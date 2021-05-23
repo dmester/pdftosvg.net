@@ -1,0 +1,207 @@
+%PDF-1.7
+
+xref
+0 5
+0000000000 65535 f 
+0000000167 00000 n 
+0000000218 00000 n 
+0000000282 00000 n 
+0000000549 00000 n 
+trailer
+<< /Root 1 0 R  /Size 5 >>
+
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >> endobj
+
+3 0 obj 
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /F1 << /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /WinAnsiEncoding >>
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj << /Length 4626 >>
+stream
+
+   0 0 0 rg
+   1 0 0 RG
+   
+   % 0.98 -0.02 0.02 0.98 0 0 cm
+
+   BT
+      /F1 12 Tf
+      %70 750 Td
+      1.7 0 0 1.7 30 750 Tm
+      
+      (Multiple spans, same line:) Tj
+      [ -500 (Abc) -1000 (def) 500 ] TJ
+      (ghi) Tj
+      ( jkl) Tj
+      150 Tz
+      [ -1000 (mno) ] TJ
+      100 Tz
+      (x) Tj
+      /F1 24 Tf
+      (larger) Tj
+      
+      % Negative font size
+      1.7 0 0 1.7 565 740 Tm
+      /F1 -12 Tf
+      (Multiple spans, same line:) Tj
+      [ -500 (Abc) -1000 (def) 500 ] TJ
+      (ghi) Tj
+      ( jkl) Tj
+      150 Tz
+      [ -1000 (mno) ] TJ
+      100 Tz
+      (x) Tj
+      /F1 -24 Tf
+      (larger) Tj
+      
+      /F1 12 Tf
+      
+      1 0 0 1 70 690 Tm
+      26 TL
+      
+      q
+         10 Tc
+         (  with  extra char space) Tj
+      Q
+      
+      T*
+      q
+         10 Tw
+         (  with  extra word space) Tj
+      Q
+      
+      T*
+      q
+         10 Tw
+         (This is ) Tj
+         5 Ts
+         (superscripted) Tj
+         0 Ts
+         ( and ) Tj
+         -5 Ts
+         (subscripted) Tj
+      Q
+      
+      (This is a line of text using the ' operator) '
+      
+      5 5 (and with extra spacing using the " operator) "
+      0 Tw
+      0 Tc
+      
+      T*
+      1 Tr
+      /F1 30 Tf
+      40 TL
+      (Outlined text) Tj
+      
+      T*
+      2 Tr
+      (Outlined and filled text) Tj
+      
+      T*
+      3 Tr
+      (invisible text) Tj
+      
+      T*
+      0 Tr
+      (filled again) Tj
+      
+      200 Tz
+      (wide ) '
+      50 Tz
+      (and narrow) '
+      
+   ET
+   
+   70 750 m
+   400 750 l
+   S
+   
+   /F1 80 Tf
+   150 Tz
+   
+   % Render mode 4 - Fill and clip
+   q
+      1 0 0 1 70 280 cm
+      BT 4 Tr (CLIPPED) Tj ET
+      30 5 400 43 re
+      0 1 0 rg
+      f
+   Q
+   
+   % Render mode 5 - Stroke and clip
+   q
+      1 0 0 1 70 210 cm
+      BT 5 Tr (CLIPPED) Tj ET
+      30 5 400 43 re
+      0 1 0 rg
+      f
+   Q
+   
+   % Render mode 6 - Fill, stroke and clip
+   q
+      1 0 0 1 70 140 cm
+      BT 6 Tr (CLIPPED) Tj ET
+      30 5 400 43 re
+      0 1 0 rg
+      f
+   Q
+   
+   % Render mode 7 - Clip only
+   q
+      1 0 0 1 70 70 cm
+      BT
+         7 Tr
+         (CLIPPED) Tj
+      ET
+      30 5 400 43 re
+      0 1 0 rg
+      f
+   Q
+   
+   
+   % Rotated text
+   120 Tz
+   /F1 20 Tf
+   BT
+      0.574 0.819 -0.819 0.574 420 380 Tm
+      (Rotated) Tj
+      100 0 Td
+      [(60) -800 (degrees)] TJ
+   ET
+   
+   % Padding whitespace to make the length less important
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+endstream
+endobj
+
+startxref
+8
+%%EOF

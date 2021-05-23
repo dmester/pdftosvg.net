@@ -1,0 +1,116 @@
+%PDF-1.7
+
+xref
+0 5
+0000000000 65535 f 
+0000000167 00000 n 
+0000000218 00000 n 
+0000000282 00000 n 
+0000001115 00000 n 
+trailer
+<< /Root 1 0 R  /Size 5 >>
+
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >> endobj
+
+3 0 obj 
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /FH1 << /Type /Font /Subtype /Type1 /BaseFont /Times-Bold /Encoding /WinAnsiEncoding >>
+         /FAnsi << /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /WinAnsiEncoding >>
+         /FMacRoman << /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /MacRomanEncoding >>
+         /FCustom <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /Times-Roman
+            /Encoding <<
+               /Type /Encoding
+               /BaseEncoding /WinAnsiEncoding
+               /Differences [
+                  65 /AE
+                  193 /Delta /Utilde
+               ]
+            >>
+         >>
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj << /Length 5264 >>
+stream
+   0 0 0 rg
+
+   BT
+      70 800 Td
+      27 TL
+     
+      /FH1 12 Tf
+      (WinAnsiEncoding) '
+      /FAnsi 12 Tf
+      <414243 20 616263 20 313233 20 C0C1C2C3C4C5C6C7C8C9CACBCCCDCECF> '
+      (ABC abc 123 ¿¡¬√ƒ≈∆«»… ÀÃÕŒœ) '
+      
+      % All non-ASCII chars
+      <80 20 81 20 82 20 83 20 84 20 85 20 86 20 87 20 88 20 89 20 8a 20 8b 20 8c 20 8d 20 8e 20 8f 20 90 20 91 20 92 20 93 20 94 20 95 20 96 20 97 20 98 20 99 20 9a 20 9b 20 9c 20 9d 20 9e 20 9f> '
+      <a0 20 a1 20 a2 20 a3 20 a4 20 a5 20 a6 20 a7 20 a8 20 a9 20 aa 20 ab 20 ac 20 ad 20 ae 20 af 20 b0 20 b1 20 b2 20 b3 20 b4 20 b5 20 b6 20 b7 20 b8 20 b9 20 ba 20 bb 20 bc 20 bd 20 be 20 bf> '
+      <c0 20 c1 20 c2 20 c3 20 c4 20 c5 20 c6 20 c7 20 c8 20 c9 20 ca 20 cb 20 cc 20 cd 20 ce 20 cf 20 d0 20 d1 20 d2 20 d3 20 d4 20 d5 20 d6 20 d7 20 d8 20 d9 20 da 20 db 20 dc 20 dd 20 de 20 df> '
+      <e0 20 e1 20 e2 20 e3 20 e4 20 e5 20 e6 20 e7 20 e8 20 e9 20 ea 20 eb 20 ec 20 ed 20 ee 20 ef 20 f0 20 f1 20 f2 20 f3 20 f4 20 f5 20 f6 20 f7 20 f8 20 f9 20 fa 20 fb 20 fc 20 fd 20 fe 20 ff> '
+      
+      /FH1 12 Tf
+      () '
+      (MacRomanEncoding) '
+      /FMacRoman 12 Tf
+      <414243 20 616263 20 313233 20 C0C1C2C3C4C5C6C7C8C9CACBCCCDCECF> '
+      (ABC abc 123 ¿¡¬√ƒ≈∆«»… ÀÃÕŒœ) '
+      
+      % All non-ASCII chars
+      <80 20 81 20 82 20 83 20 84 20 85 20 86 20 87 20 88 20 89 20 8a 20 8b 20 8c 20 8d 20 8e 20 8f 20 90 20 91 20 92 20 93 20 94 20 95 20 96 20 97 20 98 20 99 20 9a 20 9b 20 9c 20 9d 20 9e 20 9f> '
+      <a0 20 a1 20 a2 20 a3 20 a4 20 a5 20 a6 20 a7 20 a8 20 a9 20 aa 20 ab 20 ac 20 ad 20 ae 20 af 20 b0 20 b1 20 b2 20 b3 20 b4 20 b5 20 b6 20 b7 20 b8 20 b9 20 ba 20 bb 20 bc 20 bd 20 be 20 bf> '
+      <c0 20 c1 20 c2 20 c3 20 c4 20 c5 20 c6 20 c7 20 c8 20 c9 20 ca 20 cb 20 cc 20 cd 20 ce 20 cf 20 d0 20 d1 20 d2 20 d3 20 d4 20 d5 20 d6 20 d7 20 d8 20 d9 20 da 20 db 20 dc 20 dd 20 de 20 df> '
+      <e0 20 e1 20 e2 20 e3 20 e4 20 e5 20 e6 20 e7 20 e8 20 e9 20 ea 20 eb 20 ec 20 ed 20 ee 20 ef 20 f0 20 f1 20 f2 20 f3 20 f4 20 f5 20 f6 20 f7 20 f8 20 f9 20 fa 20 fb 20 fc 20 fd 20 fe 20 ff> '
+      
+      /FH1 12 Tf
+      () '
+      (Custom) '
+      /FCustom 12 Tf
+      <414243 20 616263 20 313233 20 C0C1C2C3C4C5C6C7C8C9CACBCCCDCECF> '
+      (ABC abc 123 ¿¡¬√ƒ≈∆«»… ÀÃÕŒœ) '
+      
+      % All non-ASCII chars
+      <80 20 81 20 82 20 83 20 84 20 85 20 86 20 87 20 88 20 89 20 8a 20 8b 20 8c 20 8d 20 8e 20 8f 20 90 20 91 20 92 20 93 20 94 20 95 20 96 20 97 20 98 20 99 20 9a 20 9b 20 9c 20 9d 20 9e 20 9f> '
+      <a0 20 a1 20 a2 20 a3 20 a4 20 a5 20 a6 20 a7 20 a8 20 a9 20 aa 20 ab 20 ac 20 ad 20 ae 20 af 20 b0 20 b1 20 b2 20 b3 20 b4 20 b5 20 b6 20 b7 20 b8 20 b9 20 ba 20 bb 20 bc 20 bd 20 be 20 bf> '
+      <c0 20 c1 20 c2 20 c3 20 c4 20 c5 20 c6 20 c7 20 c8 20 c9 20 ca 20 cb 20 cc 20 cd 20 ce 20 cf 20 d0 20 d1 20 d2 20 d3 20 d4 20 d5 20 d6 20 d7 20 d8 20 d9 20 da 20 db 20 dc 20 dd 20 de 20 df> '
+      <e0 20 e1 20 e2 20 e3 20 e4 20 e5 20 e6 20 e7 20 e8 20 e9 20 ea 20 eb 20 ec 20 ed 20 ee 20 ef 20 f0 20 f1 20 f2 20 f3 20 f4 20 f5 20 f6 20 f7 20 f8 20 f9 20 fa 20 fb 20 fc 20 fd 20 fe 20 ff> '
+      
+   ET
+   
+   % Padding whitespace to make the length less important
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   % xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+endstream
+endobj
+
+startxref
+8
+%%EOF

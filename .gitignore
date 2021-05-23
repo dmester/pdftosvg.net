@@ -1,0 +1,14 @@
+
+#Ignore thumbnails created by Windows
+Thumbs.db
+
+#Ignore files built by Visual Studio
+*.user
+*.suo
+[Bb]in
+obj/
+[Tt]est[Rr]esult*
+.vs/
+
+#Nuget packages folder
+packages/

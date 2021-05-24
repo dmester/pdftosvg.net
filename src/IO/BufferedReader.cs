@@ -272,8 +272,8 @@ namespace PdfToSvg.IO
 
         public override int ReadByte()
         {
-            var ch = ReadByte();
-            return ch == EndOfStreamMarker ? -1 : unchecked((int)ch);
+            var ch = ReadChar();
+            return ch == EndOfStreamMarker ? -1 : ch;
         }
 
         public int PeekByte() => PeekByte(1);

@@ -18,4 +18,16 @@
     <ProjectReference Include="..\..\src\PdfToSvg.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="IO\ZLib_Uncompressed.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="IO\ZLib_WindowBits15.bin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="IO\ZLib_WindowBits8.bin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

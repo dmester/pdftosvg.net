@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.IO
@@ -10,6 +11,41 @@ namespace PdfToSvg.IO
     // TODO Add tests
     internal static class StreamExtensions
     {
+
+        public static int ReadAll(this Stream stream, byte[] buffer, int offset, int count)
+        {
+            var totalRead = 0;
+            int read;
+
+            do
+            {
+                read = stream.Read(buffer, offset, count);
+                offset += read;
+                count -= read;
+                totalRead += read;
+            }
+            while (read > 0);
+
+            return totalRead;
+        }
+
+        public static async Task<int> ReadAllAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            var totalRead = 0;
+            int read;
+
+            do
+            {
+                read = await stream.ReadAsync(buffer, offset, count, cancellationToken);
+                offset += read;
+                count -= read;
+                totalRead += read;
+            }
+            while (read > 0);
+
+            return totalRead;
+        }
+
         public static byte[] ToArray(this IEnumerable<Func<Stream>> streamFactories)
         {
             var chunks = new List<byte[]>();

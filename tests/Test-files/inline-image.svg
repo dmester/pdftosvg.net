@@ -1,9 +1,9 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
   <style>text { white-space: pre; }</style>
   <defs>
-    <image id="imXR1fy" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAAM5JREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT3PgGa8gRwIYbLhljAgwoQYDes1iHYMDJGhAdVJmOj7bDQnHU2B82UEGRw0GOoDGOangNDkGAYffQYJfobPM2EajqagBCtQYnsxQ4U3Q4INCGU4MizPZHg/DS1YgeBIAlEeACqDxvSvz0QlDaAyROIDcvDYA5QCq0bSAE/ewDBATt5ALmryBgDzX6lKAAAAAElFTkSuQmCC" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
+    <image id="imes4p1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANJJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT3PgGa8gRwIYbLhljAgwoQYDes1iHYMDJGhAdVJmOj7bDQnHU2B82UEGRw0GOoDGOangNDkGAYffQYJfobPM2EajqagBCtQYnsxQ4U3Q4INCGU4MizPZHg/DS1YgeBIAlEeACqDxvSvz0QlDaAyROIDcvDYA5QCq0bSAE/ewDBATt5ALmryBgA34dLM/tOwHgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
   </defs>
   <g transform="matrix(400 0 0 400 100 91.92)">
-    <use href="#imXR1fy" />
+    <use href="#imes4p1" />
   </g>
 </svg>

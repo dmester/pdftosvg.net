@@ -1,31 +1,32 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
-  <style>text { white-space: pre; }.tx96X5e{font-family:'Times New Roman',serif;font-size:20.4px;}.txIs9CX{font-family:'Times New Roman',serif;font-size:40.8px;}.txhuuNB{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:10px;}.txs8vHo{font-family:'Times New Roman',serif;font-size:12px;}.txR0aSQ{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:5px;}.tx29BpV{fill:none;stroke:#f00;font-family:'Times New Roman',serif;font-size:30px;}.txHX5D6{stroke:#f00;font-family:'Times New Roman',serif;font-size:30px;}.txcw26F{font-family:'Times New Roman',serif;font-size:30px;}.txcBATn{font-family:'Times New Roman',serif;font-size:80px;}.tx76422{fill:none;stroke:#f00;font-family:'Times New Roman',serif;font-size:80px;}.tx0nZpr{stroke:#f00;font-family:'Times New Roman',serif;font-size:80px;}.tx6zuDE{font-family:'Times New Roman',serif;font-size:20.0024px;}</style>
-  <defs />
-  <text x="30" y="91.92" class="tx96X5e"><![CDATA[]]><tspan class="tx96X5e">Multiple spans, same line:</tspan><tspan class="tx96X5e" dx="10.2">Abc</tspan><tspan class="tx96X5e" dx="20.4">def</tspan><tspan class="tx96X5e" dx="-10.2">ghi jkl</tspan></text>
-  <text x="407.9508" y="91.92" class="tx96X5e" textLength="54.4068px" lengthAdjust="spacingAndGlyphs">mno</text>
-  <text x="462.3576" y="91.92"><![CDATA[]]><tspan class="tx96X5e">x</tspan><tspan class="txIs9CX">larger</tspan></text>
-  <text transform="matrix(-1 0 0 -1 565 101.92)" class="tx96X5e"><![CDATA[]]><tspan class="tx96X5e">Multiple spans, same line:</tspan><tspan class="tx96X5e" dx="10.2">Abc</tspan><tspan class="tx96X5e" dx="20.4">def</tspan><tspan class="tx96X5e" dx="-10.2">ghi jkl</tspan></text>
-  <text transform="matrix(-1 0 0 -1 187.0492 101.92)" class="tx96X5e" textLength="54.4068px" lengthAdjust="spacingAndGlyphs">mno</text>
-  <text transform="matrix(-1 0 0 -1 132.6424 101.92)"><![CDATA[]]><tspan class="tx96X5e">x</tspan><tspan class="txIs9CX">larger</tspan></text>
-  <text x="70" y="151.92" class="txhuuNB">  with  extra char space</text>
-  <text x="70" y="177.92" class="txs8vHo"><![CDATA[]]><tspan class="txs8vHo" dx="10"> </tspan><tspan class="txs8vHo" dx="10"> with</tspan><tspan class="txs8vHo" dx="10"> </tspan><tspan class="txs8vHo" dx="10"> extra</tspan><tspan class="txs8vHo" dx="10"> word</tspan><tspan class="txs8vHo" dx="10"> space</tspan></text>
-  <text x="70" y="203.92" class="txs8vHo"><![CDATA[]]><tspan class="txs8vHo">This</tspan><tspan class="txs8vHo" dx="10"> is</tspan><tspan class="txs8vHo" dx="10"> </tspan><tspan class="txs8vHo" dy="-5">superscripted</tspan><tspan class="txs8vHo" dx="10" dy="5"> and</tspan><tspan class="txs8vHo" dx="10"> </tspan><tspan class="txs8vHo" dy="5">subscripted</tspan></text>
-  <text x="70" y="229.92" class="txs8vHo">This is a line of text using the ' operator</text>
-  <text x="70" y="255.92" class="txR0aSQ"><![CDATA[]]><tspan class="txR0aSQ">and</tspan><tspan class="txR0aSQ" dx="5"> with</tspan><tspan class="txR0aSQ" dx="5"> extra</tspan><tspan class="txR0aSQ" dx="5"> spacing</tspan><tspan class="txR0aSQ" dx="5"> using</tspan><tspan class="txR0aSQ" dx="5"> the</tspan><tspan class="txR0aSQ" dx="5"> "</tspan><tspan class="txR0aSQ" dx="5"> operator</tspan></text>
-  <text x="70" y="281.92" class="tx29BpV">Outlined text</text>
-  <text x="70" y="321.92" class="txHX5D6">Outlined and filled text</text>
-  <text x="70" y="401.92" class="txcw26F">filled again</text>
-  <text x="70" y="441.92" class="txcw26F" textLength="131.64px" lengthAdjust="spacingAndGlyphs">wide </text>
-  <text x="70" y="481.92" class="txcw26F" textLength="67.89px" lengthAdjust="spacingAndGlyphs">and narrow</text>
-  <path d="M70 91.92h330" fill="none" stroke="#f00" stroke-width="1" />
-  <text x="70" y="561.92" class="txcBATn" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
-  <path d="M100 556.92h400v-43h-400z" fill="#0f0" />
-  <text x="70" y="631.92" class="tx76422" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
-  <path d="M100 626.92h400v-43h-400z" fill="#0f0" />
-  <text x="70" y="701.92" class="tx0nZpr" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
-  <path d="M100 696.92h400v-43h-400z" fill="#0f0" />
-  <path d="M100 766.92h400v-43h-400z" fill="#0f0" />
-  <text transform="matrix(0.5739 -0.8189 0.8189 0.5739 420 461.92)" class="tx6zuDE" textLength="74.6728px" lengthAdjust="spacingAndGlyphs">Rotated</text>
-  <text transform="matrix(0.5739 -0.8189 0.8189 0.5739 477.4 380.02)" class="tx6zuDE" textLength="24.0028px" lengthAdjust="spacingAndGlyphs">60</text>
-  <text transform="matrix(0.5739 -0.8189 0.8189 0.5739 502.1968 344.6392)" class="tx6zuDE" textLength="73.3047px" lengthAdjust="spacingAndGlyphs">degrees</text>
+<style>text { white-space: pre; }.tx96X5e{font-family:'Times New Roman',serif;font-size:20.4px;}.txIs9CX{font-family:'Times New Roman',serif;font-size:40.8px;}.txhuuNB{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:10px;}.txs8vHo{font-family:'Times New Roman',serif;font-size:12px;}.txR0aSQ{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:5px;}.tx29BpV{fill:none;stroke:#f00;font-family:'Times New Roman',serif;font-size:30px;}.txHX5D6{stroke:#f00;font-family:'Times New Roman',serif;font-size:30px;}.txcw26F{font-family:'Times New Roman',serif;font-size:30px;}.txcBATn{font-family:'Times New Roman',serif;font-size:80px;}.tx76422{fill:none;stroke:#f00;font-family:'Times New Roman',serif;font-size:80px;}.tx0nZpr{stroke:#f00;font-family:'Times New Roman',serif;font-size:80px;}.tx6zuDE{font-family:'Times New Roman',serif;font-size:20.0024px;}
+</style>
+<defs />
+<text x="30" y="91.92" class="tx96X5e"><tspan class="tx96X5e">Multiple spans, same line:</tspan><tspan class="tx96X5e" dx="10.2">Abc</tspan><tspan class="tx96X5e" dx="20.4">def</tspan><tspan class="tx96X5e" dx="-10.2">ghi jkl</tspan></text>
+<text x="407.9508" y="91.92" class="tx96X5e" textLength="54.4068px" lengthAdjust="spacingAndGlyphs">mno</text>
+<text x="462.3576" y="91.92"><tspan class="tx96X5e">x</tspan><tspan class="txIs9CX">larger</tspan></text>
+<text transform="matrix(-1 0 0 -1 565 101.92)" class="tx96X5e"><tspan class="tx96X5e">Multiple spans, same line:</tspan><tspan class="tx96X5e" dx="10.2">Abc</tspan><tspan class="tx96X5e" dx="20.4">def</tspan><tspan class="tx96X5e" dx="-10.2">ghi jkl</tspan></text>
+<text transform="matrix(-1 0 0 -1 187.0492 101.92)" class="tx96X5e" textLength="54.4068px" lengthAdjust="spacingAndGlyphs">mno</text>
+<text transform="matrix(-1 0 0 -1 132.6424 101.92)"><tspan class="tx96X5e">x</tspan><tspan class="txIs9CX">larger</tspan></text>
+<text x="70" y="151.92" class="txhuuNB">  with  extra char space</text>
+<text x="70" y="177.92" class="txs8vHo"><tspan class="txs8vHo" dx="10"> </tspan><tspan class="txs8vHo" dx="10"> with</tspan><tspan class="txs8vHo" dx="10"> </tspan><tspan class="txs8vHo" dx="10"> extra</tspan><tspan class="txs8vHo" dx="10"> word</tspan><tspan class="txs8vHo" dx="10"> space</tspan></text>
+<text x="70" y="203.92" class="txs8vHo"><tspan class="txs8vHo">This</tspan><tspan class="txs8vHo" dx="10"> is</tspan><tspan class="txs8vHo" dx="10"> </tspan><tspan class="txs8vHo" dy="-5">superscripted</tspan><tspan class="txs8vHo" dx="10" dy="5"> and</tspan><tspan class="txs8vHo" dx="10"> </tspan><tspan class="txs8vHo" dy="5">subscripted</tspan></text>
+<text x="70" y="229.92" class="txs8vHo">This is a line of text using the ' operator</text>
+<text x="70" y="255.92" class="txR0aSQ"><tspan class="txR0aSQ">and</tspan><tspan class="txR0aSQ" dx="5"> with</tspan><tspan class="txR0aSQ" dx="5"> extra</tspan><tspan class="txR0aSQ" dx="5"> spacing</tspan><tspan class="txR0aSQ" dx="5"> using</tspan><tspan class="txR0aSQ" dx="5"> the</tspan><tspan class="txR0aSQ" dx="5"> "</tspan><tspan class="txR0aSQ" dx="5"> operator</tspan></text>
+<text x="70" y="281.92" class="tx29BpV">Outlined text</text>
+<text x="70" y="321.92" class="txHX5D6">Outlined and filled text</text>
+<text x="70" y="401.92" class="txcw26F">filled again</text>
+<text x="70" y="441.92" class="txcw26F" textLength="131.64px" lengthAdjust="spacingAndGlyphs">wide </text>
+<text x="70" y="481.92" class="txcw26F" textLength="67.89px" lengthAdjust="spacingAndGlyphs">and narrow</text>
+<path d="M70 91.92h330" fill="none" stroke="#f00" stroke-width="1" />
+<text x="70" y="561.92" class="txcBATn" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<path d="M100 556.92h400v-43h-400z" fill="#0f0" />
+<text x="70" y="631.92" class="tx76422" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<path d="M100 626.92h400v-43h-400z" fill="#0f0" />
+<text x="70" y="701.92" class="tx0nZpr" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<path d="M100 696.92h400v-43h-400z" fill="#0f0" />
+<path d="M100 766.92h400v-43h-400z" fill="#0f0" />
+<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 420 461.92)" class="tx6zuDE" textLength="74.6728px" lengthAdjust="spacingAndGlyphs">Rotated</text>
+<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 477.4 380.02)" class="tx6zuDE" textLength="24.0028px" lengthAdjust="spacingAndGlyphs">60</text>
+<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 502.1968 344.6392)" class="tx6zuDE" textLength="73.3047px" lengthAdjust="spacingAndGlyphs">degrees</text>
 </svg>

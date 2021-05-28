@@ -1,10 +1,13 @@
 ﻿using PdfToSvg.DocumentModel;
 using PdfToSvg.Drawing;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace PdfToSvg
 {
@@ -30,7 +33,7 @@ namespace PdfToSvg
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
 
-            return SvgRenderer.Convert(page, options).ToString();
+            return ToString(SvgRenderer.Convert(page, options));
         }
 
         public Task<string> ToSvgAsync()
@@ -42,7 +45,20 @@ namespace PdfToSvg
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
 
-            return (await SvgRenderer.ConvertAsync(page, options)).ToString();
+            return ToString(await SvgRenderer.ConvertAsync(page, options));
+        }
+
+        private string ToString(XElement el)
+        {
+            using (var stringWriter = new StringWriter())
+            {
+                using (var writer = new SvgXmlWriter(stringWriter))
+                {
+                    el.WriteTo(writer);
+                }
+
+                return stringWriter.ToString();
+            }
         }
     }
 }

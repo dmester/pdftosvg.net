@@ -1158,10 +1158,6 @@ namespace PdfToSvg.Drawing
                 {
                     var currentYOffset = 0.0;
 
-                    // TODO remove CDATA
-                    // XmlWriter will preserve space within the <text> element, due to this empty CDATA.
-                    textEl.Add(new XCData(""));
-
                     var classNames = new string[paragraph.Content.Count];
                     var multipleClasses = false;
 

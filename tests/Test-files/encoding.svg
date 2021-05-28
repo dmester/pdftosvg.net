@@ -1,25 +1,26 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
-  <style>text { white-space: pre; }.txHhBSA{font-family:'Times New Roman',serif;font-weight:bold;font-size:12px;}.txs8vHo{font-family:'Times New Roman',serif;font-size:12px;}</style>
-  <defs />
-  <text x="70" y="68.92" class="txHhBSA">WinAnsiEncoding</text>
-  <text x="70" y="95.92" class="txs8vHo">ABC abc 123 ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
-  <text x="70" y="122.92" class="txs8vHo">ABC abc 123 ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
-  <text x="70" y="149.92" class="txs8vHo">€ • ‚ ƒ „ … † ‡ ˆ ‰ Š ‹ Œ • Ž • • ‘ ’ “ ” • – — ˜ ™ š › œ • ž Ÿ</text>
-  <text x="70" y="176.92" class="txs8vHo">  ¡ ¢ £ ¤ ¥ ¦ § ¨ © ª « ¬ - ® ¯ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿</text>
-  <text x="70" y="203.92" class="txs8vHo">À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß</text>
-  <text x="70" y="230.92" class="txs8vHo">à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ÷ ø ù ú û ü ý þ ÿ</text>
-  <text x="70" y="284.92" class="txHhBSA">MacRomanEncoding</text>
-  <text x="70" y="311.92" class="txs8vHo">ABC abc 123 ¿¡¬√ƒ≈∆«»… ÀÃÕŒœ</text>
-  <text x="70" y="338.92" class="txs8vHo">ABC abc 123 ¿¡¬√ƒ≈∆«»… ÀÃÕŒœ</text>
-  <text x="70" y="365.92" class="txs8vHo">Ä Å Ç É Ñ Ö Ü á à â ä ã å ç é è ê ë í ì î ï ñ ó ò ô ö õ ú ù û ü</text>
-  <text x="70" y="392.92" class="txs8vHo">† ° ¢ £ § • ¶ ß ® © ™ ´ ¨ ≠ Æ Ø ∞ ± ≤ ≥ ¥ µ ∂ ∑ ∏ π ∫ ª º Ω æ ø</text>
-  <text x="70" y="419.92" class="txs8vHo">¿ ¡ ¬ √ ƒ ≈ ∆ « » …   À Ã Õ Œ œ – — “ ” ‘ ’ ÷ ◊ ÿ Ÿ ⁄ ¤ ‹ › ﬁ ﬂ</text>
-  <text x="70" y="446.92" class="txs8vHo">‡ · ‚ „ ‰ Â Ê Á Ë È Í Î Ï Ì Ó Ô  Ò Ú Û Ù ı ˆ ˜ ¯ ˘ ˙ ˚ ¸ ˝ ˛ ˇ</text>
-  <text x="70" y="500.92" class="txHhBSA">Custom</text>
-  <text x="70" y="527.92" class="txs8vHo">ÆBC abc 123 À∆ŨÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
-  <text x="70" y="554.92" class="txs8vHo">ÆBC abc 123 À∆ŨÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
-  <text x="70" y="581.92" class="txs8vHo">€ • ‚ ƒ „ … † ‡ ˆ ‰ Š ‹ Œ • Ž • • ‘ ’ “ ” • – — ˜ ™ š › œ • ž Ÿ</text>
-  <text x="70" y="608.92" class="txs8vHo">  ¡ ¢ £ ¤ ¥ ¦ § ¨ © ª « ¬ - ® ¯ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿</text>
-  <text x="70" y="635.92" class="txs8vHo">À ∆ Ũ Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß</text>
-  <text x="70" y="662.92" class="txs8vHo">à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ÷ ø ù ú û ü ý þ ÿ</text>
+<style>text { white-space: pre; }.txHhBSA{font-family:'Times New Roman',serif;font-weight:bold;font-size:12px;}.txs8vHo{font-family:'Times New Roman',serif;font-size:12px;}
+</style>
+<defs />
+<text x="70" y="68.92" class="txHhBSA">WinAnsiEncoding</text>
+<text x="70" y="95.92" class="txs8vHo">ABC abc 123 ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
+<text x="70" y="122.92" class="txs8vHo">ABC abc 123 ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
+<text x="70" y="149.92" class="txs8vHo">€ • ‚ ƒ „ … † ‡ ˆ ‰ Š ‹ Œ • Ž • • ‘ ’ “ ” • – — ˜ ™ š › œ • ž Ÿ</text>
+<text x="70" y="176.92" class="txs8vHo">  ¡ ¢ £ ¤ ¥ ¦ § ¨ © ª « ¬ - ® ¯ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿</text>
+<text x="70" y="203.92" class="txs8vHo">À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß</text>
+<text x="70" y="230.92" class="txs8vHo">à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ÷ ø ù ú û ü ý þ ÿ</text>
+<text x="70" y="284.92" class="txHhBSA">MacRomanEncoding</text>
+<text x="70" y="311.92" class="txs8vHo">ABC abc 123 ¿¡¬√ƒ≈∆«»… ÀÃÕŒœ</text>
+<text x="70" y="338.92" class="txs8vHo">ABC abc 123 ¿¡¬√ƒ≈∆«»… ÀÃÕŒœ</text>
+<text x="70" y="365.92" class="txs8vHo">Ä Å Ç É Ñ Ö Ü á à â ä ã å ç é è ê ë í ì î ï ñ ó ò ô ö õ ú ù û ü</text>
+<text x="70" y="392.92" class="txs8vHo">† ° ¢ £ § • ¶ ß ® © ™ ´ ¨ ≠ Æ Ø ∞ ± ≤ ≥ ¥ µ ∂ ∑ ∏ π ∫ ª º Ω æ ø</text>
+<text x="70" y="419.92" class="txs8vHo">¿ ¡ ¬ √ ƒ ≈ ∆ « » …   À Ã Õ Œ œ – — “ ” ‘ ’ ÷ ◊ ÿ Ÿ ⁄ ¤ ‹ › ﬁ ﬂ</text>
+<text x="70" y="446.92" class="txs8vHo">‡ · ‚ „ ‰ Â Ê Á Ë È Í Î Ï Ì Ó Ô  Ò Ú Û Ù ı ˆ ˜ ¯ ˘ ˙ ˚ ¸ ˝ ˛ ˇ</text>
+<text x="70" y="500.92" class="txHhBSA">Custom</text>
+<text x="70" y="527.92" class="txs8vHo">ÆBC abc 123 À∆ŨÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
+<text x="70" y="554.92" class="txs8vHo">ÆBC abc 123 À∆ŨÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
+<text x="70" y="581.92" class="txs8vHo">€ • ‚ ƒ „ … † ‡ ˆ ‰ Š ‹ Œ • Ž • • ‘ ’ “ ” • – — ˜ ™ š › œ • ž Ÿ</text>
+<text x="70" y="608.92" class="txs8vHo">  ¡ ¢ £ ¤ ¥ ¦ § ¨ © ª « ¬ - ® ¯ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿</text>
+<text x="70" y="635.92" class="txs8vHo">À ∆ Ũ Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß</text>
+<text x="70" y="662.92" class="txs8vHo">à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ÷ ø ù ú û ü ý þ ÿ</text>
 </svg>

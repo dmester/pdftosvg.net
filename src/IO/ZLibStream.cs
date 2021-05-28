@@ -10,6 +10,15 @@ using PdfToSvg.Common;
 
 namespace PdfToSvg.IO
 {
+#if NETFRAMEWORK || NETSTANDARD || NET5_0
+    internal static class ZLibStreamFactory
+    {
+        public static Stream Create(Stream stream, CompressionMode mode, bool leaveOpen = false)
+        {
+            return new ZLibStream(stream, mode, leaveOpen);
+        }
+    }
+
     /// <summary>
     /// Compresses or decompresses an RFC 1950 compatible zlib/deflate stream.
     /// </summary>
@@ -254,4 +263,13 @@ namespace PdfToSvg.IO
             base.Dispose(disposing);
         }
     }
+#else
+    internal static class ZLibStreamFactory
+    {
+        public static Stream Create(Stream stream, CompressionMode mode, bool leaveOpen = false)
+        {
+            return new ZLibStream(stream, mode, leaveOpen);
+        }
+    }
+#endif
 }

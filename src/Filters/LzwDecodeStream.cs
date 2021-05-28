@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Filters
 {
-    // TODO Find a way of testing this on larger data
     internal class LzwDecodeStream : DecodeStream
     {
         // PDF spec 1.7, 7.4.4.2, page 34

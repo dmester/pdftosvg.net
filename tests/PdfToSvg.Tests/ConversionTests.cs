@@ -159,8 +159,6 @@ namespace PdfToSvg.Tests
             var expectedSvgPath = Path.Combine(testFileDirectory, Path.ChangeExtension(fileName, ".svg"));
             var actualSvgPath = Path.Combine(testFileDirectory, Path.ChangeExtension(fileName, null)) + "-actual-" + targetFramework + "-sync.svg";
 
-            var expected = File.Exists(expectedSvgPath) ? File.ReadAllText(expectedSvgPath, Encoding.UTF8) : "<non-existing>";
-            
             string actual;
 
             var pdfPath = Path.Combine(testFileDirectory, fileName);
@@ -170,9 +168,12 @@ namespace PdfToSvg.Tests
             }
 
             actual = RecompressPngs(actual);
-            expected = RecompressPngs(expected);
-
             File.WriteAllText(actualSvgPath, actual, Encoding.UTF8);
+
+            var expected = File.Exists(expectedSvgPath) ?
+                RecompressPngs(File.ReadAllText(expectedSvgPath, Encoding.UTF8)) :
+                "<non-existing>";
+
             Assert.AreEqual(expected, actual);
         }
 

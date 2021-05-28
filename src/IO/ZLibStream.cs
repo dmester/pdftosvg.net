@@ -6,6 +6,7 @@ using PdfToSvg;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using System.Threading;
+using PdfToSvg.Common;
 
 namespace PdfToSvg.IO
 {
@@ -65,6 +66,8 @@ namespace PdfToSvg.IO
 
         private readonly Adler32 adler = new Adler32();
         private readonly CompressionMode mode;
+        
+        private StripTrailerStream trailerStream;
         private Stream baseStream;
         private Stream deflateStream;
 
@@ -88,18 +91,18 @@ namespace PdfToSvg.IO
 
                 // Important to leave the stream open, since we need to dispose the DeflateStream
                 // before being able to write the checksum.
-                deflateStream = new DeflateStream(stream, CompressionLevel.Optimal, true);
+                deflateStream = new DeflateStream(stream, CompressionLevel.Optimal, leaveOpen: true);
             }
             else
             {
-                var remainingStreamLength = stream.Length - stream.Position;
+                trailerStream = new StripTrailerStream(stream, trailerLength: 4, leaveOpen: true);
 
-                var cmf = stream.ReadByte();
-                var flg = stream.ReadByte();
+                var cmf = trailerStream.ReadByte();
+                var flg = trailerStream.ReadByte();
 
-                if (cmf < 0 || flg < 0 || remainingStreamLength < 6)
+                if (cmf < 0 || flg < 0)
                 {
-                    throw new InvalidDataException("Missing header or checksum in ZLib stream.");
+                    throw new InvalidDataException("Missing header in ZLib stream.");
                 }
 
                 var cm = cmf & 0xf;
@@ -119,8 +122,7 @@ namespace PdfToSvg.IO
                     throw new InvalidDataException("Invalid ZLib header.");
                 }
 
-                var rawDeflateSlice = new StreamSlice(stream, remainingStreamLength - 6);
-                deflateStream = new DeflateStream(rawDeflateSlice, CompressionMode.Decompress, true);
+                deflateStream = new DeflateStream(trailerStream, CompressionMode.Decompress, leaveOpen: true);
             }
         }
 
@@ -149,12 +151,9 @@ namespace PdfToSvg.IO
             {
                 checksumVerified = true;
 
-                var checksumBytes = new byte[4];
+                var checksumBytes = trailerStream.GetTrailer();
 
-                baseStream.Seek(-4, SeekOrigin.End);
-                read = baseStream.ReadAll(checksumBytes, 0, 4);
-
-                if (read != 4)
+                if (checksumBytes.Length != 4)
                 {
                     throw new InvalidDataException("Missing checksum in ZLib stream.");
                 }
@@ -187,63 +186,14 @@ namespace PdfToSvg.IO
             return read;
         }
 
-        private class ReadAsyncResult : IAsyncResult
-        {
-            public IAsyncResult DeflateResult;
-
-            public byte[] Buffer;
-            public int Offset;
-            public int Count;
-
-            public object AsyncState => DeflateResult.AsyncState;
-            public WaitHandle AsyncWaitHandle => DeflateResult.AsyncWaitHandle;
-            public bool CompletedSynchronously => DeflateResult.CompletedSynchronously;
-            public bool IsCompleted => DeflateResult.IsCompleted;
-        }
-
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
-            var result = new ReadAsyncResult
-            {
-                Buffer = buffer,
-                Offset = offset,
-                Count = count,
-            };
-
-            result.DeflateResult = deflateStream.BeginRead(buffer, offset, count, originalResult =>
-            {
-                result.DeflateResult = originalResult;
-
-                if (callback != null)
-                {
-                    callback(result);
-                }
-            }, state);
-
-            return result;
+            return TaskAsyncResult<ZLibStream, int>.Begin(ReadAsync(buffer, offset, count), callback, state);
         }
 
         public override int EndRead(IAsyncResult asyncResult)
         {
-            if (asyncResult == null)
-            {
-                throw new ArgumentNullException(nameof(asyncResult));
-            }
-
-            var readOperation = asyncResult as ReadAsyncResult;
-            if (readOperation == null)
-            {
-                throw new ArgumentException("The IAsyncResult was not created by " + nameof(ZLibStream) + ".", nameof(asyncResult));
-            }
-            
-            var read = deflateStream.EndRead(readOperation.DeflateResult);
-
-            if (readOperation.Count > 0)
-            {
-                AfterRead(readOperation.Buffer, readOperation.Offset, read);
-            }
-
-            return read;
+            return TaskAsyncResult<ZLibStream, int>.End(asyncResult);
         }
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
@@ -292,6 +242,12 @@ namespace PdfToSvg.IO
                     }
 
                     baseStream = null;
+                }
+
+                if (trailerStream != null)
+                {
+                    trailerStream.Dispose();
+                    trailerStream = null;
                 }
             }
 

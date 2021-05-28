@@ -55,76 +55,76 @@ namespace PdfToSvg.Tests.IO
 
         private byte[] Inflate(byte[] data)
         {
-            using (MemoryStream inStream = new MemoryStream(), outStream = new MemoryStream())
+            using (var inStream = new NoSeekMemoryStream(data))
             {
-                inStream.Write(data, 0, data.Length);
-                inStream.Position = 0;
-
-                using (var zlibStream = new ZLibStream(inStream, CompressionMode.Decompress))
+                using (var outStream = new MemoryStream())
                 {
-                    var buffer = new byte[4096];
-                    int read;
-
-                    do
+                    using (var zlibStream = new ZLibStream(inStream, CompressionMode.Decompress))
                     {
-                        read = zlibStream.Read(buffer, 0, buffer.Length);
-                        outStream.Write(buffer, 0, read);
-                    }
-                    while (read > 0);
-                }
+                        var buffer = new byte[4096];
+                        int read;
 
-                return outStream.ToArray();
+                        do
+                        {
+                            read = zlibStream.Read(buffer, 0, buffer.Length);
+                            outStream.Write(buffer, 0, read);
+                        }
+                        while (read > 0);
+                    }
+
+                    return outStream.ToArray();
+                }
             }
         }
 
         private async Task<byte[]> InflateAsync(byte[] data)
         {
-            using (MemoryStream inStream = new MemoryStream(), outStream = new MemoryStream())
+            using (var inStream = new NoSeekMemoryStream(data))
             {
-                inStream.Write(data, 0, data.Length);
-                inStream.Position = 0;
-
-                using (var zlibStream = new ZLibStream(inStream, CompressionMode.Decompress))
+                using (var outStream = new MemoryStream())
                 {
-                    var buffer = new byte[4096];
-                    int read;
-
-                    do
+                    using (var zlibStream = new ZLibStream(inStream, CompressionMode.Decompress))
                     {
-                        read = await zlibStream.ReadAsync(buffer, 0, buffer.Length);
-                        outStream.Write(buffer, 0, read);
-                    }
-                    while (read > 0);
-                }
+                        var buffer = new byte[4096];
+                        int read;
 
-                return outStream.ToArray();
+                        do
+                        {
+                            read = await zlibStream.ReadAsync(buffer, 0, buffer.Length);
+                            outStream.Write(buffer, 0, read);
+                        }
+                        while (read > 0);
+                    }
+
+                    return outStream.ToArray();
+                }
             }
         }
 
         private async Task<byte[]> InflateAPM(byte[] data)
         {
-            using (MemoryStream inStream = new MemoryStream(), outStream = new MemoryStream())
+            using (var inStream = new NoSeekMemoryStream(data))
             {
-                inStream.Write(data, 0, data.Length);
-                inStream.Position = 0;
-
-                using (var zlibStream = new ZLibStream(inStream, CompressionMode.Decompress))
+                using (var outStream = new MemoryStream())
                 {
-                    var buffer = new byte[4096];
-                    int read;
-
-                    do
+                    using (var zlibStream = new ZLibStream(inStream, CompressionMode.Decompress))
                     {
-                        read = await Task<int>.Factory.FromAsync(
-                            zlibStream.BeginRead, zlibStream.EndRead,
-                            buffer, 0, buffer.Length, null);
+                        var buffer = new byte[4096];
+                        int read;
 
-                        outStream.Write(buffer, 0, read);
+                        do
+                        {
+                            read = await Task<int>.Factory.FromAsync(
+                                zlibStream.BeginRead, zlibStream.EndRead,
+                                buffer, 0, buffer.Length, null);
+
+                            outStream.Write(buffer, 0, read);
+                        }
+                        while (read > 0);
                     }
-                    while (read > 0);
-                }
 
-                return outStream.ToArray();
+                    return outStream.ToArray();
+                }
             }
         }
 

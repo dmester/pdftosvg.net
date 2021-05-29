@@ -62,7 +62,7 @@ namespace PdfToSvg.DocumentModel
 
             if (value == null)
             {
-                return Array.Empty<object>();
+                return ArrayUtils.Empty<object>();
             }
 
             if (value is object[] array)

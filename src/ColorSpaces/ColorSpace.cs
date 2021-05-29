@@ -113,7 +113,7 @@ namespace PdfToSvg.ColorSpaces
         private static ColorSpace ParseIndexed(object[] colorSpaceParams, PdfDictionary colorSpaceResourcesDictionary, int recursionCount)
         {
             ColorSpace baseSpace;
-            byte[] lookup = Array.Empty<byte>();
+            var lookup = ArrayUtils.Empty<byte>();
 
             if (colorSpaceParams.Length < 4)
             {

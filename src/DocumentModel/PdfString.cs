@@ -1,4 +1,5 @@
-﻿using PdfToSvg.Encodings;
+﻿using PdfToSvg.Common;
+using PdfToSvg.Encodings;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -47,7 +48,7 @@ namespace PdfToSvg.DocumentModel
             get => data[index];
         }
 
-        public static PdfString Empty { get; } = new PdfString(new byte[0]);
+        public static PdfString Empty { get; } = new PdfString(ArrayUtils.Empty<byte>());
 
         public int Length => data.Length;
 

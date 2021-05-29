@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PdfToSvg.Common;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace PdfToSvg.Filters
         private readonly Stream stream;
         private readonly List<byte[]> dictionary = new List<byte[]>();
 
-        private byte[] sequence = new byte[0];
+        private byte[] sequence = ArrayUtils.Empty<byte>();
         private int sequenceCursor;
 
         private readonly byte[] readBuffer;
@@ -126,7 +127,7 @@ namespace PdfToSvg.Filters
                 {
                     dictionary.Clear();
                     nextCodeLengthBits = 9;
-                    sequence = new byte[0];
+                    sequence = ArrayUtils.Empty<byte>();
                 }
                 else if (code == EndOfDecode)
                 {

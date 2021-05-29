@@ -13,7 +13,9 @@ namespace PdfToSvg.Tests.Encodings
         [Test]
         public void WinAnsi()
         {
+#if !NETFRAMEWORK
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+#endif
 
             var source =
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#¤%&/()=?" +

@@ -14,10 +14,10 @@ namespace PdfToSvg
     {
         private readonly PdfDictionary root;
         private readonly PdfDictionary info;
-        private readonly Dictionary<PdfObjectId, object> objects;
+        private readonly Dictionary<PdfObjectId, object?> objects;
         private InputFile? file;
 
-        internal PdfDocument(InputFile file, PdfDictionary trailer, Dictionary<PdfObjectId, object> objects)
+        internal PdfDocument(InputFile file, PdfDictionary? trailer, Dictionary<PdfObjectId, object?> objects)
         {
             this.info = trailer.GetDictionaryOrEmpty(Names.Info);
             this.root = trailer.GetDictionaryOrEmpty(Names.Root);
@@ -66,14 +66,14 @@ namespace PdfToSvg
             }
         }
 
-        public string Title => info.GetValueOrDefault(Names.Title, PdfString.Empty).ToString();
-        public string Author => info.GetValueOrDefault(Names.Author, PdfString.Empty).ToString();
-        public string Subject => info.GetValueOrDefault(Names.Subject, PdfString.Empty).ToString();
-        public string Keywords => info.GetValueOrDefault(Names.Keywords, PdfString.Empty).ToString();
-        public string Creator => info.GetValueOrDefault(Names.Creator, PdfString.Empty).ToString();
-        public string Producer => info.GetValueOrDefault(Names.Producer, PdfString.Empty).ToString();
-        public DateTimeOffset? CreationDate => info.GetValueOrDefault(Names.CreationDate, (DateTimeOffset?)null);
-        public DateTimeOffset? ModDate => info.GetValueOrDefault(Names.ModDate, (DateTimeOffset?)null);
+        public string? Title => info.GetValueOrDefault<PdfString?>(Names.Title)?.ToString();
+        public string? Author => info.GetValueOrDefault<PdfString?>(Names.Author)?.ToString();
+        public string? Subject => info.GetValueOrDefault<PdfString?>(Names.Subject)?.ToString();
+        public string? Keywords => info.GetValueOrDefault<PdfString?>(Names.Keywords)?.ToString();
+        public string? Creator => info.GetValueOrDefault<PdfString?>(Names.Creator)?.ToString();
+        public string? Producer => info.GetValueOrDefault<PdfString?>(Names.Producer)?.ToString();
+        public DateTimeOffset? CreationDate => info.GetValueOrDefault<DateTimeOffset?>(Names.CreationDate);
+        public DateTimeOffset? ModDate => info.GetValueOrDefault<DateTimeOffset?>(Names.ModDate);
 
         public IList<PdfPage> Pages { get; }
 

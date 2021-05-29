@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PdfToSvg.Common;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace PdfToSvg.Filters
 {
     internal abstract class DecodeStream : Stream
     {
-        protected byte[] buffer;
+        protected byte[] buffer = ArrayUtils.Empty<byte>();
 
         protected int bufferCursor;
         protected int bufferLength;

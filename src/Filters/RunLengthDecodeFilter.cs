@@ -12,7 +12,7 @@ namespace PdfToSvg.Filters
     {
         private const byte EodMarker = 128;
 
-        public override Stream Decode(Stream stream, PdfDictionary decodeParms)
+        public override Stream Decode(Stream stream, PdfDictionary? decodeParms)
         {
             return new RunLengthDecodeStream(stream);
         }

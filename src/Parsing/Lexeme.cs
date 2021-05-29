@@ -12,7 +12,7 @@ namespace PdfToSvg
         {
             position = 0;
             Token = token;
-            Value = null;
+            Value = PdfString.Empty;
         }
 
         public Lexeme(Token token, PdfString value)
@@ -33,7 +33,7 @@ namespace PdfToSvg
         {
             this.position = position + 1;
             Token = token;
-            Value = null;
+            Value = PdfString.Empty;
         }
 
         public Lexeme(Token token, long position, PdfString value)
@@ -59,7 +59,7 @@ namespace PdfToSvg
         {
             get
             {
-                if (Token == Token.Integer)
+                if (Token == Token.Integer && Value != null)
                 {
                     return int.Parse(Value.ToString(), CultureInfo.InvariantCulture);
                 }

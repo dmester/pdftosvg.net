@@ -429,7 +429,7 @@ namespace PdfToSvg.Fonts
             { StandardFonts.CourierBoldOblique, 600 },
         };
 
-        public static WidthMap GetWidths(PdfName fontName)
+        public static WidthMap? GetWidths(PdfName fontName)
         {
             if (monoWidth.TryGetValue(fontName, out var charWidth))
             {

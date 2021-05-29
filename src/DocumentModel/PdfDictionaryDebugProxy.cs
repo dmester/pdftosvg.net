@@ -16,7 +16,7 @@ namespace PdfToSvg.DocumentModel
             this.dict = dict ?? throw new ArgumentNullException(nameof(dict));
         }
 
-        internal static string FormatEntry(PdfName key, object value, bool allowRecursion)
+        internal static string FormatEntry(PdfName key, object? value, bool allowRecursion)
         {
             string valueString;
 
@@ -86,20 +86,23 @@ namespace PdfToSvg.DocumentModel
             public PdfName Key;
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public object Value;
+            public object? Value;
+
+            public Entry(PdfName key, object? value)
+            {
+                Key = key;
+                Value = value;
+            }
 
             [DebuggerBrowsable(DebuggerBrowsableState.Never)]
             public string DebuggerDisplay => FormatEntry(Key, Value, true);
         }
 
-        public PdfStream Stream => dict.Stream;
+        public PdfStream? Stream => dict.Stream;
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public object[] Items => dict
-            .Select(entry => new Entry { 
-                Key = entry.Key, 
-                Value = entry.Value,
-            })
+            .Select(entry => new Entry(entry.Key, entry.Value))
             .ToArray();
 
         public IEnumerable<string> CompleteDebugView
@@ -120,7 +123,7 @@ namespace PdfToSvg.DocumentModel
             }
         }
 
-        private static void FullFormatEntry(StringBuilder sb, int indentation, object value, HashSet<object> consumed)
+        private static void FullFormatEntry(StringBuilder sb, int indentation, object? value, HashSet<object> consumed)
         {
             if (value == null)
             {

@@ -103,10 +103,10 @@ namespace PdfToSvg
             var fontWeight = Match(styleStartIndex, fontWeights, fontName);
             var fontStyle = Match(styleStartIndex, fontStyles, fontName);
 
-            return new LocalFont(fontFamily, fontWeight, fontStyle);
+            return new LocalFont(fontFamily ?? "Sans-Serif", fontWeight, fontStyle);
         }
 
-        private static string Match(int startIndex, string[] propertyMatchers, string fontName)
+        private static string? Match(int startIndex, string[] propertyMatchers, string fontName)
         {
             if (startIndex < 0)
             {

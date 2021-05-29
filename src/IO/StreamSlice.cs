@@ -8,7 +8,7 @@ namespace PdfToSvg
     // TODO test
     internal class StreamSlice : Stream
     {
-        private Stream stream;
+        private Stream? stream;
         private long offset;
         private long length;
         private long cursor;
@@ -28,9 +28,9 @@ namespace PdfToSvg
             }
         }
 
-        public override bool CanRead => stream.CanRead;
+        public override bool CanRead => stream != null && stream.CanRead;
 
-        public override bool CanSeek => stream.CanSeek;
+        public override bool CanSeek => stream != null && stream.CanSeek;
 
         public override bool CanWrite => false;
 

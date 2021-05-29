@@ -35,7 +35,7 @@ namespace PdfToSvg.Parsing
 
         private IEnumerable<ContentOperation> ReadContentStream()
         {
-            var operands = new List<object>();
+            var operands = new List<object?>();
 
             while (true)
             {

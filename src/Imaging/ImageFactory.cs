@@ -13,7 +13,13 @@ namespace PdfToSvg.Imaging
     {
         public static Image Create(PdfDictionary imageDictionary, ColorSpace colorSpace)
         {
-            var lastFilter = imageDictionary.Stream.Filters.LastOrDefault();
+            var stream = imageDictionary.Stream;
+            if (stream == null)
+            {
+                throw new ArgumentException("The specified image dictionary does not contain a stream.", nameof(imageDictionary));
+            }
+
+            var lastFilter = stream.Filters.LastOrDefault();
 
             if (lastFilter.Filter == Filter.DctDecode)
             {

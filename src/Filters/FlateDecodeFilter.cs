@@ -8,7 +8,7 @@ namespace PdfToSvg.Filters
 {
     internal class FlateDecodeFilter : Filter
     {
-        public override Stream Decode(Stream stream, PdfDictionary decodeParms)
+        public override Stream Decode(Stream stream, PdfDictionary? decodeParms)
         {
             var deflateStream = ZLibStreamFactory.Create(stream, CompressionMode.Decompress);
             return PredictorStream.Create(deflateStream, decodeParms);

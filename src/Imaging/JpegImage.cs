@@ -11,17 +11,24 @@ namespace PdfToSvg.Imaging
     internal class JpegImage : Image
     {
         private readonly PdfDictionary imageDictionary;
+        private readonly PdfStream imageDictionaryStream;
 
         public JpegImage(PdfDictionary imageDictionary) : base("image/jpeg")
         {
+            if (imageDictionary.Stream == null)
+            {
+                throw new ArgumentException("There was no data stream attached to the image dictionary.", nameof(imageDictionary));
+            }
+
             this.imageDictionary = imageDictionary;
+            this.imageDictionaryStream = imageDictionary.Stream;
         }
 
         private Stream GetStream()
         {
-            var filters = imageDictionary.Stream.Filters;
+            var filters = imageDictionaryStream.Filters;
 
-            var readStream = imageDictionary.Stream.Open();
+            var readStream = imageDictionaryStream.Open();
             try
             {
                 return filters.Take(filters.Count - 1).Decode(readStream);

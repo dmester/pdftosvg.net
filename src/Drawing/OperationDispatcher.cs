@@ -15,9 +15,16 @@ namespace PdfToSvg.Drawing
         
         private class Handler
         {
-            public string Operator;
-            public Action<object, object[]> Invoke;
-            public ParameterInfo[] Parameters;
+            public readonly string Operator;
+            public readonly Action<object, object?[]> Invoke;
+            public readonly ParameterInfo[] Parameters;
+
+            public Handler(string op, Action<object, object?[]> invoke, ParameterInfo[] parameters)
+            {
+                Operator = op;
+                Invoke = invoke;
+                Parameters = parameters;
+            }
         }
 
         public OperationDispatcher(Type instanceType)
@@ -41,7 +48,7 @@ namespace PdfToSvg.Drawing
             {
                 var parameters = method.GetParameters();
                 var instance = Expression.Parameter(typeof(object));
-                var argumentArray = Expression.Parameter(typeof(object[]));
+                var argumentArray = Expression.Parameter(typeof(object?[]));
 
                 var callArguments = new List<Expression>();
 
@@ -54,16 +61,11 @@ namespace PdfToSvg.Drawing
                 }
 
                 var body = Expression.Call(Expression.Convert(instance, method.DeclaringType), method, callArguments);
-                var invoke = Expression.Lambda<Action<object, object[]>>(body, instance, argumentArray).Compile();
+                var invoke = Expression.Lambda<Action<object, object?[]>>(body, instance, argumentArray).Compile();
 
                 foreach (OperationAttribute operation in operations)
                 {
-                    yield return new Handler
-                    {
-                        Invoke = invoke,
-                        Operator = operation.Name,
-                        Parameters = parameters,
-                    };
+                    yield return new Handler(operation.Name, invoke, parameters);
                 }
             }
         }
@@ -100,7 +102,7 @@ namespace PdfToSvg.Drawing
             return false;
         }
 
-        private static bool Cast(ref object value, Type targetType)
+        private static bool Cast(ref object? value, Type targetType)
         {
             if (value == null)
             {
@@ -165,11 +167,11 @@ namespace PdfToSvg.Drawing
             return false;
         }
 
-        public bool Dispatch(object instance, string opName, object[] operands)
+        public bool Dispatch(object instance, string opName, object?[] operands)
         {
             foreach (var handler in handlers[opName])
             {
-                var castedArguments = new object[handler.Parameters.Length];
+                var castedArguments = new object?[handler.Parameters.Length];
                 var success = true;
 
                 for (var i = 0; i < handler.Parameters.Length; i++)

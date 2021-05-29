@@ -10,7 +10,7 @@ namespace PdfToSvg.DocumentModel
     internal class PdfStreamDebugProxy
     {
         private readonly PdfStream streamInfo;
-        private string content;
+        private string? content;
 
         public PdfStreamDebugProxy(PdfStream streamInfo)
         {

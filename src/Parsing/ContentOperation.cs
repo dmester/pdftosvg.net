@@ -8,14 +8,14 @@ namespace PdfToSvg.Parsing
 {
     internal class ContentOperation
     {
-        public ContentOperation(string operatorName, params object[] operands)
+        public ContentOperation(string operatorName, params object?[] operands)
         {
             Operator = operatorName;
             Operands = operands;
         }
 
         public string Operator { get; }
-        public object[] Operands { get; }
+        public object?[] Operands { get; }
 
         public override string ToString()
         {

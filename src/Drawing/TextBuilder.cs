@@ -10,9 +10,9 @@ namespace PdfToSvg.Drawing
     internal class TextBuilder
     {
         public List<TextParagraph> paragraphs = new List<TextParagraph>();
-        private TextStyle textStyle;
+        private TextStyle? textStyle;
         private double pendingSpace;
-        private TextParagraph currentParagraph;
+        private TextParagraph? currentParagraph;
 
         private double normalizedFontSize;
 
@@ -20,7 +20,7 @@ namespace PdfToSvg.Drawing
         private double scale;
         private double translateX;
         private double translateY;
-        private Matrix remainingTransform;
+        private Matrix remainingTransform = Matrix.Identity;
 
         const double ScalingMultiplier = 1.0 / 100;
 
@@ -106,15 +106,7 @@ namespace PdfToSvg.Drawing
 
             if (currentParagraph == null)
             {
-                currentParagraph = new TextParagraph
-                {
-                    Matrix = remainingTransform,
-                    X = translateX,
-                    Y = translateY,
-                };
-                paragraphs.Add(currentParagraph);
-
-                pendingSpace = 0;
+                NewParagraph();
             }
 
             var totalWidth = width + text.Length * style.CharSpacingPx;
@@ -171,6 +163,11 @@ namespace PdfToSvg.Drawing
         {
             width *= style.Scaling * ScalingMultiplier;
 
+            if (currentParagraph == null)
+            {
+                currentParagraph = NewParagraph();
+            }
+
             // TODO Remove kerning
             if (pendingSpace == 0 && currentParagraph.Content.Count > 0)
             {
@@ -183,15 +180,23 @@ namespace PdfToSvg.Drawing
                 }
             }
 
-            currentParagraph.Content.Add(new TextSpan
+            currentParagraph.Content.Add(new TextSpan(pendingSpace, style, text, width));
+            pendingSpace = 0;
+        }
+
+        private TextParagraph NewParagraph()
+        {
+            currentParagraph = new TextParagraph
             {
-                SpaceBefore = pendingSpace,
-                Style = style,
-                Value = text,
-                Width = width,
-            });
+                Matrix = remainingTransform,
+                X = translateX,
+                Y = translateY,
+            };
+            paragraphs.Add(currentParagraph);
 
             pendingSpace = 0;
+
+            return currentParagraph;
         }
 
         private void Translate(GraphicsState graphicsState, double dx)

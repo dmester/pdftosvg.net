@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace PdfToSvg.DocumentModel
 {
-    internal class XRef : IEquatable<XRef>
+    internal class XRef : IEquatable<XRef?>
     {
         public int ObjectNumber;
 
@@ -16,7 +16,7 @@ namespace PdfToSvg.DocumentModel
         public int CompressedObjectNumber;
         public int CompressedObjectElementIndex;
 
-        public bool Equals(XRef other)
+        public bool Equals(XRef? other)
         {
             return 
                 other != null &&

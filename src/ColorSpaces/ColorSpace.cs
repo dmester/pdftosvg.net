@@ -105,14 +105,14 @@ namespace PdfToSvg.ColorSpaces
 
         public abstract float[] DefaultColor { get; }
 
-        public static ColorSpace Parse(object definition, PdfDictionary colorSpaceResourcesDictionary)
+        public static ColorSpace? Parse(object? definition, PdfDictionary? colorSpaceResourcesDictionary)
         {
             return Parse(definition, colorSpaceResourcesDictionary, 0);
         }
 
-        private static ColorSpace ParseIndexed(object[] colorSpaceParams, PdfDictionary colorSpaceResourcesDictionary, int recursionCount)
+        private static ColorSpace ParseIndexed(object[] colorSpaceParams, PdfDictionary? colorSpaceResourcesDictionary, int recursionCount)
         {
-            ColorSpace baseSpace;
+            ColorSpace? baseSpace = null;
             var lookup = ArrayUtils.Empty<byte>();
 
             if (colorSpaceParams.Length < 4)
@@ -125,14 +125,9 @@ namespace PdfToSvg.ColorSpaces
                 // TODO
                 baseSpace = Parse(colorSpaceParams[1], colorSpaceResourcesDictionary, recursionCount + 1);
             }
-            else
-            {
-                baseSpace = new DeviceRgbColorSpace();
-            }
 
             if (colorSpaceParams.Length > 3)
             {
-
                 // TODO can be a stream
                 if (colorSpaceParams[3] is PdfString lookupString)
                 {
@@ -149,11 +144,11 @@ namespace PdfToSvg.ColorSpaces
                 }
             }
 
-            return new IndexedColorSpace(baseSpace, lookup);
+            return new IndexedColorSpace(baseSpace ?? new DeviceRgbColorSpace(), lookup);
         }
 
 
-        private static ColorSpace Parse(object definition, PdfDictionary colorSpaceResourcesDictionary, int recursionCount)
+        private static ColorSpace? Parse(object? definition, PdfDictionary? colorSpaceResourcesDictionary, int recursionCount)
         {
             if (recursionCount > 10)
             {

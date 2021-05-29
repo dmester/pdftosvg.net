@@ -36,7 +36,7 @@ namespace PdfToSvg.Common
             return Generate(prefix, sb.ToString());
         }
 
-        public static string Generate(string prefix, params object[] inputs)
+        public static string Generate(string prefix, params object?[] inputs)
         {
             return Generate(prefix, (IEnumerable)inputs);
         }

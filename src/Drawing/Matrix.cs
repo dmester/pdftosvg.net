@@ -131,11 +131,11 @@ namespace PdfToSvg.Drawing
             }
         }
 
-        public bool Equals(Matrix other)
+        public bool Equals(Matrix? other)
         {
             return
                 ReferenceEquals(this, other) ||
-                (object)other != null &&
+                (object?)other != null &&
                 other.A == A &&
                 other.B == B &&
                 other.E == E &&
@@ -144,7 +144,7 @@ namespace PdfToSvg.Drawing
                 other.D == D;
         }
 
-        public override bool Equals(object obj) => Equals(obj as Matrix);
+        public override bool Equals(object? obj) => Equals(obj as Matrix);
 
         public override int GetHashCode()
         {

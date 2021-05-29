@@ -15,7 +15,7 @@ namespace PdfToSvg.DocumentModel
     internal abstract class PdfStream
     {
         protected readonly PdfDictionary owner;
-        private IReadOnlyList<PdfStreamFilter> filters;
+        private IReadOnlyList<PdfStreamFilter>? filters;
 
         public PdfStream(PdfDictionary owner)
         {
@@ -93,7 +93,7 @@ namespace PdfToSvg.DocumentModel
                     }
                     else
                     {
-                        PdfDictionary filterDecodeParms = null;
+                        PdfDictionary? filterDecodeParms = null;
 
                         if (i < decodeParms.Length)
                         {

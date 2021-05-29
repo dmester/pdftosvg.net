@@ -113,8 +113,8 @@ namespace PdfToSvg.Parsing
             var end = false;
             
             var objectId = new PdfObjectId(objectIdNum, generation);
-            object objectValue = null;
-            PdfStream objectStream = null;
+            object? objectValue = null;
+            PdfStream? objectStream = null;
 
             while (!end)
             {
@@ -206,7 +206,7 @@ namespace PdfToSvg.Parsing
 
         public void ReadXRefStream(XRefTable xrefTable, PdfDictionary xrefDict)
         {
-            if (xrefDict.TryGetArray<int>(Names.W, out var widths))
+            if (xrefDict.TryGetArray<int>(Names.W, out var widths) && xrefDict.Stream != null)
             {
                 var nextObjectNumber = 0;
 
@@ -261,9 +261,9 @@ namespace PdfToSvg.Parsing
             }
         }
 
-        public Dictionary<PdfObjectId, object> ReadAllObjects(XRefTable xrefTable)
+        public Dictionary<PdfObjectId, object?> ReadAllObjects(XRefTable xrefTable)
         {
-            var objects = new Dictionary<PdfObjectId, object>();
+            var objects = new Dictionary<PdfObjectId, object?>();
 
             foreach (var xref in xrefTable
                 .Where(xref => xref.Type == XRefEntryType.NotFree)
@@ -286,10 +286,11 @@ namespace PdfToSvg.Parsing
                 var containerId = new PdfObjectId(group.Key, 0);
 
                 if (objects.TryGetValue(containerId, out var maybeObjStream) &&
-                    maybeObjStream is PdfDictionary objStream)
+                    maybeObjStream is PdfDictionary objStream &&
+                    objStream.Stream != null)
                 {
                     var first = objStream.GetValueOrDefault(Names.First, 0);
-                    var contentObjects = new List<object>();
+                    var contentObjects = new List<object?>();
 
                     using (var objStreamContent = objStream.Stream.OpenDecoded())
                     {
@@ -318,7 +319,8 @@ namespace PdfToSvg.Parsing
         public XRefTable ReadXRefTables(long byteOffsetLastXRef)
         {
             var xrefTable = new XRefTable();
-
+            var trailerSet = false;
+            
             var byteOffsets = new HashSet<long>();
 
             while (byteOffsetLastXRef >= 0)
@@ -344,9 +346,10 @@ namespace PdfToSvg.Parsing
                         var trailerDict = ReadDictionary();
                         byteOffsetLastXRef = trailerDict.GetValueOrDefault(Names.Prev, -1);
 
-                        if (xrefTable.Trailer == null)
+                        if (!trailerSet)
                         {
                             xrefTable.Trailer = trailerDict;
+                            trailerSet = true;
                         }
                     }
                     else
@@ -359,15 +362,16 @@ namespace PdfToSvg.Parsing
                     // Cross reference stream
                     var xrefTableObject = ReadIndirectObject();
 
-                    if (xrefTableObject.Value is PdfDictionary dict)
+                    if (xrefTableObject?.Value is PdfDictionary dict)
                     {
                         ReadXRefStream(xrefTable, dict);
 
                         byteOffsetLastXRef = dict.GetValueOrDefault(Names.Prev, -1);
 
-                        if (xrefTable.Trailer == null)
+                        if (!trailerSet)
                         {
-                            xrefTable.Trailer = xrefTableObject.Value as PdfDictionary;
+                            xrefTable.Trailer = dict;
+                            trailerSet = true;
                         }
                     }
                     else

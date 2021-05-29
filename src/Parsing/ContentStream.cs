@@ -57,13 +57,16 @@ namespace PdfToSvg.Parsing
 
             foreach (var content in contents)
             {
-                using (var stream = await content.Stream.OpenDecodedAsync())
+                var stream = content.Stream;
+                if (stream != null)
                 {
+                    using var decodedStream = await stream.OpenDecodedAsync();
+
                     int bytesThisIteration;
                     do
                     {
                         var chunk = new byte[4096];
-                        bytesThisIteration = await stream.ReadAsync(chunk, 0, chunk.Length);
+                        bytesThisIteration = await decodedStream.ReadAsync(chunk, 0, chunk.Length);
                         totalBytes += bytesThisIteration;
                         chunks.Add(chunk);
                     }
@@ -83,13 +86,16 @@ namespace PdfToSvg.Parsing
 
             foreach (var content in contents)
             {
-                using (var stream = content.Stream.OpenDecoded())
+                var stream = content.Stream;
+                if (stream != null)
                 {
+                    using var decodedStream = stream.OpenDecoded();
+
                     int bytesThisIteration;
                     do
                     {
                         var chunk = new byte[4096];
-                        bytesThisIteration = stream.Read(chunk, 0, chunk.Length);
+                        bytesThisIteration = decodedStream.Read(chunk, 0, chunk.Length);
                         totalBytes += bytesThisIteration;
                         chunks.Add(chunk);
                     }

@@ -10,7 +10,7 @@ namespace PdfToSvg.Filters
 {
     internal class IdentityFilter : Filter
     {
-        public override Stream Decode(Stream stream, PdfDictionary decodeParms)
+        public override Stream Decode(Stream stream, PdfDictionary? decodeParms)
         {
             return stream;
         }

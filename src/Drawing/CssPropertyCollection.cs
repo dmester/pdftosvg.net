@@ -8,32 +8,32 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Drawing
 {
-    internal class CssPropertyCollection : ICollection<CssProperty>, IDictionary<string, string>
+    internal class CssPropertyCollection : ICollection<CssProperty>, IDictionary<string, string?>
     {
         private readonly IEqualityComparer<string> comparer;
         private readonly List<CssProperty> ordered;
-        private readonly Dictionary<string, string> lookup;
+        private readonly Dictionary<string, string?> lookup;
 
         public CssPropertyCollection()
         {
             comparer = StringComparer.OrdinalIgnoreCase;
             ordered = new List<CssProperty>();
-            lookup = new Dictionary<string, string>(comparer);
+            lookup = new Dictionary<string, string?>(comparer);
         }
 
         public int Count => ordered.Count;
 
         bool ICollection<CssProperty>.IsReadOnly => false;
-        bool ICollection<KeyValuePair<string, string>>.IsReadOnly => false;
+        bool ICollection<KeyValuePair<string, string?>>.IsReadOnly => false;
 
         public ICollection<string> Keys => lookup.Keys;
-        public ICollection<string> Values => lookup.Values;
+        public ICollection<string?> Values => lookup.Values;
 
         /// <summary>
         /// Gets or sets the value of a CSS property in this collection. Setting a property to <c>null</c> or
         /// a string containing only whitespace will remove the property.
         /// </summary>
-        public string this[string propertyName]
+        public string? this[string propertyName]
         {
             get => lookup.TryGetValue(propertyName, out var value) ? value : null;
             set => Add(propertyName, value);
@@ -43,11 +43,11 @@ namespace PdfToSvg.Drawing
         /// Adds or updates the value of a CSS property in this collection. Setting a property to <c>null</c> or
         /// a string containing only whitespace will remove the property.
         /// </summary>
-        public void Add(string propertyName, string value)
+        public void Add(string propertyName, string? value)
         {
             value = value?.Trim();
 
-            if (string.IsNullOrEmpty(value))
+            if (value == null || value == "")
             {
                 Remove(propertyName);
             }
@@ -99,7 +99,7 @@ namespace PdfToSvg.Drawing
         /// Adds or updates the value of a CSS property in this collection. Setting a property to <c>null</c> or
         /// a string containing only whitespace will remove the property.
         /// </summary>
-        void ICollection<KeyValuePair<string, string>>.Add(KeyValuePair<string, string> item)
+        void ICollection<KeyValuePair<string, string?>>.Add(KeyValuePair<string, string?> item)
         {
             Add(item.Key, item.Value);
         }
@@ -110,12 +110,12 @@ namespace PdfToSvg.Drawing
             lookup.Clear();
         }
 
-        public bool TryGetValue(string propertyName, out string value)
+        public bool TryGetValue(string propertyName, out string? value)
         {
             return lookup.TryGetValue(propertyName, out value);
         }
 
-        bool ICollection<KeyValuePair<string, string>>.Contains(KeyValuePair<string, string> item)
+        bool ICollection<KeyValuePair<string, string?>>.Contains(KeyValuePair<string, string?> item)
         {
             return lookup.TryGetValue(item.Key, out var value) && value == item.Value;
         }
@@ -135,7 +135,7 @@ namespace PdfToSvg.Drawing
             ordered.CopyTo(array, arrayIndex);
         }
 
-        void ICollection<KeyValuePair<string, string>>.CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
+        void ICollection<KeyValuePair<string, string?>>.CopyTo(KeyValuePair<string, string?>[] array, int arrayIndex)
         {
             if (array == null) throw new ArgumentNullException(nameof(array));
             if (arrayIndex < 0 || arrayIndex > array.Length) throw new ArgumentOutOfRangeException(nameof(arrayIndex));
@@ -143,11 +143,11 @@ namespace PdfToSvg.Drawing
 
             for (var i = 0; i < ordered.Count; i++)
             {
-                array[arrayIndex + i] = new KeyValuePair<string, string>(ordered[i].Name, ordered[i].Value);
+                array[arrayIndex + i] = new KeyValuePair<string, string?>(ordered[i].Name, ordered[i].Value);
             }
         }
 
-        public bool Remove(string propertyName, string value)
+        public bool Remove(string propertyName, string? value)
         {
             if (lookup.TryGetValue(propertyName, out var existingValue) && existingValue == value)
             {
@@ -162,7 +162,7 @@ namespace PdfToSvg.Drawing
             return Remove(item.Name, item.Value);
         }
 
-        bool ICollection<KeyValuePair<string, string>>.Remove(KeyValuePair<string, string> item)
+        bool ICollection<KeyValuePair<string, string?>>.Remove(KeyValuePair<string, string?> item)
         {
             return Remove(item.Key, item.Value);
         }
@@ -190,10 +190,10 @@ namespace PdfToSvg.Drawing
 
         IEnumerator IEnumerable.GetEnumerator() => ordered.GetEnumerator();
 
-        IEnumerator<KeyValuePair<string, string>> IEnumerable<KeyValuePair<string, string>>.GetEnumerator()
+        IEnumerator<KeyValuePair<string, string?>> IEnumerable<KeyValuePair<string, string?>>.GetEnumerator()
         {
             return ordered
-                .Select(item => new KeyValuePair<string, string>(item.Name, item.Value))
+                .Select(item => new KeyValuePair<string, string?>(item.Name, item.Value))
                 .GetEnumerator();
         }
 

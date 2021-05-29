@@ -20,9 +20,9 @@ namespace PdfToSvg.Drawing
 
         public int Intent { get; set; }
 
-        public ClipPath ClipPath { get; set; }
+        public ClipPath? ClipPath { get; set; }
 
-        public int[] DashArray { get; set; }
+        public int[]? DashArray { get; set; }
 
         public int DashPhase { get; set; }
 

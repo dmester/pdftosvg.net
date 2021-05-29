@@ -28,7 +28,7 @@ namespace PdfToSvg.Filters
             { Names.RunLengthDecode, RunLengthDecode },
         };
 
-        public abstract Stream Decode(Stream encodedStream, PdfDictionary decodeParms);
+        public abstract Stream Decode(Stream encodedStream, PdfDictionary? decodeParms);
 
         public virtual bool CanDetectStreamLength => false;
 
@@ -37,7 +37,7 @@ namespace PdfToSvg.Filters
             throw new NotSupportedException();
         }
 
-        public static Filter ByName(PdfName filterName)
+        public static Filter? ByName(PdfName? filterName)
         {
             return 
                 filterName != null && filters.TryGetValue(filterName, out var filter) ? 

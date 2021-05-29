@@ -35,13 +35,13 @@ namespace PdfToSvg.IO
             this.trailerBuffer = new byte[trailerLength * 2];
         }
 
-        public override bool CanRead => baseStream.CanRead;
+        public override bool CanRead => baseStream != null && baseStream.CanRead;
 
         public override bool CanSeek => false;
 
         public override bool CanWrite => false;
 
-        public override long Length => Math.Max(0, baseStream.Length - trailerLength);
+        public override long Length => baseStream == null ? 0 : Math.Max(0, baseStream.Length - trailerLength);
 
         public override long Position { get => position; set => throw new NotSupportedException(); }
 

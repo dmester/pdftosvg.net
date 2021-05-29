@@ -9,6 +9,6 @@ namespace PdfToSvg.DocumentModel
 {
     internal class XRefTable : Collection<XRef>
     {
-        public PdfDictionary Trailer { get; set; }
+        public PdfDictionary Trailer { get; set; } = new PdfDictionary();
     }
 }

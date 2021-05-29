@@ -10,28 +10,25 @@ namespace PdfToSvg.Fonts
 {
     internal class Type3WidthMap : WidthMap
     {
-        private Dictionary<int, double> widthMap;
+        private readonly Dictionary<int, double> widthMap = new Dictionary<int, double>();
 
-        private Type3WidthMap() { }
-
-        public new static Type3WidthMap Parse(PdfDictionary font)
+        private Type3WidthMap(PdfDictionary font)
         {
             // PDF Specification 1.7, Table 112, page 266
-            var widthMap = new Dictionary<int, double>();
             var firstChar = font.GetValueOrDefault(Names.FirstChar, 0);
-            
+
             if (font.TryGetArray<double>(Names.Widths, out var widths))
             {
                 for (var i = 0; i < widths.Length; i++)
                 {
                     widthMap[firstChar + i] = widths[i];
-                } 
+                }
             }
+        }
 
-            return new Type3WidthMap
-            {
-                widthMap = widthMap,
-            };
+        public new static Type3WidthMap Parse(PdfDictionary font)
+        {
+            return new Type3WidthMap(font);
         }
 
         public override double GetWidth(CharacterCode ch)

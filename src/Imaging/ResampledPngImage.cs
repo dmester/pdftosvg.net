@@ -13,17 +13,24 @@ namespace PdfToSvg.Imaging
     internal class ResampledPngImage : Image
     {
         private readonly PdfDictionary imageDictionary;
+        private readonly PdfStream imageDictionaryStream;
         private readonly ColorSpace colorSpace;
 
         public ResampledPngImage(PdfDictionary imageDictionary, ColorSpace colorSpace) : base("image/png")
         {
+            if (imageDictionary.Stream == null)
+            {
+                throw new ArgumentException("There was no data stream attached to the image dictionary.", nameof(imageDictionary));
+            }
+
             this.imageDictionary = imageDictionary;
+            this.imageDictionaryStream = imageDictionary.Stream;
             this.colorSpace = colorSpace;
         }
 
         public override byte[] GetContent()
         {
-            using var imageDataStream = imageDictionary.Stream.OpenDecoded();
+            using var imageDataStream = imageDictionaryStream.OpenDecoded();
 
             var bitsPerComponent = imageDictionary.GetValueOrDefault(Names.BitsPerComponent, 8);
             var width = imageDictionary.GetValueOrDefault(Names.Width, 0);

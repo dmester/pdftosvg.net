@@ -39,7 +39,7 @@ namespace PdfToSvg.Common
                 value;
         }
 
-        public static bool ToInt(object value, out int result)
+        public static bool ToInt(object? value, out int result)
         {
             if (value is int intValue)
             {
@@ -57,7 +57,7 @@ namespace PdfToSvg.Common
             return false;
         }
 
-        public static bool ToDouble(object value, out double result)
+        public static bool ToDouble(object? value, out double result)
         {
             if (value is int intValue)
             {

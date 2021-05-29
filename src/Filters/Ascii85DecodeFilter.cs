@@ -10,7 +10,7 @@ namespace PdfToSvg.Filters
 {
     internal class Ascii85DecodeFilter : Filter
     {
-        public override Stream Decode(Stream stream, PdfDictionary decodeParms)
+        public override Stream Decode(Stream stream, PdfDictionary? decodeParms)
         {
             return new Ascii85DecodeStream(stream);
         }

@@ -10,9 +10,12 @@ namespace PdfToSvg.Fonts
 {
     internal class Type0WidthMap : WidthMap
     {
-        private Dictionary<uint, double> widthMap;
+        private readonly Dictionary<uint, double> widthMap;
         
-        private Type0WidthMap() { }
+        private Type0WidthMap(Dictionary<uint, double> widthMap)
+        {
+            this.widthMap = widthMap;
+        }
 
         public new static Type0WidthMap Parse(PdfDictionary font)
         {
@@ -100,10 +103,7 @@ namespace PdfToSvg.Fonts
                 }
             }
 
-            return new Type0WidthMap
-            {
-                widthMap = widthMap,
-            };
+            return new Type0WidthMap(widthMap);
         }
 
         public override double GetWidth(CharacterCode ch)

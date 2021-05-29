@@ -44,7 +44,7 @@ namespace PdfToSvg.Parsing
         }
 
         /// <inheritdoc cref="DetectStreamLength(Stream, object)"/>
-        public static int DetectStreamLength(BufferedReader reader, object filterNames)
+        public static int DetectStreamLength(BufferedReader reader, object? filterNames)
         {
             // Detecting length of inline image data is problematic, since the end marker is only two letter,
             // and according to the specification /Length is not specified on inline streams.
@@ -52,7 +52,7 @@ namespace PdfToSvg.Parsing
             // Prefer deterministic stream length detectors
             var outerFilterName =
                 filterNames is PdfName singleFilterName ? singleFilterName :
-                filterNames is object[] filterNamesArray ? filterNamesArray[0] as PdfName :
+                filterNames is object?[] filterNamesArray ? filterNamesArray[0] as PdfName :
                 null;
 
             var outerFilter = Filter.ByName(outerFilterName);
@@ -103,7 +103,7 @@ namespace PdfToSvg.Parsing
             return dict;
         }
 
-        private static object DeabbreviateInlineImageValue(object value, bool isRootDictionary)
+        private static object? DeabbreviateInlineImageValue(object? value, bool isRootDictionary)
         {
             if (value is PdfDictionary dict)
             {
@@ -120,7 +120,7 @@ namespace PdfToSvg.Parsing
                     }
                 }
             }
-            else if (value is object[] array)
+            else if (value is object?[] array)
             {
                 for (var i = 0; i < array.Length; i++)
                 {

@@ -9,13 +9,19 @@ namespace PdfToSvg.Drawing
 {
     internal class ClipPath
     {
-        public string Id;
-        public ClipPath Parent;
+        public string Id = "";
+        public ClipPath? Parent;
         public PathData Data;
         public bool IsRectangle;
         public Rectangle Rectangle;
         public bool Referenced;
         public bool EvenOdd;
         public Dictionary<string, ClipPath> Children = new Dictionary<string, ClipPath>();
+
+        public ClipPath(PathData data, bool evenOdd)
+        {
+            Data = data;
+            EvenOdd = evenOdd;
+        }
     }
 }

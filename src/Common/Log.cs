@@ -19,7 +19,7 @@ namespace PdfToSvg.Common
             Debug.WriteLine(format, args);
         }
 
-        public static string TypeOf(object value)
+        public static string TypeOf(object? value)
         {
             return value == null ? "(null)" : value.GetType().FullName;
         }

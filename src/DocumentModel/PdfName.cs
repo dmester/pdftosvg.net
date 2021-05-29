@@ -9,11 +9,13 @@ namespace PdfToSvg.DocumentModel
     internal class PdfName : IEquatable<PdfName>
     {
         // Lower memory usage by interning common names
+#pragma warning disable 8602,8619
         private static Dictionary<string, PdfName> knownNames = typeof(Names)
             .GetProperties(BindingFlags.Public | BindingFlags.Static | BindingFlags.GetProperty)
             .Select(x => x.GetValue(null) as PdfName)
             .Where(x => x != null)
             .ToDictionary(x => x.Value, x => x);
+#pragma warning restore 8602,8619
 
         public PdfName(string value)
         {
@@ -21,8 +23,6 @@ namespace PdfToSvg.DocumentModel
         }
 
         public string Value { get; }
-
-        public static PdfName Null => null;
 
         public static PdfName Create(string value)
         {
@@ -34,21 +34,21 @@ namespace PdfToSvg.DocumentModel
             return new PdfNamePath(name1, name2);
         }
 
-        public static bool operator ==(PdfName a, PdfName b)
+        public static bool operator ==(PdfName? a, PdfName? b)
         {
-            if ((object)a == null) return (object)b == null;
-            if ((object)b == null) return false;
+            if ((object?)a == null) return (object?)b == null;
+            if ((object?)b == null) return false;
             return a.Value == b.Value;
         }
 
-        public static bool operator !=(PdfName a, PdfName b) => !(a == b);
+        public static bool operator !=(PdfName? a, PdfName? b) => !(a == b);
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return Equals(obj as PdfName);
         }
 
-        public bool Equals(PdfName other)
+        public bool Equals(PdfName? other)
         {
             return other != null && other.Value == Value;
         }

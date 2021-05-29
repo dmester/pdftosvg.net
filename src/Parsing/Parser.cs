@@ -15,9 +15,9 @@ namespace PdfToSvg.Parsing
             this.lexer = lexer;
         }
 
-        protected object[] ReadArray()
+        protected object?[] ReadArray()
         {
-            var result = new List<object>();
+            var result = new List<object?>();
 
             lexer.Read(); // Start
 
@@ -201,7 +201,7 @@ namespace PdfToSvg.Parsing
             return false;
         }
 
-        protected object ReadValue()
+        protected object? ReadValue()
         {
             var nextLexeme = lexer.Peek();
 

@@ -10,7 +10,7 @@ namespace PdfToSvg.DocumentModel
 {
     internal class PdfStreamFilter
     {
-        public PdfStreamFilter(Filter filter, PdfDictionary decodeParms)
+        public PdfStreamFilter(Filter filter, PdfDictionary? decodeParms)
         {
             Filter = filter;
             DecodeParms = decodeParms;
@@ -18,7 +18,7 @@ namespace PdfToSvg.DocumentModel
 
         public Filter Filter { get; }
 
-        public PdfDictionary DecodeParms { get; }
+        public PdfDictionary? DecodeParms { get; }
 
         public Stream Decode(Stream encodedStream)
         {

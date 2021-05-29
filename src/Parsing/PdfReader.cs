@@ -25,7 +25,8 @@ namespace PdfToSvg.Parsing
                 var startxref = parser.ReadStartXRef();
                 var xrefTable = parser.ReadXRefTables(startxref);
 
-                if (xrefTable.Trailer.ContainsKey(Names.Encrypt))
+                if (xrefTable.Trailer != null && 
+                    xrefTable.Trailer.ContainsKey(Names.Encrypt))
                 {
                     throw Exceptions.EncryptedPdf();
                 }
@@ -64,7 +65,7 @@ namespace PdfToSvg.Parsing
             }
         }
 
-        private static void InlineReferences(Dictionary<PdfObjectId, object> objects)
+        private static void InlineReferences(Dictionary<PdfObjectId, object?> objects)
         {
             foreach (var pair in objects)
             {
@@ -72,7 +73,7 @@ namespace PdfToSvg.Parsing
             }
         }
 
-        private static void InlineReferences(Dictionary<PdfObjectId, object> objects, object value)
+        private static void InlineReferences(Dictionary<PdfObjectId, object?> objects, object? value)
         {
             if (value is PdfDictionary dict)
             {
@@ -102,7 +103,7 @@ namespace PdfToSvg.Parsing
                     }
                 }
             }
-            else if (value is object[] arr)
+            else if (value is object?[] arr)
             {
                 for (var i = 0; i < arr.Length; i++)
                 {

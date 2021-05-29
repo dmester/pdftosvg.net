@@ -37,8 +37,8 @@ namespace PdfToSvg.Drawing
 
         private HashSet<string> defIds = new HashSet<string>();
 
-        private XElement clipWrapper;
-        private string clipWrapperId;
+        private XElement? clipWrapper;
+        private string? clipWrapperId;
 
         private static readonly OperationDispatcher dispatcher = new OperationDispatcher(typeof(SvgRenderer));
 
@@ -56,8 +56,7 @@ namespace PdfToSvg.Drawing
         {
             this.options = options;
 
-            resources = new ResourceCache(
-                pageDict.GetValueOrDefault<PdfDictionary>(Names.Resources, null) ?? new PdfDictionary());
+            resources = new ResourceCache(pageDict.GetDictionaryOrEmpty(Names.Resources));
             
             Rectangle cropBox;
 
@@ -234,7 +233,7 @@ namespace PdfToSvg.Drawing
 
         #region XObject operators
         
-        private string GetSvgImageId(PdfDictionary imageObject, out int width, out int height)
+        private string? GetSvgImageId(PdfDictionary imageObject, out int width, out int height)
         {
             if (imageObject.Stream != null &&
                 imageObject.TryGetName(Names.Subtype, out var subtype) && subtype == Names.Image &&
@@ -286,33 +285,36 @@ namespace PdfToSvg.Drawing
         
         private void RenderForm(PdfDictionary xobject)
         {
-            q_SaveState();
-            
-            var previousResources = resources;
-
-            resources = new ResourceCache(xobject.GetValueOrDefault<PdfDictionary>(Names.Resources, null) ?? new PdfDictionary());
-
-            if (xobject.TryGetArray<double>(Names.Matrix, out var matrix) && matrix.Length == 6)
+            if (xobject.Stream != null)
             {
-                graphicsState.Transform = graphicsState.Transform *
-                    new Matrix(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
-            }
+                q_SaveState();
 
-            if (xobject.TryGetArray<double>(Names.BBox, out var bbox) && bbox.Length == 4)
-            {
-                re_Rectangle(bbox[0], bbox[1], bbox[2] - bbox[0], bbox[3] - bbox[1]);
-                W_Clip_NonZero();
-                n_EndPath();
-            }
+                var previousResources = resources;
 
-            foreach (var operation in ContentParser.Parse(xobject.Stream.OpenDecoded()))
-            {
-                dispatcher.Dispatch(this, operation.Operator, operation.Operands);
-            }
+                resources = new ResourceCache(xobject.GetDictionaryOrEmpty(Names.Resources));
 
-            resources = previousResources;
-            
-            Q_RestoreState();
+                if (xobject.TryGetArray<double>(Names.Matrix, out var matrix) && matrix.Length == 6)
+                {
+                    graphicsState.Transform = graphicsState.Transform *
+                        new Matrix(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+                }
+
+                if (xobject.TryGetArray<double>(Names.BBox, out var bbox) && bbox.Length == 4)
+                {
+                    re_Rectangle(bbox[0], bbox[1], bbox[2] - bbox[0], bbox[3] - bbox[1]);
+                    W_Clip_NonZero();
+                    n_EndPath();
+                }
+
+                foreach (var operation in ContentParser.Parse(xobject.Stream.OpenDecoded()))
+                {
+                    dispatcher.Dispatch(this, operation.Operator, operation.Operands);
+                }
+
+                resources = previousResources;
+
+                Q_RestoreState();
+            }
         }
 
         private void RenderImage(PdfDictionary xobject)
@@ -405,11 +407,9 @@ namespace PdfToSvg.Drawing
         {
             var path = currentPath.Transform(graphicsState.Transform);
 
-            var clipPath = new ClipPath
+            var clipPath = new ClipPath(path, evenOdd)
             {
                 Parent = graphicsState.ClipPath,
-                EvenOdd = evenOdd,
-                Data = path,
             };
 
             if (PathConverter.TryConvertToRectangle(path, out var rect))
@@ -563,7 +563,7 @@ namespace PdfToSvg.Drawing
                     }
                 }
 
-                return clipWrapper;
+                return clipWrapper!;
             }
         }
 
@@ -775,14 +775,14 @@ namespace PdfToSvg.Drawing
 
         // PDF spec 1.7, Table 74, page 180
 
-        private ColorSpace GetColorSpace(object definition)
+        private ColorSpace? GetColorSpace(object? definition)
         {
             if (definition is PdfName name)
             {
                 return resources.GetColorSpace(name);
             }
 
-            return ColorSpace.Parse(definition, resources.Dictionary.GetValueOrDefault(Names.ColorSpace, PdfDictionary.Null));
+            return ColorSpace.Parse(definition, resources.Dictionary.GetDictionaryOrNull(Names.ColorSpace));
         }
 
         [Operation("CS")]
@@ -896,7 +896,7 @@ namespace PdfToSvg.Drawing
         [Operation("Tf")]
         private void Tf_Font(PdfName fontName, double fontSize)
         {
-            textState.Font = resources.GetFont(fontName, options.FontResolver ?? DefaultFontResolver.Instance);
+            textState.Font = resources.GetFont(fontName, options.FontResolver ?? DefaultFontResolver.Instance) ?? InternalFont.Fallback;
             textState.FontSize = fontSize;
 
             if (textState.Font == null)
@@ -1005,7 +1005,7 @@ namespace PdfToSvg.Drawing
             foreach (var paragraph in paragraphs)
             {
                 var x = paragraph.X;
-                TextParagraph newParagraph = null;
+                TextParagraph? newParagraph = null;
 
                 foreach (var span in paragraph.Content)
                 {
@@ -1034,7 +1034,7 @@ namespace PdfToSvg.Drawing
             return result;
         }
 
-        private string BuildCssClass(TextStyle style)
+        private string? BuildCssClass(TextStyle style)
         {
             var className = default(string);
             var cssClass = new CssPropertyCollection();
@@ -1119,7 +1119,7 @@ namespace PdfToSvg.Drawing
         [Operation("ET")]
         private void ET_EndText()
         {
-            var styleToClassNameLookup = new Dictionary<TextStyle, string>();
+            var styleToClassNameLookup = new Dictionary<TextStyle, string?>();
 
             foreach (var paragraph in PrepareSvgSpans(textBuilder.paragraphs, TextRenderingMode.Fill | TextRenderingMode.Stroke))
             {
@@ -1154,7 +1154,7 @@ namespace PdfToSvg.Drawing
 
                 if (singleSpan != null)
                 {
-                    if (!styleToClassNameLookup.TryGetValue(singleSpan.Style, out var className))
+                    if (!styleToClassNameLookup.TryGetValue(singleSpan.Style, out string? className))
                     {
                         styleToClassNameLookup[singleSpan.Style] = className = BuildCssClass(singleSpan.Style);
                     }
@@ -1178,7 +1178,7 @@ namespace PdfToSvg.Drawing
                 {
                     var currentYOffset = 0.0;
 
-                    var classNames = new string[paragraph.Content.Count];
+                    var classNames = new string?[paragraph.Content.Count];
                     var multipleClasses = false;
 
                     for (var i = 0; i < classNames.Length; i++)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -6,7 +7,7 @@ namespace PdfToSvg.DocumentModel
 {
     internal static class PdfDictionaryExtensions
     {
-        public static bool TryGetValue(this PdfDictionary dict, PdfNamePath path, out object value)
+        public static bool TryGetValue(this PdfDictionary? dict, PdfNamePath path, out object? value)
         {
             value = dict;
 
@@ -29,61 +30,61 @@ namespace PdfToSvg.DocumentModel
         }
 
         // TODO use or remove
-        public static PdfName GetNameOrNull(this PdfDictionary dict, PdfNamePath path)
+        public static PdfName? GetNameOrNull(this PdfDictionary? dict, PdfNamePath path)
         {
-            return GetValueOrDefault<PdfName>(dict, path, null);
+            return GetValueOrDefault<PdfName?>(dict, path, null);
         }
 
         // TODO check usage
-        public static PdfDictionary GetDictionaryOrNull(this PdfDictionary dict, PdfNamePath path)
+        public static PdfDictionary? GetDictionaryOrNull(this PdfDictionary? dict, PdfNamePath path)
         {
-            return GetValueOrDefault<PdfDictionary>(dict, path, null);
+            return GetValueOrDefault<PdfDictionary?>(dict, path, null);
         }
 
-        public static PdfDictionary GetDictionaryOrEmpty(this PdfDictionary dict, PdfNamePath path)
+        public static PdfDictionary GetDictionaryOrEmpty(this PdfDictionary? dict, PdfNamePath path)
         {
-            return GetValueOrDefault<PdfDictionary>(dict, path, null) ?? new PdfDictionary();
+            return GetValueOrDefault<PdfDictionary?>(dict, path, null) ?? new PdfDictionary();
         }
 
-        public static T GetValueOrDefault<T>(this PdfDictionary dict, PdfNamePath path, T defaultValue = default)
+        public static T GetValueOrDefault<T>(this PdfDictionary? dict, PdfNamePath path, T defaultValue = default!)
         {
             if (TryGetValue(dict, path, out var objValue) && TryConvert(objValue, typeof(T), out var convertedValue))
             {
-                return (T)convertedValue;
+                return (T)convertedValue!;
             }
 
             return defaultValue;
         }
 
-        public static bool TryGetValue<T>(this PdfDictionary dict, PdfNamePath path, out T value)
+        public static bool TryGetValue<T>(this PdfDictionary? dict, PdfNamePath path, out T value)
         {
-            if (TryGetValue(dict, path, out object objValue) &&
+            if (TryGetValue(dict, path, out object? objValue) &&
                 TryConvert(objValue, typeof(T), out var convertedValue))
             {
-                value = (T)convertedValue;
+                value = (T)convertedValue!;
                 return true;
             }
 
-            value = default;
+            value = default!;
             return false;
         }
 
-        public static bool TryGetInteger(this PdfDictionary dict, PdfNamePath path, out int value)
+        public static bool TryGetInteger(this PdfDictionary? dict, PdfNamePath path, out int value)
         {
             return TryGetValue(dict, path, out value);
         }
 
-        public static bool TryGetName(this PdfDictionary dict, PdfNamePath path, out PdfName value)
+        public static bool TryGetName(this PdfDictionary? dict, PdfNamePath path, [NotNullWhen(true)] out PdfName? value)
         {
             return TryGetValue(dict, path, out value);
         }
 
-        public static bool TryGetArray(this PdfDictionary dict, PdfNamePath path, out object[] value)
+        public static bool TryGetArray(this PdfDictionary? dict, PdfNamePath path, [NotNullWhen(true)] out object?[]? value)
         {
             return TryGetValue(dict, path, out value);
         }
 
-        public static bool TryGetArray<T>(this PdfDictionary dict, PdfNamePath path, out T[] value)
+        public static bool TryGetArray<T>(this PdfDictionary? dict, PdfNamePath path, [NotNullWhen(true)] out T[]? value)
         {
             if (dict.TryGetArray(path, out var objArray))
             {
@@ -93,7 +94,7 @@ namespace PdfToSvg.DocumentModel
                 {
                     if (TryConvert(objArray[i], typeof(T), out var convertedValue))
                     {
-                        value[i] = (T)convertedValue;
+                        value[i] = (T)convertedValue!;
                     }
                     else
                     {
@@ -109,14 +110,14 @@ namespace PdfToSvg.DocumentModel
             return false;
         }
 
-        public static bool TryGetDictionary(this PdfDictionary dict, PdfNamePath path, out PdfDictionary value)
+        public static bool TryGetDictionary(this PdfDictionary? dict, PdfNamePath path, [NotNullWhen(true)] out PdfDictionary? value)
         {
             return TryGetValue(dict, path, out value);
         }
 
-        public static bool TryGetNumber(this PdfDictionary dict, PdfNamePath path, out double value)
+        public static bool TryGetNumber(this PdfDictionary? dict, PdfNamePath path, out double value)
         {
-            if (dict.TryGetValue(path, out object objValue))
+            if (dict.TryGetValue(path, out object? objValue))
             {
                 if (objValue is int intValue)
                 {
@@ -135,7 +136,7 @@ namespace PdfToSvg.DocumentModel
             return false;
         }
 
-        private static bool TryParseDate(object value, out DateTimeOffset result)
+        private static bool TryParseDate(object? value, out DateTimeOffset result)
         {
             // PDF spec 1.7, 7.9.4, page 95
             // Note that there is a difference between what is documented in ISO 32000-1:2008 and what pdf producers do.
@@ -247,7 +248,7 @@ namespace PdfToSvg.DocumentModel
             return false;
         }
 
-        private static bool TryConvert(object value, Type destinationType, out object result)
+        private static bool TryConvert(object? value, Type destinationType, out object? result)
         {
             var nullableType = Nullable.GetUnderlyingType(destinationType);
             if (nullableType != null)

@@ -10,39 +10,33 @@ namespace PdfToSvg.Fonts
 {
     internal class Type1WidthMap : WidthMap
     {
-        private Dictionary<int, double> widthMap;
-        private uint firstChar;
-        private uint lastChar;
-        private double missingWidth;
+        private readonly Dictionary<uint, double> widthMap = new Dictionary<uint, double>();
+        private readonly uint firstChar;
+        private readonly uint lastChar;
+        private readonly double missingWidth;
 
-        private Type1WidthMap() { }
+        private Type1WidthMap(PdfDictionary font, double[] widths)
+        {
+            // PDF Specification 1.7, Table 111, page 263
+            firstChar = (uint)font.GetValueOrDefault(Names.FirstChar, 0);
+            lastChar = (uint)font.GetValueOrDefault(Names.LastChar, int.MaxValue);
+            missingWidth = font.GetValueOrDefault(Names.MissingWidth, 0.0);
+
+            for (var i = 0u; i < widths.Length; i++)
+            {
+                widthMap[firstChar + i] = widths[i];
+            }
+        }
 
         public new static WidthMap Parse(PdfDictionary font)
         {
             if (font.TryGetArray<double>(Names.Widths, out var widths))
             {
-                // PDF Specification 1.7, Table 111, page 263
-                var widthMap = new Dictionary<int, double>();
-                var firstChar = font.GetValueOrDefault(Names.FirstChar, 0);
-                var lastChar = font.GetValueOrDefault(Names.LastChar, int.MaxValue);
-                var missingWidth = font.GetValueOrDefault(Names.MissingWidth, 0.0);
-
-                for (var i = 0; i < widths.Length; i++)
-                {
-                    widthMap[firstChar + i] = widths[i];
-                }
-
-                return new Type1WidthMap
-                {
-                    firstChar = (uint)firstChar,
-                    lastChar = (uint)lastChar,
-                    missingWidth = missingWidth,
-                    widthMap = widthMap,
-                };
+                return new Type1WidthMap(font, widths);
             }
-            else
+
+            if (font.TryGetName(Names.BaseFont, out var name))
             {
-                var name = font.GetValueOrDefault(Names.BaseFont, PdfName.Null);
                 var standardWidth = StandardFontWidthMaps.GetWidths(name);
                 if (standardWidth != null)
                 {
@@ -55,7 +49,7 @@ namespace PdfToSvg.Fonts
 
         public override double GetWidth(CharacterCode ch)
         {
-            if (widthMap.TryGetValue((int)ch.Code, out var width))
+            if (widthMap.TryGetValue(ch.Code, out var width))
             {
                 return width;
             }

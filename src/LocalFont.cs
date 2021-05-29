@@ -8,7 +8,7 @@ namespace PdfToSvg
 {
     public class LocalFont : Font
     {
-        public LocalFont(string fontFamily, string fontWeight, string fontStyle)
+        public LocalFont(string fontFamily, string? fontWeight = null, string? fontStyle = null)
         {
             FontFamily = fontFamily;
             FontWeight = fontWeight;
@@ -17,8 +17,8 @@ namespace PdfToSvg
 
         public override string FontFamily { get; }
 
-        public string FontWeight { get; }
+        public string? FontWeight { get; }
 
-        public string FontStyle { get; }
+        public string? FontStyle { get; }
     }
 }

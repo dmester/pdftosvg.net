@@ -15,7 +15,7 @@ namespace PdfToSvg.Filters
         private const int DefaultBitsPerComponent = 8;
         private const int DefaultColors = 1;
 
-        public static Stream Create(Stream decompressedStream, PdfDictionary decodeParms)
+        public static Stream Create(Stream decompressedStream, PdfDictionary? decodeParms)
         {
             var predictor = DefaultPredictor;
             var columns = DefaultColumns;

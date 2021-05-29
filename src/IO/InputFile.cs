@@ -10,8 +10,8 @@ namespace PdfToSvg.IO
 {
     internal class InputFile : IDisposable
     {
-        private Stream baseStream;
-        private SemaphoreSlim readSemaphore = new SemaphoreSlim(1, 1);
+        private Stream? baseStream;
+        private SemaphoreSlim? readSemaphore = new SemaphoreSlim(1, 1);
 
         public InputFile(Stream baseStream)
         {
@@ -25,30 +25,38 @@ namespace PdfToSvg.IO
 
         public async Task<BufferedReader> CreateExclusiveReaderAsync(int bufferSize = 4096)
         {
-            var reader = new BufferedStreamReader(baseStream, () => readSemaphore.Release(), bufferSize);
+            if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
+
+            var reader = new BufferedStreamReader(baseStream, () => readSemaphore?.Release(), bufferSize);
             await readSemaphore.WaitAsync();
             return reader;
         }
 
         public BufferedReader CreateExclusiveReader(int bufferSize = 4096)
         {
-            var reader = new BufferedStreamReader(baseStream, () => readSemaphore.Release(), bufferSize);
+            if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
+
+            var reader = new BufferedStreamReader(baseStream, () => readSemaphore?.Release(), bufferSize);
             readSemaphore.Wait();
             return reader;
         }
 
         public async Task<BufferedReader> CreateExclusiveSliceReaderAsync(long offset, long length, int bufferSize = 4096)
         {
+            if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
+
             baseStream.Position = offset;
-            var reader = new BufferedStreamReader(baseStream, offset, length, () => readSemaphore.Release(), bufferSize);
+            var reader = new BufferedStreamReader(baseStream, offset, length, () => readSemaphore?.Release(), bufferSize);
             await readSemaphore.WaitAsync();
             return reader;
         }
 
         public BufferedReader CreateExclusiveSliceReader(long offset, long length, int bufferSize = 4096)
         {
+            if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
+
             baseStream.Position = offset;
-            var reader = new BufferedStreamReader(baseStream, offset, length, () => readSemaphore.Release(), bufferSize);
+            var reader = new BufferedStreamReader(baseStream, offset, length, () => readSemaphore?.Release(), bufferSize);
             readSemaphore.Wait();
             return reader;
         }

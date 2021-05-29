@@ -55,8 +55,8 @@ namespace PdfToSvg.ColorSpaces
         public int ColorCount => lookup.Length;
 
         public override int GetHashCode() => baseSpace.GetHashCode() ^ lookup.Length;
-        public override bool Equals(object obj) => Equals(obj as IndexedColorSpace);
-        public bool Equals(IndexedColorSpace other)
+        public override bool Equals(object? obj) => Equals(obj as IndexedColorSpace);
+        public bool Equals(IndexedColorSpace? other)
         {
             if (other == null)
             {

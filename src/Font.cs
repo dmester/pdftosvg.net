@@ -15,6 +15,6 @@ namespace PdfToSvg
 
         public override int GetHashCode() => FontFamily?.GetHashCode() ?? 0;
 
-        public override string ToString() => FontFamily;
+        public override string ToString() => FontFamily ?? "";
     }
 }

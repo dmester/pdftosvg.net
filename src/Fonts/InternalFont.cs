@@ -15,7 +15,7 @@ namespace PdfToSvg.Fonts
     // TODO Create document wide font cache
     internal class InternalFont
     {
-        public string Name { get; }
+        public string? Name { get; }
 
         public Font SubstituteFont { get; }
 
@@ -40,13 +40,20 @@ namespace PdfToSvg.Fonts
                 Name = name.Value;
             }
 
-            SubstituteFont = fontResolver.ResolveFont(Name);
+            if (Name == null)
+            {
+                SubstituteFont = new LocalFont("Sans-Serif");
+            }
+            else
+            {
+                SubstituteFont = fontResolver.ResolveFont(Name);
+            }
 
-            if (font.TryGetDictionary(Names.ToUnicode, out var toUnicode))
+            if (font.TryGetDictionary(Names.ToUnicode, out var toUnicode) && toUnicode.Stream != null)
             {
                 textDecoder = CMapParser.Parse(toUnicode.Stream);
             }
-            else if (font.TryGetValue(Names.Encoding, out var encoding))
+            else if (font.TryGetValue(Names.Encoding, out var encoding) && encoding != null)
             {
                 textDecoder = EncodingFactory.Create(encoding);
             }

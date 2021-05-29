@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.DocumentModel
 {
-    internal class PdfString : IEquatable<PdfString>
+    internal class PdfString : IEquatable<PdfString?>
     {
         private readonly byte[] data;
         private int hash;
@@ -52,19 +52,19 @@ namespace PdfToSvg.DocumentModel
 
         public int Length => data.Length;
 
-        public static bool operator ==(PdfString a, PdfString b)
+        public static bool operator ==(PdfString? a, PdfString? b)
         {
-            if ((object)a == null) return (object)b == null;
-            if ((object)b == null) return false;
+            if ((object?)a == null) return (object?)b == null;
+            if ((object?)b == null) return false;
             return a.Equals(b);
         }
 
-        public static bool operator !=(PdfString a, PdfString b) => !(a == b);
+        public static bool operator !=(PdfString? a, PdfString? b) => !(a == b);
 
-        public static PdfString operator +(PdfString a, PdfString b)
+        public static PdfString operator +(PdfString? a, PdfString? b)
         {
-            if ((object)a == null) return b ?? Empty;
-            if ((object)b == null) return a;
+            if ((object?)a == null) return b ?? Empty;
+            if ((object?)b == null) return a;
 
             var concat = new byte[a.Length + b.Length];
             Buffer.BlockCopy(a.data, 0, concat, 0, a.data.Length);
@@ -77,9 +77,9 @@ namespace PdfToSvg.DocumentModel
             return new PdfString(Encoding.BigEndianUnicode.GetBytes(str), true);
         }
 
-        public bool Equals(PdfString other)
+        public bool Equals(PdfString? other)
         {
-            if ((object)other == null)
+            if ((object?)other == null)
             {
                 return false;
             }

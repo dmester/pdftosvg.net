@@ -76,9 +76,9 @@ namespace PdfToSvg.IO
         private readonly Adler32 adler = new Adler32();
         private readonly CompressionMode mode;
         
-        private StripTrailerStream trailerStream;
-        private Stream baseStream;
-        private Stream deflateStream;
+        private StripTrailerStream? trailerStream;
+        private Stream? baseStream;
+        private Stream? deflateStream;
 
         private bool checksumVerified;
         private bool leaveOpen;
@@ -147,11 +147,15 @@ namespace PdfToSvg.IO
 
         public override void Flush()
         {
+            if (deflateStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
+
             deflateStream.Flush();
         }
 
         private void AfterRead(byte[] buffer, int offset, int read)
         {
+            if (trailerStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
+
             if (read > 0)
             {
                 adler.Update(buffer, offset, read);
@@ -184,6 +188,8 @@ namespace PdfToSvg.IO
 
         public override int Read(byte[] buffer, int offset, int count)
         {
+            if (deflateStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
+
             var read = 0;
 
             if (count > 0)
@@ -207,6 +213,8 @@ namespace PdfToSvg.IO
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
+            if (deflateStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
+
             var read = 0;
 
             if (count > 0)
@@ -224,6 +232,8 @@ namespace PdfToSvg.IO
 
         public override void Write(byte[] buffer, int offset, int count)
         {
+            if (deflateStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
+
             deflateStream.Write(buffer, offset, count);
             adler.Update(buffer, offset, count);
         }

@@ -7,14 +7,12 @@ namespace PdfToSvg.DocumentModel
 {
     [DebuggerTypeProxy(typeof(PdfDictionaryDebugProxy))]
     [DebuggerDisplay("{DebugView,nq}")]
-    internal class PdfDictionary : IDictionary<PdfName, object>
+    internal class PdfDictionary : IDictionary<PdfName, object?>
     {
-        List<KeyValuePair<PdfName, object>> ordered = new List<KeyValuePair<PdfName, object>>();
-        Dictionary<PdfName, object> lookup = new Dictionary<PdfName, object>();
+        List<KeyValuePair<PdfName, object?>> ordered = new List<KeyValuePair<PdfName, object?>>();
+        Dictionary<PdfName, object?> lookup = new Dictionary<PdfName, object?>();
 
-        public static PdfDictionary Null => null;
-
-        public object this[PdfName key]
+        public object? this[PdfName key]
         {
             get => lookup.TryGetValue(key, out var value) ? value : null;
             set => Add(key, value);
@@ -22,7 +20,7 @@ namespace PdfToSvg.DocumentModel
 
         public ICollection<PdfName> Keys => lookup.Keys;
 
-        public ICollection<object> Values => lookup.Values;
+        public ICollection<object?> Values => lookup.Values;
 
         /// <summary>
         /// Id, if this dictionary is an indirect object.
@@ -32,11 +30,11 @@ namespace PdfToSvg.DocumentModel
         /// <summary>
         /// The content stream if this is an indirect object. Otherwise, <c>null</c>.
         /// </summary>
-        public PdfStream Stream { get; private set; }
+        public PdfStream? Stream { get; private set; }
 
         public int Count => ordered.Count;
 
-        bool ICollection<KeyValuePair<PdfName, object>>.IsReadOnly => false;
+        bool ICollection<KeyValuePair<PdfName, object?>>.IsReadOnly => false;
 
         private string DebugView
         {
@@ -56,18 +54,18 @@ namespace PdfToSvg.DocumentModel
             }
         }
 
-        internal void MakeIndirectObject(PdfObjectId id, PdfStream stream)
+        internal void MakeIndirectObject(PdfObjectId id, PdfStream? stream)
         {
             Id = id;
             Stream = stream;
         }
 
-        public void Add(PdfName key, object value)
+        public void Add(PdfName key, object? value)
         {
-            Add(new KeyValuePair<PdfName, object>(key, value));
+            Add(new KeyValuePair<PdfName, object?>(key, value));
         }
 
-        public void Add(KeyValuePair<PdfName, object> item)
+        public void Add(KeyValuePair<PdfName, object?> item)
         {
             if (lookup.ContainsKey(item.Key))
             {
@@ -88,7 +86,7 @@ namespace PdfToSvg.DocumentModel
             ordered.Clear();
         }
 
-        public bool Contains(KeyValuePair<PdfName, object> item)
+        public bool Contains(KeyValuePair<PdfName, object?> item)
         {
             return lookup.TryGetValue(item.Key, out var value) && Equals(value, item.Value);
         }
@@ -109,7 +107,7 @@ namespace PdfToSvg.DocumentModel
             return false;
         }
 
-        public bool Remove(KeyValuePair<PdfName, object> item)
+        public bool Remove(KeyValuePair<PdfName, object?> item)
         {
             var index = ordered.IndexOf(item);
             if (index >= 0)
@@ -121,17 +119,17 @@ namespace PdfToSvg.DocumentModel
             return false;
         }
 
-        public bool TryGetValue(PdfName key, out object value)
+        public bool TryGetValue(PdfName key, out object? value)
         {
             return lookup.TryGetValue(key, out value);
         }
 
-        void ICollection<KeyValuePair<PdfName, object>>.CopyTo(KeyValuePair<PdfName, object>[] array, int arrayIndex)
+        void ICollection<KeyValuePair<PdfName, object?>>.CopyTo(KeyValuePair<PdfName, object?>[] array, int arrayIndex)
         {
             ordered.CopyTo(array, arrayIndex);
         }
 
-        public IEnumerator<KeyValuePair<PdfName, object>> GetEnumerator() => ordered.GetEnumerator();
+        public IEnumerator<KeyValuePair<PdfName, object?>> GetEnumerator() => ordered.GetEnumerator();
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => ordered.GetEnumerator();
     }
 }

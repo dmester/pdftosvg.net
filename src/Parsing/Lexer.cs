@@ -13,7 +13,7 @@ namespace PdfToSvg.Parsing
         private ForwardReadBuffer<Lexeme> forwardLexemeBuffer;
         private Dictionary<string, Token> keywords;
 
-        public Lexer(string source, Dictionary<string, Token> keywords = null)
+        public Lexer(string source, Dictionary<string, Token>? keywords = null)
         {
             var bytes = Encoding.ASCII.GetBytes(source);
             Stream = new BufferedMemoryReader(bytes);
@@ -21,11 +21,11 @@ namespace PdfToSvg.Parsing
             this.keywords = keywords ?? new Dictionary<string, Token>();
         }
 
-        public Lexer(Stream stream, Dictionary<string, Token> keywords)
+        public Lexer(Stream stream, Dictionary<string, Token>? keywords)
         {
             Stream = stream as BufferedReader ?? new BufferedStreamReader(stream);
             forwardLexemeBuffer = new ForwardReadBuffer<Lexeme>(ReadLexeme, 2);
-            this.keywords = keywords;
+            this.keywords = keywords ?? new Dictionary<string, Token>();
         }
 
         public BufferedReader Stream { get; }

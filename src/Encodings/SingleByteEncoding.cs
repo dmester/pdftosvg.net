@@ -10,7 +10,7 @@ namespace PdfToSvg.Encodings
     internal class SingleByteEncoding : Encoding, ITextDecoder
     {
         private readonly string toUnicode;
-        private Dictionary<char, byte> fromUnicode;
+        private Dictionary<char, byte>? fromUnicode;
 
         public SingleByteEncoding(string toUnicode)
         {

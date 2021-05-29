@@ -8,8 +8,8 @@ namespace PdfToSvg
 {
     public class SvgConversionOptions
     {
-        public IImageResolver ImageResolver { get; set; }
+        public IImageResolver? ImageResolver { get; set; }
 
-        public IFontResolver FontResolver { get; set; }
+        public IFontResolver? FontResolver { get; set; }
     }
 }

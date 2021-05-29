@@ -58,7 +58,7 @@ namespace PdfToSvg.Drawing
         public static string PathData(PathData path)
         {
             var result = new StringBuilder();
-            var lastPosition = (IMovingCommand)null;
+            var lastPosition = (IMovingCommand?)null;
             
             foreach (var command in path)
             {

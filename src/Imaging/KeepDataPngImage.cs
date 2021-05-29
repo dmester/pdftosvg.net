@@ -15,24 +15,31 @@ namespace PdfToSvg.Imaging
     internal class KeepDataPngImage : Image
     {
         private readonly PdfDictionary imageDictionary;
+        private readonly PdfStream imageDictionaryStream;
         private readonly ColorSpace colorSpace;
 
         public KeepDataPngImage(PdfDictionary imageDictionary, ColorSpace colorSpace) : base("image/png")
         {
+            if (imageDictionary.Stream == null)
+            {
+                throw new ArgumentException("There was no data stream attached to the image dictionary.", nameof(imageDictionary));
+            }
+
             this.imageDictionary = imageDictionary;
+            this.imageDictionaryStream = imageDictionary.Stream;
             this.colorSpace = colorSpace;
         }
 
         public static bool IsSupported(PdfDictionary imageDictionary, ColorSpace colorSpace)
         {
-            var lastFilter = imageDictionary.Stream.Filters.LastOrDefault();
+            var lastFilter = imageDictionary.Stream?.Filters.LastOrDefault();
             if (lastFilter == null || lastFilter.Filter != Filter.FlateDecode)
             {
                 return false;
             }
 
             var decodeParms = lastFilter.DecodeParms;
-            var bitsPerComponent = decodeParms.GetValueOrDefault(Names.BitsPerComponent, 8);
+            var bitsPerComponent = decodeParms == null ? 8 : decodeParms.GetValueOrDefault(Names.BitsPerComponent, 8);
 
             // A decode array requires unpacking and scaling each pixel
             if (imageDictionary.ContainsKey(Names.Decode))
@@ -77,7 +84,7 @@ namespace PdfToSvg.Imaging
             var height = imageDictionary.GetValueOrDefault(Names.Height, 0);
             
             int bytesPerRow;
-            byte[] palette = null;
+            byte[]? palette = null;
             PngColorType colorType;
             
             if (colorSpace is DeviceGrayColorSpace)
@@ -122,7 +129,7 @@ namespace PdfToSvg.Imaging
 
             using (var pngDataStream = pngWriter.GetImageDataStream())
             {
-                using var decodedStream = imageDictionary.Stream.OpenDecoded();
+                using var decodedStream = imageDictionaryStream.OpenDecoded();
 
                 var row = new byte[bytesPerRow];
 

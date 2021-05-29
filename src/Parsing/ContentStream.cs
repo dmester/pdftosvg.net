@@ -37,77 +37,49 @@ namespace PdfToSvg.Parsing
             return contents;
         }
 
-        private static MemoryStream CreateReadOnlyStream(List<byte[]> chunks, int length)
+        private static MemoryStream CreateReadOnlyStream(MemoryStream memoryStream)
         {
-            var result = new byte[length];
-            var resultCursor = 0;
-
-            foreach (var chunk in chunks)
-            {
-                var bytesThisIteration = Math.Min(length - resultCursor, chunk.Length);
-                Buffer.BlockCopy(chunk, 0, result, resultCursor, bytesThisIteration);
-                resultCursor += bytesThisIteration;
-            }
-
-            return new MemoryStream(result, false);
+            return new MemoryStream(memoryStream.GetBuffer(), 0, (int)memoryStream.Length, false);
         }
 
         public static async Task<Stream> CombineAsync(PdfDictionary pageDict)
         {
             var contents = GetContents(pageDict);
-
-            var chunks = new List<byte[]>();
-            var totalBytes = 0;
+            var combinedBuffer = new MemoryStream();
 
             foreach (var content in contents)
             {
                 var stream = content.Stream;
                 if (stream != null)
                 {
-                    using var decodedStream = await stream.OpenDecodedAsync();
-
-                    int bytesThisIteration;
-                    do
+                    using (var decodedStream = stream.OpenDecoded())
                     {
-                        var chunk = new byte[4096];
-                        bytesThisIteration = await decodedStream.ReadAsync(chunk, 0, chunk.Length);
-                        totalBytes += bytesThisIteration;
-                        chunks.Add(chunk);
+                        await decodedStream.CopyToAsync(combinedBuffer);
                     }
-                    while (bytesThisIteration > 0);
                 }
             }
 
-            return CreateReadOnlyStream(chunks, totalBytes);
+            return CreateReadOnlyStream(combinedBuffer);
         }
 
         public static Stream Combine(PdfDictionary pageDict)
         {
             var contents = GetContents(pageDict);
-
-            var chunks = new List<byte[]>();
-            var totalBytes = 0;
+            var combinedBuffer = new MemoryStream();
 
             foreach (var content in contents)
             {
                 var stream = content.Stream;
                 if (stream != null)
                 {
-                    using var decodedStream = stream.OpenDecoded();
-
-                    int bytesThisIteration;
-                    do
+                    using (var decodedStream = stream.OpenDecoded())
                     {
-                        var chunk = new byte[4096];
-                        bytesThisIteration = decodedStream.Read(chunk, 0, chunk.Length);
-                        totalBytes += bytesThisIteration;
-                        chunks.Add(chunk);
+                        decodedStream.CopyTo(combinedBuffer);
                     }
-                    while (bytesThisIteration > 0);
                 }
             }
 
-            return CreateReadOnlyStream(chunks, totalBytes);
+            return CreateReadOnlyStream(combinedBuffer);
         }
     }
 }

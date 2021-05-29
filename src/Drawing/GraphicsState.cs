@@ -26,7 +26,7 @@ namespace PdfToSvg.Drawing
 
         public int DashPhase { get; set; }
 
-        public double MiterLimit { get; set; }
+        public double MiterLimit { get; set; } = 10d;
 
         public int LineJoin { get; set; }
 

@@ -25,6 +25,7 @@ namespace PdfToSvg.Drawing
         private Stack<GraphicsState> graphicsStateStack = new Stack<GraphicsState>();
 
         private XElement svg;
+        private bool svgHasDefaultMiterLimit;
 
         private PathData currentPath = new PathData();
 
@@ -636,7 +637,7 @@ namespace PdfToSvg.Drawing
                 }
 
                 attributes.Add(new XAttribute("stroke", SvgConversion.FormatColor(graphicsState.StrokeColor)));
-                attributes.Add(new XAttribute("stroke-width", lineWidth.ToString("0.####", CultureInfo.InvariantCulture)));
+                attributes.Add(new XAttribute("stroke-width", SvgConversion.FormatCoordinate(lineWidth)));
 
                 if (graphicsState.LineCap == 1)
                 {
@@ -654,6 +655,25 @@ namespace PdfToSvg.Drawing
                 else if (graphicsState.LineJoin == 2)
                 {
                     attributes.Add(new XAttribute("stroke-linejoin", "bevel"));
+                }
+                else
+                {
+                    // Default to miter join
+
+                    // Miter limit is applicable
+                    // Default in SVG: 4
+                    // Default in PDF: 10 (PDF 1.7 spec, Table 52)
+
+                    if (graphicsState.MiterLimit != 10)
+                    {
+                        attributes.Add(new XAttribute("stroke-miterlimit", SvgConversion.FormatCoordinate(graphicsState.MiterLimit)));
+                    }
+                    else if (!svgHasDefaultMiterLimit)
+                    {
+                        // Change default miter limit on root element
+                        svg.Add(new XAttribute("stroke-miterlimit", SvgConversion.FormatCoordinate(graphicsState.MiterLimit)));
+                        svgHasDefaultMiterLimit = true;
+                    }
                 }
 
                 if (graphicsState.DashArray != null)

@@ -1,0 +1,296 @@
+%PDF-1.7
+
+xref
+0 5
+0000000000 65535 f 
+0000000167 00000 n 
+0000000218 00000 n 
+0000000282 00000 n 
+0000000549 00000 n 
+trailer
+<< /Root 1 0 R  /Size 5 >>
+
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >> endobj
+
+3 0 obj 
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /F1 << /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /WinAnsiEncoding >>
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj << /Length 4329 >>
+stream
+   /F1 12 Tf
+   
+   0 0 0 rg
+   1 0 0 RG
+   
+   35 -20 m 35 -55 l 0 -55 l 0 -30 l 20 -30 l 20 -40 l 10 -40 l 10 -20 l
+   n
+   
+   % S stroke
+   q
+      1 0 0 1 70 750 cm
+      BT (S stroke) Tj ET
+      35 -20 m 35 -55 l 0 -55 l 0 -30 l 20 -30 l 20 -40 l 10 -40 l 10 -20 l
+      S
+   Q
+   
+   % s close, stroke
+   q
+      1 0 0 1 170 750 cm
+      BT (s close, stroke) Tj ET
+      35 -20 m 35 -55 l 0 -55 l 0 -30 l 20 -30 l 20 -40 l 10 -40 l 10 -20 l
+      s
+   Q
+   
+   % f fill
+   q
+      1 0 0 1 270 750 cm
+      BT (f fill) Tj ET
+      35 -20 m 35 -55 l 0 -55 l 0 -30 l 20 -30 l 20 -40 l 10 -40 l 10 -20 l
+      f
+   Q
+   
+   % F fill
+   q
+      1 0 0 1 370 750 cm
+      BT (F fill) Tj ET
+      35 -20 m 35 -55 l 0 -55 l 0 -30 l 20 -30 l 20 -40 l 10 -40 l 10 -20 l
+      F
+   Q
+   
+   % f* fill even-odd
+   q
+      1 0 0 1 470 750 cm
+      BT (f* fill) Tj 0 -15 TD (even-odd) Tj ET
+      35 -20 m 35 -55 l 0 -55 l 0 -30 l 20 -30 l 20 -40 l 10 -40 l 10 -20 l
+      f*
+   Q
+   
+   
+   % B fill, stroke
+   q
+      1 0 0 1 70 650 cm
+      BT (B fill, stroke) Tj ET
+      35 -20 m 35 -55 l 0 -55 l 0 -30 l 20 -30 l 20 -40 l 10 -40 l 10 -20 l
+      B
+   Q
+   
+   % B* fill, stroke even-odd
+   q
+      1 0 0 1 170 650 cm
+      BT (B* fill, stroke) Tj 0 -15 TD (even-odd) Tj ET
+      35 -20 m 35 -55 l 0 -55 l 0 -30 l 20 -30 l 20 -40 l 10 -40 l 10 -20 l
+      B*
+   Q
+   
+   % b close, fill, stroke
+   q
+      1 0 0 1 270 650 cm
+      BT (b close, fill, stroke) Tj ET
+      35 -20 m 35 -55 l 0 -55 l 0 -30 l 20 -30 l 20 -40 l 10 -40 l 10 -20 l
+      b
+   Q
+   
+   % b* close, fill, stroke even-odd
+   q
+      1 0 0 1 370 650 cm
+      BT (b* close, fill, stroke) Tj 0 -15 TD (even-odd) Tj ET
+      35 -20 m 35 -55 l 0 -55 l 0 -30 l 20 -30 l 20 -40 l 10 -40 l 10 -20 l
+      b*
+   Q
+   
+   0 0 0 RG
+   
+   % Curve
+   q
+      1 0 0 1 70 480 cm
+      BT 0 50 Td (Curve) Tj ET
+      0 0 m
+      0 25 l
+      20 50 40 0 60 25 c
+      30 0 60 -25 v
+      30 0 0 -25 y
+      S
+   Q
+   
+   % Closed curve
+   q
+      1 0 0 1 240 480 cm
+      BT 0 50 Td (Closed curve) Tj ET
+      0 0 m
+      0 25 l
+      20 50 40 0 60 25 c
+      30 0 60 -25 v
+      30 0 0 -25 y
+      h
+      S
+   Q
+   
+   % Rectangle
+   q
+      1 0 0 1 420 480 cm
+      BT 0 50 Td (Rectangle) Tj ET
+      0 -20 50 50 re
+      S
+   Q
+   
+   % Line width
+   q
+      1 0 0 1 70 400 cm
+      BT (w Line width) Tj ET
+      
+      5 w
+      0 -10 m
+      100 -10  l
+      S
+      
+      3 w
+      0 -20 m
+      100 -20  l
+      S
+      
+      1 w
+      0 -30 m
+      100 -30  l
+      S
+   Q
+   
+   % Line cap
+   q
+      1 0 0 1 70 320 cm
+      BT (J Line cap) Tj ET
+      12 w
+      
+      0 J
+      0 -10 m
+      100 -10  l
+      S
+      
+      1 J
+      0 -25 m
+      100 -25  l
+      S
+      
+      2 J
+      0 -40 m
+      100 -40  l
+      S
+   Q
+   
+   % Dash array
+   q
+      1 0 0 1 70 220 cm
+      BT (d Dash array) Tj ET
+      6 w
+      
+      [] 0 d
+      0 -10 m
+      100 -10  l
+      S
+      
+      [3] 0 d
+      0 -20 m
+      100 -20  l
+      S
+      
+      [2] 1 d
+      0 -30 m
+      100 -30  l
+      S
+      
+      [2 1] 0 d
+      0 -40 m
+      100 -40  l
+      S
+      
+      [3 5] 6 d
+      0 -50 m
+      100 -50  l
+      S
+      
+      [2 3] 11 d
+      0 -60 m
+      100 -60  l
+      S
+   Q
+   
+   % Line join
+   q
+      1 0 0 1 300 400 cm
+      BT (j Line join) Tj ET
+      16 w
+      
+      1 0 0 1 0 -40 cm
+      0 j
+      0 0 m
+      20 20 l
+      40 0 l
+      S
+      
+      1 0 0 1 65 0 cm
+      1 j
+      0 0 m
+      20 20 l
+      40 0 l
+      S
+      
+      1 0 0 1 65 0 cm
+      2 j
+      0 0 m
+      20 20 l
+      40 0 l
+      S
+   Q
+   
+   % Miter limit
+   q
+      1 0 0 1 300 320 cm
+      BT (M Miter limit) Tj ET
+      8 w
+      0 j
+      
+      1 0 0 1 0 -40 cm
+      2.4 M
+      0 0 m
+      10 20 l
+      20 0 l
+      S
+      
+      1 0 0 1 45 0 cm
+      2.3 M
+      0 0 m
+      10 20 l
+      20 0 l
+      S
+      
+      1 0 0 1 45 0 cm
+      2.2 M
+      0 0 m
+      10 20 l
+      20 0 l
+      S
+      
+      1 0 0 1 45 0 cm
+      2.1 M
+      0 0 m
+      10 20 l
+      20 0 l
+      S
+   Q
+
+endstream
+endobj
+
+startxref
+10
+%%EOF

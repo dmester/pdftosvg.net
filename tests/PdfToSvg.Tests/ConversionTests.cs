@@ -21,13 +21,13 @@ namespace PdfToSvg.Tests
     {
         private static string GetTargetFramework()
         {
-            var directory = TestContext.CurrentContext.TestDirectory;
+            var directory = TestContext.CurrentContext.WorkDirectory;
             return Path.GetFileName(directory).Replace(".", "");
         }
 
         private static string GetTestFileDirectory()
         {
-            var directory = TestContext.CurrentContext.TestDirectory;
+            var directory = TestContext.CurrentContext.WorkDirectory;
             
             for (var i = 0; i < 8 && !string.IsNullOrEmpty(directory); i++)
             {

@@ -76,6 +76,12 @@ namespace PdfToSvg.Drawing
                 transform = Matrix.Scale(-1, -1, transform);
             }
 
+            // Force scaling to be positive
+            if (graphicsState.TextState.Scaling < 0)
+            {
+                transform = Matrix.Scale(-1, 1, transform);
+            }
+
             transform.DecomposeTranslate(out translateX, out translateY, out remainingTransform);
 
             if (scale == previousScale &&
@@ -213,7 +219,7 @@ namespace PdfToSvg.Drawing
         {
             if (textStyle == null)
             {
-                textStyle = new TextStyle(graphicsState, normalizedFontSize);
+                textStyle = new TextStyle(graphicsState, normalizedFontSize, Math.Abs(graphicsState.TextState.Scaling));
             }
 
             return textStyle;

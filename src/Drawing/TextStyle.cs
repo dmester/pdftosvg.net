@@ -13,7 +13,7 @@ namespace PdfToSvg.Drawing
 {
     internal class TextStyle
     {
-        public TextStyle(GraphicsState state, double fontSize)
+        public TextStyle(GraphicsState state, double fontSize, double scaling)
         {
             Fill = state.FillColor;
             Stroke = state.StrokeColor;
@@ -25,7 +25,7 @@ namespace PdfToSvg.Drawing
             WordSpacingPx = textState.WordSpacing;
             RenderingMode = textState.RenderingMode;
             RisePx = textState.Rise;
-            Scaling = textState.Scaling;
+            Scaling = scaling;
         }
 
         public RgbColor Fill { get; }

@@ -889,6 +889,7 @@ namespace PdfToSvg.Drawing
         {
             textState.Scaling = scale;
             textBuilder.InvalidateStyle();
+            textBuilder.UpdateLineMatrix(graphicsState);
         }
 
         [Operation("TL")]

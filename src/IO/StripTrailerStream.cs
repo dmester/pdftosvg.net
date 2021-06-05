@@ -89,6 +89,10 @@ namespace PdfToSvg.IO
                     LoopCopy(trailerBuffer, returnBytes, trailerBuffer, 0, trailerLength);
                     trailerBufferLength -= returnBytes;
                 }
+                else
+                {
+                    returnBytes = 0;
+                }
             }
             else
             {
@@ -141,6 +145,10 @@ namespace PdfToSvg.IO
                     LoopCopy(trailerBuffer, 0, buffer, offset, returnBytes);
                     LoopCopy(trailerBuffer, returnBytes, trailerBuffer, 0, trailerLength);
                     trailerBufferLength -= returnBytes;
+                }
+                else
+                {
+                    returnBytes = 0;
                 }
             }
             else

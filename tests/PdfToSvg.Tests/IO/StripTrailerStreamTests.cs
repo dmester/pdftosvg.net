@@ -26,8 +26,31 @@ namespace PdfToSvg.Tests.IO
             var sourceStream = new NoSeekMemoryStream(sourceData);
             var trailerStream = new StripTrailerStream(sourceStream, 4);
 
+            for (var i = 0; i < 10; i++)
+            {
+                Assert.AreEqual(0, trailerStream.Read(readData, 0, i));
+            }
+
             Assert.AreEqual(0, trailerStream.Read(readData, 0, 1000));
-            Assert.AreEqual(0, trailerStream.Read(readData, 0, 1000));
+
+            Assert.AreEqual(sourceData, trailerStream.GetTrailer());
+        }
+
+        [Test]
+        public async Task ReadSmallDataAsync()
+        {
+            var sourceData = new byte[] { 1, 2 };
+            var readData = new byte[1000];
+
+            var sourceStream = new NoSeekMemoryStream(sourceData);
+            var trailerStream = new StripTrailerStream(sourceStream, 4);
+
+            for (var i = 0; i < 10; i++)
+            {
+                Assert.AreEqual(0, await trailerStream.ReadAsync(readData, 0, i));
+            }
+
+            Assert.AreEqual(0, await trailerStream.ReadAsync(readData, 0, 1000));
 
             Assert.AreEqual(sourceData, trailerStream.GetTrailer());
         }
@@ -41,8 +64,31 @@ namespace PdfToSvg.Tests.IO
             var sourceStream = new NoSeekMemoryStream(sourceData);
             var trailerStream = new StripTrailerStream(sourceStream, 4);
 
+            for (var i = 0; i < 10; i++)
+            {
+                Assert.AreEqual(0, trailerStream.Read(readData, 0, i));
+            }
+
             Assert.AreEqual(0, trailerStream.Read(readData, 0, 1000));
-            Assert.AreEqual(0, trailerStream.Read(readData, 0, 1000));
+
+            Assert.AreEqual(new byte[0], trailerStream.GetTrailer());
+        }
+
+        [Test]
+        public async Task ReadEmptyDataAsync()
+        {
+            var sourceData = new byte[0];
+            var readData = new byte[1000];
+
+            var sourceStream = new NoSeekMemoryStream(sourceData);
+            var trailerStream = new StripTrailerStream(sourceStream, 4);
+
+            for (var i = 0; i < 10; i++)
+            {
+                Assert.AreEqual(0, await trailerStream.ReadAsync(readData, 0, i));
+            }
+
+            Assert.AreEqual(0, await trailerStream.ReadAsync(readData, 0, 1000));
 
             Assert.AreEqual(new byte[0], trailerStream.GetTrailer());
         }

@@ -5,8 +5,10 @@
 using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Imaging;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -126,25 +128,37 @@ namespace PdfToSvg.ColorSpaces
 
             if (colorSpaceParams.Length > 1)
             {
-                // TODO
                 baseSpace = Parse(colorSpaceParams[1], colorSpaceResourcesDictionary, recursionCount + 1);
-            }
 
-            if (colorSpaceParams.Length > 3)
-            {
-                // TODO can be a stream
-                if (colorSpaceParams[3] is PdfString lookupString)
+                if (colorSpaceParams.Length > 3)
                 {
-                    lookup = new byte[lookupString.Length];
+                    var maxLookupLength = baseSpace.ComponentsPerSample * 255;
 
-                    for (var i = 0; i < lookupString.Length; i++)
+                    if (colorSpaceParams[3] is PdfDictionary lookupDict &&
+                        lookupDict.Stream != null)
                     {
-                        lookup[i] = lookupString[i];
+                        using (var lookupStream = lookupDict.Stream.OpenDecoded())
+                        {
+                            var buffer = new byte[maxLookupLength];
+                            var lookupLength = lookupStream.ReadAll(buffer, 0, buffer.Length);
+
+                            lookup = new byte[lookupLength];
+                            Buffer.BlockCopy(buffer, 0, lookup, 0, lookupLength);
+                        }
                     }
-                }
-                else
-                {
-                    Log.WriteLine("/Indexed color space: Expected lookup array, but found {0}.", Log.TypeOf(colorSpaceParams[3]));
+                    else if (colorSpaceParams[3] is PdfString lookupString)
+                    {
+                        lookup = new byte[Math.Min(maxLookupLength, lookupString.Length)];
+
+                        for (var i = 0; i < lookup.Length; i++)
+                        {
+                            lookup[i] = lookupString[i];
+                        }
+                    }
+                    else
+                    {
+                        Log.WriteLine("/Indexed color space: Expected lookup array, but found {0}.", Log.TypeOf(colorSpaceParams[3]));
+                    }
                 }
             }
 
@@ -209,6 +223,26 @@ namespace PdfToSvg.ColorSpaces
                 if (colorSpaceName == Names.Indexed)
                 {
                     return ParseIndexed(definitionArray, colorSpaceResourcesDictionary, recursionCount + 1);
+                }
+
+                if (colorSpaceName == Names.ICCBased &&
+                    definitionArray.Length > 1 &&
+                    definitionArray[1] is PdfDictionary iccStreamDict)
+                {
+                    // ICC color profiles are not supported.
+                    // Use alternative approach described in PDF spec 1.7, Table 66, page 158
+                    if (iccStreamDict.TryGetValue(Names.Alternate, out var alternate))
+                    {
+                        return Parse(alternate, colorSpaceResourcesDictionary, recursionCount + 1);
+                    }
+
+                    var n = iccStreamDict.GetValueOrDefault(Names.N, 0);
+                    switch (n)
+                    {
+                        case 1: return new DeviceGrayColorSpace();
+                        case 4: return new DeviceCmykColorSpace();
+                        default: return new DeviceRgbColorSpace();
+                    }
                 }
 
                 if (colorSpaceName == Names.Separation &&

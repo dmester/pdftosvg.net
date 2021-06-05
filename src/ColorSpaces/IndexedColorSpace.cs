@@ -22,6 +22,7 @@ namespace PdfToSvg.ColorSpaces
             this.baseSpace = baseSpace;
             this.baseBuffer = new float[baseSpace.ComponentsPerSample];
             this.lookup = lookup;
+            this.ColorCount = (lookup.Length + baseBuffer.Length - 1) / baseBuffer.Length;
         }
 
         public override void ToRgb(float[] input, ref int inputOffset, out float red, out float green, out float blue)
@@ -56,7 +57,7 @@ namespace PdfToSvg.ColorSpaces
 
         public override float[] DefaultColor => new[] { 0f };
 
-        public int ColorCount => lookup.Length;
+        public int ColorCount { get; }
 
         public override int GetHashCode() => baseSpace.GetHashCode() ^ lookup.Length;
         public override bool Equals(object? obj) => Equals(obj as IndexedColorSpace);

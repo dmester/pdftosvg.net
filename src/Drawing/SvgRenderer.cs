@@ -317,7 +317,15 @@ namespace PdfToSvg.Drawing
                     n_EndPath();
                 }
 
-                foreach (var operation in ContentParser.Parse(xobject.Stream.OpenDecoded()))
+                // Buffer content since we might need to access the input file while rendering the page
+                using var bufferedFormContent = new MemoryStream();
+                using (var decodedFormContent = xobject.Stream.OpenDecoded())
+                {
+                    decodedFormContent.CopyTo(bufferedFormContent);
+                }
+                bufferedFormContent.Position = 0;
+
+                foreach (var operation in ContentParser.Parse(bufferedFormContent))
                 {
                     dispatcher.Dispatch(this, operation.Operator, operation.Operands);
                 }

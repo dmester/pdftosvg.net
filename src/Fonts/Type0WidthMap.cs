@@ -12,113 +12,20 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Fonts
 {
-    internal class Type0WidthMap : WidthMap
+    internal static class Type0WidthMap
     {
-        private readonly Dictionary<uint, double> widthMap;
-        private const double WidthMultiplier = 0.001;
-        
-        private Type0WidthMap(Dictionary<uint, double> widthMap)
+        public static WidthMap Parse(PdfDictionary font)
         {
-            this.widthMap = widthMap;
-        }
-
-        public new static Type0WidthMap Parse(PdfDictionary font)
-        {
-            var widthMap = new Dictionary<uint, double>();
-
             if (font.TryGetArray<PdfDictionary>(Names.DescendantFonts, out var descendantFonts))
             {
-                // CIDFont
-                // PDF Specification 1.7, Table 117, page 278
-                // PDF Specification 1.7, 9.7.4.3, page 279
-
+                // TODO This is probably not correct
                 foreach (var descendantFont in descendantFonts)
                 {
-                    if (descendantFont.TryGetArray(Names.W, out var w))
-                    {
-                        uint? cfirst = null;
-                        uint? clast = null;
-
-                        foreach (var item in w)
-                        {
-                            if (item is object[] rangeArray)
-                            {
-                                if (cfirst != null)
-                                {
-                                    var offset = 0u;
-
-                                    foreach (var width in rangeArray)
-                                    {
-                                        var charCode = cfirst.Value + offset;
-
-                                        if (width is int intWidth)
-                                        {
-                                            widthMap[charCode] = intWidth * WidthMultiplier;
-                                        }
-                                        else if (width is double realWidth)
-                                        {
-                                            widthMap[charCode] = realWidth * WidthMultiplier;
-                                        }
-
-                                        offset++;
-                                    }
-                                }
-
-                                cfirst = null;
-                                clast = null;
-                            }
-                            else if (item is int integer)
-                            {
-                                if (cfirst == null)
-                                {
-                                    cfirst = unchecked((uint)integer);
-                                }
-                                else if (clast == null)
-                                {
-                                    clast = unchecked((uint)integer);
-                                }
-                                else
-                                {
-                                    for (var i = cfirst.Value; i <= clast.Value; i++)
-                                    {
-                                        widthMap[i] = integer * WidthMultiplier;
-                                    }
-
-                                    cfirst = null;
-                                    clast = null;
-                                }
-                            }
-                            else if (item is double real)
-                            {
-                                if (cfirst != null && clast != null)
-                                {
-                                    for (var i = cfirst.Value; i <= clast.Value; i++)
-                                    {
-                                        widthMap[i] = real * WidthMultiplier;
-                                    }
-                                }
-
-                                cfirst = null;
-                                clast = null;
-                            }
-                        }
-
-                        break;
-                    }
+                    return CIDFontWidthMap.Parse(descendantFont);
                 }
             }
 
-            return new Type0WidthMap(widthMap);
-        }
-
-        public override double GetWidth(CharacterCode ch)
-        {
-            if (widthMap.TryGetValue(ch.Code, out var width))
-            {
-                return width;
-            }
-
-            return 0;
+            return new EmptyWidthMap();
         }
     }
 }

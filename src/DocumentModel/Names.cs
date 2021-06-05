@@ -47,8 +47,12 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Differences { get; } = new PdfName("Differences");
 
         public static PdfName Type0 { get; } = new PdfName("Type0");
+        public static PdfName CIDFontType0 { get; } = new PdfName("CIDFontType0");
+        public static PdfName CIDFontType2 { get; } = new PdfName("CIDFontType2");
         public static PdfName Type1 { get; } = new PdfName("Type1");
         public static PdfName Type3 { get; } = new PdfName("Type3");
+        public static PdfName MMType1 { get; } = new PdfName("MMType1");
+        public static PdfName TrueType { get; } = new PdfName("TrueType");
         public static PdfName BaseFont { get; } = new PdfName("BaseFont");
         public static PdfName ToUnicode { get; } = new PdfName("ToUnicode");
         public static PdfName DescendantFonts { get; } = new PdfName("DescendantFonts");

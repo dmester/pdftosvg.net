@@ -23,13 +23,20 @@ namespace PdfToSvg.Fonts
             {
                 // PDF spec 1.7, Table 110, page 261
 
-                // TODO More types that can be implemented?
                 if (subtype == Names.Type0)
                 {
                     return Type0WidthMap.Parse(font);
                 }
 
-                if (subtype == Names.Type1)
+                if (subtype == Names.CIDFontType0 ||
+                    subtype == Names.CIDFontType2)
+                {
+                    return CIDFontWidthMap.Parse(font);
+                }
+
+                if (subtype == Names.Type1 ||
+                    subtype == Names.MMType1 ||
+                    subtype == Names.TrueType)
                 {
                     return Type1WidthMap.Parse(font);
                 }

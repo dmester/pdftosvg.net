@@ -13,6 +13,8 @@ namespace PdfToSvg.Common
 {
     internal static class Log
     {
+        // TODO add context
+
         public static void WriteLine(string message)
         {
             Debug.WriteLine(message);

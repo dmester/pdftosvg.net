@@ -16,6 +16,9 @@ namespace PdfToSvg.Tests.IO
 {
     public class ZLibStreamTests
     {
+        // See also test file 
+        // deflate-special-cases.pdf
+
         private byte[] Deflate(byte[] data)
         {
             using (var memoryStream = new MemoryStream())
@@ -199,13 +202,30 @@ namespace PdfToSvg.Tests.IO
         }
 
         [Test]
+        public void EmptyStream()
+        {
+            var inflated = Inflate(new byte[] { });
+            Assert.AreEqual(new byte[0], inflated);
+        }
+
+        [Test]
+        public void AlmostEmptyStream()
+        {
+            var inflated = Inflate(new byte[] { 0x78, 0x9c, 0 });
+            Assert.AreEqual(new byte[0], inflated);
+        }
+
+        [Test]
         public void IncorrectChecksum()
         {
             var compressed = File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "IO", "ZLib_WindowBits15.bin"));
-
+            var expectedUncompressed = File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "IO", "ZLib_Uncompressed.bmp"));
+            
             compressed[compressed.Length - 1] = (byte)(1 ^ compressed[compressed.Length - 1]);
 
-            Assert.Throws<InvalidDataException>(() => Inflate(compressed));
+            var actualUncompressed = Inflate(compressed);
+
+            Assert.AreEqual(actualUncompressed, expectedUncompressed);
         }
 
         [Test]

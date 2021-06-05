@@ -14,18 +14,12 @@ using PdfToSvg.Common;
 
 namespace PdfToSvg.IO
 {
-#if NETFRAMEWORK || NETSTANDARD || NET5_0
-    internal static class ZLibStreamFactory
-    {
-        public static Stream Create(Stream stream, CompressionMode mode, bool leaveOpen = false)
-        {
-            return new ZLibStream(stream, mode, leaveOpen);
-        }
-    }
-
     /// <summary>
     /// Compresses or decompresses an RFC 1950 compatible zlib/deflate stream.
     /// </summary>
+    /// <remarks>
+    /// The .NET 6 implementation will probably not be usable, since we need to suppress incorrect checksum errors.
+    /// </remarks>
     internal class ZLibStream : Stream
     {
         // IMPLEMENTATION NOTES
@@ -84,7 +78,7 @@ namespace PdfToSvg.IO
         private Stream? baseStream;
         private Stream? deflateStream;
 
-        private bool checksumVerified;
+        private bool endOfStream;
         private bool leaveOpen;
 
         public ZLibStream(Stream stream, CompressionMode mode, bool leaveOpen = false)
@@ -115,7 +109,8 @@ namespace PdfToSvg.IO
 
                 if (cmf < 0 || flg < 0)
                 {
-                    throw new InvalidDataException("Missing header in ZLib stream.");
+                    endOfStream = true;
+                    return;
                 }
 
                 var cm = cmf & 0xf;
@@ -164,15 +159,25 @@ namespace PdfToSvg.IO
             {
                 adler.Update(buffer, offset, read);
             }
-            else if (!checksumVerified)
+            else 
             {
-                checksumVerified = true;
+                endOfStream = true;
 
                 var checksumBytes = trailerStream.GetTrailer();
 
+                // Invalid checksums seem to be present in some PDf files. 
+                //
+                // The following PDF readers don't care about invalid zlib checksums:
+                // * Adobe Reader
+                // * PDF.js
+                // * Pdfium
+                // * MuPDF
+                //
+                // Let's follow their lead and just log the error.
+                //
                 if (checksumBytes.Length != 4)
                 {
-                    throw new InvalidDataException("Missing checksum in ZLib stream.");
+                    Log.WriteLine("Missing checksum in ZLib stream.");
                 }
                 else
                 {
@@ -184,7 +189,7 @@ namespace PdfToSvg.IO
 
                     if (checksum != adler.Value)
                     {
-                        throw new InvalidDataException("Invalid checksum in Zlib stream.");
+                        Log.WriteLine("Invalid checksum in Zlib stream.");
                     }
                 }
             }
@@ -192,11 +197,11 @@ namespace PdfToSvg.IO
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (deflateStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
+            if (baseStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
 
             var read = 0;
 
-            if (count > 0)
+            if (count > 0 && !endOfStream && deflateStream != null)
             {
                 read = deflateStream.Read(buffer, offset, count);
                 AfterRead(buffer, offset, read);
@@ -217,11 +222,11 @@ namespace PdfToSvg.IO
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            if (deflateStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
+            if (baseStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
 
             var read = 0;
 
-            if (count > 0)
+            if (count > 0 && !endOfStream && deflateStream != null)
             {
                 read = await deflateStream.ReadAsync(buffer, offset, count, cancellationToken);
                 AfterRead(buffer, offset, read);
@@ -277,13 +282,4 @@ namespace PdfToSvg.IO
             base.Dispose(disposing);
         }
     }
-#else
-    internal static class ZLibStreamFactory
-    {
-        public static Stream Create(Stream stream, CompressionMode mode, bool leaveOpen = false)
-        {
-            return new ZLibStream(stream, mode, leaveOpen);
-        }
-    }
-#endif
 }

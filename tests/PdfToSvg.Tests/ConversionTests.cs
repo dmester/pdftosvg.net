@@ -71,11 +71,11 @@ namespace PdfToSvg.Tests
 
                         var dataStartIndex = (int)resultStream.Position;
 
-                        using (var deflateStream = ZLibStreamFactory.Create(resultStream, CompressionMode.Compress, true))
+                        using (var deflateStream = new ZLibStream(resultStream, CompressionMode.Compress, true))
                         {
                             using (var originalDataStream = new MemoryStream(pngData, cursor, chunkLength, false))
                             {
-                                using (var inflateStream = ZLibStreamFactory.Create(originalDataStream, CompressionMode.Decompress))
+                                using (var inflateStream = new ZLibStream(originalDataStream, CompressionMode.Decompress))
                                 {
                                     inflateStream.CopyTo(deflateStream);
                                 }

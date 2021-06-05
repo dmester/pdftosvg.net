@@ -1,0 +1,11 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" stroke-miterlimit="10" xmlns="http://www.w3.org/2000/svg">
+<style>text { white-space: pre; }.txs8vHo{font-family:'Times New Roman',serif;font-size:12px;}
+</style>
+<defs />
+<text x="70" y="141.92" class="txs8vHo">Uncompressed line:</text>
+<text x="70" y="241.92" class="txs8vHo">After empty content:</text>
+<text x="70" y="341.92" class="txs8vHo">Content with wrong checksum:</text>
+<path d="M70 161.92h70" fill="none" stroke="#00b200" stroke-width="10" />
+<path d="M70 261.92h70" fill="none" stroke="#00b200" stroke-width="10" />
+<path d="M70 361.92h70" fill="none" stroke="#00b200" stroke-width="10" />
+</svg>

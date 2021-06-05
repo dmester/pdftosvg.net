@@ -851,7 +851,23 @@ namespace PdfToSvg.Drawing
             graphicsState.FillColor = new RgbColor(graphicsState.FillColorSpace, components);
             textBuilder.InvalidateStyle();
         }
-        
+
+        [Operation("SCN")]
+        public void SCN_StrokeColor(params float[] components)
+        {
+            // TODO Should also accept a trailing name argument
+            graphicsState.StrokeColor = new RgbColor(graphicsState.StrokeColorSpace, components);
+            textBuilder.InvalidateStyle();
+        }
+
+        [Operation("scn")]
+        public void scn_FillColor(params float[] components)
+        {
+            // TODO Should also accept a trailing name argument
+            graphicsState.FillColor = new RgbColor(graphicsState.FillColorSpace, components);
+            textBuilder.InvalidateStyle();
+        }
+
         [Operation("G")]
         private void G_StrokeGray(float gray)
         {

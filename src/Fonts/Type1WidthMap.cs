@@ -14,6 +14,7 @@ namespace PdfToSvg.Fonts
 {
     internal class Type1WidthMap : WidthMap
     {
+        private const double WidthMultiplier = 0.001;
         private readonly Dictionary<uint, double> widthMap = new Dictionary<uint, double>();
         private readonly uint firstChar;
         private readonly uint lastChar;
@@ -24,11 +25,11 @@ namespace PdfToSvg.Fonts
             // PDF Specification 1.7, Table 111, page 263
             firstChar = (uint)font.GetValueOrDefault(Names.FirstChar, 0);
             lastChar = (uint)font.GetValueOrDefault(Names.LastChar, int.MaxValue);
-            missingWidth = font.GetValueOrDefault(Names.MissingWidth, 0.0);
+            missingWidth = font.GetValueOrDefault(Names.MissingWidth, 0.0) * WidthMultiplier;
 
             for (var i = 0u; i < widths.Length; i++)
             {
-                widthMap[firstChar + i] = widths[i];
+                widthMap[firstChar + i] = widths[i] * WidthMultiplier;
             }
         }
 

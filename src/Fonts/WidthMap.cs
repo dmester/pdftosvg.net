@@ -21,6 +21,8 @@ namespace PdfToSvg.Fonts
         {
             if (font.TryGetName(Names.Subtype, out var subtype))
             {
+                // PDF spec 1.7, Table 110, page 261
+
                 // TODO More types that can be implemented?
                 if (subtype == Names.Type0)
                 {

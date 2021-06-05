@@ -17,5 +17,11 @@ namespace PdfToSvg
         public IFontResolver? FontResolver { get; set; }
 
         public double MinStrokeWidth { get; set; } = 0.5;
+
+        /// <summary>
+        /// Spacing between letters below this threshold is assumed to be kerning and removed.
+        /// The value is relative to the current font size, where 1.0 represents the font size.
+        /// </summary>
+        public double KerningThreshold { get; set; } = 0.2;
     }
 }

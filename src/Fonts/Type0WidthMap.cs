@@ -15,6 +15,7 @@ namespace PdfToSvg.Fonts
     internal class Type0WidthMap : WidthMap
     {
         private readonly Dictionary<uint, double> widthMap;
+        private const double WidthMultiplier = 0.001;
         
         private Type0WidthMap(Dictionary<uint, double> widthMap)
         {
@@ -52,11 +53,11 @@ namespace PdfToSvg.Fonts
 
                                         if (width is int intWidth)
                                         {
-                                            widthMap[charCode] = intWidth;
+                                            widthMap[charCode] = intWidth * WidthMultiplier;
                                         }
                                         else if (width is double realWidth)
                                         {
-                                            widthMap[charCode] = realWidth;
+                                            widthMap[charCode] = realWidth * WidthMultiplier;
                                         }
 
                                         offset++;
@@ -80,7 +81,7 @@ namespace PdfToSvg.Fonts
                                 {
                                     for (var i = cfirst.Value; i <= clast.Value; i++)
                                     {
-                                        widthMap[i] = integer;
+                                        widthMap[i] = integer * WidthMultiplier;
                                     }
 
                                     cfirst = null;
@@ -93,7 +94,7 @@ namespace PdfToSvg.Fonts
                                 {
                                     for (var i = cfirst.Value; i <= clast.Value; i++)
                                     {
-                                        widthMap[i] = real;
+                                        widthMap[i] = real * WidthMultiplier;
                                     }
                                 }
 

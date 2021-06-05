@@ -14,6 +14,9 @@ namespace PdfToSvg.Drawing
     internal class TextBuilder
     {
         public List<TextParagraph> paragraphs = new List<TextParagraph>();
+
+        private readonly double minSpaceEm;
+        private readonly double minSpacePx;
         private TextStyle? textStyle;
         private double pendingSpace;
         private TextParagraph? currentParagraph;
@@ -28,8 +31,10 @@ namespace PdfToSvg.Drawing
 
         const double ScalingMultiplier = 1.0 / 100;
 
-        public TextBuilder()
+        public TextBuilder(double minSpaceEm, double minSpacePx)
         {
+            this.minSpaceEm = minSpaceEm;
+            this.minSpacePx = minSpacePx;
             Clear();
         }
 
@@ -178,14 +183,20 @@ namespace PdfToSvg.Drawing
                 currentParagraph = NewParagraph();
             }
 
-            // TODO Remove kerning
-            if (pendingSpace == 0 && currentParagraph.Content.Count > 0)
+            var absolutePendingSpace = Math.Abs(pendingSpace);
+
+            var mergeWithPrevious = 
+                absolutePendingSpace < minSpacePx ||
+                absolutePendingSpace < minSpaceEm * normalizedFontSize;
+
+            if (mergeWithPrevious && currentParagraph.Content.Count > 0)
             {
                 var span = currentParagraph.Content.Last();
                 if (span.Style == style)
                 {
                     span.Value += text;
-                    span.Width += width;
+                    span.Width += pendingSpace + width;
+                    pendingSpace = 0;
                     return;
                 }
             }

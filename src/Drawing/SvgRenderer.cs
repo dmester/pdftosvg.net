@@ -50,7 +50,7 @@ namespace PdfToSvg.Drawing
         private HashSet<string> styleClassIds = new HashSet<string>();
         private HashSet<string> fontFaceNames = new HashSet<string>();
 
-        private TextBuilder textBuilder = new TextBuilder();
+        private TextBuilder textBuilder;
 
         private SvgConversionOptions options;
 
@@ -59,6 +59,11 @@ namespace PdfToSvg.Drawing
         private SvgRenderer(PdfDictionary pageDict, SvgConversionOptions options)
         {
             this.options = options;
+
+            textBuilder = new TextBuilder(
+                minSpaceEm: options.KerningThreshold,
+                minSpacePx: 0.001 // Lower space will be rounded to "0" in SVG formatting.
+                );
 
             resources = new ResourceCache(pageDict.GetDictionaryOrEmpty(Names.Resources));
             

@@ -23,16 +23,15 @@ namespace PdfToSvg.Fonts
 
         public Font SubstituteFont { get; }
 
-        public static InternalFont Fallback { get; } = new InternalFont();
+        public static InternalFont Fallback { get; } = new InternalFont(
+            new PdfDictionary {
+                { Names.Subtype, Names.Type1 },
+                { Names.BaseFont, StandardFonts.TimesRoman },
+            },
+            DefaultFontResolver.Instance);
 
         private readonly WidthMap widthMap;
         private readonly ITextDecoder textDecoder;
-
-        private InternalFont() : this(
-            new PdfDictionary { { Names.BaseFont, StandardFonts.TimesRoman } },
-            DefaultFontResolver.Instance)
-        {
-        }
 
         public InternalFont(PdfDictionary font, IFontResolver fontResolver)
         {

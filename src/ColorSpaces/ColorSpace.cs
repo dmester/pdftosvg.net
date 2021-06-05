@@ -109,7 +109,7 @@ namespace PdfToSvg.ColorSpaces
 
         public abstract float[] DefaultColor { get; }
 
-        public static ColorSpace? Parse(object? definition, PdfDictionary? colorSpaceResourcesDictionary)
+        public static ColorSpace Parse(object? definition, PdfDictionary? colorSpaceResourcesDictionary)
         {
             return Parse(definition, colorSpaceResourcesDictionary, 0);
         }
@@ -152,12 +152,12 @@ namespace PdfToSvg.ColorSpaces
         }
 
 
-        private static ColorSpace? Parse(object? definition, PdfDictionary? colorSpaceResourcesDictionary, int recursionCount)
+        private static ColorSpace Parse(object? definition, PdfDictionary? colorSpaceResourcesDictionary, int recursionCount)
         {
             if (recursionCount > 10)
             {
                 Log.WriteLine("Too many color space jumps.");
-                return null;
+                return new UnsupportedColorSpace(new PdfName("TooDeep"));
             }
 
             if (definition is PdfName singleColorSpaceName)
@@ -184,7 +184,7 @@ namespace PdfToSvg.ColorSpaces
                 }
 
                 Log.WriteLine($"Unsupported color space: {singleColorSpaceName}.");
-                return null;
+                return new UnsupportedColorSpace(singleColorSpaceName);
             }
 
             if (definition is object[] definitionArray &&
@@ -223,11 +223,11 @@ namespace PdfToSvg.ColorSpaces
                 }
 
                 Log.WriteLine("Unsupported color space: {0}.", colorSpaceName);
-                return null;
+                return new UnsupportedColorSpace(colorSpaceName);
             }
 
             Log.WriteLine("Unexpected color space definition type: {0}.", Log.TypeOf(definition));
-            return null;
+            return new UnsupportedColorSpace(new PdfName("Undefined"));
         }
 
         private static byte ToRgb8Component(float value)

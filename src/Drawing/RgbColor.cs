@@ -24,12 +24,17 @@ namespace PdfToSvg.Drawing
             {
                 throw new ArgumentNullException(nameof(components));
             }
-            if (components.Length < colorSpace.ComponentsPerSample)
+            
+            // If the color space is not supported, or if the page is corrupted, there might be some
+            // components missing. Don't make the whole page or document fail parsing because of this.
+            var fullComponents = components;
+            if (fullComponents.Length < colorSpace.ComponentsPerSample)
             {
-                throw new ArgumentException($"Expected {components.Length} components for this color space.", nameof(components));
+                fullComponents = new float[colorSpace.ComponentsPerSample];
+                components.CopyTo(fullComponents, 0);
             }
 
-            colorSpace.ToRgb(components, out var red, out var green, out var blue);
+            colorSpace.ToRgb(fullComponents, out var red, out var green, out var blue);
 
             Red = MathUtils.Clamp(red, 0f, 1f);
             Green = MathUtils.Clamp(green, 0f, 1f);

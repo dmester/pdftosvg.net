@@ -779,7 +779,7 @@ namespace PdfToSvg.Drawing
 
         // PDF spec 1.7, Table 74, page 180
 
-        private ColorSpace? GetColorSpace(object? definition)
+        private ColorSpace GetColorSpace(object? definition)
         {
             if (definition is PdfName name)
             {
@@ -792,7 +792,7 @@ namespace PdfToSvg.Drawing
         [Operation("CS")]
         private void CS_StrokeColorSpace(PdfName name)
         {
-            graphicsState.StrokeColorSpace = GetColorSpace(name) ?? new DeviceRgbColorSpace();
+            graphicsState.StrokeColorSpace = GetColorSpace(name);
             graphicsState.StrokeColor = graphicsState.StrokeColorSpace.GetDefaultRgbColor();
             textBuilder.InvalidateStyle();
         }
@@ -800,11 +800,11 @@ namespace PdfToSvg.Drawing
         [Operation("cs")]
         private void cs_FillColorSpace(PdfName name)
         {
-            graphicsState.FillColorSpace = GetColorSpace(name) ?? new DeviceRgbColorSpace();
+            graphicsState.FillColorSpace = GetColorSpace(name);
             graphicsState.FillColor = graphicsState.FillColorSpace.GetDefaultRgbColor();
             textBuilder.InvalidateStyle();
         }
-        
+
         [Operation("SC")]
         public void SC_StrokeColor(params float[] components)
         {

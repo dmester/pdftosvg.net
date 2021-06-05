@@ -16,7 +16,7 @@ namespace PdfToSvg.Drawing
     internal class ResourceCache
     {
         private readonly Dictionary<PdfName, InternalFont?> fonts = new Dictionary<PdfName, InternalFont?>();
-        private readonly Dictionary<PdfName, ColorSpace?> colorSpaces = new Dictionary<PdfName, ColorSpace?>();
+        private readonly Dictionary<PdfName, ColorSpace> colorSpaces = new Dictionary<PdfName, ColorSpace>();
 
         public ResourceCache(PdfDictionary resourcesDict)
         {
@@ -40,7 +40,7 @@ namespace PdfToSvg.Drawing
             return font;
         }
 
-        public ColorSpace? GetColorSpace(PdfName colorSpaceName)
+        public ColorSpace GetColorSpace(PdfName colorSpaceName)
         {
             if (!colorSpaces.TryGetValue(colorSpaceName, out var colorSpace))
             {

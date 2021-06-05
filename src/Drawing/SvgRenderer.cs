@@ -272,7 +272,14 @@ namespace PdfToSvg.Drawing
 
                         if (imageObject.GetValueOrDefault(Names.Interpolate, false) == false)
                         {
-                            svgImage.SetAttributeValue("image-rendering", "pixelated");
+                            // Only respect disabling of interpolation for upscaled images.
+                            // Most readers does not seem to consider the /Interpolate option for downscaled images.
+                            graphicsState.Transform.DecomposeScaleXY(out var transformScaleX, out var transformScaleY);
+
+                            if (transformScaleX > width * 4 && transformScaleY > height * 4)
+                            {
+                                svgImage.SetAttributeValue("image-rendering", "pixelated");
+                            }
                         }
 
                         defs.Add(svgImage);

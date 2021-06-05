@@ -104,7 +104,7 @@ namespace PdfToSvg.Parsing
             return ReadStartXRef(buffer, 0, readBytes);
         }
 
-        public IndirectObject? ReadIndirectObject()
+        public IndirectObject? ReadIndirectObject(Dictionary<PdfObjectId, object?>? objectTable = null)
         {
             if (!TryReadInteger(out var objectIdNum) ||
                 !TryReadInteger(out var generation) ||
@@ -127,8 +127,33 @@ namespace PdfToSvg.Parsing
                     case Token.Stream:
                         if (objectValue is PdfDictionary dict)
                         {
-                            if (dict.TryGetInteger(Names.Length, out var streamLength) &&
-                                streamLength < 1024)
+                            var streamLengthObj = dict.GetValueOrDefault<object?>(Names.Length);
+                            var streamLength = -1;
+                            var invalidLength = false;
+
+                            // The length can be a reference. The referenced value might or might not have been read yet.
+                            var streamLengthRef = streamLengthObj as PdfRef;
+                            if (streamLengthRef != null && objectTable != null)
+                            {
+                                objectTable.TryGetValue(streamLengthRef.Id, out streamLengthObj);
+                            }
+                            
+                            if (streamLengthObj is int streamLengthInt)
+                            {
+                                streamLength = Math.Max(0, streamLengthInt);
+                            }
+                            else if (streamLengthObj != null)
+                            {
+                                invalidLength = true;
+                            }
+
+                            if (invalidLength)
+                            {
+                                Log.WriteLine(
+                                    $"Encountered an indirect object ({objectId}) containing a stream with the unexpected /Length value type {Log.TypeOf(streamLengthObj)}. " +
+                                    "The stream is ignored.");
+                            }
+                            else if (streamLength >= 0 && streamLength < 1024)
                             {
                                 // Read and cache small objects
                                 var streamContent = new byte[streamLength];
@@ -137,18 +162,15 @@ namespace PdfToSvg.Parsing
                             }
                             else
                             {
-                                // Larger objects are read on demand when they are needed
+                                // Larger objects, and objects without a currently known length, are read on demand when they are needed
                                 objectStream = new PdfOnDemandStream(dict, file, lexer.Stream.Position);
                             }
-
-                            dict.MakeIndirectObject(objectId, objectStream);
                         }
                         else
                         {
                             Log.WriteLine(
                                 $"Encountered an indirect object ({objectId}) containing a stream without an associated dictionary. " +
-                                "The object is ignored.");
-                            return null;
+                                "The stream is ignored.");
                         }
 
                         end = true;
@@ -275,7 +297,7 @@ namespace PdfToSvg.Parsing
             {
                 lexer.Seek(xref.ByteOffset, SeekOrigin.Begin);
 
-                var obj = ReadIndirectObject();
+                var obj = ReadIndirectObject(objects);
                 if (obj != null)
                 {
                     objects[obj.ID] = obj.Value;

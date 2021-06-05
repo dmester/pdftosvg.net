@@ -661,6 +661,11 @@ namespace PdfToSvg.Drawing
                     strokeWidth *= scaleX;
                 }
 
+                if (strokeWidth * strokeWidthScale < options.MinStrokeWidth)
+                {
+                    strokeWidth = options.MinStrokeWidth / strokeWidthScale;
+                }
+
                 attributes.Add(new XAttribute("stroke", SvgConversion.FormatColor(graphicsState.StrokeColor)));
                 attributes.Add(new XAttribute("stroke-width", SvgConversion.FormatCoordinate(strokeWidth)));
 

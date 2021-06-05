@@ -15,5 +15,7 @@ namespace PdfToSvg
         public IImageResolver? ImageResolver { get; set; }
 
         public IFontResolver? FontResolver { get; set; }
+
+        public double MinStrokeWidth { get; set; } = 0.5;
     }
 }

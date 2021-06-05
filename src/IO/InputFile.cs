@@ -14,6 +14,7 @@ namespace PdfToSvg.IO
 {
     internal class InputFile : IDisposable
     {
+        private const int OpenTimeout = 10000;
         private Stream? baseStream;
         private SemaphoreSlim? readSemaphore = new SemaphoreSlim(1, 1);
 
@@ -32,7 +33,12 @@ namespace PdfToSvg.IO
             if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
 
             var reader = new BufferedStreamReader(baseStream, () => readSemaphore?.Release(), bufferSize);
-            await readSemaphore.WaitAsync();
+
+            if (!await readSemaphore.WaitAsync(OpenTimeout))
+            {
+                throw NewTimeoutException();
+            }
+
             return reader;
         }
 
@@ -41,7 +47,12 @@ namespace PdfToSvg.IO
             if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
 
             var reader = new BufferedStreamReader(baseStream, () => readSemaphore?.Release(), bufferSize);
-            readSemaphore.Wait();
+
+            if (!readSemaphore.Wait(OpenTimeout))
+            {
+                throw NewTimeoutException();
+            }
+
             return reader;
         }
 
@@ -51,7 +62,12 @@ namespace PdfToSvg.IO
 
             baseStream.Position = offset;
             var reader = new BufferedStreamReader(baseStream, offset, length, () => readSemaphore?.Release(), bufferSize);
-            await readSemaphore.WaitAsync();
+
+            if (!await readSemaphore.WaitAsync(OpenTimeout))
+            {
+                throw NewTimeoutException();
+            }
+
             return reader;
         }
 
@@ -61,8 +77,18 @@ namespace PdfToSvg.IO
 
             baseStream.Position = offset;
             var reader = new BufferedStreamReader(baseStream, offset, length, () => readSemaphore?.Release(), bufferSize);
-            readSemaphore.Wait();
+
+            if (!readSemaphore.Wait(OpenTimeout))
+            {
+                throw NewTimeoutException();
+            }
+
             return reader;
+        }
+
+        private static Exception NewTimeoutException()
+        {
+            return new TimeoutException("Failed to lock the input file within a reasonable time. This usually means a deadlock has occured.");
         }
 
         public void Dispose()

@@ -26,7 +26,7 @@ trailer
 >>
 endobj
 
-4 0 obj << /Length 4329 >>
+4 0 obj << /Length 4782 >>
 stream
    /F1 12 Tf
    
@@ -286,6 +286,36 @@ stream
       10 20 l
       20 0 l
       S
+   Q
+   
+   % Scaled path
+   q
+      1 0 0 1 300 220 cm
+      BT (Scaled stroke) Tj ET
+      
+      1 w
+      q
+         15 0 0 5 0 0 cm
+         0.5 -6.6 3 4 re
+         S
+      Q
+      q
+         5 0 0 5 0 0 cm
+         14 -6.6 4 4 re
+         S
+      Q
+      
+      0 w
+      q
+         15 0 0 5 0 0 cm
+         7 -6.6 3 4 re
+         S
+      Q
+      q
+         5 0 0 5 0 0 cm
+         32 -6.6 4 4 re
+         S
+      Q
    Q
 
 endstream

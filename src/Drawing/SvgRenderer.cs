@@ -578,7 +578,15 @@ namespace PdfToSvg.Drawing
 
         private void DrawPath(bool stroke, bool fill, bool evenOddWinding)
         {
-            currentPath = currentPath.Transform(graphicsState.Transform);
+            var pathTransformed = false;
+
+            graphicsState.Transform.DecomposeScaleXY(out var scaleX, out var scaleY);
+            
+            if (!stroke || scaleX == scaleY)
+            {
+                currentPath = currentPath.Transform(graphicsState.Transform);
+                pathTransformed = true;
+            }
 
             var contained =
                 graphicsState.ClipPath != null &&
@@ -618,6 +626,11 @@ namespace PdfToSvg.Drawing
 
             var attributes = new List<object>();
 
+            if (!pathTransformed && !graphicsState.Transform.IsIdentity)
+            {
+                attributes.Add(new XAttribute("transform", SvgConversion.Matrix(graphicsState.Transform)));
+            }
+
             if (evenOddWinding)
             {
                 attributes.Add(new XAttribute("fill-rule", "evenodd"));
@@ -634,14 +647,22 @@ namespace PdfToSvg.Drawing
 
             if (stroke)
             {
-                var lineWidth = graphicsState.LineWidth;
-                if (lineWidth == 0)
+                var strokeWidth = graphicsState.LineWidth;
+                var strokeWidthScale = pathTransformed ? 1d : Math.Min(scaleX, scaleY);
+
+                if (strokeWidth == 0)
                 {
-                    lineWidth = 1;
+                    // Zero width stroke should be rendered as the thinnest line that can be rendered.
+                    // Since the SVG can be scaled, we will assume 0.5pt is the thinnest renderable line.
+                    strokeWidth = 0.5d / strokeWidthScale;
+                }
+                else if (pathTransformed)
+                {
+                    strokeWidth *= scaleX;
                 }
 
                 attributes.Add(new XAttribute("stroke", SvgConversion.FormatColor(graphicsState.StrokeColor)));
-                attributes.Add(new XAttribute("stroke-width", SvgConversion.FormatCoordinate(lineWidth)));
+                attributes.Add(new XAttribute("stroke-width", SvgConversion.FormatCoordinate(strokeWidth)));
 
                 if (graphicsState.LineCap == 1)
                 {

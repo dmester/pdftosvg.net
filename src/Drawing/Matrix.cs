@@ -116,6 +116,12 @@ namespace PdfToSvg.Drawing
             scaleX = Math.Sqrt(A * A + B * B);
         }
 
+        public void DecomposeScaleXY(out double scaleX, out double scaleY)
+        {
+            scaleX = Math.Sqrt(A * A + B * B);
+            scaleY = Math.Sqrt(C * C + D * D);
+        }
+
         public void DecomposeTranslate(out double dx, out double dy, out Matrix remainder)
         {
             var ad = A * D;

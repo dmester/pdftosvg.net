@@ -14,7 +14,7 @@ namespace PdfToSvg.Drawing
     // TODO merge with TextState?
     internal class GraphicsState
     {
-        // PDF spec 1.7, Table 104, page 251
+        // PDF spec 1.7, Table 52, page 129
 
         public TextState TextState { get; set; } = new TextState();
 
@@ -36,7 +36,7 @@ namespace PdfToSvg.Drawing
 
         public int LineCap { get; set; }
 
-        public double LineWidth { get; set; }
+        public double LineWidth { get; set; } = 1d;
 
         public ColorSpace FillColorSpace { get; set; } = new DeviceRgbColorSpace();
         public ColorSpace StrokeColorSpace { get; set; } = new DeviceRgbColorSpace();

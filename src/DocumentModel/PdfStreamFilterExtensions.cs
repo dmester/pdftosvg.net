@@ -17,10 +17,23 @@ namespace PdfToSvg.DocumentModel
         public static Stream Decode(this IEnumerable<PdfStreamFilter> filters, Stream encodedStream)
         {
             var result = encodedStream;
+            var disposeResult = true;
 
-            foreach (var filter in filters)
+            try
             {
-                result = filter.Decode(result);
+                foreach (var filter in filters)
+                {
+                    result = filter.Decode(result);
+                }
+
+                disposeResult = false;
+            }
+            finally
+            {
+                if (disposeResult)
+                {
+                    result.Dispose();
+                }
             }
 
             return result;

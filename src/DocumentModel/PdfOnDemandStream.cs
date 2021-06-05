@@ -14,47 +14,33 @@ namespace PdfToSvg.DocumentModel
     internal class PdfOnDemandStream : PdfStream
     {
         private readonly InputFile file;
-        private readonly long startPosition;
 
-        public PdfOnDemandStream(PdfDictionary owner, InputFile file, long startPosition) : base(owner)
+        public PdfOnDemandStream(PdfDictionary owner, InputFile file, long offset) : base(owner)
         {
             this.file = file;
-            this.startPosition = startPosition;
+            this.Offset = offset;
         }
+
+        public long Offset { get; }
+        public long Length => owner.GetValueOrDefault(Names.Length, 0);
 
         public override Stream Open()
         {
-            if (owner.TryGetInteger(Names.Length, out var streamLength))
-            {
-                return file.CreateExclusiveSliceReader(startPosition, streamLength);
-            }
-            else
-            {
-                // TODO extract exception
-                throw new Exception("No length.");
-            }
+            return file.CreateExclusiveSliceReader(Offset, Length);
         }
 
         public override async Task<Stream> OpenAsync()
         {
-            if (owner.TryGetInteger(Names.Length, out var streamLength))
+            var reader = await file.CreateExclusiveSliceReaderAsync(Offset, Length, (int)Math.Min(8 * 1024, Length));
+            try
             {
-                var reader = await file.CreateExclusiveSliceReaderAsync(startPosition, streamLength, Math.Min(8 * 1024, streamLength));
-                try
-                {
-                    await reader.FillBufferAsync();
-                    return reader;
-                }
-                catch
-                {
-                    reader.Dispose();
-                    throw;
-                }
+                await reader.FillBufferAsync();
+                return reader;
             }
-            else
+            catch
             {
-                // TODO extract exception
-                throw new Exception("No length.");
+                reader.Dispose();
+                throw;
             }
         }
     }

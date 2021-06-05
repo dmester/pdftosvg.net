@@ -244,8 +244,9 @@ namespace PdfToSvg.Parsing
                 }
 
                 var entryBuffer = new byte[widths.Sum()];
-                var data = xrefDict.Stream.OpenDecoded();
 
+                using var data = OpenDecodedSharedStream(xrefDict.Stream);
+                
                 while (true)
                 {
                     var read = data.Read(entryBuffer, 0, entryBuffer.Length);
@@ -287,6 +288,22 @@ namespace PdfToSvg.Parsing
             }
         }
 
+        private Stream OpenDecodedSharedStream(PdfStream stream)
+        {
+            Stream encodedStream;
+
+            if (stream is PdfOnDemandStream onDemandStream)
+            {
+                encodedStream = new StreamSlice(lexer.Stream, onDemandStream.Offset, onDemandStream.Length, true);
+            }
+            else
+            {
+                encodedStream = stream.Open();
+            }
+
+            return stream.Filters.Decode(encodedStream);
+        }
+
         public Dictionary<PdfObjectId, object?> ReadAllObjects(XRefTable xrefTable)
         {
             var objects = new Dictionary<PdfObjectId, object?>();
@@ -318,7 +335,7 @@ namespace PdfToSvg.Parsing
                     var first = objStream.GetValueOrDefault(Names.First, 0);
                     var contentObjects = new List<object?>();
 
-                    using (var objStreamContent = objStream.Stream.OpenDecoded())
+                    using (var objStreamContent = OpenDecodedSharedStream(objStream.Stream))
                     {
                         objStreamContent.Skip(first);
 

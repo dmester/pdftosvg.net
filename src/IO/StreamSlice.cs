@@ -9,27 +9,21 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg
 {
-    // TODO test
     internal class StreamSlice : Stream
     {
         private Stream? stream;
-        private long offset;
-        private long length;
+        private readonly long offset;
+        private readonly long length;
+        private readonly bool leaveOpen;
         private long cursor;
 
-        public StreamSlice(Stream stream, long length)
+        public StreamSlice(Stream stream, long offset, long length, bool leaveOpen = false)
         {
             this.stream = stream;
+            this.offset = offset;
             this.length = length;
-
-            try
-            {
-                this.offset = stream.Position;
-            }
-            catch
-            {
-                this.offset = -1;
-            }
+            this.leaveOpen = leaveOpen;
+            stream.Position = offset;
         }
 
         public override bool CanRead => stream != null && stream.CanRead;
@@ -113,8 +107,7 @@ namespace PdfToSvg
         public override long Seek(long offset, SeekOrigin origin)
         {
             if (stream == null) throw new ObjectDisposedException(nameof(StreamSlice));
-            if (this.offset < 0) throw new NotSupportedException();
-
+            
             long newPosition;
 
             switch (origin)
@@ -162,7 +155,11 @@ namespace PdfToSvg
 
             if (disposing && stream != null)
             {
-                stream.Dispose();
+                if (!leaveOpen)
+                {
+                    stream.Dispose();
+                }
+
                 stream = null;
             }
         }

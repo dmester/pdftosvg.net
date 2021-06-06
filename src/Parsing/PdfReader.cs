@@ -6,6 +6,7 @@ using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.IO;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -67,6 +68,51 @@ namespace PdfToSvg.Parsing
 
                 return new PdfDocument(file, xrefTable.Trailer, objects);
             }
+        }
+
+        public static IList<PdfDictionary> GetPageDictionaries(PdfDictionary root)
+        {
+            var pages = new List<PdfDictionary>();
+            var pagesStack = new Stack<IEnumerator>();
+
+            if (root.TryGetDictionary(Names.Pages, out var rootPagesDict))
+            {
+                if (rootPagesDict.TryGetArray(Names.Kids, out var kids))
+                {
+                    pagesStack.Push(kids.GetEnumerator());
+                }
+            }
+
+            while (pagesStack.Count > 0)
+            {
+                var enumerator = pagesStack.Peek();
+                if (enumerator.MoveNext())
+                {
+                    var value = enumerator.Current;
+
+                    if (value is PdfDictionary dict && dict.TryGetName(Names.Type, out var name))
+                    {
+                        if (name == Names.Pages)
+                        {
+                            if (dict.TryGetArray(Names.Kids, out var kids))
+                            {
+                                pagesStack.Push(kids.GetEnumerator());
+                            }
+                        }
+                        else if (name == Names.Page)
+                        {
+                            pages.Add(dict);
+                        }
+                    }
+                }
+                else
+                {
+                    (enumerator as IDisposable)?.Dispose();
+                    pagesStack.Pop();
+                }
+            }
+
+            return pages;
         }
 
         private static void InlineReferences(Dictionary<PdfObjectId, object?> objects)

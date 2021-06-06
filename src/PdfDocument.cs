@@ -6,7 +6,6 @@ using PdfToSvg.DocumentModel;
 using PdfToSvg.IO;
 using PdfToSvg.Parsing;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -27,7 +26,11 @@ namespace PdfToSvg
             this.root = trailer.GetDictionaryOrEmpty(Names.Root);
             this.objects = objects;
             this.file = file;
-            this.Pages = GetPages(root);
+
+            this.Pages = new PdfPageCollection(PdfReader
+                .GetPageDictionaries(root)
+                .Select(dict => new PdfPage(this, dict))
+                .ToList());
         }
 
         public static PdfDocument Open(Stream stream)
@@ -79,52 +82,7 @@ namespace PdfToSvg
         public DateTimeOffset? CreationDate => info.GetValueOrDefault<DateTimeOffset?>(Names.CreationDate);
         public DateTimeOffset? ModDate => info.GetValueOrDefault<DateTimeOffset?>(Names.ModDate);
 
-        public IList<PdfPage> Pages { get; }
-
-        private IList<PdfPage> GetPages(PdfDictionary root)
-        {
-            var pages = new List<PdfPage>();
-            var pagesStack = new Stack<IEnumerator>();
-
-            if (root.TryGetDictionary(Names.Pages, out var rootPagesDict))
-            {
-                if (rootPagesDict.TryGetArray(Names.Kids, out var kids))
-                {
-                    pagesStack.Push(kids.GetEnumerator());
-                }
-            }
-            
-            while (pagesStack.Count > 0)
-            {
-                var enumerator = pagesStack.Peek();
-                if (enumerator.MoveNext())
-                {
-                    var value = enumerator.Current;
-
-                    if (value is PdfDictionary dict && dict.TryGetName(Names.Type, out var name))
-                    {
-                        if (name == Names.Pages)
-                        {
-                            if (dict.TryGetArray(Names.Kids, out var kids))
-                            {
-                                pagesStack.Push(kids.GetEnumerator());
-                            }
-                        }
-                        else if (name == Names.Page)
-                        {
-                            pages.Add(new PdfPage(this, dict));
-                        }
-                    }
-                }
-                else
-                {
-                    (enumerator as IDisposable)?.Dispose();
-                    pagesStack.Pop();
-                }
-            }
-
-            return pages;
-        }
+        public PdfPageCollection Pages { get; }
 
         public void Dispose()
         {

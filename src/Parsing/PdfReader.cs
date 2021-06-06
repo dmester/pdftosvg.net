@@ -19,6 +19,15 @@ namespace PdfToSvg.Parsing
 {
     internal static class PdfReader
     {
+        // PDF spec 1.7, Table 30, page 85
+        private static readonly HashSet<PdfName> InheritablePageAttributes = new HashSet<PdfName>
+        {
+            Names.Resources,
+            Names.MediaBox,
+            Names.CropBox,
+            Names.Rotate,
+        };
+
         public static PdfDocument Read(InputFile file)
         {
             using (var reader = file.CreateExclusiveReader())
@@ -70,16 +79,18 @@ namespace PdfToSvg.Parsing
             }
         }
 
-        public static IList<PdfDictionary> GetPageDictionaries(PdfDictionary root)
+        public static IList<PdfDictionary> GetFlattenedPages(PdfDictionary root)
         {
             var pages = new List<PdfDictionary>();
             var pagesStack = new Stack<IEnumerator>();
+            var parentStack = new Stack<PdfDictionary>();
 
             if (root.TryGetDictionary(Names.Pages, out var rootPagesDict))
             {
                 if (rootPagesDict.TryGetArray(Names.Kids, out var kids))
                 {
                     pagesStack.Push(kids.GetEnumerator());
+                    parentStack.Push(rootPagesDict);
                 }
             }
 
@@ -96,11 +107,14 @@ namespace PdfToSvg.Parsing
                         {
                             if (dict.TryGetArray(Names.Kids, out var kids))
                             {
+                                InheritAttributes(parentStack.Peek(), dict);
                                 pagesStack.Push(kids.GetEnumerator());
+                                parentStack.Push(dict);
                             }
                         }
                         else if (name == Names.Page)
                         {
+                            InheritAttributes(parentStack.Peek(), dict);
                             pages.Add(dict);
                         }
                     }
@@ -109,10 +123,22 @@ namespace PdfToSvg.Parsing
                 {
                     (enumerator as IDisposable)?.Dispose();
                     pagesStack.Pop();
+                    parentStack.Pop();
                 }
             }
 
             return pages;
+        }
+
+        private static void InheritAttributes(PdfDictionary parent, PdfDictionary child)
+        {
+            foreach (var property in parent)
+            {
+                if (InheritablePageAttributes.Contains(property.Key) && !child.ContainsKey(property.Key))
+                {
+                    child.Add(property);
+                }
+            }
         }
 
         private static void InlineReferences(Dictionary<PdfObjectId, object?> objects)

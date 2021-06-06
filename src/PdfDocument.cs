@@ -28,7 +28,7 @@ namespace PdfToSvg
             this.file = file;
 
             this.Pages = new PdfPageCollection(PdfReader
-                .GetPageDictionaries(root)
+                .GetFlattenedPages(root)
                 .Select(dict => new PdfPage(this, dict))
                 .ToList());
         }

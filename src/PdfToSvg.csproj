@@ -9,6 +9,18 @@
     <FileVersion>0.1.0.0</FileVersion>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
+    <Description>Open source library for converting PDF files to SVG.
+
+Note: this is a prerelease.</Description>
+    <RepositoryUrl>https://github.com/dmester/pdftosvg.net/</RepositoryUrl>
+    <PackageTags>pdf svg convert</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/dmester/pdftosvg.net/</PackageProjectUrl>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryType>git</RepositoryType>
+    <Version>0.1.0</Version>
   </PropertyGroup>
 
 </Project>

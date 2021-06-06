@@ -10,8 +10,24 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg
 {
+    // TODO not imlemented
+
+    /// <summary>
+    /// Uses a web font in the resulting SVG markup.
+    /// </summary>
     public class WebFont : Font
     {
+        /// <summary>
+        /// Creates an instance of a <see cref="WebFont"/>.
+        /// </summary>
+        /// <param name="fontFamily">Font family name used in SVG file.</param>
+        /// <param name="woffUrl">URL to a WOFF font file to be included as a @font-face.</param>
+        /// <param name="woff2Url">URL to a WOFF2 font file to be included as a @font-face.</param>
+        /// <param name="trueTypeUrl">URL to a TypeType font file to be included as a @font-face.</param>
+        /// <remarks>
+        /// Note that standalone SVGs must not have external resources. If you intend to create standalone SVG files,
+        /// ensure the font URLs are data URIs.
+        /// </remarks>
         public WebFont(string fontFamily, string? woffUrl = null, string? woff2Url = null, string? trueTypeUrl = null)
         {
             FontFamily = fontFamily;
@@ -21,12 +37,22 @@ namespace PdfToSvg
             TrueTypeUrl = trueTypeUrl;
         }
 
+        /// <inheritdoc/>
         public override string FontFamily { get; }
 
+        /// <summary>
+        /// Gets an URL to a WOFF font file to be included as a @font-face.
+        /// </summary>
         public string? WoffUrl { get; }
 
+        /// <summary>
+        /// Gets an URL to a WOFF2 font file to be included as a @font-face.
+        /// </summary>
         public string? Woff2Url { get; }
 
+        /// <summary>
+        /// Gets an URL to a TrueType font file to be included as a @font-face.
+        /// </summary>
         public string? TrueTypeUrl { get; }
     }
 }

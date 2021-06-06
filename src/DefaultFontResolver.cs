@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg
 {
+    /// <summary>
+    /// The default font resolver which will try to match font names against commonly available fonts.
+    /// </summary>
     public class DefaultFontResolver : IFontResolver
     {
         private static readonly string[] fontWeights = new string[]
@@ -97,8 +100,12 @@ namespace PdfToSvg
             "mono", "monospace",
         };
 
+        /// <summary>
+        /// Gets an instance of the <see cref="DefaultFontResolver"/>.
+        /// </summary>
         public static DefaultFontResolver Instance { get; } = new DefaultFontResolver();
 
+        /// <inheritdoc/>
         public Font ResolveFont(string fontName)
         {
             var styleStartIndex = fontName.IndexOfAny(new[] { ',', '-' });

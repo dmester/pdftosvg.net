@@ -10,8 +10,12 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg
 {
+    /// <summary>
+    /// Creates data URIs for images.
+    /// </summary>
     public class DataUriImageResolver : IImageResolver
     {
+        /// <inheritdoc/>
         public string ResolveImageUrl(Image image)
         {
             return image.ToDataUri();

@@ -10,11 +10,18 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg
 {
+    /// <summary>
+    /// Represents a substitute font to be used in the generated SVG markup.
+    /// </summary>
     public abstract class Font
     {
         // Don't allow external implementations
         internal Font() { }
 
+        /// <summary>
+        /// Gets the font family name to be used in the SVG markup. Multiple font families
+        /// can be separated by comma.
+        /// </summary>
         public abstract string FontFamily { get; }
 
         public override int GetHashCode() => FontFamily?.GetHashCode() ?? 0;

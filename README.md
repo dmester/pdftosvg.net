@@ -27,6 +27,9 @@ using (var doc = PdfDocument.Open("input.pdf"))
 }
 ```
 
+Note that is you parse the XML returned from pdftosvg.net, you need to preserve space and not add indentation.
+Otherwise text will not be rendered correctly in the modified markup.
+
 ## Limitations
 Not all PDF features are supported. Here is a summary of non-supported features:
 

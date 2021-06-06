@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg
 {
+    /// <summary>
+    /// Thrown when an encrypted PDF is opened.
+    /// </summary>
     public class EncryptedPdfException : Exception
     {
         public EncryptedPdfException() : 

@@ -25,7 +25,13 @@ namespace PdfToSvg.Common
                 {
                     if (input != null)
                     {
-                        if (input is IFormattable formattable)
+                        if (input is double inputDbl)
+                        {
+                            // This special case is to ensure the same id is generated on .NET Core and Framework.
+                            // See https://devblogs.microsoft.com/dotnet/floating-point-parsing-and-formatting-improvements-in-net-core-3-0/
+                            sb.Append(inputDbl.ToString("G15", CultureInfo.InvariantCulture));
+                        }
+                        else if (input is IFormattable formattable)
                         {
                             sb.Append(formattable.ToString(null, CultureInfo.InvariantCulture));
                         }

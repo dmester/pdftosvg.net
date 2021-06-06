@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright (c) PdfToSvg.NET contributors.
+// https://github.com/dmester/pdftosvg.net
+// Licensed under the MIT License.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.RegularExpressions;

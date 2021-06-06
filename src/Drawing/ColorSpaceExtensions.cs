@@ -1,4 +1,8 @@
-﻿using PdfToSvg.ColorSpaces;
+﻿// Copyright (c) PdfToSvg.NET contributors.
+// https://github.com/dmester/pdftosvg.net
+// Licensed under the MIT License.
+
+using PdfToSvg.ColorSpaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,4 +1,11 @@
-﻿using System;
+﻿// This file is part of pdftosvg.net
+// https://github.com/dmester/pdftosvg.net
+//
+// Copyright (c) Daniel Mester Pirttijärvi
+//
+// Licensed under the terms of the MIT license.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

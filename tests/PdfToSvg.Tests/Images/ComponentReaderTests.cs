@@ -1,4 +1,11 @@
-﻿using NUnit.Framework;
+﻿// This file is part of pdftosvg.net
+// https://github.com/dmester/pdftosvg.net
+//
+// Copyright (c) Daniel Mester Pirttijärvi
+//
+// Licensed under the terms of the MIT license.
+
+using NUnit.Framework;
 using PdfToSvg.Imaging;
 using System;
 using System.Collections.Generic;

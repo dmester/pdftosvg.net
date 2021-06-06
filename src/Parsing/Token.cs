@@ -1,4 +1,8 @@
-﻿namespace PdfToSvg
+﻿// Copyright (c) PdfToSvg.NET contributors.
+// https://github.com/dmester/pdftosvg.net
+// Licensed under the MIT License.
+
+namespace PdfToSvg
 {
     internal enum Token
     {

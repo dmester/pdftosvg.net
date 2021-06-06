@@ -1,4 +1,8 @@
-﻿using NUnit.Framework;
+﻿// Copyright (c) PdfToSvg.NET contributors.
+// https://github.com/dmester/pdftosvg.net
+// Licensed under the MIT License.
+
+using NUnit.Framework;
 using PdfToSvg.Common;
 using PdfToSvg.IO;
 using System;

@@ -1,4 +1,8 @@
-﻿using PdfToSvg.Filters;
+﻿// Copyright (c) PdfToSvg.NET contributors.
+// https://github.com/dmester/pdftosvg.net
+// Licensed under the MIT License.
+
+using PdfToSvg.Filters;
 using System;
 using System.Collections.Generic;
 using System.IO;

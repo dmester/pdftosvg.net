@@ -1,4 +1,8 @@
-﻿using PdfToSvg.Drawing.Paths;
+﻿// Copyright (c) PdfToSvg.NET contributors.
+// https://github.com/dmester/pdftosvg.net
+// Licensed under the MIT License.
+
+using PdfToSvg.Drawing.Paths;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

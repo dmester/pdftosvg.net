@@ -1,4 +1,8 @@
-﻿using PdfToSvg.DocumentModel;
+﻿// Copyright (c) PdfToSvg.NET contributors.
+// https://github.com/dmester/pdftosvg.net
+// Licensed under the MIT License.
+
+using PdfToSvg.DocumentModel;
 using System;
 using System.Collections.Generic;
 using System.IO;

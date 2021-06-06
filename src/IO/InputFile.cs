@@ -17,10 +17,12 @@ namespace PdfToSvg.IO
         private const int OpenTimeout = 10000;
         private Stream? baseStream;
         private SemaphoreSlim? readSemaphore = new SemaphoreSlim(1, 1);
+        private readonly bool leaveOpen;
 
-        public InputFile(Stream baseStream)
+        public InputFile(Stream baseStream, bool leaveOpen)
         {
             this.baseStream = baseStream;
+            this.leaveOpen = leaveOpen;
         }
 
         public InputFile(string path)
@@ -94,7 +96,11 @@ namespace PdfToSvg.IO
         public void Dispose()
         {
             readSemaphore?.Dispose();
-            baseStream?.Dispose();
+
+            if (!leaveOpen)
+            {
+                baseStream?.Dispose();
+            }
 
             readSemaphore = null;
             baseStream = null;

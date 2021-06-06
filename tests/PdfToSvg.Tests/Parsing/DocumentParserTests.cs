@@ -23,7 +23,7 @@ namespace PdfToSvg.Tests.Parsing
         {
             var stream = new MemoryStream(Encoding.ASCII.GetBytes(
                 "xref 0 1 0000000000 65535 f 22 4 0005687164 00000 n 0005687936 00000 n 0005687978 00000 n"));
-            var parser = new DocumentParser(new InputFile(stream), stream);
+            var parser = new DocumentParser(new InputFile(stream, false), stream);
             var xrefs = new XRefTable();
             parser.ReadXRefTable(xrefs);
 

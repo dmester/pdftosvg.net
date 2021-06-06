@@ -40,6 +40,8 @@ namespace PdfToSvg.Common
                             sb.Append(input.ToString());
                         }
                     }
+
+                    sb.Append('\0');
                 }
             }
 

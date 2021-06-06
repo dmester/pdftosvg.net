@@ -148,7 +148,7 @@ namespace PdfToSvg.Drawing
                     AddSpanNoSpacing(style, " " + words[i], wordWidth);
                 }
 
-                totalWidth += (words.Length - 1) * wordSpacing;
+                totalWidth += (words.Length - 1) * wordSpacingGlobalUnits;
             }
             else
             {

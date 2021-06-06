@@ -1,3 +1,7 @@
+<div align="center">
+    <img src="src/logo.svg" alt="PdfToSvg.NET Logo" width="200" height="200">
+</div>
+
 # PdfToSvg.NET
 Fully managed library for converting PDF files to SVG. Potential usage is embedding PDFs on your site without the need of loading a PDF reader.
 

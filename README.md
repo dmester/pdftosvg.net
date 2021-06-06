@@ -1,11 +1,31 @@
 # PdfToSvg.NET
 Fully managed library for converting PDF files to SVG. Potential usage is embedding PDFs on your site without the need of loading a PDF reader.
 
+## State
+The library is still under active development and should not yet be used in production code.
+
 ## Install
 Install the pdftosvg.net NuGet package.
 
-## State
-The library is still under active development and should not yet be used in production code.
+```
+PM> Install-Package pdftosvg.net
+```
+
+## Usage
+
+Open a PDF document by calling `PdfDocument.Open`. Use `ToSvg()` on each page to convert it to SVG.
+
+```csharp
+using (var doc = PdfDocument.Open("input.pdf"))
+{
+    var pageIndex = 0;
+
+    foreach (var page in doc.Pages)
+    {
+        File.WriteAllText($"output-{pageIndex++}.svg", page.ToSvg());
+    }
+}
+```
 
 ## Limitations
 Not all PDF features are supported. Here is a summary of non-supported features:

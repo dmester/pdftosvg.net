@@ -132,7 +132,7 @@ namespace PdfToSvg.ColorSpaces
 
                 if (colorSpaceParams.Length > 3)
                 {
-                    var maxLookupLength = baseSpace.ComponentsPerSample * 255;
+                    var maxLookupLength = baseSpace.ComponentsPerSample * 256;
 
                     if (colorSpaceParams[3] is PdfDictionary lookupDict &&
                         lookupDict.Stream != null)

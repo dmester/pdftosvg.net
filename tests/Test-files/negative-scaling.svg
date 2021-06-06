@@ -1,7 +1,6 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 595 842" xmlns="http://www.w3.org/2000/svg">
 <style>text { white-space: pre; }.txnInFK{font-family:Arial,sans-serif;font-size:20px;}
 </style>
-<defs />
 <text x="70" y="80" class="txnInFK">Older PdfSharp versions use negative font size and </text>
 <text x="70" y="120" class="txnInFK">scaling to flip the text right.</text>
 </svg>

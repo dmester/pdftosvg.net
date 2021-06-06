@@ -1,6 +1,5 @@
 ﻿<svg width="80" height="80" preserveAspectRatio="xMidYMid meet" viewBox="0 0 80 80" stroke-miterlimit="10" xmlns="http://www.w3.org/2000/svg">
 <style>text { white-space: pre; }
 </style>
-<defs />
 <path d="M-10 90h100v-100h-100zM0 80h80v-80h-80zM5 75h70v-70h-70zM10 70h60v-60h-60zM15 65h50v-50h-50z" fill="none" stroke="#000" stroke-width="1" />
 </svg>

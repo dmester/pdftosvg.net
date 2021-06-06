@@ -108,6 +108,11 @@ namespace PdfToSvg.Drawing
 
             // Add clip paths
             AddClipPaths(clipPaths.Values);
+
+            if (!defs.HasElements)
+            {
+                defs.Remove();
+            }
         }
 
         private void AddClipPaths(IEnumerable<ClipPath> paths)

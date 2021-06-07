@@ -1061,6 +1061,7 @@ namespace PdfToSvg.Drawing
         private void BT_BeginText()
         {
             graphicsState.TextState.TextMatrix = Matrix.Identity;
+            graphicsState.TextState.LineMatrix = Matrix.Identity;
             textBuilder.Clear();
             textBuilder.UpdateLineMatrix(graphicsState);
         }

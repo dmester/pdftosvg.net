@@ -24,15 +24,17 @@ namespace PdfToSvg.Imaging
             }
 
             var lastFilter = stream.Filters.LastOrDefault();
-
-            if (lastFilter.Filter == Filter.DctDecode)
+            if (lastFilter != null)
             {
-                return new JpegImage(imageDictionary);
-            }
+                if (lastFilter.Filter == Filter.DctDecode)
+                {
+                    return new JpegImage(imageDictionary);
+                }
 
-            if (lastFilter.Filter == Filter.FlateDecode && KeepDataPngImage.IsSupported(imageDictionary, colorSpace))
-            {
-                return new KeepDataPngImage(imageDictionary, colorSpace);
+                if (lastFilter.Filter == Filter.FlateDecode && KeepDataPngImage.IsSupported(imageDictionary, colorSpace))
+                {
+                    return new KeepDataPngImage(imageDictionary, colorSpace);
+                }
             }
 
             return new ResampledPngImage(imageDictionary, colorSpace);

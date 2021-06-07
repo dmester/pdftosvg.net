@@ -314,10 +314,10 @@ namespace PdfToSvg.Drawing
 
                 resources = new ResourceCache(xobject.GetDictionaryOrEmpty(Names.Resources));
 
-                if (xobject.TryGetArray<double>(Names.Matrix, out var matrix) && matrix.Length == 6)
+                if (xobject.TryGetArray<double>(Names.Matrix, out var matrixArr) && matrixArr.Length == 6)
                 {
-                    graphicsState.Transform = graphicsState.Transform *
-                        new Matrix(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+                    var matrix = new Matrix(matrixArr[0], matrixArr[1], matrixArr[2], matrixArr[3], matrixArr[4], matrixArr[5]);
+                    graphicsState.Transform = matrix * graphicsState.Transform;
                 }
 
                 if (xobject.TryGetArray<double>(Names.BBox, out var bbox) && bbox.Length == 4)

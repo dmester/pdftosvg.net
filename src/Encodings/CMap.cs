@@ -127,8 +127,9 @@ namespace PdfToSvg.Encodings
         public CharacterCode GetCharacter(PdfString value, int index)
         {
             var code = 0u;
+            var maxCodeLength = Math.Min(value.Length - index, mappingsByCodeLength.Length - 1);
 
-            for (var codeLength = 1; codeLength <= value.Length && codeLength < mappingsByCodeLength.Length; codeLength++)
+            for (var codeLength = 1; codeLength <= maxCodeLength; codeLength++)
             {
                 code = (code << 8) | value[index + codeLength - 1];
 

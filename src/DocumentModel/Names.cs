@@ -104,6 +104,15 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Alternate { get; } = new PdfName("Alternate");
         public static PdfName N { get; } = new PdfName("N");
 
+        public static PdfName FunctionType { get; } = new PdfName("FunctionType");
+        public static PdfName Functions { get; } = new PdfName("Functions");
+        public static PdfName Domain { get; } = new PdfName("Domain");
+        public static PdfName Bounds { get; } = new PdfName("Bounds");
+        public static PdfName Encode { get; } = new PdfName("Encode");
+        public static PdfName Range { get; } = new PdfName("Range");
+        public static PdfName C0 { get; } = new PdfName("C0");
+        public static PdfName C1 { get; } = new PdfName("C1");
+
         public static PdfName Title { get; } = new PdfName("Title");
         public static PdfName Author { get; } = new PdfName("Author");
         public static PdfName Subject { get; } = new PdfName("Subject");

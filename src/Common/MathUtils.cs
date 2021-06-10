@@ -78,5 +78,10 @@ namespace PdfToSvg.Common
             result = 0;
             return false;
         }
+
+        public static double Interpolate(double x, double xmin, double xmax, double ymin, double ymax)
+        {
+            return ymin + ((x - xmin) * (ymax - ymin) / (xmax - xmin));
+        }
     }
 }

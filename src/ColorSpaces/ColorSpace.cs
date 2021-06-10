@@ -4,6 +4,7 @@
 
 using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Functions;
 using PdfToSvg.Imaging;
 using PdfToSvg.IO;
 using System;
@@ -246,14 +247,13 @@ namespace PdfToSvg.ColorSpaces
                 }
 
                 if (colorSpaceName == Names.Separation &&
-                    definitionArray.Length > 2)
+                    definitionArray.Length > 3)
                 {
                     // PDF spec 1.7, 8.6.6.4, page 165
-                    // Computer screen representations should use alternateSpace.
-
-                    // TODO this won't work if support for CIE-based color spaces is implemented
-                    var alternateSpace = definitionArray[2];
-                    return Parse(alternateSpace, colorSpaceResourcesDictionary, recursionCount + 1);
+                    // TOOD implement colorant "None"
+                    var alternateSpace = Parse(definitionArray[2], colorSpaceResourcesDictionary, recursionCount + 1);
+                    var tintTransform = Function.Parse(definitionArray[3]);
+                    return new SeparationColorSpace(alternateSpace, tintTransform);
                 }
 
                 Log.WriteLine("Unsupported color space: {0}.", colorSpaceName);

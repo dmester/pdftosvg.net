@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.Common;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,18 +20,13 @@ namespace PdfToSvg.Filters
         // Implemented based on algorithm description at:
         // https://marknelson.us/posts/1989/10/01/lzw-data-compression.html
 
-        private readonly Stream stream;
         private readonly List<byte[]> dictionary = new List<byte[]>();
+
+        private readonly BitReader reader;
+        private readonly uint[] codeBuffer = new uint[1];
 
         private byte[] sequence = ArrayUtils.Empty<byte>();
         private int sequenceCursor;
-
-        private readonly byte[] readBuffer;
-        private int readBufferLength;
-        private int readBufferCursor;
-        private int skipBitsNextByte;
-
-        private int nextCodeLengthBits = 9;
 
         private readonly bool earlyChange;
 
@@ -41,10 +37,9 @@ namespace PdfToSvg.Filters
 
         public LzwDecodeStream(Stream stream, bool earlyChange)
         {
-            this.stream = stream;
             this.earlyChange = earlyChange;
             buffer = new byte[BufferSize];
-            readBuffer = new byte[BufferSize];
+            reader = new BitReader(stream, bitsPerValue: 9, BufferSize);
         }
 
         protected override void Dispose(bool disposing)
@@ -53,55 +48,8 @@ namespace PdfToSvg.Filters
 
             if (disposing)
             {
-                stream.Dispose();
+                reader.Dispose();
             }
-        }
-
-        private int ReadBits(int bits)
-        {
-            // Fill buffer
-            if (readBufferCursor + (skipBitsNextByte + bits + 7) / 8 > readBufferLength)
-            {
-                var saveBytes = readBufferLength - readBufferCursor;
-                for (var i = 0; i < saveBytes; i++)
-                {
-                    readBuffer[i] = readBuffer[readBufferLength - saveBytes + i];
-                }
-
-                readBufferCursor = 0;
-                readBufferLength = saveBytes;
-
-                do
-                {
-                    var readFromStream = stream.Read(readBuffer, readBufferLength, readBuffer.Length - readBufferLength);
-
-                    // Check end of stream
-                    if (readFromStream == 0) return -1;
-
-                    readBufferLength += readFromStream;
-                }
-                while (readBufferCursor + (skipBitsNextByte + bits + 7) / 8 > readBufferLength);
-            }
-
-            // First byte
-            var result = readBuffer[readBufferCursor++] & ((1 << (8 - skipBitsNextByte)) - 1);
-            bits -= 8 - skipBitsNextByte;
-
-            // Middle bytes
-            while (bits >= 8)
-            {
-                result = (result << 8) | readBuffer[readBufferCursor++];
-                bits -= 8;
-            }
-
-            // Last byte
-            if (bits > 0)
-            {
-                result = (result << bits) | (readBuffer[readBufferCursor] >> (8 - bits));
-            }
-
-            skipBitsNextByte = bits;
-            return result;
         }
 
         protected override void FillBuffer()
@@ -119,18 +67,19 @@ namespace PdfToSvg.Filters
                     sequenceCursor += readFromSequence;
                     continue;
                 }
-
-                var code = ReadBits(nextCodeLengthBits);
-                if (code < 0)
+                
+                if (reader.Read(codeBuffer, 0, 1) == 0)
                 {
                     endOfStream = true;
                     break;
                 }
+
+                var code = codeBuffer[0];
                 
                 if (code == ClearTable)
                 {
                     dictionary.Clear();
-                    nextCodeLengthBits = 9;
+                    reader.BitsPerValue = 9;
                     sequence = ArrayUtils.Empty<byte>();
                 }
                 else if (code == EndOfDecode)
@@ -156,7 +105,7 @@ namespace PdfToSvg.Filters
                     }
                     else if (code - FirstDictionaryKey < dictionary.Count)
                     {
-                        sequence = dictionary[code - FirstDictionaryKey];
+                        sequence = dictionary[(int)(code - FirstDictionaryKey)];
                         newEntry[newEntry.Length - 1] = sequence[0];
                     }
                     else
@@ -172,18 +121,18 @@ namespace PdfToSvg.Filters
                     {
                         switch (dictionary.Count)
                         {
-                            case 253: nextCodeLengthBits = 10; break;
-                            case 765: nextCodeLengthBits = 11; break;
-                            case 1789: nextCodeLengthBits = 12; break;
+                            case 253: reader.BitsPerValue = 10; break;
+                            case 765: reader.BitsPerValue = 11; break;
+                            case 1789: reader.BitsPerValue = 12; break;
                         }
                     }
                     else
                     {
                         switch (dictionary.Count)
                         {
-                            case 254: nextCodeLengthBits = 10; break;
-                            case 766: nextCodeLengthBits = 11; break;
-                            case 1790: nextCodeLengthBits = 12; break;
+                            case 254: reader.BitsPerValue = 10; break;
+                            case 766: reader.BitsPerValue = 11; break;
+                            case 1790: reader.BitsPerValue = 12; break;
                         }
                     }
                 }

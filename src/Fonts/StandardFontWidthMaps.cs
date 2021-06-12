@@ -435,6 +435,8 @@ namespace PdfToSvg.Fonts
 
         public static WidthMap? GetWidths(PdfName fontName)
         {
+            fontName = StandardFonts.TranslateAlternativeNames(fontName);
+
             if (monoWidth.TryGetValue(fontName, out var charWidth))
             {
                 return new MonospaceWidthMap(charWidth * WidthMultiplier);

@@ -4,7 +4,9 @@
 <defs>
 <image id="imbAqVF" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANFJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT0P1ockZCAHQphsuCXgoCBew3oNoh0DQ2RoQHUSJvo+G81JR1PgfBlBBgcNhvoAhvkpIDQ5hsFHn0GCn+HzTJiGoykowQqU2F7MUOHNkGADQhmODMszGd5PQwtWIDiSQJQHgMqgMf3rM1FJA6gMkfiAHDz2AKXAqpE0wJM3MAyQkzeQi5q8ATfh0sy8wXdXAAAAAElFTkSuQmCC" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
 </defs>
+<g>
 <g transform="matrix(400 0 0 400 100 91.92)">
 <use href="#imbAqVF" />
+</g>
 </g>
 </svg>

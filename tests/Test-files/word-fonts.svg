@@ -6,6 +6,7 @@
 <rect x="0" y="0" width="595.32" height="841.92" />
 </clipPath>
 </defs>
+<g>
 <text x="35.4" y="91.46" class="tx1UF4m">The </text>
 <text x="79.464" y="91.46" class="txOhbb1">quick brown</text>
 <text x="208.97" y="91.46" class="txKzlat"> </text>
@@ -211,4 +212,5 @@
 <text x="486.22" y="471.43" class="txoaUs3">◼</text>
 <text x="498.22" y="471.43" class="txoaUs3"> </text>
 <text x="311.93" y="505.27" class="txp91tC"> </text>
+</g>
 </svg>

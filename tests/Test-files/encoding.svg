@@ -1,6 +1,7 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <style>text { white-space: pre; }.txHhBSA{font-family:'Times New Roman',serif;font-weight:bold;font-size:12px;}.txs8vHo{font-family:'Times New Roman',serif;font-size:12px;}
 </style>
+<g>
 <text x="70" y="68.92" class="txHhBSA">WinAnsiEncoding</text>
 <text x="70" y="95.92" class="txs8vHo">ABC abc 123 ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
 <text x="70" y="122.92" class="txs8vHo">ABC abc 123 ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
@@ -22,4 +23,5 @@
 <text x="70" y="608.92" class="txs8vHo">  ¡ ¢ £ ¤ ¥ ¦ § ¨ © ª « ¬ - ® ¯ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿</text>
 <text x="70" y="635.92" class="txs8vHo">À ∆ Ũ Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß</text>
 <text x="70" y="662.92" class="txs8vHo">à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ÷ ø ù ú û ü ý þ ÿ</text>
+</g>
 </svg>

@@ -6,6 +6,7 @@
 <rect x="29" y="29" width="537.9999" height="784.8646" />
 </clipPath>
 </defs>
+<g>
 <g clip-path="url(#cl4DTi6)">
 <path d="M29 29h538v784.8647h-538z" fill="#fff" />
 </g>
@@ -17,4 +18,5 @@
 <text x="152.9482" y="88.2775" class="txhF7pb"> qui officia deserunt </text>
 <text x="238.7224" y="88.2775" class="tx5sc4J">mollit anim id est</text>
 <text x="310.24" y="88.2775" class="txhF7pb"> laborum.</text>
+</g>
 </svg>

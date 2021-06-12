@@ -29,6 +29,8 @@ namespace PdfToSvg.Drawing
         private Stack<GraphicsState> graphicsStateStack = new Stack<GraphicsState>();
 
         private XElement svg;
+        private XElement rootGraphics;
+
         private bool svgHasDefaultMiterLimit;
 
         private PathData currentPath = new PathData();
@@ -76,6 +78,8 @@ namespace PdfToSvg.Drawing
                 cropBox = RectangleUtils.GetA4();
             }
 
+            rootGraphics = new XElement(ns + "g");
+
             svg = new XElement(ns + "svg",
                 new XAttribute("width", cropBox.Width.ToString("0", CultureInfo.InvariantCulture)),
                 new XAttribute("height", cropBox.Height.ToString("0", CultureInfo.InvariantCulture)),
@@ -85,7 +89,8 @@ namespace PdfToSvg.Drawing
                     cropBox.Width, cropBox.Height
                 )),
                 style,
-                defs);
+                defs,
+                rootGraphics);
 
             // PDF coordinate system has its origin in the bottom left corner in opposite to SVG, 
             // which has its origin in the upper left corner.
@@ -574,7 +579,7 @@ namespace PdfToSvg.Drawing
                 clipWrapperId = null;
                 clipWrapper = null;
 
-                return svg;
+                return rootGraphics;
             }
             else
             {
@@ -582,7 +587,7 @@ namespace PdfToSvg.Drawing
                 {
                     clipWrapper = new XElement(ns + "g", new XAttribute("clip-path", "url(#" + graphicsState.ClipPath.Id + ")"));
                     clipWrapperId = graphicsState.ClipPath.Id;
-                    svg.Add(clipWrapper);
+                    rootGraphics.Add(clipWrapper);
 
                     var cursor = graphicsState.ClipPath;
                     while (cursor != null && !cursor.Referenced)
@@ -726,7 +731,7 @@ namespace PdfToSvg.Drawing
                     else if (!svgHasDefaultMiterLimit)
                     {
                         // Change default miter limit on root element
-                        svg.Add(new XAttribute("stroke-miterlimit", SvgConversion.FormatCoordinate(graphicsState.MiterLimit)));
+                        rootGraphics.Add(new XAttribute("stroke-miterlimit", SvgConversion.FormatCoordinate(graphicsState.MiterLimit)));
                         svgHasDefaultMiterLimit = true;
                     }
                 }
@@ -753,7 +758,7 @@ namespace PdfToSvg.Drawing
             {
                 clipWrapper = null;
                 clipWrapperId = null;
-                svg.Add(el);
+                rootGraphics.Add(el);
             }
             else
             {
@@ -1325,7 +1330,7 @@ namespace PdfToSvg.Drawing
                         // which seems to rasterize all clipped graphics before printing.
                         clipWrapper = null;
                         clipWrapperId = null;
-                        svg.Add(textEl);
+                        rootGraphics.Add(textEl);
                         continue;
                     }
                 }

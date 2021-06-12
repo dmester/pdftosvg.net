@@ -28,6 +28,24 @@ namespace PdfToSvg.IO
             preserveSpaceState.Push(false);
         }
 
+        public SvgXmlWriter(Stream stream, Encoding encoding) : base(stream, encoding)
+        {
+            Formatting = Formatting.None;
+            preserveSpaceState.Push(false);
+        }
+
+        public override void WriteStartDocument()
+        {
+            base.WriteStartDocument();
+            WriteRaw("\n");
+        }
+
+        public override void WriteStartDocument(bool standalone)
+        {
+            base.WriteStartDocument(standalone);
+            WriteRaw("\n");
+        }
+
         public override void WriteStartElement(string prefix, string localName, string ns)
         {
             var currentlyPreservingSpace = preserveSpaceState.Peek();

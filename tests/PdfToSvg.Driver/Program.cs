@@ -10,20 +10,19 @@ namespace PdfToSvg.Driver
 {
     class Program
     {
-        static void Main()
+        static async Task Main()
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
-            var input = @"C:\Users\Daniel\Downloads\GWG181_16Bit_CMYK_X4.pdf";
+            var input = @"M:\Repos\pdftosvg.net\tests\Test-files\rotated-page.pdf";
 
-            using (var doc = PdfDocument.Open(input))
+            using (var doc = await PdfDocument.OpenAsync(input))
             {
                 var pageIndex = 0;
 
                 foreach (var page in doc.Pages)
                 {
-                    var svg = page.ToSvg();
                     var svgFileName = Path.GetFileNameWithoutExtension(input) + "-" + pageIndex++ + ".svg";
-                    File.WriteAllText("R:\\" + svgFileName, svg);
+                    await page.SaveAsSvgAsync("R:\\" + svgFileName);
                 }
             }
 

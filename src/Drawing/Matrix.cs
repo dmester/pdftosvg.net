@@ -72,6 +72,15 @@ namespace PdfToSvg.Drawing
 
         public static Matrix Scale(double sx, double sy) => new Matrix(sx, 0, 0, sy, 0, 0);
 
+        public static Matrix Rotate(double angleRadians)
+        {
+            var cos = Math.Cos(angleRadians);
+            var sin = Math.Sin(angleRadians);
+            return new Matrix(cos, -sin, sin, cos, 0, 0);
+        }
+
+        public static Matrix Rotate(double angleRadians, Matrix source) => Rotate(angleRadians) * source;
+
         public static Matrix Translate(double dx, double dy, Matrix source)
         {
             return new Matrix(

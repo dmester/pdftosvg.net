@@ -78,15 +78,38 @@ namespace PdfToSvg.Drawing
                 cropBox = RectangleUtils.GetA4();
             }
 
+            var pageWidth = cropBox.Width;
+            var pageHeight = cropBox.Height;
+
             rootGraphics = new XElement(ns + "g");
 
+            if (pageDict.TryGetInteger(Names.Rotate, out var rotate))
+            {
+                rotate = (((rotate / 90) % 4) + 4) % 4;
+
+                if (rotate % 2 == 1)
+                {
+                    pageWidth = cropBox.Height;
+                    pageHeight = cropBox.Width;
+                }
+
+                // The page transform is applied on the root element instead of on the graphics transform, to avoid
+                // a matrix being applied to all text elements, which are most probably rendered horizontally.
+                var rootTransform = 
+                    Matrix.Translate(-cropBox.Width / 2, -cropBox.Height / 2) * 
+                    Matrix.Rotate(-Math.PI * 0.5 * rotate) * 
+                    Matrix.Translate(pageWidth / 2, pageHeight / 2);
+                
+                rootGraphics.Add(new XAttribute("transform", SvgConversion.Matrix(rootTransform)));
+            }
+
             svg = new XElement(ns + "svg",
-                new XAttribute("width", cropBox.Width.ToString("0", CultureInfo.InvariantCulture)),
-                new XAttribute("height", cropBox.Height.ToString("0", CultureInfo.InvariantCulture)),
+                new XAttribute("width", pageWidth.ToString("0", CultureInfo.InvariantCulture)),
+                new XAttribute("height", pageHeight.ToString("0", CultureInfo.InvariantCulture)),
                 new XAttribute("preserveAspectRatio", "xMidYMid meet"),
                 new XAttribute("viewBox", 
                     string.Format(CultureInfo.InvariantCulture, "0 0 {0:0.####} {1:0.####}",
-                    cropBox.Width, cropBox.Height
+                    pageWidth, pageHeight
                 )),
                 style,
                 defs,

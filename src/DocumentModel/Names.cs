@@ -112,6 +112,9 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Range { get; } = new PdfName("Range");
         public static PdfName C0 { get; } = new PdfName("C0");
         public static PdfName C1 { get; } = new PdfName("C1");
+        public static PdfName Size { get; } = new PdfName("Size");
+        public static PdfName BitsPerSample { get; } = new PdfName("BitsPerSample");
+        public static PdfName Order { get; } = new PdfName("Order");
 
         public static PdfName Title { get; } = new PdfName("Title");
         public static PdfName Author { get; } = new PdfName("Author");

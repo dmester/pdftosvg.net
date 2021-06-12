@@ -26,6 +26,7 @@
   <PropertyGroup Condition="$(Configuration) == 'Release'">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <DocumentationFile>$(TargetDir)\PdfToSvg.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

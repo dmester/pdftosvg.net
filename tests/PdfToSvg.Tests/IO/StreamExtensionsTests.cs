@@ -87,7 +87,7 @@ namespace PdfToSvg.Tests.IO
         public void WriteBigEndian()
         {
             var stream = new MemoryStream();
-            
+
             stream.WriteBigEndian(0xfedca123u);
 
             Assert.AreEqual(new byte[] { 0xfe, 0xdc, 0xa1, 0x23 }, stream.ToArray());

@@ -16,7 +16,7 @@ namespace PdfToSvg.Tests.Parsing
 {
     public class LexerTests
     {
-        Dictionary<string, Token> basicKeywords = new Dictionary<string, Token>(StringComparer.OrdinalIgnoreCase)
+        private readonly Dictionary<string, Token> basicKeywords = new(StringComparer.OrdinalIgnoreCase)
         {
             { "stream", Token.Stream },
             { "true", Token.True },

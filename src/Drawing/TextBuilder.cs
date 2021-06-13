@@ -29,7 +29,7 @@ namespace PdfToSvg.Drawing
         private double translateY;
         private Matrix remainingTransform = Matrix.Identity;
 
-        const double ScalingMultiplier = 1.0 / 100;
+        private const double ScalingMultiplier = 1.0 / 100;
 
         public TextBuilder(double minSpaceEm, double minSpacePx)
         {

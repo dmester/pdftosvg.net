@@ -138,14 +138,13 @@ namespace PdfToSvg.ColorSpaces
                     if (colorSpaceParams[3] is PdfDictionary lookupDict &&
                         lookupDict.Stream != null)
                     {
-                        using (var lookupStream = lookupDict.Stream.OpenDecoded())
-                        {
-                            var buffer = new byte[maxLookupLength];
-                            var lookupLength = lookupStream.ReadAll(buffer, 0, buffer.Length);
+                        using var lookupStream = lookupDict.Stream.OpenDecoded();
 
-                            lookup = new byte[lookupLength];
-                            Buffer.BlockCopy(buffer, 0, lookup, 0, lookupLength);
-                        }
+                        var buffer = new byte[maxLookupLength];
+                        var lookupLength = lookupStream.ReadAll(buffer, 0, buffer.Length);
+
+                        lookup = new byte[lookupLength];
+                        Buffer.BlockCopy(buffer, 0, lookup, 0, lookupLength);
                     }
                     else if (colorSpaceParams[3] is PdfString lookupString)
                     {
@@ -237,13 +236,12 @@ namespace PdfToSvg.ColorSpaces
                         return Parse(alternate, colorSpaceResourcesDictionary, recursionCount + 1);
                     }
 
-                    var n = iccStreamDict.GetValueOrDefault(Names.N, 0);
-                    switch (n)
+                    return iccStreamDict.GetValueOrDefault(Names.N, 0) switch
                     {
-                        case 1: return new DeviceGrayColorSpace();
-                        case 4: return new DeviceCmykColorSpace();
-                        default: return new DeviceRgbColorSpace();
-                    }
+                        1 => new DeviceGrayColorSpace(),
+                        4 => new DeviceCmykColorSpace(),
+                        _ => new DeviceRgbColorSpace(),
+                    };
                 }
 
                 if (colorSpaceName == Names.Separation &&

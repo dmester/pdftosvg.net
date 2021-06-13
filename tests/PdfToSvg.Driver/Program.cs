@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Driver
 {
-    class Program
+    internal static class Program
     {
-        static async Task Main()
+        public static async Task Main()
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
             var input = @"M:\Repos\pdftosvg.net\tests\Test-files\rotated-page.pdf";

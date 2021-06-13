@@ -432,7 +432,7 @@ namespace PdfToSvg.Parsing
         public void Read(Token expectedToken)
         {
             var lexeme = Read();
-            
+
             if (lexeme.Token != expectedToken)
             {
                 throw new PdfParserException($"Expected {expectedToken} but found {lexeme.Token}.", lexeme.Position);

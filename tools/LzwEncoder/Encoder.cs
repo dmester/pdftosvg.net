@@ -75,7 +75,7 @@ namespace LzwEncoder
         {
             var result = new byte[a.Length + 1];
             Buffer.BlockCopy(a, 0, result, 0, a.Length);
-            result[result.Length - 1] = b;
+            result[^1] = b;
             return result;
         }
     }

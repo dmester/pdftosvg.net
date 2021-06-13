@@ -8,9 +8,9 @@ using System.Text;
 
 namespace LzwEncoder
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var commandLine = new CommandLine(args);
             if (commandLine.InputPath == null && commandLine.OutputPath == null)
@@ -24,20 +24,19 @@ namespace LzwEncoder
 
             if (commandLine.HexEncode)
             {
-                using (var output = new StreamWriter(commandLine.OutputPath, false, Encoding.ASCII))
-                {
-                    for (var i = 0; i < compressed.Length; i++)
-                    {
-                        if ((i % 40) == 0 && i != 0)
-                        {
-                            output.WriteLine();
-                        }
+                using var output = new StreamWriter(commandLine.OutputPath, false, Encoding.ASCII);
 
-                        output.Write(compressed[i].ToString("x2"));
+                for (var i = 0; i < compressed.Length; i++)
+                {
+                    if ((i % 40) == 0 && i != 0)
+                    {
+                        output.WriteLine();
                     }
 
-                    output.Write('>');
+                    output.Write(compressed[i].ToString("x2"));
                 }
+
+                output.Write('>');
             }
             else
             {

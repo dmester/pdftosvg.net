@@ -13,7 +13,7 @@ namespace ApproximateCmyk
 {
     internal static class Program
     {
-        private static readonly object lockObject = new object();
+        private static readonly object lockObject = new();
 
         public static void Main()
         {
@@ -289,7 +289,7 @@ namespace ApproximateCmyk
                     Q1 = diffs[diffs.Count / 4],
                     Q2 = diffs[diffs.Count / 2],
                     Q3 = diffs[diffs.Count * 3 / 4],
-                    Max = diffs[diffs.Count - 1],
+                    Max = diffs[^1],
                 };
 
                 if (bestResult == null ||

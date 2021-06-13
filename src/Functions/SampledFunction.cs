@@ -136,7 +136,7 @@ namespace PdfToSvg.Functions
             var sampleIndexes = new int[sampleCount];
 
             var partitionMultiplier = new double[sampleCount]; // N in the paper
-            
+
             for (var partitionIndex = 0; partitionIndex < partitionMultiplier.Length; partitionIndex++)
             {
                 partitionMultiplier[partitionIndex] = 1d;

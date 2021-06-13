@@ -21,7 +21,7 @@ PM> Install-Package PdfToSvg.NET
 
 ## Usage
 
-Open a PDF document by calling `PdfDocument.Open`. Use `ToSvg` on each page to convert it to SVG.
+Open a PDF document by calling `PdfDocument.Open`. Call `SaveAsSvg()` on each page to convert it to an SVG file.
 
 ```csharp
 using (var doc = PdfDocument.Open("input.pdf"))

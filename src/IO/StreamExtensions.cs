@@ -12,10 +12,8 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.IO
 {
-    // TODO Add tests
     internal static class StreamExtensions
     {
-
         public static int ReadAll(this Stream stream, byte[] buffer, int offset, int count)
         {
             var totalRead = 0;
@@ -33,7 +31,7 @@ namespace PdfToSvg.IO
             return totalRead;
         }
 
-        public static async Task<int> ReadAllAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        public static async Task<int> ReadAllAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken = default)
         {
             var totalRead = 0;
             int read;
@@ -48,138 +46,6 @@ namespace PdfToSvg.IO
             while (read > 0);
 
             return totalRead;
-        }
-
-        public static byte[] ToArray(this IEnumerable<Func<Stream>> streamFactories)
-        {
-            var chunks = new List<byte[]>();
-            var totalBytes = 0;
-            var bytesThisIteration = 0;
-
-            foreach (var streamFactory in streamFactories)
-            {
-                using var stream = streamFactory();
-
-                do
-                {
-                    var chunk = new byte[4096];
-                    bytesThisIteration = stream.Read(chunk, 0, chunk.Length);
-                    totalBytes += bytesThisIteration;
-                    chunks.Add(chunk);
-                }
-                while (bytesThisIteration > 0);
-            }
-
-            var result = new byte[totalBytes];
-            var resultCursor = 0;
-
-            foreach (var chunk in chunks)
-            {
-                bytesThisIteration = Math.Min(totalBytes - resultCursor, chunk.Length);
-                Buffer.BlockCopy(chunk, 0, result, resultCursor, bytesThisIteration);
-                resultCursor += bytesThisIteration;
-            }
-
-            return result;
-        }
-
-        public static async Task<byte[]> ToArrayAsync(this IEnumerable<Func<Stream>> streamFactories)
-        {
-            var chunks = new List<byte[]>();
-            var totalBytes = 0;
-            var bytesThisIteration = 0;
-
-            foreach (var streamFactory in streamFactories)
-            {
-                using var stream = streamFactory();
-
-                do
-                {
-                    var chunk = new byte[4096];
-                    bytesThisIteration = await stream.ReadAsync(chunk, 0, chunk.Length).ConfigureAwait(false);
-                    totalBytes += bytesThisIteration;
-                    chunks.Add(chunk);
-                }
-                while (bytesThisIteration > 0);
-            }
-
-            var result = new byte[totalBytes];
-            var resultCursor = 0;
-
-            foreach (var chunk in chunks)
-            {
-                bytesThisIteration = Math.Min(totalBytes - resultCursor, chunk.Length);
-                Buffer.BlockCopy(chunk, 0, result, resultCursor, bytesThisIteration);
-                resultCursor += bytesThisIteration;
-            }
-
-            return result;
-        }
-
-        public static byte[] ToArray(this Stream stream)
-        {
-            if (stream is MemoryStream memStream)
-            {
-                return memStream.ToArray();
-            }
-
-            var chunks = new List<byte[]>();
-            var totalBytes = 0;
-            int bytesThisIteration;
-
-            do
-            {
-                var chunk = new byte[4096];
-                bytesThisIteration = stream.Read(chunk, 0, chunk.Length);
-                totalBytes += bytesThisIteration;
-                chunks.Add(chunk);
-            }
-            while (bytesThisIteration > 0);
-
-            var result = new byte[totalBytes];
-            var resultCursor = 0;
-
-            foreach (var chunk in chunks)
-            {
-                bytesThisIteration = Math.Min(totalBytes - resultCursor, chunk.Length);
-                Buffer.BlockCopy(chunk, 0, result, resultCursor, bytesThisIteration);
-                resultCursor += bytesThisIteration;
-            }
-
-            return result;
-        }
-
-        public static async Task<byte[]> ToArrayAsync(this Stream stream)
-        {
-            if (stream is MemoryStream memStream)
-            {
-                return memStream.ToArray();
-            }
-
-            var chunks = new List<byte[]>();
-            var totalBytes = 0;
-            int bytesThisIteration;
-
-            do
-            {
-                var chunk = new byte[4096];
-                bytesThisIteration = await stream.ReadAsync(chunk, 0, chunk.Length).ConfigureAwait(false);
-                totalBytes += bytesThisIteration;
-                chunks.Add(chunk);
-            }
-            while (bytesThisIteration > 0);
-
-            var result = new byte[totalBytes];
-            var resultCursor = 0;
-
-            foreach (var chunk in chunks)
-            {
-                bytesThisIteration = Math.Min(totalBytes - resultCursor, chunk.Length);
-                Buffer.BlockCopy(chunk, 0, result, resultCursor, bytesThisIteration);
-                resultCursor += bytesThisIteration;
-            }
-
-            return result;
         }
 
         public static void Skip(this Stream stream, long offset)

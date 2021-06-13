@@ -168,7 +168,7 @@ namespace PdfToSvg.Tests
             var pdfPath = Path.Combine(testFileDirectory, fileName);
             using (var doc = PdfDocument.Open(pdfPath))
             {
-                actual = doc.Pages[0].ToSvg();
+                actual = doc.Pages[0].ToSvgString();
             }
 
             actual = RecompressPngs(actual);
@@ -198,7 +198,7 @@ namespace PdfToSvg.Tests
 
             using (var doc = await PdfDocument.OpenAsync(pdfPath))
             {
-                actual = await doc.Pages[0].ToSvgAsync();
+                actual = await doc.Pages[0].ToSvgStringAsync();
             }
 
             actual = RecompressPngs(actual);

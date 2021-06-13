@@ -35,20 +35,20 @@ namespace PdfToSvg
         public PdfDocument Document => owner;
 
         /// <summary>
-        /// Converts this page to an SVG fragment.
+        /// Converts this page to an SVG string. The string can for example be saved to a file, or inlined in HTML.
         /// </summary>
         /// <returns>SVG fragment without XML declaration. The fragment can be saved to a file or included as inline SVG in HTML.</returns>
         /// <remarks>
         /// Note that if you parse the returned SVG fragment as XML, you need to preserve space and not add indentation. Text content
         /// will otherwise not render correctly.
         /// </remarks>
-        public string ToSvg()
+        public string ToSvgString()
         {
-            return ToSvg(new SvgConversionOptions());
+            return ToSvgString(new SvgConversionOptions());
         }
 
         /// <summary>
-        /// Converts this page to an SVG fragment.
+        /// Converts this page to an SVG string. The string can for example be saved to a file, or inlined in HTML.
         /// </summary>
         /// <param name="options">Additional configuration options for the conversion.</param>
         /// <returns>SVG fragment without XML declaration. The fragment can be saved to a file or included as inline SVG in HTML.</returns>
@@ -57,7 +57,7 @@ namespace PdfToSvg
         /// Note that if you parse the returned SVG fragment as XML, you need to preserve space and not add indentation. Text content
         /// will otherwise not render correctly.
         /// </remarks>
-        public string ToSvg(SvgConversionOptions options)
+        public string ToSvgString(SvgConversionOptions options)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
 
@@ -65,20 +65,20 @@ namespace PdfToSvg
         }
 
         /// <summary>
-        /// Converts this page to an SVG fragment asynchronously.
+        /// Converts this page to an SVG string asynchronously. The string can for example be saved to a file, or inlined in HTML.
         /// </summary>
         /// <returns>SVG fragment without XML declaration. The fragment can be saved to a file or included as inline SVG in HTML.</returns>
         /// <remarks>
         /// Note that if you parse the returned SVG fragment as XML, you need to preserve space and not add indentation. Text content
         /// will otherwise not render correctly.
         /// </remarks>
-        public Task<string> ToSvgAsync()
+        public Task<string> ToSvgStringAsync()
         {
-            return ToSvgAsync(new SvgConversionOptions());
+            return ToSvgStringAsync(new SvgConversionOptions());
         }
 
         /// <summary>
-        /// Converts this page to an SVG fragment asynchronously.
+        /// Converts this page to an SVG string asynchronously. The string can for example be saved to a file, or inlined in HTML.
         /// </summary>
         /// <param name="options">Additional configuration options for the conversion.</param>
         /// <returns>SVG fragment without XML declaration. The fragment can be saved to a file or included as inline SVG in HTML.</returns>
@@ -87,7 +87,7 @@ namespace PdfToSvg
         /// Note that if you parse the returned SVG fragment as XML, you need to preserve space and not add indentation. Text content
         /// will otherwise not render correctly.
         /// </remarks>
-        public async Task<string> ToSvgAsync(SvgConversionOptions options)
+        public async Task<string> ToSvgStringAsync(SvgConversionOptions options)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
 

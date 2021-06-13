@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,7 +43,7 @@ namespace PdfToSvg.Filters
             stream = sourceStream;
             this.colors = colors;
             this.bitsPerComponent = bitsPerComponent;
-            bytesPerRow = (colors * bitsPerComponent * columns + 7) / 8 + 1;
+            bytesPerRow = 1 + MathUtils.BitsToBytes(colors * bitsPerComponent * columns);
 
             buffer = new byte[bytesPerRow];
             previousBuffer = new byte[bytesPerRow];
@@ -78,7 +79,7 @@ namespace PdfToSvg.Filters
                 return;
             }
 
-            var sampleSizeBytes = (colors * bitsPerComponent + 7) / 8;
+            var sampleSizeBytes = MathUtils.BitsToBytes(colors * bitsPerComponent);
 
             switch ((PngFilter)buffer[0])
             {

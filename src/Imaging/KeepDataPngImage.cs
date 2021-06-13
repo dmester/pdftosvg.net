@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.ColorSpaces;
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Filters;
 using PdfToSvg.Imaging.Png;
@@ -94,14 +95,14 @@ namespace PdfToSvg.Imaging
             if (colorSpace is DeviceGrayColorSpace)
             {
                 colorType = PngColorType.Greyscale;
-                bytesPerRow = 1 + (width * bitsPerComponent + 7) / 8;
+                bytesPerRow = 1 + MathUtils.BitsToBytes(width * bitsPerComponent);
             }
             else if (colorSpace is IndexedColorSpace indexedColorSpace)
             {
                 const int PaletteBytesPerColor = 3;
 
                 colorType = PngColorType.IndexedColour;
-                bytesPerRow = 1 + (width * bitsPerComponent + 7) / 8;
+                bytesPerRow = 1 + MathUtils.BitsToBytes(width * bitsPerComponent);
 
                 var paletteColorCount = 1 << bitsPerComponent;
                 palette = new byte[paletteColorCount * PaletteBytesPerColor];

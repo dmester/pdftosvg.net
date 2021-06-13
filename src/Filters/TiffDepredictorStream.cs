@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,7 +35,7 @@ namespace PdfToSvg.Filters
             this.colors = colors;
             this.bitsPerComponent = bitsPerComponent;
             this.columns = columns;
-            bytesPerRow = (colors * bitsPerComponent * columns + 7) / 8;
+            bytesPerRow = MathUtils.BitsToBytes(colors * bitsPerComponent * columns);
 
             this.buffer = new byte[Math.Max(bytesPerRow, bufferSize - (bufferSize % bytesPerRow))];
         }

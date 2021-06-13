@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -124,12 +125,6 @@ namespace PdfToSvg.IO
             if (count < 0 || offset + count > buffer.Length) throw new ArgumentOutOfRangeException(nameof(count));
 
             return floatReader(buffer, offset, count);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int BitsToBytes(int bits)
-        {
-            return (bits + 7) >> 3;
         }
 
         private void FillBuffer()
@@ -339,7 +334,7 @@ namespace PdfToSvg.IO
         {
             var read = 0;
 
-            while (read < count && EnsureBufferBytes(BitsToBytes(bitCursor + bitsPerValue)))
+            while (read < count && EnsureBufferBytes(MathUtils.BitsToBytes(bitCursor + bitsPerValue)))
             {
                 buffer[offset + read] = ReadBits(bitsPerValue);
                 read++;
@@ -352,7 +347,7 @@ namespace PdfToSvg.IO
         {
             var read = 0;
 
-            while (read < count && EnsureBufferBytes(BitsToBytes(bitCursor + bitsPerValue)))
+            while (read < count && EnsureBufferBytes(MathUtils.BitsToBytes(bitCursor + bitsPerValue)))
             {
                 buffer[offset + read] = ReadBits(bitsPerValue);
                 read++;

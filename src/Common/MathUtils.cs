@@ -79,9 +79,16 @@ namespace PdfToSvg.Common
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Interpolate(double x, double xmin, double xmax, double ymin, double ymax)
         {
             return ymin + ((x - xmin) * (ymax - ymin) / (xmax - xmin));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int BitsToBytes(int bits)
+        {
+            return (bits + 7) >> 3;
         }
     }
 }

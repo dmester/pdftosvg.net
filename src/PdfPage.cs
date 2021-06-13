@@ -91,7 +91,7 @@ namespace PdfToSvg
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
 
-            return ToString(await SvgRenderer.ConvertAsync(page, options));
+            return ToString(await SvgRenderer.ConvertAsync(page, options).ConfigureAwait(false));
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace PdfToSvg
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
 
-            var content = await SvgRenderer.ConvertAsync(page, options);
+            var content = await SvgRenderer.ConvertAsync(page, options).ConfigureAwait(false);
             var document = new XDocument(content);
 
             // XmlTextWriter does not support async, so buffer the file before writing it to the output stream.
@@ -170,7 +170,7 @@ namespace PdfToSvg
                     writer.Flush();
 
                     var buffer = memoryStream.GetBuffer();
-                    await stream.WriteAsync(buffer, 0, (int)memoryStream.Length);
+                    await stream.WriteAsync(buffer, 0, (int)memoryStream.Length).ConfigureAwait(false);
                 }
             }
         }
@@ -184,7 +184,7 @@ namespace PdfToSvg
         {
             using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None))
             {
-                await SaveAsSvgAsync(stream, options);
+                await SaveAsSvgAsync(stream, options).ConfigureAwait(false);
             }
         }
 

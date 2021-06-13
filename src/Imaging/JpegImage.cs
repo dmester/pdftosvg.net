@@ -62,7 +62,7 @@ namespace PdfToSvg.Imaging
 
             using (var jpegStream = GetStream())
             {
-                await jpegStream.CopyToAsync(memoryStream);
+                await jpegStream.CopyToAsync(memoryStream).ConfigureAwait(false);
             }
 
             return memoryStream.ToArray();

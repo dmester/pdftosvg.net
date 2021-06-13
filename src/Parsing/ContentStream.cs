@@ -54,7 +54,7 @@ namespace PdfToSvg.Parsing
                 {
                     using (var decodedStream = stream.OpenDecoded())
                     {
-                        await decodedStream.CopyToAsync(combinedBuffer);
+                        await decodedStream.CopyToAsync(combinedBuffer).ConfigureAwait(false);
                     }
                 }
             }

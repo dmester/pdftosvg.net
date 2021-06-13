@@ -102,7 +102,7 @@ namespace PdfToSvg
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             if (!stream.CanRead || !stream.CanSeek) throw new ArgumentException("The stream must be readable and seekable.", nameof(stream));
 
-            return await PdfReader.ReadAsync(new InputFile(stream, leaveOpen));
+            return await PdfReader.ReadAsync(new InputFile(stream, leaveOpen)).ConfigureAwait(false);
         }
 
         /// <inheritdoc cref="Open(string)"/>
@@ -118,7 +118,7 @@ namespace PdfToSvg
 
             try
             {
-                return await PdfReader.ReadAsync(file);
+                return await PdfReader.ReadAsync(file).ConfigureAwait(false);
             }
             catch
             {

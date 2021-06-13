@@ -40,7 +40,7 @@ namespace PdfToSvg.IO
 
             do
             {
-                read = await stream.ReadAsync(buffer, offset, count, cancellationToken);
+                read = await stream.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
                 offset += read;
                 count -= read;
                 totalRead += read;
@@ -97,7 +97,7 @@ namespace PdfToSvg.IO
                     do
                     {
                         var chunk = new byte[4096];
-                        bytesThisIteration = await stream.ReadAsync(chunk, 0, chunk.Length);
+                        bytesThisIteration = await stream.ReadAsync(chunk, 0, chunk.Length).ConfigureAwait(false);
                         totalBytes += bytesThisIteration;
                         chunks.Add(chunk);
                     }
@@ -165,7 +165,7 @@ namespace PdfToSvg.IO
             do
             {
                 var chunk = new byte[4096];
-                bytesThisIteration = await stream.ReadAsync(chunk, 0, chunk.Length);
+                bytesThisIteration = await stream.ReadAsync(chunk, 0, chunk.Length).ConfigureAwait(false);
                 totalBytes += bytesThisIteration;
                 chunks.Add(chunk);
             }

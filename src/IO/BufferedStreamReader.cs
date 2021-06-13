@@ -79,7 +79,7 @@ namespace PdfToSvg.IO
                 if (stream != null)
                 {
                     var bytesToRead = LimitReadByteCount(buffer.Length - bufferLength);
-                    var bytesRead = await stream.ReadAsync(buffer, bufferLength, bytesToRead);
+                    var bytesRead = await stream.ReadAsync(buffer, bufferLength, bytesToRead).ConfigureAwait(false);
 
                     bufferLength += bytesRead;
                     estimatedStreamPosition += bytesRead;

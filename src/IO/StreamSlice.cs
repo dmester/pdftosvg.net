@@ -99,7 +99,7 @@ namespace PdfToSvg
         {
             if (stream == null) throw new ObjectDisposedException(nameof(StreamSlice));
 
-            var read = await stream.ReadAsync(buffer, offset, LimitCount(count), cancellationToken);
+            var read = await stream.ReadAsync(buffer, offset, LimitCount(count), cancellationToken).ConfigureAwait(false);
             cursor += read;
             return read;
         }

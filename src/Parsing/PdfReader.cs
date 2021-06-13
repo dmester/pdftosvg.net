@@ -56,13 +56,13 @@ namespace PdfToSvg.Parsing
 
         public static async Task<PdfDocument> ReadAsync(InputFile file)
         {
-            using (var reader = await file.CreateExclusiveReaderAsync())
+            using (var reader = await file.CreateExclusiveReaderAsync().ConfigureAwait(false))
             {
                 var parser = new DocumentParser(file, reader);
 
-                await parser.ReadFileHeaderAsync();
+                await parser.ReadFileHeaderAsync().ConfigureAwait(false);
 
-                var startxref = await parser.ReadStartXRefAsync();
+                var startxref = await parser.ReadStartXRefAsync().ConfigureAwait(false);
                 var xrefTable = parser.ReadXRefTables(startxref); // TODO make async
 
                 if (xrefTable.Trailer.ContainsKey(Names.Encrypt))

@@ -31,10 +31,10 @@ namespace PdfToSvg.DocumentModel
 
         public override async Task<Stream> OpenAsync()
         {
-            var reader = await file.CreateExclusiveSliceReaderAsync(Offset, Length, (int)Math.Min(8 * 1024, Length));
+            var reader = await file.CreateExclusiveSliceReaderAsync(Offset, Length, (int)Math.Min(8 * 1024, Length)).ConfigureAwait(false);
             try
             {
-                await reader.FillBufferAsync();
+                await reader.FillBufferAsync().ConfigureAwait(false);
                 return reader;
             }
             catch

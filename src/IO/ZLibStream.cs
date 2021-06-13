@@ -228,7 +228,7 @@ namespace PdfToSvg.IO
 
             if (count > 0 && !endOfStream && deflateStream != null)
             {
-                read = await deflateStream.ReadAsync(buffer, offset, count, cancellationToken);
+                read = await deflateStream.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
                 AfterRead(buffer, offset, read);
             }
 

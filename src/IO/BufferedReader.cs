@@ -189,12 +189,12 @@ namespace PdfToSvg.IO
             {
                 if (count < this.buffer.Length)
                 {
-                    await FillBufferAsync();
+                    await FillBufferAsync().ConfigureAwait(false);
                     ReadFromBuffer(buffer, ref read, ref offset, ref count);
                 }
                 else
                 {
-                    var readFromStream = await ReadUnbufferedAsync(buffer, offset, count, cancellationToken);
+                    var readFromStream = await ReadUnbufferedAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
                     if (readFromStream > 0)
                     {
                         read += readFromStream;

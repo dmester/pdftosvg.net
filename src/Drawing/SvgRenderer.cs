@@ -187,7 +187,7 @@ namespace PdfToSvg.Drawing
         public static async Task<XElement> ConvertAsync(PdfDictionary pageDict, SvgConversionOptions options)
         {
             var renderer = new SvgRenderer(pageDict, options);
-            var contentStream = await ContentStream.CombineAsync(pageDict);
+            var contentStream = await ContentStream.CombineAsync(pageDict).ConfigureAwait(false);
             renderer.Convert(contentStream);
             return renderer.svg;
         }

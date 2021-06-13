@@ -57,7 +57,7 @@ namespace PdfToSvg.DocumentModel
         /// </summary>
         public async Task<Stream> OpenDecodedAsync()
         {
-            return Filters.Decode(await OpenAsync());
+            return Filters.Decode(await OpenAsync().ConfigureAwait(false));
         }
 
         private static object[] GetAsArray(PdfDictionary dict, PdfName key)

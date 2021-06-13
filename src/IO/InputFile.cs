@@ -36,7 +36,7 @@ namespace PdfToSvg.IO
 
             var reader = new BufferedStreamReader(baseStream, () => readSemaphore?.Release(), bufferSize);
 
-            if (!await readSemaphore.WaitAsync(OpenTimeout))
+            if (!await readSemaphore.WaitAsync(OpenTimeout).ConfigureAwait(false))
             {
                 throw NewTimeoutException();
             }
@@ -65,7 +65,7 @@ namespace PdfToSvg.IO
             baseStream.Position = offset;
             var reader = new BufferedStreamReader(baseStream, offset, length, () => readSemaphore?.Release(), bufferSize);
 
-            if (!await readSemaphore.WaitAsync(OpenTimeout))
+            if (!await readSemaphore.WaitAsync(OpenTimeout).ConfigureAwait(false))
             {
                 throw NewTimeoutException();
             }

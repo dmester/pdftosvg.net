@@ -59,7 +59,7 @@ namespace PdfToSvg
         /// <returns>Data URI for this image.</returns>
         public async Task<string> ToDataUriAsync()
         {
-            return "data:" + ContentType + ";base64," + Convert.ToBase64String(await GetContentAsync());
+            return "data:" + ContentType + ";base64," + Convert.ToBase64String(await GetContentAsync().ConfigureAwait(false));
         }
     }
 }

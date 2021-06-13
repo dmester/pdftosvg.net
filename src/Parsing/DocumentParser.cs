@@ -67,7 +67,7 @@ namespace PdfToSvg.Parsing
         public async Task ReadFileHeaderAsync()
         {
             var buffer = new byte[1024];
-            var readBytes = await lexer.Stream.ReadAsync(buffer, 0, buffer.Length);
+            var readBytes = await lexer.Stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
             ReadFileHeader(buffer, 0, readBytes);
         }
 
@@ -99,7 +99,7 @@ namespace PdfToSvg.Parsing
             lexer.Stream.Seek(-1024, SeekOrigin.End);
 
             var buffer = new byte[1024];
-            var readBytes = await lexer.Stream.ReadAsync(buffer, 0, buffer.Length);
+            var readBytes = await lexer.Stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
 
             return ReadStartXRef(buffer, 0, readBytes);
         }

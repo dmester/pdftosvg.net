@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg
 {
-    public class PdfPageCollection : ReadOnlyCollection<PdfPage>
+    public sealed class PdfPageCollection : ReadOnlyCollection<PdfPage>
     {
         internal PdfPageCollection(IList<PdfPage> list) : base(list)
         {

@@ -14,7 +14,6 @@ namespace PdfToSvg.Imaging
 {
     internal class JpegImage : Image
     {
-        private readonly PdfDictionary imageDictionary;
         private readonly PdfStream imageDictionaryStream;
 
         public JpegImage(PdfDictionary imageDictionary) : base("image/jpeg")
@@ -24,7 +23,6 @@ namespace PdfToSvg.Imaging
                 throw new ArgumentException("There was no data stream attached to the image dictionary.", nameof(imageDictionary));
             }
 
-            this.imageDictionary = imageDictionary;
             this.imageDictionaryStream = imageDictionary.Stream;
         }
 

@@ -16,18 +16,16 @@ namespace PdfToSvg
     /// <summary>
     /// Contains the public API for accessing an opened PDF file.
     /// </summary>
-    public class PdfDocument : IDisposable
+    public sealed class PdfDocument : IDisposable
     {
         private readonly PdfDictionary root;
         private readonly PdfDictionary info;
-        private readonly Dictionary<PdfObjectId, object?> objects;
         private InputFile? file;
 
-        internal PdfDocument(InputFile file, PdfDictionary? trailer, Dictionary<PdfObjectId, object?> objects)
+        internal PdfDocument(InputFile file, PdfDictionary? trailer)
         {
             this.info = trailer.GetDictionaryOrEmpty(Names.Info);
             this.root = trailer.GetDictionaryOrEmpty(Names.Root);
-            this.objects = objects;
             this.file = file;
 
             this.Pages = new PdfPageCollection(PdfReader

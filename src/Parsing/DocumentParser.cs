@@ -46,7 +46,7 @@ namespace PdfToSvg.Parsing
             this.file = file;
         }
 
-        private void ReadFileHeader(byte[] buffer, int offset, int count)
+        private static void ReadFileHeader(byte[] buffer, int offset, int count)
         {
             var str = Encoding.ASCII.GetString(buffer, offset, count);
 
@@ -71,7 +71,7 @@ namespace PdfToSvg.Parsing
             ReadFileHeader(buffer, 0, readBytes);
         }
 
-        private long ReadStartXRef(byte[] buffer, int offset, int count)
+        private static long ReadStartXRef(byte[] buffer, int offset, int count)
         {
             var str = Encoding.ASCII.GetString(buffer, offset, count);
 
@@ -132,8 +132,7 @@ namespace PdfToSvg.Parsing
                             var invalidLength = false;
 
                             // The length can be a reference. The referenced value might or might not have been read yet.
-                            var streamLengthRef = streamLengthObj as PdfRef;
-                            if (streamLengthRef != null && objectTable != null)
+                            if (streamLengthObj is PdfRef streamLengthRef && objectTable != null)
                             {
                                 objectTable.TryGetValue(streamLengthRef.Id, out streamLengthObj);
                             }

@@ -17,6 +17,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
+#pragma warning disable IDE1006
+#pragma warning disable IDE0051
+
 namespace PdfToSvg.Drawing
 {
     internal class SvgRenderer
@@ -1012,19 +1015,18 @@ namespace PdfToSvg.Drawing
         [Operation("Tr")]
         private void Tr_Renderer(int renderer)
         {
-            switch (renderer)
+            textState.RenderingMode = renderer switch
             {
-                case 0: textState.RenderingMode = TextRenderingMode.Fill; break;
-                case 1: textState.RenderingMode = TextRenderingMode.Stroke; break;
-                case 2: textState.RenderingMode = TextRenderingMode.Fill | TextRenderingMode.Stroke; break;
-                case 3: textState.RenderingMode = TextRenderingMode.None; break;
-                case 4: textState.RenderingMode = TextRenderingMode.Fill | TextRenderingMode.Clip; break;
-                case 5: textState.RenderingMode = TextRenderingMode.Stroke | TextRenderingMode.Clip; break;
-                case 6: textState.RenderingMode = TextRenderingMode.Fill | TextRenderingMode.Stroke | TextRenderingMode.Clip; break;
-                case 7: textState.RenderingMode = TextRenderingMode.Clip; break;
-                default: textState.RenderingMode = TextRenderingMode.Fill; break;
-            }
-
+                0 => TextRenderingMode.Fill,
+                1 => TextRenderingMode.Stroke,
+                2 => TextRenderingMode.Fill | TextRenderingMode.Stroke,
+                3 => TextRenderingMode.None,
+                4 => TextRenderingMode.Fill | TextRenderingMode.Clip,
+                5 => TextRenderingMode.Stroke | TextRenderingMode.Clip,
+                6 => TextRenderingMode.Fill | TextRenderingMode.Stroke | TextRenderingMode.Clip,
+                7 => TextRenderingMode.Clip,
+                _ => TextRenderingMode.Fill,
+            };
             textBuilder.InvalidateStyle();
         }
 
@@ -1094,7 +1096,7 @@ namespace PdfToSvg.Drawing
             textBuilder.UpdateLineMatrix(graphicsState);
         }
 
-        private List<TextParagraph> PrepareSvgSpans(List<TextParagraph> paragraphs, TextRenderingMode includedModes)
+        private static List<TextParagraph> PrepareSvgSpans(List<TextParagraph> paragraphs, TextRenderingMode includedModes)
         {
             // Horizontal scaling is resalized using the textLength attribute, which ensures any stroke
             // is not affected by the scaling. However, the support for textLength is rather buggy in 

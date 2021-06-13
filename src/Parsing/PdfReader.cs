@@ -30,53 +30,50 @@ namespace PdfToSvg.Parsing
 
         public static PdfDocument Read(InputFile file)
         {
-            using (var reader = file.CreateExclusiveReader())
+            using var reader = file.CreateExclusiveReader();
+            var parser = new DocumentParser(file, reader);
+
+            parser.ReadFileHeader();
+
+            var startxref = parser.ReadStartXRef();
+            var xrefTable = parser.ReadXRefTables(startxref);
+
+            if (xrefTable.Trailer != null &&
+                xrefTable.Trailer.ContainsKey(Names.Encrypt))
             {
-                var parser = new DocumentParser(file, reader);
-
-                parser.ReadFileHeader();
-
-                var startxref = parser.ReadStartXRef();
-                var xrefTable = parser.ReadXRefTables(startxref);
-
-                if (xrefTable.Trailer != null &&
-                    xrefTable.Trailer.ContainsKey(Names.Encrypt))
-                {
-                    throw Exceptions.EncryptedPdf();
-                }
-
-                var objects = parser.ReadAllObjects(xrefTable);
-
-                InlineReferences(objects);
-                InlineReferences(objects, xrefTable.Trailer);
-
-                return new PdfDocument(file, xrefTable.Trailer, objects);
+                throw Exceptions.EncryptedPdf();
             }
+
+            var objects = parser.ReadAllObjects(xrefTable);
+
+            InlineReferences(objects);
+            InlineReferences(objects, xrefTable.Trailer);
+
+            return new PdfDocument(file, xrefTable.Trailer);
         }
 
         public static async Task<PdfDocument> ReadAsync(InputFile file)
         {
-            using (var reader = await file.CreateExclusiveReaderAsync().ConfigureAwait(false))
+            using var reader = await file.CreateExclusiveReaderAsync().ConfigureAwait(false);
+
+            var parser = new DocumentParser(file, reader);
+
+            await parser.ReadFileHeaderAsync().ConfigureAwait(false);
+
+            var startxref = await parser.ReadStartXRefAsync().ConfigureAwait(false);
+            var xrefTable = parser.ReadXRefTables(startxref); // TODO make async
+
+            if (xrefTable.Trailer.ContainsKey(Names.Encrypt))
             {
-                var parser = new DocumentParser(file, reader);
-
-                await parser.ReadFileHeaderAsync().ConfigureAwait(false);
-
-                var startxref = await parser.ReadStartXRefAsync().ConfigureAwait(false);
-                var xrefTable = parser.ReadXRefTables(startxref); // TODO make async
-
-                if (xrefTable.Trailer.ContainsKey(Names.Encrypt))
-                {
-                    throw Exceptions.EncryptedPdf();
-                }
-
-                var objects = parser.ReadAllObjects(xrefTable); // TODO make async
-
-                InlineReferences(objects);
-                InlineReferences(objects, xrefTable.Trailer);
-
-                return new PdfDocument(file, xrefTable.Trailer, objects);
+                throw Exceptions.EncryptedPdf();
             }
+
+            var objects = parser.ReadAllObjects(xrefTable); // TODO make async
+
+            InlineReferences(objects);
+            InlineReferences(objects, xrefTable.Trailer);
+
+            return new PdfDocument(file, xrefTable.Trailer);
         }
 
         public static IList<PdfDictionary> GetFlattenedPages(PdfDictionary root)

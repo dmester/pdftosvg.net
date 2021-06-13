@@ -31,7 +31,7 @@ namespace PdfToSvg.DocumentModel
         /// </summary>
         public IReadOnlyList<PdfStreamFilter> Filters
         {
-            get => filters ?? (filters = GetFilters());
+            get => filters ??= GetFilters();
         }
 
         /// <summary>

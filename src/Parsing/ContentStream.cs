@@ -52,10 +52,8 @@ namespace PdfToSvg.Parsing
                 var stream = content.Stream;
                 if (stream != null)
                 {
-                    using (var decodedStream = stream.OpenDecoded())
-                    {
-                        await decodedStream.CopyToAsync(combinedBuffer).ConfigureAwait(false);
-                    }
+                    using var decodedStream = stream.OpenDecoded();
+                    await decodedStream.CopyToAsync(combinedBuffer).ConfigureAwait(false);
                 }
             }
 
@@ -72,10 +70,8 @@ namespace PdfToSvg.Parsing
                 var stream = content.Stream;
                 if (stream != null)
                 {
-                    using (var decodedStream = stream.OpenDecoded())
-                    {
-                        decodedStream.CopyTo(combinedBuffer);
-                    }
+                    using var decodedStream = stream.OpenDecoded();
+                    decodedStream.CopyTo(combinedBuffer);
                 }
             }
 

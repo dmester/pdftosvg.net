@@ -96,25 +96,13 @@ namespace PdfToSvg.IO
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            long newPosition;
-
-            switch (origin)
+            var newPosition = origin switch
             {
-                case SeekOrigin.Begin:
-                    newPosition = offset;
-                    break;
-
-                case SeekOrigin.Current:
-                    newPosition = Position + offset;
-                    break;
-
-                case SeekOrigin.End:
-                    newPosition = Length + offset;
-                    break;
-
-                default:
-                    throw new ArgumentException(nameof(origin));
-            }
+                SeekOrigin.Begin => offset,
+                SeekOrigin.Current => Position + offset,
+                SeekOrigin.End => Length + offset,
+                _ => throw new ArgumentOutOfRangeException(nameof(origin)),
+            };
 
             if (newPosition < 0)
             {

@@ -58,17 +58,16 @@ namespace PdfToSvg.IO
 
             foreach (var streamFactory in streamFactories)
             {
-                using (var stream = streamFactory())
+                using var stream = streamFactory();
+
+                do
                 {
-                    do
-                    {
-                        var chunk = new byte[4096];
-                        bytesThisIteration = stream.Read(chunk, 0, chunk.Length);
-                        totalBytes += bytesThisIteration;
-                        chunks.Add(chunk);
-                    }
-                    while (bytesThisIteration > 0);
+                    var chunk = new byte[4096];
+                    bytesThisIteration = stream.Read(chunk, 0, chunk.Length);
+                    totalBytes += bytesThisIteration;
+                    chunks.Add(chunk);
                 }
+                while (bytesThisIteration > 0);
             }
 
             var result = new byte[totalBytes];
@@ -92,17 +91,16 @@ namespace PdfToSvg.IO
 
             foreach (var streamFactory in streamFactories)
             {
-                using (var stream = streamFactory())
+                using var stream = streamFactory();
+
+                do
                 {
-                    do
-                    {
-                        var chunk = new byte[4096];
-                        bytesThisIteration = await stream.ReadAsync(chunk, 0, chunk.Length).ConfigureAwait(false);
-                        totalBytes += bytesThisIteration;
-                        chunks.Add(chunk);
-                    }
-                    while (bytesThisIteration > 0);
+                    var chunk = new byte[4096];
+                    bytesThisIteration = await stream.ReadAsync(chunk, 0, chunk.Length).ConfigureAwait(false);
+                    totalBytes += bytesThisIteration;
+                    chunks.Add(chunk);
                 }
+                while (bytesThisIteration > 0);
             }
 
             var result = new byte[totalBytes];
@@ -127,7 +125,7 @@ namespace PdfToSvg.IO
 
             var chunks = new List<byte[]>();
             var totalBytes = 0;
-            var bytesThisIteration = 0;
+            int bytesThisIteration;
 
             do
             {
@@ -160,7 +158,7 @@ namespace PdfToSvg.IO
 
             var chunks = new List<byte[]>();
             var totalBytes = 0;
-            var bytesThisIteration = 0;
+            int bytesThisIteration;
 
             do
             {

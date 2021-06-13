@@ -18,7 +18,7 @@ namespace PdfToSvg
     /// <summary>
     /// Represents a single page in a PDF document.
     /// </summary>
-    public class PdfPage
+    public sealed class PdfPage
     {
         private readonly PdfDocument owner;
         private readonly PdfDictionary page;
@@ -118,10 +118,8 @@ namespace PdfToSvg
             var content = SvgRenderer.Convert(page, options);
             var document = new XDocument(content);
 
-            using (var writer = new SvgXmlWriter(stream, Encoding.UTF8))
-            {
-                document.WriteTo(writer);
-            }
+            using var writer = new SvgXmlWriter(stream, Encoding.UTF8);
+            document.WriteTo(writer);
         }
 
         /// <summary>
@@ -131,10 +129,8 @@ namespace PdfToSvg
         /// <param name="options">Additional configuration options for the conversion.</param>
         public void SaveAsSvg(string path, SvgConversionOptions options)
         {
-            using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                SaveAsSvg(stream, options);
-            }
+            using var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
+            SaveAsSvg(stream, options);
         }
 
         /// <summary>
@@ -162,17 +158,14 @@ namespace PdfToSvg
             var document = new XDocument(content);
 
             // XmlTextWriter does not support async, so buffer the file before writing it to the output stream.
-            using (var memoryStream = new MemoryStream())
-            {
-                using (var writer = new SvgXmlWriter(memoryStream, Encoding.UTF8))
-                {
-                    document.WriteTo(writer);
-                    writer.Flush();
+            using var memoryStream = new MemoryStream();
+            using var writer = new SvgXmlWriter(memoryStream, Encoding.UTF8);
 
-                    var buffer = memoryStream.GetBuffer();
-                    await stream.WriteAsync(buffer, 0, (int)memoryStream.Length).ConfigureAwait(false);
-                }
-            }
+            document.WriteTo(writer);
+            writer.Flush();
+
+            var buffer = memoryStream.GetBuffer();
+            await stream.WriteAsync(buffer, 0, (int)memoryStream.Length).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -182,22 +175,19 @@ namespace PdfToSvg
         /// <param name="options">Additional configuration options for the conversion.</param>
         public async Task SaveAsSvgAsync(string path, SvgConversionOptions options)
         {
-            using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                await SaveAsSvgAsync(stream, options).ConfigureAwait(false);
-            }
+            using var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
+            await SaveAsSvgAsync(stream, options).ConfigureAwait(false);
         }
 
-        private string ToString(XNode el)
+        private static string ToString(XNode el)
         {
-            using (var stringWriter = new StringWriter())
-            {
-                using (var writer = new SvgXmlWriter(stringWriter))
-                {
-                    el.WriteTo(writer);
-                }
-                return stringWriter.ToString();
-            }
+            using var stringWriter = new StringWriter();
+            using var writer = new SvgXmlWriter(stringWriter);
+
+            el.WriteTo(writer);
+            writer.Flush();
+
+            return stringWriter.ToString();
         }
     }
 }

@@ -107,23 +107,14 @@ namespace PdfToSvg
         public override long Seek(long offset, SeekOrigin origin)
         {
             if (stream == null) throw new ObjectDisposedException(nameof(StreamSlice));
-
-            long newPosition;
-
-            switch (origin)
+            
+            var newPosition = origin switch
             {
-                case SeekOrigin.Begin:
-                    newPosition = offset;
-                    break;
-                case SeekOrigin.Current:
-                    newPosition = cursor + offset;
-                    break;
-                case SeekOrigin.End:
-                    newPosition = length + offset;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(origin));
-            }
+                SeekOrigin.Begin => offset,
+                SeekOrigin.Current => cursor + offset,
+                SeekOrigin.End => length + offset,
+                _ => throw new ArgumentOutOfRangeException(nameof(origin)),
+            };
 
             if (newPosition < 0)
             {

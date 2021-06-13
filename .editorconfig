@@ -1,0 +1,20 @@
+# To learn more about .editorconfig see https://aka.ms/editorconfigdocs
+
+[*]
+indent_style = space
+
+[*.cs]
+indent_size = 4
+insert_final_newline = true
+charset = utf-8-bom
+
+dotnet_style_readonly_field = true:silent
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
+csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:suggestion
+
+# Require ConfigureAwait on Tasks
+dotnet_diagnostic.CA2007.severity = error
+dotnet_code_quality.CA2007.output_kind = DynamicallyLinkedLibrary
+
+dotnet_diagnostic.IDE0073.severity = warning
+file_header_template = Copyright (c) PdfToSvg.NET contributors.\nhttps://github.com/dmester/pdftosvg.net\nLicensed under the MIT License.

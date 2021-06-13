@@ -21,6 +21,8 @@
     <PackageIconUrl />
     <RepositoryType>git</RepositoryType>
     <Version>0.1.0-alpha</Version>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>5</AnalysisLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(Configuration) == 'Release'">

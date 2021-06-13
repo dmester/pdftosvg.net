@@ -11,7 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfToSvg.Driver", "tests\Pd
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{F4AEEB7B-A810-44EF-B3EC-26943FF7E205}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LzwEncoder", "tools\LzwEncoder\LzwEncoder.csproj", "{6BBF2731-B2E6-4440-8156-5D967978FCA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LzwEncoder", "tools\LzwEncoder\LzwEncoder.csproj", "{6BBF2731-B2E6-4440-8156-5D967978FCA8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7B629648-EA1E-41AF-89AD-F37365CBA778}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

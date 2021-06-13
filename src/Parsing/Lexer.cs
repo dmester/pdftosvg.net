@@ -215,7 +215,7 @@ namespace PdfToSvg.Parsing
             var startPosition = Stream.Position;
             var expectedEndParentheses = 0;
 
-            Stream.Skip(); // TODO assert? Starting (
+            Stream.ReadChar('(');
 
             while (true)
             {
@@ -310,7 +310,7 @@ namespace PdfToSvg.Parsing
         protected Lexeme ReadName()
         {
             var startPosition = Stream.Position;
-            Stream.Skip();
+            Stream.ReadChar('/');
 
             while (true)
             {
@@ -361,7 +361,7 @@ namespace PdfToSvg.Parsing
         {
             var startPosition = Stream.Position;
 
-            Stream.Skip(); // TODO assert
+            Stream.ReadChar('<');
             var nextChar = Stream.PeekChar();
 
             var hi = -1;
@@ -428,6 +428,16 @@ namespace PdfToSvg.Parsing
         public Lexeme Peek(int offset) => forwardLexemeBuffer.Peek(offset);
 
         public Lexeme Read() => forwardLexemeBuffer.Read();
+
+        public void Read(Token expectedToken)
+        {
+            var lexeme = Read();
+            
+            if (lexeme.Token != expectedToken)
+            {
+                throw new PdfParserException($"Expected {expectedToken} but found {lexeme.Token}.", lexeme.Position);
+            }
+        }
 
         private Lexeme ReadLexeme()
         {

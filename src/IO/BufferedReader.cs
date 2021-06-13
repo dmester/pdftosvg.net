@@ -240,6 +240,15 @@ namespace PdfToSvg.IO
             return unchecked((char)buffer[readCursor++]);
         }
 
+        public void ReadChar(char expectedChar)
+        {
+            var actualChar = ReadChar();
+            if (actualChar != expectedChar)
+            {
+                throw new InvalidOperationException($"Expected to read the character '{expectedChar}' but instead found '{actualChar}'. Position: {Position}");
+            }
+        }
+
         public char PeekChar() => PeekChar(1);
 
         public char PeekChar(int offset)

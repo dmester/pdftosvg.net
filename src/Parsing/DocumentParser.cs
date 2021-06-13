@@ -195,7 +195,7 @@ namespace PdfToSvg.Parsing
 
         public void ReadXRefTable(XRefTable xrefTable)
         {
-            lexer.Read(); // TODO assert Xref
+            lexer.Read(Token.Xref);
 
             while (TryReadInteger(out var startObjectNumber) && TryReadInteger(out var entryCount))
             {

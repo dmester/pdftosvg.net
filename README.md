@@ -4,6 +4,7 @@
 
 # PdfToSvg.NET
 [![Tests](https://img.shields.io/github/workflow/status/dmester/pdftosvg.net/Tests/master?style=flat-square)](https://github.com/dmester/pdftosvg.net/actions)
+[![NuGet](https://img.shields.io/nuget/vpre/PdfToSvg.NET?style=flat-square)](https://www.nuget.org/packages/PdfToSvg.NET/)
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](https://github.com/dmester/pdftosvg.net/blob/master/LICENSE)
 
 Fully managed library for converting PDF files to SVG. Potential usage is embedding PDFs on your site without the need of loading a PDF reader.
@@ -12,7 +13,7 @@ Fully managed library for converting PDF files to SVG. Potential usage is embedd
 The library is still under active development and should not yet be used in production code.
 
 ## Install
-Install the PdfToSvg.NET NuGet package.
+Install the [PdfToSvg.NET NuGet package](https://www.nuget.org/packages/PdfToSvg.NET/).
 
 ```
 PM> Install-Package PdfToSvg.NET

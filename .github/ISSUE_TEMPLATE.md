@@ -1,4 +1,4 @@
-To report an issue, please read and check the following steps:
+Before reporting an issue, please ensure:
 
-- [ ] I have read the list of non-supported features and the issue is not regarding one of them.
-- [ ] I have provided a link to the PDF file that cannot be converted (if applicable).
+* Your issue is not regarding a non-supported feature. See a non-complete list in the README.
+* You have provided a link to the PDF file that cannot be converted (if applicable).

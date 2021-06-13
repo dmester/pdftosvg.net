@@ -14,8 +14,24 @@ using System.Threading.Tasks;
 namespace PdfToSvg
 {
     /// <summary>
-    /// Contains the public API for accessing an opened PDF file.
+    /// Contains information about a loaded PDF file.
     /// </summary>
+    /// <example>
+    /// <para>
+    ///     The following example opens a PDF file and saves each page as an SVG file.
+    /// </para>
+    /// <code lang="cs" title="Convert PDF to SVG">
+    /// using (var doc = PdfDocument.Open("input.pdf"))
+    /// {
+    ///     var pageIndex = 0;
+    /// 
+    ///     foreach (var page in doc.Pages)
+    ///     {
+    ///         page.SaveAsSvg($"output-{pageIndex++}.svg");
+    ///     }
+    /// }
+    /// </code>
+    /// </example>
     public sealed class PdfDocument : IDisposable
     {
         private readonly PdfDictionary root;

@@ -15,6 +15,9 @@ namespace PdfToSvg
     /// </summary>
     public class EncryptedPdfException : Exception
     {
+        /// <summary>
+        /// Creates a new instance of <see cref="EncryptedPdfException"/>.
+        /// </summary>
         public EncryptedPdfException() :
             base("The specified PDF file is encrypted. Encrypted PDF files are currently not supported.")
         {

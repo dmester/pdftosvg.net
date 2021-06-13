@@ -24,8 +24,14 @@ namespace PdfToSvg
         /// </summary>
         public abstract string FontFamily { get; }
 
+        /// <summary>
+        /// Returns the hash code for this font.
+        /// </summary>
         public override int GetHashCode() => FontFamily?.GetHashCode() ?? 0;
 
+        /// <summary>
+        /// Returns a string representation of this font.
+        /// </summary>
         public override string ToString() => FontFamily ?? "";
     }
 }

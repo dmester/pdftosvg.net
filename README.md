@@ -29,7 +29,7 @@ using (var doc = PdfDocument.Open("input.pdf"))
 
     foreach (var page in doc.Pages)
     {
-        File.WriteAllText($"output-{pageIndex++}.svg", page.ToSvg());
+        page.SaveAsSvg($"output-{pageIndex++}.svg");
     }
 }
 ```

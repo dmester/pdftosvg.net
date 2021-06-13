@@ -46,14 +46,24 @@ namespace PdfToSvg.Imaging
             var decodeParms = lastFilter.DecodeParms;
             var bitsPerComponent = decodeParms == null ? 8 : decodeParms.GetValueOrDefault(Names.BitsPerComponent, 8);
 
-            // A decode array requires unpacking and scaling each pixel
-            if (imageDictionary.ContainsKey(Names.Decode))
+            // See supported color types and bit depths in PNG:
+            // https://www.w3.org/TR/PNG/#table111
+
+            if (colorSpace is IndexedColorSpace)
+            {
+                return
+                    bitsPerComponent == 1 ||
+                    bitsPerComponent == 2 ||
+                    bitsPerComponent == 4 ||
+                    bitsPerComponent == 8;
+            }
+
+            // A decode array requires unpacking and scaling each pixel except for indexed images,
+            // where the decoding can be done entirely on the color table.
+            if (ImageHelper.HasCustomDecodeArray(imageDictionary, colorSpace))
             {
                 return false;
             }
-
-            // See supported color types and bit depths in PNG:
-            // https://www.w3.org/TR/PNG/#table111
 
             if (colorSpace is DeviceRgbColorSpace)
             {
@@ -69,14 +79,6 @@ namespace PdfToSvg.Imaging
                     bitsPerComponent == 4 ||
                     bitsPerComponent == 8 ||
                     bitsPerComponent == 16;
-            }
-            else if (colorSpace is IndexedColorSpace)
-            {
-                return
-                    bitsPerComponent == 1 ||
-                    bitsPerComponent == 2 ||
-                    bitsPerComponent == 4 ||
-                    bitsPerComponent == 8;
             }
 
             return false;
@@ -107,10 +109,13 @@ namespace PdfToSvg.Imaging
                 var paletteColorCount = 1 << bitsPerComponent;
                 palette = new byte[paletteColorCount * PaletteBytesPerColor];
 
+                var decodeArray = ImageHelper.GetDecodeArray(imageDictionary, colorSpace);
+
                 var indexedColorValue = new float[1];
                 for (var i = 0; i < indexedColorSpace.ColorCount && i < paletteColorCount; i++)
                 {
                     indexedColorValue[0] = i;
+                    decodeArray.Decode(indexedColorValue, 0, 1);
                     indexedColorSpace.ToRgb8(indexedColorValue, 0, palette, i * PaletteBytesPerColor, 1);
                 }
             }

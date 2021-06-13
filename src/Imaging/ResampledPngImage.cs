@@ -41,16 +41,7 @@ namespace PdfToSvg.Imaging
             var width = imageDictionary.GetValueOrDefault(Names.Width, 0);
             var height = imageDictionary.GetValueOrDefault(Names.Height, 0);
 
-            DecodeArray decodeArray;
-
-            if (imageDictionary.TryGetArray<double>(Names.Decode, out var decodeValues))
-            {
-                decodeArray = new DecodeArray(bitsPerComponent, decodeValues);
-            }
-            else
-            {
-                decodeArray = colorSpace.GetDefaultDecodeArray(bitsPerComponent);
-            }
+            var decodeArray = ImageHelper.GetDecodeArray(imageDictionary, colorSpace);
 
             var pngStream = new MemoryStream();
             var pngWriter = new PngEncoder(pngStream);

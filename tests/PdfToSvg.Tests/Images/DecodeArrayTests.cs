@@ -35,5 +35,23 @@ namespace PdfToSvg.Tests.Images
 
             Assert.That(data, Is.EqualTo(new[] { .2f, 2f, .52f, 1.2f, .44f }).Within(0.00001f));
         }
+
+        [Test]
+        public void Equal()
+        {
+            var decodeArray1 = new DecodeArray(4, new[] { .2f, .8f, 0f, 2.00001f });
+            var decodeArray2 = new DecodeArray(4, new[] { .2f, .8f, 0f, 2f, 6f });
+
+            Assert.AreEqual(decodeArray1, decodeArray2);
+        }
+
+        [Test]
+        public void NotEqual()
+        {
+            var decodeArray1 = new DecodeArray(4, new[] { .2f, .8f, 0f, 2f });
+            var decodeArray2 = new DecodeArray(4, new[] { .2f, .5f, 0f, 1f });
+
+            Assert.AreNotEqual(decodeArray1, decodeArray2);
+        }
     }
 }

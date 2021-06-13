@@ -285,18 +285,39 @@ namespace PdfToSvg.Drawing
                 imageObject.TryGetInteger(Names.Width, out width) &&
                 imageObject.TryGetInteger(Names.Height, out height))
             {
-                var colorSpace = GetColorSpace(imageObject[Names.ColorSpace]);
-                if (colorSpace == null)
+                ColorSpace colorSpace;
+
+                if (imageObject.GetValueOrDefault(Names.ImageMask, false))
                 {
-                    // TODO handle for masks
                     // PDF spec 1.7, Table 89
-                    return null;
+                    // Unmasked pixels should be rendered using the stroking color
+
+                    static byte FloatToByte(float floatValue)
+                    {
+                        return (byte)MathUtils.Clamp(unchecked((int)(floatValue * 255f)), 0, 255);
+                    }
+
+                    var strokeColor = graphicsState.StrokeColor;
+
+                    var colorLookup = new byte[]
+                    {
+                        /* 0 */ FloatToByte(strokeColor.Red), FloatToByte(strokeColor.Green), FloatToByte(strokeColor.Blue),
+                        /* 1 */ 255, 255, 255
+                    };
+
+                    colorSpace = new IndexedColorSpace(new DeviceRgbColorSpace(), colorLookup);
+                }
+                else
+                {
+                    colorSpace = GetColorSpace(imageObject[Names.ColorSpace]);
                 }
 
                 var image = ImageFactory.Create(imageObject, colorSpace);
                 if (image != null)
                 {
-                    // TODO add Dictinary<Image, string> to ensure stable ids
+                    // TODO add Dictinary<Image, string> to ensure stable ids.
+                    // The key should be a combination of stroking color, image id, and some other data if it is an inline image.
+
                     var imageResolver = options.ImageResolver ?? new DataUriImageResolver();
                     var imageUrl = imageResolver.ResolveImageUrl(image);
                     var imageId = StableID.Generate("im", imageUrl);

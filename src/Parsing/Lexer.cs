@@ -112,7 +112,7 @@ namespace PdfToSvg.Parsing
 
             var keywordName = new PdfString(stringBuffer);
             stringBuffer.SetLength(0);
-            
+
             if (keywords.TryGetValue(keywordName.ToString(), out var keyword))
             {
                 if (keyword == Token.Stream)
@@ -323,8 +323,8 @@ namespace PdfToSvg.Parsing
                     stringBuffer.WriteByte(hexByte < 0 ? (byte)'#' : (byte)hexByte);
                 }
                 else if (
-                    nextChar == BufferedReader.EndOfStreamMarker || 
-                    PdfCharacters.IsWhiteSpace(nextChar) || 
+                    nextChar == BufferedReader.EndOfStreamMarker ||
+                    PdfCharacters.IsWhiteSpace(nextChar) ||
                     PdfCharacters.IsDelimiter(nextChar))
                 {
                     break;
@@ -482,9 +482,19 @@ namespace PdfToSvg.Parsing
                         result = ReadKeyword();
                         break;
 
-                    case '+': case '-': case '.':
-                    case '0': case '1': case '2': case '3': case '4':
-                    case '5': case '6': case '7': case '8': case '9':
+                    case '+':
+                    case '-':
+                    case '.':
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
                         result = ReadNumber();
                         break;
 

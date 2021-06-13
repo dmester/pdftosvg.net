@@ -16,7 +16,7 @@ namespace PdfToSvg.Filters
         private readonly Stream stream;
 
         private int copyBytesLeft;
-        
+
         private byte repeatedByte;
         private int repeatsLeft;
 

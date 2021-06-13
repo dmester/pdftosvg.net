@@ -8,7 +8,7 @@ using System.Globalization;
 
 namespace PdfToSvg
 {
-    internal struct Lexeme: IEquatable<Lexeme>
+    internal struct Lexeme : IEquatable<Lexeme>
     {
         long position;
 
@@ -71,10 +71,10 @@ namespace PdfToSvg
             }
         }
 
-        public override bool Equals(object obj) => 
+        public override bool Equals(object obj) =>
             obj is Lexeme lexeme && Equals(lexeme);
 
-        public bool Equals(Lexeme other) => 
+        public bool Equals(Lexeme other) =>
             other.Token == Token &&
             (
                 other.position == 0 ||
@@ -85,8 +85,8 @@ namespace PdfToSvg
 
         public override int GetHashCode() => (int)Token;
 
-        public override string ToString() => position == 0 
-            ? $"{Token} {Value}" 
+        public override string ToString() => position == 0
+            ? $"{Token} {Value}"
             : $"{Token} {Value} (pos {position})";
     }
 }

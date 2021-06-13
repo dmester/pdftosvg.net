@@ -220,7 +220,7 @@ namespace PdfToSvg.Tests.IO
         {
             var compressed = File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "IO", "ZLib_WindowBits15.bin"));
             var expectedUncompressed = File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "IO", "ZLib_Uncompressed.bmp"));
-            
+
             compressed[compressed.Length - 1] = (byte)(1 ^ compressed[compressed.Length - 1]);
 
             var actualUncompressed = Inflate(compressed);

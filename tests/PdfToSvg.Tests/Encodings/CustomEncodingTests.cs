@@ -21,7 +21,7 @@ namespace PdfToSvg.Tests.Encodings
             var decoder = CustomEncoding.Create(new PdfDictionary
             {
                 { Names.BaseEncoding, Names.WinAnsiEncoding },
-                { Names.Differences, new object[] 
+                { Names.Differences, new object[]
                 {
                     39, new PdfName("quotesingle"),
                     128, new PdfName("Aring"), new PdfName("Ntilde"),

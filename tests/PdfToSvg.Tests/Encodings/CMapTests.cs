@@ -28,7 +28,7 @@ namespace PdfToSvg.Tests.Encodings
             cmap.AddBfChar(new PdfString(new byte[] { 9, 5 }), PdfString.FromUnicode("95"));
             cmap.AddBfRange(new PdfString(new byte[] { 6 }), new PdfString(new byte[] { 8 }), PdfString.FromUnicode("ghi"));
             cmap.AddBfRange(new PdfString(new byte[] { 9, 6 }), new PdfString(new byte[] { 9, 15 }), PdfString.FromUnicode("A"));
-            
+
             Assert.AreEqual("abc", cmap.GetCharacter(new PdfString(new byte[] { 4, 0, 0 }), 0).DestinationString);
             Assert.AreEqual("def", cmap.GetCharacter(new PdfString(new byte[] { 5, 0, 0 }), 0).DestinationString);
             Assert.AreEqual("94", cmap.GetCharacter(new PdfString(new byte[] { 9, 4, 0 }), 0).DestinationString);

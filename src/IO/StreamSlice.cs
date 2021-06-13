@@ -107,7 +107,7 @@ namespace PdfToSvg
         public override long Seek(long offset, SeekOrigin origin)
         {
             if (stream == null) throw new ObjectDisposedException(nameof(StreamSlice));
-            
+
             long newPosition;
 
             switch (origin)

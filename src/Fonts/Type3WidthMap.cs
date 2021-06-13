@@ -30,7 +30,7 @@ namespace PdfToSvg.Fonts
             }
         }
 
-        public new static Type3WidthMap Parse(PdfDictionary font)
+        public static new Type3WidthMap Parse(PdfDictionary font)
         {
             return new Type3WidthMap(font);
         }

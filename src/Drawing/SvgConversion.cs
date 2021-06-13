@@ -20,7 +20,7 @@ namespace PdfToSvg.Drawing
         {
             var intComponent = (int)(component * 255);
 
-            var result = new[] 
+            var result = new[]
             {
                 Hex[(intComponent >> 4) & 0xf],
                 Hex[intComponent & 0xf],
@@ -63,7 +63,7 @@ namespace PdfToSvg.Drawing
         {
             var result = new StringBuilder();
             var lastPosition = (IMovingCommand?)null;
-            
+
             foreach (var command in path)
             {
                 switch (command)
@@ -87,8 +87,8 @@ namespace PdfToSvg.Drawing
                         }
                         else
                         {
-                            result.Append("l" + 
-                                FormatCoordinate(lineTo.X - lastPosition.X) + " " + 
+                            result.Append("l" +
+                                FormatCoordinate(lineTo.X - lastPosition.X) + " " +
                                 FormatCoordinate(lineTo.Y - lastPosition.Y));
                         }
                         break;

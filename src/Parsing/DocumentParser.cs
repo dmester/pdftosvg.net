@@ -74,7 +74,7 @@ namespace PdfToSvg.Parsing
         private long ReadStartXRef(byte[] buffer, int offset, int count)
         {
             var str = Encoding.ASCII.GetString(buffer, offset, count);
-            
+
             var eof = Regex.Match(str, "startxref[\0\t\n\f\r ]*([0-9]+)[\0\t\n\f\r ]*%%EOF", RegexOptions.RightToLeft);
             if (!eof.Success)
             {
@@ -115,7 +115,7 @@ namespace PdfToSvg.Parsing
             }
 
             var end = false;
-            
+
             var objectId = new PdfObjectId(objectIdNum, generation);
             object? objectValue = null;
             PdfStream? objectStream = null;
@@ -137,7 +137,7 @@ namespace PdfToSvg.Parsing
                             {
                                 objectTable.TryGetValue(streamLengthRef.Id, out streamLengthObj);
                             }
-                            
+
                             if (streamLengthObj is int streamLengthInt)
                             {
                                 streamLength = Math.Max(0, streamLengthInt);
@@ -246,7 +246,7 @@ namespace PdfToSvg.Parsing
                 var entryBuffer = new byte[widths.Sum()];
 
                 using var data = OpenDecodedSharedStream(xrefDict.Stream);
-                
+
                 while (true)
                 {
                     var read = data.Read(entryBuffer, 0, entryBuffer.Length);
@@ -363,7 +363,7 @@ namespace PdfToSvg.Parsing
         {
             var xrefTable = new XRefTable();
             var trailerSet = false;
-            
+
             var byteOffsets = new HashSet<long>();
 
             while (byteOffsetLastXRef >= 0)

@@ -13,7 +13,7 @@ namespace PdfToSvg.Parsing
     internal abstract class Parser
     {
         protected readonly Lexer lexer;
-        
+
         public Parser(Lexer lexer)
         {
             this.lexer = lexer;
@@ -94,7 +94,7 @@ namespace PdfToSvg.Parsing
 
                 PdfName name;
 
-                if (nextLexeme.Token == Token.BeginImageData || 
+                if (nextLexeme.Token == Token.BeginImageData ||
                     nextLexeme.Token == Token.EndImage)
                 {
                     break;
@@ -123,7 +123,7 @@ namespace PdfToSvg.Parsing
             }
 
             InlineImageHelper.DeabbreviateInlineImageDictionary(dictionary);
-            
+
             if (nextLexeme.Token == Token.BeginImageData)
             {
                 // According to PDF spec 1.7, page 223, ID should be followed by a single whitespace character.

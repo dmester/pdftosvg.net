@@ -70,7 +70,7 @@ namespace PdfToSvg.Drawing
             transform = Matrix.Scale(1, -1, transform);
 
             transform.DecomposeScale(out scale, out transform);
-            
+
             normalizedFontSize = graphicsState.TextState.FontSize * scale;
 
             // Force font size to be positive
@@ -130,7 +130,7 @@ namespace PdfToSvg.Drawing
             if (wordSpacing != 0)
             {
                 // TODO not correct, scale is not horizontal
-                var wordSpacingGlobalUnits = wordSpacing * scale; 
+                var wordSpacingGlobalUnits = wordSpacing * scale;
                 var words = decodedText.Split(' ');
 
                 // This is not accurate, but the width of each individual word is not important
@@ -166,7 +166,7 @@ namespace PdfToSvg.Drawing
             const double WidthMultiplier = -FontSizeMultiplier * ScalingMultiplier;
 
             var widthTextSpace = widthGlyphSpaceUnits *
-                graphicsState.TextState.FontSize * 
+                graphicsState.TextState.FontSize *
                 graphicsState.TextState.Scaling * WidthMultiplier *
                 scale;
 
@@ -185,7 +185,7 @@ namespace PdfToSvg.Drawing
 
             var absolutePendingSpace = Math.Abs(pendingSpace);
 
-            var mergeWithPrevious = 
+            var mergeWithPrevious =
                 absolutePendingSpace < minSpacePx ||
                 absolutePendingSpace < minSpaceEm * normalizedFontSize;
 

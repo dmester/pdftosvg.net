@@ -38,7 +38,7 @@ namespace PdfToSvg.IO
 
                 s2 += s1;
             }
-            
+
             this.s1 = s1 % Modulo;
             this.s2 = s2 % Modulo;
         }

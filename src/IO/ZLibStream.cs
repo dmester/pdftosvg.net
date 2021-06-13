@@ -2,15 +2,15 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg;
+using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using PdfToSvg;
 using System.IO.Compression;
-using System.Threading.Tasks;
+using System.Text;
 using System.Threading;
-using PdfToSvg.Common;
+using System.Threading.Tasks;
 
 namespace PdfToSvg.IO
 {
@@ -73,7 +73,7 @@ namespace PdfToSvg.IO
 
         private readonly Adler32 adler = new Adler32();
         private readonly CompressionMode mode;
-        
+
         private StripTrailerStream? trailerStream;
         private Stream? baseStream;
         private Stream? deflateStream;
@@ -92,7 +92,7 @@ namespace PdfToSvg.IO
                 const byte cmf = (CINFO_32K << 4) | CM_Deflate;
                 const byte flg = FLEVEL_Default << 6;
                 const byte fcheck = (10000 * 31 - cmf * 256 - flg) % 31;
-                
+
                 stream.WriteByte(cmf);
                 stream.WriteByte(flg | fcheck);
 
@@ -159,7 +159,7 @@ namespace PdfToSvg.IO
             {
                 adler.Update(buffer, offset, read);
             }
-            else 
+            else
             {
                 endOfStream = true;
 

@@ -24,7 +24,7 @@ namespace PdfToSvg.Drawing
             {
                 throw new ArgumentNullException(nameof(components));
             }
-            
+
             // If the color space is not supported, or if the page is corrupted, there might be some
             // components missing. Don't make the whole page or document fail parsing because of this.
             var fullComponents = components;
@@ -70,7 +70,7 @@ namespace PdfToSvg.Drawing
 
         public override int GetHashCode()
         {
-            return 
+            return
                 (((int)Red * 255) << 16) |
                 (((int)Green * 255) << 8) |
                 ((int)Blue * 255);
@@ -81,7 +81,7 @@ namespace PdfToSvg.Drawing
 
         public bool Equals(RgbColor other)
         {
-            return 
+            return
                 other.Red == Red &&
                 other.Green == Green &&
                 other.Blue == Blue;

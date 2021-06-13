@@ -14,7 +14,7 @@ namespace PdfToSvg.Imaging.Png
     internal class PngEncoder
     {
         private readonly Stream output;
-        
+
         public PngEncoder(Stream output)
         {
             this.output = output;

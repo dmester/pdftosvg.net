@@ -192,7 +192,7 @@ namespace PdfToSvg.ColorSpaces
                     return new DeviceGrayColorSpace();
                 }
 
-                if (colorSpaceResourcesDictionary != null && 
+                if (colorSpaceResourcesDictionary != null &&
                     colorSpaceResourcesDictionary.TryGetValue(singleColorSpaceName, out var colorSpaceResource))
                 {
                     return Parse(colorSpaceResource, colorSpaceResourcesDictionary, recursionCount + 1);

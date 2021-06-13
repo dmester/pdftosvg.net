@@ -74,7 +74,7 @@ namespace PdfToSvg.Fonts
             var sb = new StringBuilder(value.Length);
             width = 0;
 
-            for (var i = 0; i < value.Length; )
+            for (var i = 0; i < value.Length;)
             {
                 var character = textDecoder.GetCharacter(value, i);
                 if (character.IsEmpty)

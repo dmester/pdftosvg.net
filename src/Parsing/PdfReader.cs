@@ -39,7 +39,7 @@ namespace PdfToSvg.Parsing
                 var startxref = parser.ReadStartXRef();
                 var xrefTable = parser.ReadXRefTables(startxref);
 
-                if (xrefTable.Trailer != null && 
+                if (xrefTable.Trailer != null &&
                     xrefTable.Trailer.ContainsKey(Names.Encrypt))
                 {
                     throw Exceptions.EncryptedPdf();

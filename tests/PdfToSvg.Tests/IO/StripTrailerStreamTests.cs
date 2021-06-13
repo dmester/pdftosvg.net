@@ -120,7 +120,7 @@ namespace PdfToSvg.Tests.IO
 
             do
             {
-                read = await readImpl(trailerStream, 
+                read = await readImpl(trailerStream,
                     readBuffer, totalRead,
                     Math.Min(readPattern[readPatternIndex], readBuffer.Length - totalRead));
 

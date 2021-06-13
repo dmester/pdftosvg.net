@@ -16,13 +16,13 @@ namespace PdfToSvg.Fonts
     {
         private readonly Dictionary<uint, double> widthMap;
         private const double WidthMultiplier = 0.001;
-        
+
         private CIDFontWidthMap(Dictionary<uint, double> widthMap)
         {
             this.widthMap = widthMap;
         }
 
-        public new static CIDFontWidthMap Parse(PdfDictionary font)
+        public static new CIDFontWidthMap Parse(PdfDictionary font)
         {
             var widthMap = new Dictionary<uint, double>();
 

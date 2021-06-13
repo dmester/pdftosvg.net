@@ -15,8 +15,8 @@ namespace PdfToSvg
     /// </summary>
     public class EncryptedPdfException : Exception
     {
-        public EncryptedPdfException() : 
-            base("The specified PDF file is encrypted. Encrypted PDF files are currently not supported.") 
+        public EncryptedPdfException() :
+            base("The specified PDF file is encrypted. Encrypted PDF files are currently not supported.")
         {
         }
     }

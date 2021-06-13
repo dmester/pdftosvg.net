@@ -83,7 +83,7 @@ namespace PdfToSvg.Filters
             else if (bitsPerComponent == 16)
             {
                 var bytesPerSample = colors * 2;
-                
+
                 for (var rowStart = bufferCursor; rowStart + bytesPerRow <= bufferLength; rowStart += bytesPerRow)
                 {
                     for (var colorOffset = rowStart + bytesPerSample; colorOffset < rowStart + bytesPerRow; colorOffset += 2)
@@ -98,7 +98,7 @@ namespace PdfToSvg.Filters
             else // bitsPerComponent is 1, 2 or 4
             {
                 var componentMask = (1 << bitsPerComponent) - 1;
-                
+
                 var previousSample = new int[colors];
 
                 for (var rowStart = bufferCursor; rowStart + bytesPerRow <= bufferLength; rowStart += bytesPerRow)
@@ -119,7 +119,7 @@ namespace PdfToSvg.Filters
                             previousSample[color] = componentValue;
 
                             buffer[byteIndex] = unchecked((byte)(
-                                (byteValue & ~(componentMask << bitOffset)) | 
+                                (byteValue & ~(componentMask << bitOffset)) |
                                 (componentValue << bitOffset)));
 
                             bitIndex += bitsPerComponent;

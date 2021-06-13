@@ -67,7 +67,7 @@ namespace PdfToSvg.Filters
                     sequenceCursor += readFromSequence;
                     continue;
                 }
-                
+
                 if (reader.Read(codeBuffer, 0, 1) == 0)
                 {
                     endOfStream = true;
@@ -75,7 +75,7 @@ namespace PdfToSvg.Filters
                 }
 
                 var code = codeBuffer[0];
-                
+
                 if (code == ClearTable)
                 {
                     dictionary.Clear();
@@ -93,11 +93,11 @@ namespace PdfToSvg.Filters
                     sequence = new byte[] { unchecked((byte)code) };
                     sequenceCursor = 1;
                 }
-                else 
+                else
                 {
                     var newEntry = new byte[sequence.Length + 1];
                     sequence.CopyTo(newEntry, 0);
-                 
+
                     if (code < ClearTable)
                     {
                         sequence = new byte[] { unchecked((byte)code) };

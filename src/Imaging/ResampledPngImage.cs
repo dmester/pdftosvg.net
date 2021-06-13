@@ -70,7 +70,7 @@ namespace PdfToSvg.Imaging
                 var componentBuffer = new float[colorSpace.ComponentsPerSample * 800];
                 var componentCursor = componentBuffer.Length;
 
-                using var componentReader = new BitReader(imageDataStream, bitsPerComponent, 
+                using var componentReader = new BitReader(imageDataStream, bitsPerComponent,
                     bufferSize: componentBuffer.Length * bitsPerComponent / 8);
 
                 var pngRgbRow = new byte[1 + width * 3];

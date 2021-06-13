@@ -38,7 +38,7 @@ namespace PdfToSvg.DocumentModel
                 {
                     valueString = $"<< {dict.Count} >>";
                 }
-                else 
+                else
                 {
                     var first = dict.First();
 
@@ -82,7 +82,7 @@ namespace PdfToSvg.DocumentModel
 
             return result;
         }
-        
+
         [DebuggerDisplay("{DebuggerDisplay,nq}")]
         internal class Entry
         {

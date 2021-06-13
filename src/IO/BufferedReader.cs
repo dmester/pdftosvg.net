@@ -128,7 +128,7 @@ namespace PdfToSvg.IO
 
             long bufferStartPosition = estimatedStreamPosition - bufferLength;
 
-            if (newPosition < bufferStartPosition || 
+            if (newPosition < bufferStartPosition ||
                 newPosition > bufferStartPosition + bufferLength)
             {
                 // Seek stream first, to ensure it is seekable

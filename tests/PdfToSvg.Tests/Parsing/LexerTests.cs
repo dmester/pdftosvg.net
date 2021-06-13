@@ -41,7 +41,7 @@ namespace PdfToSvg.Tests.Parsing
         public void Commands()
         {
             var lexer = new Lexer("ET\nT* 0 0 1 rg /Ti Tj 12 (T*)", basicKeywords);
-            
+
             Assert.AreEqual(new Lexeme(Token.Keyword, "ET"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Keyword, "T*"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Integer, "0"), lexer.Read());
@@ -165,7 +165,7 @@ namespace PdfToSvg.Tests.Parsing
             Assert.AreEqual(new Lexeme(Token.LiteralString, "no line breaks"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.LiteralString, "normalized\nline\nbreaks\n"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.LiteralString, "octal ++ +a \x00053"), lexer.Read());
-            
+
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
 

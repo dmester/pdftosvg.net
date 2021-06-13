@@ -43,8 +43,8 @@ namespace PdfToSvg.Filters
 
         public static Filter? ByName(PdfName? filterName)
         {
-            return 
-                filterName != null && filters.TryGetValue(filterName, out var filter) ? 
+            return
+                filterName != null && filters.TryGetValue(filterName, out var filter) ?
                 filter : null;
         }
     }

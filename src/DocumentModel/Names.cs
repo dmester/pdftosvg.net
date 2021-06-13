@@ -143,7 +143,7 @@ namespace PdfToSvg.DocumentModel
                 case "F": return Names.Filter;
                 case "H": return Names.Height;
                 case "IM": return Names.ImageMask;
-                case "I": return isRootDictionary ? Names.Interpolate : Names.Indexed; 
+                case "I": return isRootDictionary ? Names.Interpolate : Names.Indexed;
                 case "W": return Names.Width;
                 case "G": return Names.DeviceGray;
                 case "RGB": return Names.DeviceRGB;

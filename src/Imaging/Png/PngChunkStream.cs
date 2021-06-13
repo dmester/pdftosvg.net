@@ -52,12 +52,12 @@ namespace PdfToSvg.Imaging.Png
                 // Data
                 outputStream.Write(data, 0, dataLength);
                 crc.Update(data, 0, dataLength);
-                
+
                 // crc32: type + data
                 outputStream.WriteBigEndian(crc.Value);
             }
         }
-        
+
         public override bool CanRead => true;
 
         public override bool CanSeek => true;

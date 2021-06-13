@@ -117,7 +117,7 @@ namespace PdfToSvg
 
             var content = SvgRenderer.Convert(page, options);
             var document = new XDocument(content);
-            
+
             using (var writer = new SvgXmlWriter(stream, Encoding.UTF8))
             {
                 document.WriteTo(writer);

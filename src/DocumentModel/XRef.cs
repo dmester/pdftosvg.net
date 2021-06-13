@@ -13,7 +13,7 @@ namespace PdfToSvg.DocumentModel
         public int ObjectNumber;
 
         public XRefEntryType Type;
-        
+
         public long ByteOffset;
         public int Generation;
 
@@ -22,7 +22,7 @@ namespace PdfToSvg.DocumentModel
 
         public bool Equals(XRef? other)
         {
-            return 
+            return
                 other != null &&
                 other.CompressedObjectElementIndex == CompressedObjectElementIndex &&
                 other.CompressedObjectNumber == CompressedObjectNumber &&

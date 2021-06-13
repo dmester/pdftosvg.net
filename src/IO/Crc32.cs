@@ -28,7 +28,7 @@ namespace PdfToSvg.IO
         /// Gets the checksum of the processed data so far.
         /// </summary>
         public uint Value => crc ^ 0xffffffff;
-        
+
         private static uint[] MakeCrcTable()
         {
             uint c;

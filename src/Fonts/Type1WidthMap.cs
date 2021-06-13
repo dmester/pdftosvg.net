@@ -33,7 +33,7 @@ namespace PdfToSvg.Fonts
             }
         }
 
-        public new static WidthMap Parse(PdfDictionary font)
+        public static new WidthMap Parse(PdfDictionary font)
         {
             if (font.TryGetArray<double>(Names.Widths, out var widths))
             {

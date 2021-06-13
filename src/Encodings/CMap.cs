@@ -22,7 +22,7 @@ namespace PdfToSvg.Encodings
         // ToUnicode Mapping File Tutorial
         // https://web.archive.org/web/20210303045910/https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/5411.ToUnicode.pdf
 
-        
+
         private readonly Dictionary<uint, string>[] mappingsByCodeLength;
 
         public CMap()

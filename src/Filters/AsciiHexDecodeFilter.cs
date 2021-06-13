@@ -35,7 +35,7 @@ namespace PdfToSvg.Filters
                 read = stream.Read(buffer, 0, buffer.Length);
 
                 for (var i = 0; i < read; i++)
-                { 
+                {
                     var ch = (char)buffer[i];
 
                     if ((ch < '0' || ch > '9') &&

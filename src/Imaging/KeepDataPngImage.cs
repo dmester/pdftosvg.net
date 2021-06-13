@@ -86,11 +86,11 @@ namespace PdfToSvg.Imaging
             var bitsPerComponent = imageDictionary.GetValueOrDefault(Names.BitsPerComponent, 8);
             var width = imageDictionary.GetValueOrDefault(Names.Width, 0);
             var height = imageDictionary.GetValueOrDefault(Names.Height, 0);
-            
+
             int bytesPerRow;
             byte[]? palette = null;
             PngColorType colorType;
-            
+
             if (colorSpace is DeviceGrayColorSpace)
             {
                 colorType = PngColorType.Greyscale;

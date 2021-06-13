@@ -42,7 +42,7 @@ namespace PdfToSvg.Imaging
         {
             private readonly float dmin;
             private readonly float multiplier;
-            
+
             public Range(float dmin, float dmax, int bitsPerComponent)
             {
                 this.dmin = dmin;
@@ -58,7 +58,7 @@ namespace PdfToSvg.Imaging
         public void Decode(float[] values, int offset, int count)
         {
             var rangeOffset = offset % ranges.Length;
-            
+
             for (var i = 0; i < count; i++)
             {
                 ranges[rangeOffset].Decode(ref values[i + offset]);

@@ -28,7 +28,7 @@ namespace PdfToSvg.Tests
         private static string GetTestFileDirectory()
         {
             var directory = TestContext.CurrentContext.WorkDirectory;
-            
+
             for (var i = 0; i < 8 && !string.IsNullOrEmpty(directory); i++)
             {
                 var potentialTestFileDirectory = Path.Combine(directory, "Test-files");
@@ -99,7 +99,7 @@ namespace PdfToSvg.Tests
 
                         var crc32 = new Crc32();
                         crc32.Update(resultData, dataStartIndex - NameLength, dataEndIndex - dataStartIndex + NameLength);
-                        
+
                         var checksum = crc32.Value;
 
                         // Update checksum
@@ -141,7 +141,7 @@ namespace PdfToSvg.Tests
 
                     var oldId = image.Attribute("id").Value;
                     var newId = StableID.Generate("im", hrefAttribute.Value);
-                    
+
                     image.SetAttributeValue("id", newId);
 
                     foreach (var reference in useElements["#" + oldId])

@@ -64,7 +64,7 @@ namespace PdfToSvg.Parsing
             {
                 return outerFilter.DetectStreamLength(reader);
             }
-            
+
             // For other filters, or no filter at all, we need to revert back to heuristics.
             // Find first index of <whitespace> 'E' 'I' <whitespace>
             //

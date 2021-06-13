@@ -66,8 +66,8 @@ namespace PdfToSvg.Tests.DocumentModel
             var streamDictionary = new PdfDictionary
             {
                 { Names.Filter, new object[] { Names.ASCII85Decode, Names.ASCIIHexDecode, Names.FlateDecode } },
-                { Names.DecodeParms, new object[] 
-                { 
+                { Names.DecodeParms, new object[]
+                {
                     null,
                     new PdfDictionary { { Names.BitsPerComponent, 42 } },
                 } },

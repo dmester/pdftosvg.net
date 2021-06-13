@@ -44,7 +44,7 @@ namespace PdfToSvg.DocumentModel
 
         public static implicit operator PdfNamePath(PdfName name)
         {
-            return new PdfNamePath(new [] { name }, false);
+            return new PdfNamePath(new[] { name }, false);
         }
 
         public static PdfNamePath operator /(PdfNamePath path, PdfName name)

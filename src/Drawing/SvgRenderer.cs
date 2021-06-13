@@ -21,8 +21,8 @@ namespace PdfToSvg.Drawing
 {
     internal class SvgRenderer
     {
-        private readonly static XNamespace ns = "http://www.w3.org/2000/svg";
-        
+        private static readonly XNamespace ns = "http://www.w3.org/2000/svg";
+
         private TextState textState => graphicsState.TextState;
         private GraphicsState graphicsState = new GraphicsState();
 
@@ -68,7 +68,7 @@ namespace PdfToSvg.Drawing
                 );
 
             resources = new ResourceCache(pageDict.GetDictionaryOrEmpty(Names.Resources));
-            
+
             Rectangle cropBox;
 
             if (!pageDict.TryGetRectangle(Names.CropBox, out cropBox) &&
@@ -95,11 +95,11 @@ namespace PdfToSvg.Drawing
 
                 // The page transform is applied on the root element instead of on the graphics transform, to avoid
                 // a matrix being applied to all text elements, which are most probably rendered horizontally.
-                var rootTransform = 
-                    Matrix.Translate(-cropBox.Width / 2, -cropBox.Height / 2) * 
-                    Matrix.Rotate(-Math.PI * 0.5 * rotate) * 
+                var rootTransform =
+                    Matrix.Translate(-cropBox.Width / 2, -cropBox.Height / 2) *
+                    Matrix.Rotate(-Math.PI * 0.5 * rotate) *
                     Matrix.Translate(pageWidth / 2, pageHeight / 2);
-                
+
                 rootGraphics.Add(new XAttribute("transform", SvgConversion.Matrix(rootTransform)));
             }
 
@@ -107,7 +107,7 @@ namespace PdfToSvg.Drawing
                 new XAttribute("width", pageWidth.ToString("0", CultureInfo.InvariantCulture)),
                 new XAttribute("height", pageHeight.ToString("0", CultureInfo.InvariantCulture)),
                 new XAttribute("preserveAspectRatio", "xMidYMid meet"),
-                new XAttribute("viewBox", 
+                new XAttribute("viewBox",
                     string.Format(CultureInfo.InvariantCulture, "0 0 {0:0.####} {1:0.####}",
                     pageWidth, pageHeight
                 )),
@@ -166,7 +166,7 @@ namespace PdfToSvg.Drawing
                             path.EvenOdd ? new XAttribute("fill-rule", "evenodd") : null);
                     }
 
-                    defs.Add(new XElement(ns + "clipPath", 
+                    defs.Add(new XElement(ns + "clipPath",
                         new XAttribute("id", path.Id),
                         path.Parent != null ? new XAttribute("clip-path", "url(#" + path.Parent.Id + ")") : null,
                         content));
@@ -274,7 +274,7 @@ namespace PdfToSvg.Drawing
         #endregion
 
         #region XObject operators
-        
+
         private string? GetSvgImageId(PdfDictionary imageObject, out int width, out int height)
         {
             if (imageObject.Stream != null &&
@@ -301,7 +301,7 @@ namespace PdfToSvg.Drawing
                     if (defIds.Add(imageId))
                     {
                         var svgImage = new XElement(ns + "image");
-                        
+
                         svgImage.SetAttributeValue("id", imageId);
                         svgImage.SetAttributeValue("href", imageUrl);
                         svgImage.SetAttributeValue("width", "1");
@@ -331,7 +331,7 @@ namespace PdfToSvg.Drawing
             height = 0;
             return null;
         }
-        
+
         private void RenderForm(PdfDictionary xobject)
         {
             if (xobject.Stream != null)
@@ -549,7 +549,7 @@ namespace PdfToSvg.Drawing
         private void c_Bezier(double x1, double y1, double x2, double y2, double x3, double y3)
         {
             currentPath.CurveTo(x1, y1, x2, y2, x3, y3);
-            
+
             currentPointX = x3;
             currentPointY = y3;
         }
@@ -634,7 +634,7 @@ namespace PdfToSvg.Drawing
             var pathTransformed = false;
 
             graphicsState.Transform.DecomposeScaleXY(out var scaleX, out var scaleY);
-            
+
             if (!stroke || scaleX == scaleY)
             {
                 currentPath = currentPath.Transform(graphicsState.Transform);
@@ -766,7 +766,7 @@ namespace PdfToSvg.Drawing
 
                     if (graphicsState.DashPhase != 0)
                     {
-                        attributes.Add(new XAttribute("stroke-dashoffset", 
+                        attributes.Add(new XAttribute("stroke-dashoffset",
                             graphicsState.DashPhase.ToString(CultureInfo.InvariantCulture)));
                     }
                 }
@@ -875,7 +875,7 @@ namespace PdfToSvg.Drawing
             graphicsState.StrokeColor = graphicsState.StrokeColorSpace.GetDefaultRgbColor();
             textBuilder.InvalidateStyle();
         }
-        
+
         [Operation("cs")]
         private void cs_FillColorSpace(PdfName name)
         {
@@ -1357,7 +1357,7 @@ namespace PdfToSvg.Drawing
                         continue;
                     }
                 }
-                
+
                 AppendClipped(textEl);
             }
         }

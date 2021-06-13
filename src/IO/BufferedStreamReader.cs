@@ -59,7 +59,7 @@ namespace PdfToSvg.IO
                 return stream.Length;
             }
         }
-        
+
         private int LimitReadByteCount(int desiredCount)
         {
             if (length >= 0 && desiredCount > length - estimatedStreamPosition)

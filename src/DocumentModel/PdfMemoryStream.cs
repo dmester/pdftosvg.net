@@ -17,7 +17,7 @@ namespace PdfToSvg.DocumentModel
     {
         private readonly byte[] content;
         private readonly int length;
-        
+
         public PdfMemoryStream(PdfDictionary owner, byte[] content, int length) : base(owner)
         {
             this.content = content ?? throw new ArgumentNullException(nameof(content));

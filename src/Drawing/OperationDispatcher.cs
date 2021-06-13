@@ -16,7 +16,7 @@ namespace PdfToSvg.Drawing
     internal class OperationDispatcher
     {
         private readonly ILookup<string, Handler> handlers;
-        
+
         private class Handler
         {
             public readonly string Operator;

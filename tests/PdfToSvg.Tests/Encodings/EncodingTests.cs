@@ -63,7 +63,7 @@ namespace PdfToSvg.Tests.Encodings
         [Test]
         public void PdfDocEncoding()
         {
-            var source = 
+            var source =
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#¤%&/()=?" +
                 "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖ×ØÙÚÛÜßàáâãäåæçèéêëìíîïñòóôõö÷øùúûüÿ";
 

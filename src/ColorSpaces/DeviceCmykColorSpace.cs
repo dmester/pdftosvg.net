@@ -21,9 +21,12 @@ namespace PdfToSvg.ColorSpaces
             var k = input[inputOffset++];
 
             // Since ICC color profiles are currently not supported, we will do an approximated color conversion from CMYK to sRGB.
+            //
             // The approximation is based on the samples provided in
             // "Color Characterization Data for SWOP proofing on Grade 3 coated paper", which can be found here:
             // http://www.npes.org/programs/standardsworkroom/toolsbestpractices/technicalreports.aspx
+            //
+            // The constants were generated with the ApproximateCmyk tool included in the tools folder.
 
             red = 1f +
                 c * (

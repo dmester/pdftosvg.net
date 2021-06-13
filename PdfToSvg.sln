@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApproximateCmyk", "tools\ApproximateCmyk\ApproximateCmyk.csproj", "{F84FBE74-2436-4EF5-A70A-A115EA28A604}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,12 +42,17 @@ Global
 		{6BBF2731-B2E6-4440-8156-5D967978FCA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BBF2731-B2E6-4440-8156-5D967978FCA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BBF2731-B2E6-4440-8156-5D967978FCA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F84FBE74-2436-4EF5-A70A-A115EA28A604}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F84FBE74-2436-4EF5-A70A-A115EA28A604}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F84FBE74-2436-4EF5-A70A-A115EA28A604}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F84FBE74-2436-4EF5-A70A-A115EA28A604}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6BBF2731-B2E6-4440-8156-5D967978FCA8} = {F4AEEB7B-A810-44EF-B3EC-26943FF7E205}
+		{F84FBE74-2436-4EF5-A70A-A115EA28A604} = {F4AEEB7B-A810-44EF-B3EC-26943FF7E205}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4BAB36F1-C2A3-49D5-B830-2F4F734E9E73}

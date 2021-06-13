@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg
 {
-    // TODO not imlemented
+    // TODO not imlemented. Mark as public when it has been implemented
 
     /// <summary>
     /// Uses a web font in the resulting SVG markup.
     /// </summary>
-    public class WebFont : Font
+    internal class WebFont : Font
     {
         /// <summary>
         /// Creates an instance of a <see cref="WebFont"/>.

@@ -33,13 +33,11 @@ namespace PdfToSvg.DocumentModel
             return true;
         }
 
-        // TODO use or remove
         public static PdfName? GetNameOrNull(this PdfDictionary? dict, PdfNamePath path)
         {
             return GetValueOrDefault<PdfName?>(dict, path, null);
         }
 
-        // TODO check usage
         public static PdfDictionary? GetDictionaryOrNull(this PdfDictionary? dict, PdfNamePath path)
         {
             return GetValueOrDefault<PdfDictionary?>(dict, path, null);

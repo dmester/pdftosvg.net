@@ -112,7 +112,6 @@ namespace PdfToSvg.Drawing
                 return;
             }
 
-            // TODO handle null font
             var decodedText = graphicsState.TextState.Font.Decode(text, out var width);
 
             width *= normalizedFontSize;

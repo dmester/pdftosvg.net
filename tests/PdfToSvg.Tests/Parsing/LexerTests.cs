@@ -191,7 +191,6 @@ namespace PdfToSvg.Tests.Parsing
             var lexerInvalidChars = new Lexer("< 4XXX 14 ### \0 \na  \t \f 4A 5  >");
             Assert.Throws<PdfParserException>(() => lexerInvalidChars.Read());
 
-            // TODO check how other handles unclosed strings
             var lexerUnclosed = new Lexer("<414a4A50");
             Assert.Throws<PdfParserException>(() => lexerUnclosed.Read());
         }

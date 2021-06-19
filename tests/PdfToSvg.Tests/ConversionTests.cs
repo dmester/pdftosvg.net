@@ -17,7 +17,7 @@ using System.Xml.Linq;
 
 namespace PdfToSvg.Tests
 {
-    class ConversionTests
+    public class ConversionTests
     {
         private static string GetTargetFramework()
         {

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Tests.Images
 {
-    class DecodeArrayTests
+    public class DecodeArrayTests
     {
         [Test]
         public void DecodeValues()

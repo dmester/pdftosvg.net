@@ -14,7 +14,7 @@ namespace PdfToSvg.Drawing
 {
     internal class SvgConversion
     {
-        const string Hex = "0123456789abcdef";
+        private const string Hex = "0123456789abcdef";
 
         private static string FormatRgbComponent(float component)
         {

@@ -1332,7 +1332,10 @@ namespace PdfToSvg.Drawing
                         var span = paragraph.Content[i];
                         var tspan = new XElement(ns + "tspan");
 
-                        tspan.SetAttributeValue("class", classNames[i]);
+                        if (multipleClasses)
+                        {
+                            tspan.SetAttributeValue("class", classNames[i]);
+                        }
 
                         if (span.SpaceBefore != 0)
                         {

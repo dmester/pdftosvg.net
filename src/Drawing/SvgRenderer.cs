@@ -103,7 +103,10 @@ namespace PdfToSvg.Drawing
                     Matrix.Rotate(-Math.PI * 0.5 * rotate) *
                     Matrix.Translate(pageWidth / 2, pageHeight / 2);
 
-                rootGraphics.Add(new XAttribute("transform", SvgConversion.Matrix(rootTransform)));
+                if (!rootTransform.IsIdentity)
+                {
+                    rootGraphics.Add(new XAttribute("transform", SvgConversion.Matrix(rootTransform)));
+                }
             }
 
             svg = new XElement(ns + "svg",

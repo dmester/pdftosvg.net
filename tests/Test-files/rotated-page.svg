@@ -2,9 +2,13 @@
 <style>text { white-space: pre; }.tx1n16W{font-family:'Times New Roman',serif;font-size:24px;}
 </style>
 <g transform="matrix(0 -1 1 0 0 594.96)" stroke-miterlimit="10">
-<text x="70" y="76.92" class="tx1n16W">This page is rotated</text>
-<text x="70" y="111.92" class="tx1n16W">270 degrees</text>
-<path d="M70 131.92h330z" fill="none" stroke="#000" stroke-width="1" />
-<path d="M10 831.92h575v-822h-575zM287 431.92h20v-20h-20z" fill="none" stroke="#000" stroke-width="1" />
+<g class="tx1n16W">
+<text x="70" y="76.92">This page is rotated</text>
+<text x="70" y="111.92">270 degrees</text>
+</g>
+<g fill="none" stroke="#000" stroke-width="1">
+<path d="M70 131.92h330z" />
+<path d="M10 831.92h575v-822h-575zM287 431.92h20v-20h-20z" />
+</g>
 </g>
 </svg>

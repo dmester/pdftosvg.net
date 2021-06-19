@@ -2,7 +2,9 @@
 <style>text { white-space: pre; }.txnInFK{font-family:Arial,sans-serif;font-size:20px;}
 </style>
 <g>
-<text x="70" y="80" class="txnInFK">Older PdfSharp versions use negative font size and </text>
-<text x="70" y="120" class="txnInFK">scaling to flip the text right.</text>
+<g class="txnInFK">
+<text x="70" y="80">Older PdfSharp versions use negative font size and </text>
+<text x="70" y="120">scaling to flip the text right.</text>
+</g>
 </g>
 </svg>

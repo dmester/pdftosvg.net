@@ -10,18 +10,24 @@
 <path d="M305 111.92v35h-35v-25h20v10h-10v-20" fill="#000" />
 <text x="370" y="91.92" class="txs8vHo">F fill</text>
 <path d="M405 111.92v35h-35v-25h20v10h-10v-20" fill="#000" />
-<text x="470" y="91.92" class="txs8vHo">f* fill</text>
-<text x="470" y="106.92" class="txs8vHo">even-odd</text>
+<g class="txs8vHo">
+<text x="470" y="91.92">f* fill</text>
+<text x="470" y="106.92">even-odd</text>
+</g>
 <path d="M505 111.92v35h-35v-25h20v10h-10v-20" fill-rule="evenodd" fill="#000" />
 <text x="70" y="191.92" class="txs8vHo">B fill, stroke</text>
 <path d="M105 211.92v35h-35v-25h20v10h-10v-20" fill="#000" stroke="#f00" stroke-width="1" />
-<text x="170" y="191.92" class="txs8vHo">B* fill, stroke</text>
-<text x="170" y="206.92" class="txs8vHo">even-odd</text>
+<g class="txs8vHo">
+<text x="170" y="191.92">B* fill, stroke</text>
+<text x="170" y="206.92">even-odd</text>
+</g>
 <path d="M205 211.92v35h-35v-25h20v10h-10v-20" fill-rule="evenodd" fill="#000" stroke="#f00" stroke-width="1" />
 <text x="270" y="191.92" class="txs8vHo">b close, fill, stroke</text>
 <path d="M305 211.92v35h-35v-25h20v10h-10v-20z" fill="#000" stroke="#f00" stroke-width="1" />
-<text x="370" y="191.92" class="txs8vHo">b* close, fill, stroke</text>
-<text x="370" y="206.92" class="txs8vHo">even-odd</text>
+<g class="txs8vHo">
+<text x="370" y="191.92">b* close, fill, stroke</text>
+<text x="370" y="206.92">even-odd</text>
+</g>
 <path d="M405 211.92v35h-35v-25h20v10h-10v-20z" fill-rule="evenodd" fill="#000" stroke="#f00" stroke-width="1" />
 <text x="70" y="311.92" class="txs8vHo">Curve</text>
 <path d="M70 361.92v-25C90 311.92,110 361.92,130 336.92C130 336.92,100 361.92,130 386.92C100 361.92,70 386.92,70 386.92" fill="none" stroke="#000" stroke-width="1" />

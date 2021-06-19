@@ -2,8 +2,10 @@
 <style>text { white-space: pre; }
 </style>
 <g stroke-miterlimit="10">
-<path d="M70 141.92l30 30l40 -50" fill="none" stroke="#00b200" stroke-width="12" />
-<path d="M180 141.92l30 30l40 -50" fill="none" stroke="#00b200" stroke-width="12" />
-<path d="M290 141.92l30 30l40 -50" fill="none" stroke="#00b200" stroke-width="12" />
+<g fill="none" stroke="#00b200" stroke-width="12">
+<path d="M70 141.92l30 30l40 -50" />
+<path d="M180 141.92l30 30l40 -50" />
+<path d="M290 141.92l30 30l40 -50" />
+</g>
 </g>
 </svg>

@@ -13,8 +13,10 @@
 <text x="215.09" y="91.46" class="txd5DWN">fox</text>
 <text x="244.49" y="91.46" class="txKzlat"> </text>
 <text x="35.4" y="130.46" class="txxngAO">The </text>
-<text x="87.864" y="130.46" class="txfb7bm">quick brown</text>
-<text x="235.85" y="130.46" class="txfb7bm"> </text>
+<g class="txfb7bm">
+<text x="87.864" y="130.46">quick brown</text>
+<text x="235.85" y="130.46"> </text>
+</g>
 <g clip-path="url(#clBUA5n)">
 <text transform="matrix(1 0 -0.3333 1 243.17 130.46)" class="txfb7bm">fox</text>
 </g>
@@ -83,21 +85,23 @@
 <text transform="matrix(1 0 -0.3333 1 221.45 521.71)" class="txLYBf1">fox</text>
 </g>
 <text x="256.37" y="521.71" class="txuH4x0"> </text>
-<text x="35.4" y="558.19" class="txxRjap"></text>
-<text x="43.44" y="558.19" class="txxRjap"></text>
-<text x="59.4" y="558.19" class="txxRjap"></text>
-<text x="75.384" y="558.19" class="txxRjap"></text>
-<text x="91.344" y="558.19" class="txxRjap"></text>
-<text x="107.3" y="558.19" class="txxRjap"></text>
-<text x="123.26" y="558.19" class="txxRjap"></text>
-<text x="131.3" y="558.19" class="txxRjap"></text>
-<text x="147.38" y="558.19" class="txxRjap"></text>
-<text x="163.34" y="558.19" class="txxRjap"></text>
-<text x="179.3" y="558.19" class="txxRjap"></text>
-<text x="195.29" y="558.19" class="txxRjap"></text>
-<text x="211.37" y="558.19" class="txxRjap"></text>
-<text x="227.33" y="558.19" class="txxRjap"></text>
-<text x="243.41" y="558.19" class="txxRjap"></text>
+<g class="txxRjap">
+<text x="35.4" y="558.19"></text>
+<text x="43.44" y="558.19"></text>
+<text x="59.4" y="558.19"></text>
+<text x="75.384" y="558.19"></text>
+<text x="91.344" y="558.19"></text>
+<text x="107.3" y="558.19"></text>
+<text x="123.26" y="558.19"></text>
+<text x="131.3" y="558.19"></text>
+<text x="147.38" y="558.19"></text>
+<text x="163.34" y="558.19"></text>
+<text x="179.3" y="558.19"></text>
+<text x="195.29" y="558.19"></text>
+<text x="211.37" y="558.19"></text>
+<text x="227.33" y="558.19"></text>
+<text x="243.41" y="558.19"></text>
+</g>
 <text x="35.4" y="588.79" class="txwunJ7">The </text>
 <text x="78.864" y="588.79" class="txa00Af">quick brown</text>
 <text x="200.57" y="588.79" class="txwunJ7"> </text>
@@ -181,36 +185,40 @@
 <text x="512.74" y="417.17" class="txFB5pp"> </text>
 <text x="520.42" y="417.17" class="txvXI5U">fox</text>
 <text x="554.62" y="417.17" class="txFB5pp"> </text>
-<text x="311.93" y="444.65" class="txE6Tb2"></text>
-<text x="327.91" y="444.65" class="txE6Tb2"></text>
-<text x="343.87" y="444.65" class="txE6Tb2"></text>
-<text x="359.83" y="444.65" class="txE6Tb2"></text>
-<text x="375.91" y="444.65" class="txE6Tb2"></text>
-<text x="391.87" y="444.65" class="txE6Tb2"></text>
-<text x="407.83" y="444.65" class="txE6Tb2"></text>
-<text x="415.87" y="444.65" class="txE6Tb2"></text>
-<text x="431.95" y="444.65" class="txE6Tb2"></text>
-<text x="447.94" y="444.65" class="txE6Tb2"></text>
-<text x="463.9" y="444.65" class="txE6Tb2"></text>
-<text x="479.86" y="444.65" class="txE6Tb2"></text>
-<text x="495.94" y="444.65" class="txE6Tb2"></text>
-<text x="511.9" y="444.65" class="txE6Tb2"></text>
-<text x="527.98" y="444.65" class="txE6Tb2"></text>
-<text x="311.93" y="471.43" class="txoaUs3"></text>
-<text x="320.71" y="471.43" class="txoaUs3"></text>
-<text x="337.03" y="471.43" class="txoaUs3"></text>
-<text x="353.83" y="471.43" class="txoaUs3">⬧</text>
-<text x="361.15" y="471.43" class="txoaUs3"></text>
-<text x="378.67" y="471.43" class="txoaUs3">◼</text>
-<text x="390.55" y="471.43" class="txoaUs3"> </text>
-<text x="406.51" y="471.43" class="txoaUs3">⬧</text>
-<text x="413.83" y="471.43" class="txoaUs3">❖</text>
-<text x="428.23" y="471.43" class="txoaUs3"></text>
-<text x="444.58" y="471.43" class="txoaUs3"></text>
-<text x="461.38" y="471.43" class="txoaUs3">⬧</text>
-<text x="468.7" y="471.43" class="txoaUs3"></text>
-<text x="486.22" y="471.43" class="txoaUs3">◼</text>
-<text x="498.22" y="471.43" class="txoaUs3"> </text>
+<g class="txE6Tb2">
+<text x="311.93" y="444.65"></text>
+<text x="327.91" y="444.65"></text>
+<text x="343.87" y="444.65"></text>
+<text x="359.83" y="444.65"></text>
+<text x="375.91" y="444.65"></text>
+<text x="391.87" y="444.65"></text>
+<text x="407.83" y="444.65"></text>
+<text x="415.87" y="444.65"></text>
+<text x="431.95" y="444.65"></text>
+<text x="447.94" y="444.65"></text>
+<text x="463.9" y="444.65"></text>
+<text x="479.86" y="444.65"></text>
+<text x="495.94" y="444.65"></text>
+<text x="511.9" y="444.65"></text>
+<text x="527.98" y="444.65"></text>
+</g>
+<g class="txoaUs3">
+<text x="311.93" y="471.43"></text>
+<text x="320.71" y="471.43"></text>
+<text x="337.03" y="471.43"></text>
+<text x="353.83" y="471.43">⬧</text>
+<text x="361.15" y="471.43"></text>
+<text x="378.67" y="471.43">◼</text>
+<text x="390.55" y="471.43"> </text>
+<text x="406.51" y="471.43">⬧</text>
+<text x="413.83" y="471.43">❖</text>
+<text x="428.23" y="471.43"></text>
+<text x="444.58" y="471.43"></text>
+<text x="461.38" y="471.43">⬧</text>
+<text x="468.7" y="471.43"></text>
+<text x="486.22" y="471.43">◼</text>
+<text x="498.22" y="471.43"> </text>
+</g>
 <text x="311.93" y="505.27" class="txp91tC"> </text>
 </g>
 </svg>

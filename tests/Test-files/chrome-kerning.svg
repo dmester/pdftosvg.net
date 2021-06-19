@@ -10,10 +10,12 @@
 <g clip-path="url(#cl4DTi6)">
 <path d="M29 29h538v784.8647h-538z" fill="#fff" />
 </g>
-<text x="35.0028" y="45.5077" class="txhF7pb">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</text>
-<text x="35.0028" y="59.7643" class="txhF7pb">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute</text>
-<text x="35.0028" y="74.0209" class="txhF7pb">irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat</text>
-<text x="35.0028" y="88.2775" class="txhF7pb">non proident, </text>
+<g class="txhF7pb">
+<text x="35.0028" y="45.5077">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</text>
+<text x="35.0028" y="59.7643">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute</text>
+<text x="35.0028" y="74.0209">irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat</text>
+<text x="35.0028" y="88.2775">non proident, </text>
+</g>
 <text x="93.7293" y="88.2775" class="txn3gX7">sunt in culpa</text>
 <text x="152.9482" y="88.2775" class="txhF7pb"> qui officia deserunt </text>
 <text x="238.7224" y="88.2775" class="tx5sc4J">mollit anim id est</text>

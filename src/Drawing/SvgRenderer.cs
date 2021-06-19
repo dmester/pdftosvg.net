@@ -140,6 +140,8 @@ namespace PdfToSvg.Drawing
                 dispatcher.Dispatch(this, op.Operator, op.Operands);
             }
 
+            SvgAttributeOptimizer.Optimize(rootGraphics);
+
             // Add clip paths
             AddClipPaths(clipPaths.Values);
 

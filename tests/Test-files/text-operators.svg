@@ -1,5 +1,5 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
-<style>text { white-space: pre; }.tx96X5e{font-family:'Times New Roman',serif;font-size:20.4px;}.txIs9CX{font-family:'Times New Roman',serif;font-size:40.8px;}.txhuuNB{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:10px;}.txs8vHo{font-family:'Times New Roman',serif;font-size:12px;}.txR0aSQ{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:5px;}.tx29BpV{fill:none;stroke:#f00;font-family:'Times New Roman',serif;font-size:30px;}.txHX5D6{stroke:#f00;font-family:'Times New Roman',serif;font-size:30px;}.txcw26F{font-family:'Times New Roman',serif;font-size:30px;}.txcBATn{font-family:'Times New Roman',serif;font-size:80px;}.tx76422{fill:none;stroke:#f00;font-family:'Times New Roman',serif;font-size:80px;}.tx0nZpr{stroke:#f00;font-family:'Times New Roman',serif;font-size:80px;}.tx6zuDE{font-family:'Times New Roman',serif;font-size:20.0024px;}
+<style>text { white-space: pre; }.tx96X5e{font-family:'Times New Roman',serif;font-size:20.4px;}.txIs9CX{font-family:'Times New Roman',serif;font-size:40.8px;}.txhuuNB{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:10px;}.txs8vHo{font-family:'Times New Roman',serif;font-size:12px;}.txR0aSQ{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:5px;}.tx29BpV{fill:none;stroke:#f00;font-family:'Times New Roman',serif;font-size:30px;}.txHX5D6{stroke:#f00;font-family:'Times New Roman',serif;font-size:30px;}.txcw26F{font-family:'Times New Roman',serif;font-size:30px;}.tx82Lag{font-family:'Times New Roman',serif;font-size:15px;}.txcBATn{font-family:'Times New Roman',serif;font-size:80px;}.tx76422{fill:none;stroke:#f00;font-family:'Times New Roman',serif;font-size:80px;}.tx0nZpr{stroke:#f00;font-family:'Times New Roman',serif;font-size:80px;}.tx6zuDE{font-family:'Times New Roman',serif;font-size:20.0024px;}
 </style>
 <g stroke-miterlimit="10">
 <text x="30" y="91.92" class="tx96X5e"><tspan class="tx96X5e">Multiple spans, same line:</tspan><tspan class="tx96X5e" dx="10.2">Abc</tspan><tspan class="tx96X5e" dx="20.4">def</tspan><tspan class="tx96X5e" dx="-10.2">ghi jkl</tspan></text>
@@ -16,6 +16,7 @@
 <text x="70" y="281.92" class="tx29BpV">Outlined text</text>
 <text x="70" y="321.92" class="txHX5D6">Outlined and filled text</text>
 <text x="70" y="401.92" class="txcw26F">filled again</text>
+<text x="211" y="401.92" class="tx82Lag">smaller</text>
 <text x="70" y="441.92" class="txcw26F" textLength="131.64px" lengthAdjust="spacingAndGlyphs">wide </text>
 <text x="70" y="481.92" class="txcw26F" textLength="67.89px" lengthAdjust="spacingAndGlyphs">and narrow</text>
 <path d="M70 91.92h330" fill="none" stroke="#f00" stroke-width="1" />

@@ -63,6 +63,7 @@ namespace PdfToSvg.Drawing
             var previousTranslateX = translateX;
             var previousTranslateY = translateY;
             var previousTransform = remainingTransform;
+            var previousNormalizedFontSize = normalizedFontSize;
 
             // The origin in pdfs is in the bottom-left corner. We have a root transform which flips the entire page 
             // vertically, to get the origin in the upper-left corner. To avoid flipped text, we need to flip
@@ -102,6 +103,11 @@ namespace PdfToSvg.Drawing
             {
                 pendingSpace = 0;
                 currentParagraph = null;
+            }
+
+            if (normalizedFontSize != previousNormalizedFontSize)
+            {
+                InvalidateStyle();
             }
         }
 

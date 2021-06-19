@@ -116,18 +116,26 @@ namespace PdfToSvg.Drawing
 
         public static string Matrix(Matrix matrix)
         {
-            if (matrix.A == 1 && matrix.B == 0 && matrix.C == 0 && matrix.D == 1)
+            var a = FormatCoordinate(matrix.A);
+            var b = FormatCoordinate(matrix.B);
+            var c = FormatCoordinate(matrix.C);
+            var d = FormatCoordinate(matrix.D);
+            var e = FormatCoordinate(matrix.E);
+            var f = FormatCoordinate(matrix.F);
+
+            if (a == "1" && b == "0" && c == "0" && d == "1")
             {
-                return "translate(" + FormatCoordinate(matrix.E) + " " + FormatCoordinate(matrix.F) + ")";
+                if (e == "0" && f == "0")
+                {
+                    return "none";
+                }
+                else
+                {
+                    return "translate(" + e + " " + f + ")";
+                }
             }
 
-            return "matrix(" +
-                FormatCoordinate(matrix.A) + " " +
-                FormatCoordinate(matrix.B) + " " +
-                FormatCoordinate(matrix.C) + " " +
-                FormatCoordinate(matrix.D) + " " +
-                FormatCoordinate(matrix.E) + " " +
-                FormatCoordinate(matrix.F) + ")";
+            return "matrix(" + a + " " + b + " " + c + " " + d + " " + e + " " + f + ")";
         }
     }
 }

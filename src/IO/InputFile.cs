@@ -62,12 +62,26 @@ namespace PdfToSvg.IO
         {
             if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
 
-            baseStream.Position = offset;
-            var reader = new BufferedStreamReader(baseStream, offset, length, () => readSemaphore?.Release(), bufferSize);
-
             if (!await readSemaphore.WaitAsync(OpenTimeout).ConfigureAwait(false))
             {
                 throw NewTimeoutException();
+            }
+            
+            BufferedStreamReader reader;
+            var succeeded = false;
+
+            try
+            {
+                baseStream.Position = offset;
+                reader = new BufferedStreamReader(baseStream, offset, length, () => readSemaphore?.Release(), bufferSize);
+                succeeded = true;
+            }
+            finally
+            {
+                if (!succeeded)
+                {
+                    readSemaphore.Release();
+                }
             }
 
             return reader;
@@ -77,12 +91,26 @@ namespace PdfToSvg.IO
         {
             if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
 
-            baseStream.Position = offset;
-            var reader = new BufferedStreamReader(baseStream, offset, length, () => readSemaphore?.Release(), bufferSize);
-
             if (!readSemaphore.Wait(OpenTimeout))
             {
                 throw NewTimeoutException();
+            }
+
+            BufferedStreamReader reader;
+            var succeeded = false;
+
+            try
+            {
+                baseStream.Position = offset;
+                reader = new BufferedStreamReader(baseStream, offset, length, () => readSemaphore?.Release(), bufferSize);
+                succeeded = true;
+            }
+            finally
+            {
+                if (!succeeded)
+                {
+                    readSemaphore.Release();
+                }
             }
 
             return reader;

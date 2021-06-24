@@ -26,7 +26,7 @@ namespace PdfToSvg.Functions
                         case 0: return new SampledFunction(dict);
                         case 2: return new ExponentialFunction(dict);
                         case 3: return new StitchingFunction(dict);
-                        // case 4: return new PostScriptFunction(dict);
+                        case 4: return new PostScriptFunction(dict);
                         default:
                             Log.WriteLine("Unknown function type {0}.", functionType);
                             break;

@@ -25,7 +25,7 @@ namespace PdfToSvg.Parsing
             this.keywords = keywords ?? new Dictionary<string, Token>();
         }
 
-        public Lexer(Stream stream, Dictionary<string, Token>? keywords)
+        public Lexer(Stream stream, Dictionary<string, Token>? keywords = null)
         {
             Stream = stream as BufferedReader ?? new BufferedStreamReader(stream);
             forwardLexemeBuffer = new ForwardReadBuffer<Lexeme>(ReadLexeme, 2);
@@ -479,6 +479,16 @@ namespace PdfToSvg.Parsing
 
                     case ']':
                         result = CreateLexeme(Token.EndArray, Stream.Position);
+                        Stream.Skip();
+                        break;
+
+                    case '{':
+                        result = CreateLexeme(Token.BeginBlock, Stream.Position);
+                        Stream.Skip();
+                        break;
+
+                    case '}':
+                        result = CreateLexeme(Token.EndBlock, Stream.Position);
                         Stream.Skip();
                         break;
 

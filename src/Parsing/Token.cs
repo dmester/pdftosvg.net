@@ -44,5 +44,7 @@ namespace PdfToSvg
         EndNotDefChar,
         BeginNotDefRange,
         EndNotDefRange,
+        BeginBlock,
+        EndBlock,
     }
 }

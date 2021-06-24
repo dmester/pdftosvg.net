@@ -14,7 +14,7 @@ namespace PdfToSvg.IO
 {
     internal class InputFile : IDisposable
     {
-        private const int OpenTimeout = 10000;
+        private const int OpenTimeout = 30000;
         private Stream? baseStream;
         private SemaphoreSlim? readSemaphore = new SemaphoreSlim(1, 1);
         private readonly bool leaveOpen;

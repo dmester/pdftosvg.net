@@ -29,6 +29,15 @@ namespace PdfToSvg.IO
             this.stream = stream;
             this.offset = offset;
             this.length = length;
+
+            try
+            {
+                estimatedStreamPosition = stream.Position - offset;
+            }
+            catch
+            {
+                estimatedStreamPosition = 0;
+            }
         }
 
         public BufferedStreamReader(Stream stream, Action? customDisposer = null, int bufferSize = 4096)
@@ -38,6 +47,15 @@ namespace PdfToSvg.IO
             this.stream = stream;
             this.offset = 0;
             this.length = -1;
+
+            try
+            {
+                estimatedStreamPosition = stream.Position;
+            }
+            catch
+            {
+                estimatedStreamPosition = 0;
+            }
         }
 
         public Stream BaseStream => stream ?? throw new ObjectDisposedException(nameof(BufferedStreamReader));

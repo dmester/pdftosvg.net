@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Tests.IO
 {
-    class BufferedReaderTests
+    public class BufferedReaderTests
     {
         private static BufferedStreamReader Create(string content, int bufferSize)
         {
@@ -79,6 +79,38 @@ namespace PdfToSvg.Tests.IO
             Assert.AreEqual('n', buffer.PeekChar(1));
 
             Assert.AreEqual(14, buffer.BaseStream.Position);
+        }
+
+        [Test]
+        public void InitialPosition()
+        {
+            var stream = new MemoryStream(new byte[10000], false);
+            stream.Position = 42;
+
+            var reader = new BufferedStreamReader(stream, bufferSize: 10);
+            Assert.AreEqual(42, reader.Position);
+            Assert.AreEqual(42, stream.Position);
+
+            reader.Position = 0;
+
+            Assert.AreEqual(0, reader.Position);
+            Assert.AreEqual(0, stream.Position);
+        }
+
+        [Test]
+        public void InitialSlicePosition()
+        {
+            var stream = new MemoryStream(new byte[10000], false);
+            stream.Position = 42;
+
+            var reader = new BufferedStreamReader(stream, 10, 500, bufferSize: 10);
+            Assert.AreEqual(32, reader.Position);
+            Assert.AreEqual(42, stream.Position);
+
+            reader.Position = 0;
+
+            Assert.AreEqual(0, reader.Position);
+            Assert.AreEqual(10, stream.Position);
         }
 
         [Test]

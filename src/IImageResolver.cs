@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg
@@ -19,7 +20,8 @@ namespace PdfToSvg
         /// Creates an URL for the specified image.
         /// </summary>
         /// <param name="image">Found image.</param>
+        /// <param name="cancellationToken">Token for monitoring cancellation requests.</param>
         /// <returns>URL for the specified image.</returns>
-        string ResolveImageUrl(Image image);
+        string ResolveImageUrl(Image image, CancellationToken cancellationToken);
     }
 }

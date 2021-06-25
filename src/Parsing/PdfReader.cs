@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Parsing
@@ -28,15 +29,17 @@ namespace PdfToSvg.Parsing
             Names.Rotate,
         };
 
-        public static PdfDocument Read(InputFile file)
+        public static PdfDocument Read(InputFile file, CancellationToken cancellationToken)
         {
-            using var reader = file.CreateExclusiveReader();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using var reader = file.CreateExclusiveReader(cancellationToken);
             var parser = new DocumentParser(file, reader);
 
             parser.ReadFileHeader();
 
             var startxref = parser.ReadStartXRef();
-            var xrefTable = parser.ReadXRefTables(startxref);
+            var xrefTable = parser.ReadXRefTables(startxref, cancellationToken);
 
             if (xrefTable.Trailer != null &&
                 xrefTable.Trailer.ContainsKey(Names.Encrypt))
@@ -44,7 +47,7 @@ namespace PdfToSvg.Parsing
                 throw Exceptions.EncryptedPdf();
             }
 
-            var objects = parser.ReadAllObjects(xrefTable);
+            var objects = parser.ReadAllObjects(xrefTable, cancellationToken);
 
             InlineReferences(objects);
             InlineReferences(objects, xrefTable.Trailer);
@@ -52,23 +55,25 @@ namespace PdfToSvg.Parsing
             return new PdfDocument(file, xrefTable.Trailer);
         }
 
-        public static async Task<PdfDocument> ReadAsync(InputFile file)
+        public static async Task<PdfDocument> ReadAsync(InputFile file, CancellationToken cancellationToken)
         {
-            using var reader = await file.CreateExclusiveReaderAsync().ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using var reader = await file.CreateExclusiveReaderAsync(cancellationToken).ConfigureAwait(false);
 
             var parser = new DocumentParser(file, reader);
 
             await parser.ReadFileHeaderAsync().ConfigureAwait(false);
 
             var startxref = await parser.ReadStartXRefAsync().ConfigureAwait(false);
-            var xrefTable = parser.ReadXRefTables(startxref); // TODO make async
+            var xrefTable = parser.ReadXRefTables(startxref, cancellationToken); // TODO make async
 
             if (xrefTable.Trailer.ContainsKey(Names.Encrypt))
             {
                 throw Exceptions.EncryptedPdf();
             }
 
-            var objects = parser.ReadAllObjects(xrefTable); // TODO make async
+            var objects = parser.ReadAllObjects(xrefTable, cancellationToken); // TODO make async
 
             InlineReferences(objects);
             InlineReferences(objects, xrefTable.Trailer);

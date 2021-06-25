@@ -8,13 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Functions
 {
     internal abstract class Function
     {
-        public static Function Parse(object? functionDefinition)
+        public static Function Parse(object? functionDefinition, CancellationToken cancellationToken)
         {
             if (functionDefinition is PdfDictionary dict &&
                 dict.TryGetInteger(Names.FunctionType, out var functionType))
@@ -23,10 +24,10 @@ namespace PdfToSvg.Functions
                 {
                     switch (functionType)
                     {
-                        case 0: return new SampledFunction(dict);
+                        case 0: return new SampledFunction(dict, cancellationToken);
                         case 2: return new ExponentialFunction(dict);
-                        case 3: return new StitchingFunction(dict);
-                        case 4: return new PostScriptFunction(dict);
+                        case 3: return new StitchingFunction(dict, cancellationToken);
+                        case 4: return new PostScriptFunction(dict, cancellationToken);
                         default:
                             Log.WriteLine("Unknown function type {0}.", functionType);
                             break;

@@ -3,11 +3,13 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.DocumentModel;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Imaging
@@ -26,11 +28,11 @@ namespace PdfToSvg.Imaging
             this.imageDictionaryStream = imageDictionary.Stream;
         }
 
-        private Stream GetStream()
+        private Stream GetStream(CancellationToken cancellationToken)
         {
             var filters = imageDictionaryStream.Filters;
 
-            var readStream = imageDictionaryStream.Open();
+            var readStream = imageDictionaryStream.Open(cancellationToken);
             try
             {
                 return filters.Take(filters.Count - 1).Decode(readStream);
@@ -42,25 +44,25 @@ namespace PdfToSvg.Imaging
             }
         }
 
-        public override byte[] GetContent()
+        public override byte[] GetContent(CancellationToken cancellationToken)
         {
             var memoryStream = new MemoryStream();
 
-            using (var jpegStream = GetStream())
+            using (var jpegStream = GetStream(cancellationToken))
             {
-                jpegStream.CopyTo(memoryStream);
+                jpegStream.CopyTo(memoryStream, cancellationToken);
             }
 
             return memoryStream.ToArray();
         }
 
-        public override async Task<byte[]> GetContentAsync()
+        public override async Task<byte[]> GetContentAsync(CancellationToken cancellationToken)
         {
             var memoryStream = new MemoryStream();
 
-            using (var jpegStream = GetStream())
+            using (var jpegStream = GetStream(cancellationToken))
             {
-                await jpegStream.CopyToAsync(memoryStream).ConfigureAwait(false);
+                await jpegStream.CopyToAsync(memoryStream, cancellationToken).ConfigureAwait(false);
             }
 
             return memoryStream.ToArray();

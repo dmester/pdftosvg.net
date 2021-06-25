@@ -1,4 +1,4 @@
-// Copyright (c) PdfToSvg.NET contributors.
+﻿// Copyright (c) PdfToSvg.NET contributors.
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Functions
@@ -29,7 +30,7 @@ namespace PdfToSvg.Functions
         private readonly uint[] samples;
         private readonly uint maxSampleValue;
 
-        public SampledFunction(PdfDictionary dictionary)
+        public SampledFunction(PdfDictionary dictionary, CancellationToken cancellationToken = default)
         {
             if (!dictionary.TryGetArray(Names.Domain, out domain!))
             {
@@ -87,7 +88,7 @@ namespace PdfToSvg.Functions
 
             if (dictionary.Stream != null)
             {
-                using var stream = dictionary.Stream.OpenDecoded();
+                using var stream = dictionary.Stream.OpenDecoded(cancellationToken);
                 using var reader = new BitReader(stream, bitsPerSample, bufferSize: 1024);
 
                 reader.Read(samples, 0, samples.Length);

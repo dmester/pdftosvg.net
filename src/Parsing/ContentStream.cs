@@ -3,11 +3,13 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.DocumentModel;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Parsing
@@ -42,7 +44,7 @@ namespace PdfToSvg.Parsing
             return new MemoryStream(memoryStream.GetBuffer(), 0, (int)memoryStream.Length, false);
         }
 
-        public static async Task<Stream> CombineAsync(PdfDictionary pageDict)
+        public static async Task<Stream> CombineAsync(PdfDictionary pageDict, CancellationToken cancellationToken)
         {
             var contents = GetContents(pageDict);
             var combinedBuffer = new MemoryStream();
@@ -52,15 +54,15 @@ namespace PdfToSvg.Parsing
                 var stream = content.Stream;
                 if (stream != null)
                 {
-                    using var decodedStream = stream.OpenDecoded();
-                    await decodedStream.CopyToAsync(combinedBuffer).ConfigureAwait(false);
+                    using var decodedStream = stream.OpenDecoded(cancellationToken);
+                    await decodedStream.CopyToAsync(combinedBuffer, cancellationToken).ConfigureAwait(false);
                 }
             }
 
             return CreateReadOnlyStream(combinedBuffer);
         }
 
-        public static Stream Combine(PdfDictionary pageDict)
+        public static Stream Combine(PdfDictionary pageDict, CancellationToken cancellationToken)
         {
             var contents = GetContents(pageDict);
             var combinedBuffer = new MemoryStream();
@@ -70,8 +72,8 @@ namespace PdfToSvg.Parsing
                 var stream = content.Stream;
                 if (stream != null)
                 {
-                    using var decodedStream = stream.OpenDecoded();
-                    decodedStream.CopyTo(combinedBuffer);
+                    using var decodedStream = stream.OpenDecoded(cancellationToken);
+                    decodedStream.CopyTo(combinedBuffer, cancellationToken);
                 }
             }
 

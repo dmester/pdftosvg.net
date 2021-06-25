@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.DocumentModel
@@ -24,14 +25,15 @@ namespace PdfToSvg.DocumentModel
             this.length = length;
         }
 
-        public override Stream Open()
+        public override Stream Open(CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             return new MemoryStream(content, 0, length, false);
         }
 
-        public override Task<Stream> OpenAsync()
+        public override Task<Stream> OpenAsync(CancellationToken cancellationToken)
         {
-            return Task.FromResult(Open());
+            return Task.FromResult(Open(cancellationToken));
         }
     }
 }

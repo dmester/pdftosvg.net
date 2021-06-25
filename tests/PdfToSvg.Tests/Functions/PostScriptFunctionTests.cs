@@ -128,7 +128,7 @@ namespace PdfToSvg.Tests.Functions
             var binaryDefinition = Encoding.ASCII.GetBytes(definition);
             dict.MakeIndirectObject(new PdfObjectId(), new PdfMemoryStream(dict, binaryDefinition, binaryDefinition.Length));
 
-            var function = new PostScriptFunction(dict);
+            var function = new PostScriptFunction(dict, default);
             Assert.That(function.Evaluate(input), Is.EqualTo(expectedOutput).Within(0.00001d));
         }
 

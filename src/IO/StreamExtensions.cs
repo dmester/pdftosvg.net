@@ -14,6 +14,29 @@ namespace PdfToSvg.IO
 {
     internal static class StreamExtensions
     {
+        // Same as in .NET
+        private const int DefaultCopyToBuffer = 81920;
+
+        public static void CopyTo(this Stream stream, Stream destination, CancellationToken cancellationToken)
+        {
+            var buffer = new byte[DefaultCopyToBuffer];
+
+            int read;
+
+            do
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                read = stream.Read(buffer, 0, DefaultCopyToBuffer);
+                destination.Write(buffer, 0, read);
+            }
+            while (read > 0);
+        }
+
+        public static Task CopyToAsync(this Stream stream, Stream destination, CancellationToken cancellationToken)
+        {
+            return stream.CopyToAsync(destination, DefaultCopyToBuffer, cancellationToken);
+        }
+
         public static int ReadAll(this Stream stream, byte[] buffer, int offset, int count)
         {
             var totalRead = 0;

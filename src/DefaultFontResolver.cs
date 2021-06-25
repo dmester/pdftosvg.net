@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg
@@ -106,7 +107,7 @@ namespace PdfToSvg
         public static DefaultFontResolver Instance { get; } = new DefaultFontResolver();
 
         /// <inheritdoc/>
-        public Font ResolveFont(string fontName)
+        public Font ResolveFont(string fontName, CancellationToken cancellationToken)
         {
             var styleStartIndex = fontName.IndexOfAny(new[] { ',', '-' });
 

@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Parsing
@@ -229,7 +230,7 @@ namespace PdfToSvg.Parsing
             }
         }
 
-        public void ReadXRefStream(XRefTable xrefTable, PdfDictionary xrefDict)
+        public void ReadXRefStream(XRefTable xrefTable, PdfDictionary xrefDict, CancellationToken cancellationToken)
         {
             if (xrefDict.TryGetArray<int>(Names.W, out var widths) && xrefDict.Stream != null)
             {
@@ -244,7 +245,7 @@ namespace PdfToSvg.Parsing
 
                 var entryBuffer = new byte[widths.Sum()];
 
-                using var data = OpenDecodedSharedStream(xrefDict.Stream);
+                using var data = OpenDecodedSharedStream(xrefDict.Stream, cancellationToken);
 
                 while (true)
                 {
@@ -287,7 +288,7 @@ namespace PdfToSvg.Parsing
             }
         }
 
-        private Stream OpenDecodedSharedStream(PdfStream stream)
+        private Stream OpenDecodedSharedStream(PdfStream stream, CancellationToken cancellationToken)
         {
             Stream encodedStream;
 
@@ -297,13 +298,13 @@ namespace PdfToSvg.Parsing
             }
             else
             {
-                encodedStream = stream.Open();
+                encodedStream = stream.Open(cancellationToken);
             }
 
             return stream.Filters.Decode(encodedStream);
         }
 
-        public Dictionary<PdfObjectId, object?> ReadAllObjects(XRefTable xrefTable)
+        public Dictionary<PdfObjectId, object?> ReadAllObjects(XRefTable xrefTable, CancellationToken cancellationToken)
         {
             var objects = new Dictionary<PdfObjectId, object?>();
 
@@ -311,6 +312,8 @@ namespace PdfToSvg.Parsing
                 .Where(xref => xref.Type == XRefEntryType.NotFree)
                 .OrderBy(xref => xref.ByteOffset))
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 lexer.Seek(xref.ByteOffset, SeekOrigin.Begin);
 
                 var obj = ReadIndirectObject(objects);
@@ -325,6 +328,8 @@ namespace PdfToSvg.Parsing
                 .GroupBy(xref => xref.CompressedObjectNumber)
                 .OrderBy(group => group.Key))
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var containerId = new PdfObjectId(group.Key, 0);
 
                 if (objects.TryGetValue(containerId, out var maybeObjStream) &&
@@ -334,7 +339,7 @@ namespace PdfToSvg.Parsing
                     var first = objStream.GetValueOrDefault(Names.First, 0);
                     var contentObjects = new List<object?>();
 
-                    using (var objStreamContent = OpenDecodedSharedStream(objStream.Stream))
+                    using (var objStreamContent = OpenDecodedSharedStream(objStream.Stream, cancellationToken))
                     {
                         objStreamContent.Skip(first);
 
@@ -358,7 +363,7 @@ namespace PdfToSvg.Parsing
             return objects;
         }
 
-        public XRefTable ReadXRefTables(long byteOffsetLastXRef)
+        public XRefTable ReadXRefTables(long byteOffsetLastXRef, CancellationToken cancellationToken)
         {
             var xrefTable = new XRefTable();
             var trailerSet = false;
@@ -367,6 +372,8 @@ namespace PdfToSvg.Parsing
 
             while (byteOffsetLastXRef >= 0)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 if (!byteOffsets.Add(byteOffsetLastXRef))
                 {
                     throw Exceptions.CircularXref(byteOffsetLastXRef);
@@ -406,7 +413,7 @@ namespace PdfToSvg.Parsing
 
                     if (xrefTableObject?.Value is PdfDictionary dict)
                     {
-                        ReadXRefStream(xrefTable, dict);
+                        ReadXRefStream(xrefTable, dict, cancellationToken);
 
                         byteOffsetLastXRef = dict.GetValueOrDefault(Names.Prev, -1);
 

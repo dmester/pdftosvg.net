@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg
@@ -36,30 +37,30 @@ namespace PdfToSvg
         /// Gets the binary content of the image.
         /// </summary>
         /// <returns>Binary content of the image.</returns>
-        public abstract byte[] GetContent();
+        public abstract byte[] GetContent(CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the binary content of the image asynchronously.
         /// </summary>
         /// <returns>Binary content of the image.</returns>
-        public abstract Task<byte[]> GetContentAsync();
+        public abstract Task<byte[]> GetContentAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Generates a data URI for this image.
         /// </summary>
         /// <returns>Data URI for this image.</returns>
-        public string ToDataUri()
+        public string ToDataUri(CancellationToken cancellationToken)
         {
-            return "data:" + ContentType + ";base64," + Convert.ToBase64String(GetContent());
+            return "data:" + ContentType + ";base64," + Convert.ToBase64String(GetContent(cancellationToken));
         }
 
         /// <summary>
         /// Generates a data URI for this image asynchronously.
         /// </summary>
         /// <returns>Data URI for this image.</returns>
-        public async Task<string> ToDataUriAsync()
+        public async Task<string> ToDataUriAsync(CancellationToken cancellationToken)
         {
-            return "data:" + ContentType + ";base64," + Convert.ToBase64String(await GetContentAsync().ConfigureAwait(false));
+            return "data:" + ContentType + ";base64," + Convert.ToBase64String(await GetContentAsync(cancellationToken).ConfigureAwait(false));
         }
     }
 }

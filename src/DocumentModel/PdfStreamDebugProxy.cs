@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.DocumentModel
@@ -29,7 +30,7 @@ namespace PdfToSvg.DocumentModel
             {
                 if (content == null)
                 {
-                    using (var stream = streamInfo.OpenDecoded())
+                    using (var stream = streamInfo.OpenDecoded(CancellationToken.None))
                     {
                         var encoding = new PdfDocEncoding();
                         var buffer = new byte[8 * 1024];

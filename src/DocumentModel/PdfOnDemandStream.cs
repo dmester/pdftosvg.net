@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.DocumentModel
@@ -24,14 +25,14 @@ namespace PdfToSvg.DocumentModel
         public long Offset { get; }
         public long Length => owner.GetValueOrDefault(Names.Length, 0);
 
-        public override Stream Open()
+        public override Stream Open(CancellationToken cancellationToken)
         {
-            return file.CreateExclusiveSliceReader(Offset, Length);
+            return file.CreateExclusiveSliceReader(Offset, Length, cancellationToken);
         }
 
-        public override async Task<Stream> OpenAsync()
+        public override async Task<Stream> OpenAsync(CancellationToken cancellationToken)
         {
-            var reader = await file.CreateExclusiveSliceReaderAsync(Offset, Length, (int)Math.Min(8 * 1024, Length)).ConfigureAwait(false);
+            var reader = await file.CreateExclusiveSliceReaderAsync(Offset, Length, (int)Math.Min(8 * 1024, Length), cancellationToken).ConfigureAwait(false);
             try
             {
                 await reader.FillBufferAsync().ConfigureAwait(false);

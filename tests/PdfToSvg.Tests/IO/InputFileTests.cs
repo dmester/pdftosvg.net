@@ -86,7 +86,7 @@ namespace PdfToSvg.Tests.IO
             {
                 var streamPosition = i * 100;
 
-                using (var reader = file.CreateExclusiveReader(bufferSize: 10))
+                using (var reader = file.CreateExclusiveReader(bufferSize: 10, cancellationToken: default))
                 {
                     reader.Position = streamPosition;
 
@@ -109,7 +109,7 @@ namespace PdfToSvg.Tests.IO
             {
                 var streamPosition = i * 100;
 
-                using (var reader = await file.CreateExclusiveReaderAsync(bufferSize: 10))
+                using (var reader = await file.CreateExclusiveReaderAsync(bufferSize: 10, cancellationToken: default))
                 {
                     reader.Position = streamPosition;
 
@@ -132,7 +132,7 @@ namespace PdfToSvg.Tests.IO
             {
                 var sliceStartPosition = i * 100;
 
-                using (var reader = file.CreateExclusiveSliceReader(sliceStartPosition, 100, bufferSize: 10))
+                using (var reader = file.CreateExclusiveSliceReader(sliceStartPosition, 100, bufferSize: 10, cancellationToken: default))
                 {
                     reader.Position = 1;
 
@@ -155,7 +155,7 @@ namespace PdfToSvg.Tests.IO
             {
                 var sliceStartPosition = i * 500;
 
-                using (var reader = await file.CreateExclusiveSliceReaderAsync(sliceStartPosition, 100, bufferSize: 10))
+                using (var reader = await file.CreateExclusiveSliceReaderAsync(sliceStartPosition, 100, bufferSize: 10, cancellationToken: default))
                 {
                     reader.Position = 1;
 

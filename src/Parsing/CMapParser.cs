@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Parsing
@@ -33,9 +34,9 @@ namespace PdfToSvg.Parsing
         {
         }
 
-        public static CMap Parse(PdfStream stream)
+        public static CMap Parse(PdfStream stream, CancellationToken cancellationToken)
         {
-            using (var decodedStream = stream.OpenDecoded())
+            using (var decodedStream = stream.OpenDecoded(cancellationToken))
             {
                 var parser = new CMapParser(decodedStream);
                 return parser.ReadCMap();

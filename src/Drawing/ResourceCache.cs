@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Drawing
@@ -25,13 +26,13 @@ namespace PdfToSvg.Drawing
 
         public PdfDictionary Dictionary { get; }
 
-        public InternalFont? GetFont(PdfName fontName, IFontResolver fontResolver)
+        public InternalFont? GetFont(PdfName fontName, IFontResolver fontResolver, CancellationToken cancellationToken)
         {
             if (!fonts.TryGetValue(fontName, out var font))
             {
                 if (Dictionary.TryGetDictionary(Names.Font / fontName, out var fontDict))
                 {
-                    font = new InternalFont(fontDict, fontResolver);
+                    font = new InternalFont(fontDict, fontResolver, cancellationToken);
                 }
 
                 fonts[fontName] = font;
@@ -40,11 +41,11 @@ namespace PdfToSvg.Drawing
             return font;
         }
 
-        public ColorSpace GetColorSpace(PdfName colorSpaceName)
+        public ColorSpace GetColorSpace(PdfName colorSpaceName, CancellationToken cancellationToken)
         {
             if (!colorSpaces.TryGetValue(colorSpaceName, out var colorSpace))
             {
-                colorSpace = ColorSpace.Parse(colorSpaceName, Dictionary.GetDictionaryOrNull(Names.ColorSpace));
+                colorSpace = ColorSpace.Parse(colorSpaceName, Dictionary.GetDictionaryOrNull(Names.ColorSpace), cancellationToken);
                 colorSpaces[colorSpaceName] = colorSpace;
             }
 

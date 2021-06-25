@@ -13,6 +13,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Imaging
@@ -84,7 +85,7 @@ namespace PdfToSvg.Imaging
             return false;
         }
 
-        public override byte[] GetContent()
+        public override byte[] GetContent(CancellationToken cancellationToken)
         {
             var bitsPerComponent = imageDictionary.GetValueOrDefault(Names.BitsPerComponent, 8);
             var width = imageDictionary.GetValueOrDefault(Names.Width, 0);
@@ -125,6 +126,8 @@ namespace PdfToSvg.Imaging
                 bytesPerRow = 1 + 3 * width * bitsPerComponent / 8;
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             var pngStream = new MemoryStream();
             var pngWriter = new PngEncoder(pngStream);
 
@@ -139,7 +142,7 @@ namespace PdfToSvg.Imaging
 
             using (var pngDataStream = pngWriter.GetImageDataStream())
             {
-                using var decodedStream = imageDictionaryStream.OpenDecoded();
+                using var decodedStream = imageDictionaryStream.OpenDecoded(cancellationToken);
 
                 var row = new byte[bytesPerRow];
 
@@ -156,6 +159,11 @@ namespace PdfToSvg.Imaging
                     while (read > 0 && rowCursor < row.Length);
 
                     pngDataStream.Write(row, 0, row.Length);
+
+                    if ((y & 0x3f) == 0)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                    }
                 }
             }
 
@@ -164,9 +172,9 @@ namespace PdfToSvg.Imaging
             return pngStream.ToArray();
         }
 
-        public override Task<byte[]> GetContentAsync()
+        public override Task<byte[]> GetContentAsync(CancellationToken cancellationToken)
         {
-            return Task.FromResult(GetContent());
+            return Task.FromResult(GetContent(cancellationToken));
         }
     }
 }

@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.DocumentModel
@@ -37,27 +38,27 @@ namespace PdfToSvg.DocumentModel
         /// <summary>
         /// Opens the raw, potentially encoded, stream.
         /// </summary>
-        public abstract Stream Open();
+        public abstract Stream Open(CancellationToken cancellationToken);
 
         /// <summary>
         /// Opens the raw, potentially encoded, stream.
         /// </summary>
-        public abstract Task<Stream> OpenAsync();
+        public abstract Task<Stream> OpenAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Opens the stream with all the decode filters applied.
         /// </summary>
-        public Stream OpenDecoded()
+        public Stream OpenDecoded(CancellationToken cancellationToken)
         {
-            return Filters.Decode(Open());
+            return Filters.Decode(Open(cancellationToken));
         }
 
         /// <summary>
         /// Opens the stream with all the decode filters applied.
         /// </summary>
-        public async Task<Stream> OpenDecodedAsync()
+        public async Task<Stream> OpenDecodedAsync(CancellationToken cancellationToken)
         {
-            return Filters.Decode(await OpenAsync().ConfigureAwait(false));
+            return Filters.Decode(await OpenAsync(cancellationToken).ConfigureAwait(false));
         }
 
         private static object[] GetAsArray(PdfDictionary dict, PdfName key)

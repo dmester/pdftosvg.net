@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Functions
@@ -19,7 +20,7 @@ namespace PdfToSvg.Functions
         private readonly double[] range;
         private readonly PostScriptExpression expression;
 
-        public PostScriptFunction(PdfDictionary dictionary)
+        public PostScriptFunction(PdfDictionary dictionary, CancellationToken cancellationToken = default)
         {
             if (!dictionary.TryGetArray(Names.Domain, out domain!))
             {
@@ -33,7 +34,7 @@ namespace PdfToSvg.Functions
 
             if (dictionary.Stream != null)
             {
-                using var stream = dictionary.Stream.OpenDecoded();
+                using var stream = dictionary.Stream.OpenDecoded(cancellationToken);
 
                 try
                 {

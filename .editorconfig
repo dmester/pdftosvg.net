@@ -18,6 +18,12 @@ csharp_preferred_modifier_order = public,private,protected,internal,static,exter
 dotnet_diagnostic.CA2007.severity = error
 dotnet_code_quality.CA2007.output_kind = DynamicallyLinkedLibrary
 
+# CancellationToken parameters must come last
+dotnet_diagnostic.CA1068.severity = error
+
+# Forward CancellationToken
+dotnet_diagnostic.CA2016.severity = error
+
 dotnet_diagnostic.IDE0073.severity = warning
 file_header_template = Copyright (c) PdfToSvg.NET contributors.\nhttps://github.com/dmester/pdftosvg.net\nLicensed under the MIT License.
 

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Functions
@@ -22,7 +23,7 @@ namespace PdfToSvg.Functions
         private readonly double[] encode;
 
 
-        public StitchingFunction(PdfDictionary dictionary)
+        public StitchingFunction(PdfDictionary dictionary, CancellationToken cancellationToken = default)
         {
             if (!dictionary.TryGetArray(Names.Domain, out domain!))
             {
@@ -50,7 +51,7 @@ namespace PdfToSvg.Functions
 
             for (var i = 0; i < functions.Length; i++)
             {
-                functions[i] = Parse(funcDicts[i]);
+                functions[i] = Parse(funcDicts[i], cancellationToken);
             }
 
             this.domain = EnsureArrayLength(this.domain, 2);

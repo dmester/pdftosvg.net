@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg
@@ -16,9 +17,9 @@ namespace PdfToSvg
     public class DataUriImageResolver : IImageResolver
     {
         /// <inheritdoc/>
-        public string ResolveImageUrl(Image image)
+        public string ResolveImageUrl(Image image, CancellationToken cancellationToken)
         {
-            return image.ToDataUri();
+            return image.ToDataUri(cancellationToken);
         }
     }
 }

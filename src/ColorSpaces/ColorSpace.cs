@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.ColorSpaces
@@ -112,12 +113,12 @@ namespace PdfToSvg.ColorSpaces
 
         public abstract float[] DefaultColor { get; }
 
-        public static ColorSpace Parse(object? definition, PdfDictionary? colorSpaceResourcesDictionary)
+        public static ColorSpace Parse(object? definition, PdfDictionary? colorSpaceResourcesDictionary, CancellationToken cancellationToken)
         {
-            return Parse(definition, colorSpaceResourcesDictionary, 0);
+            return Parse(definition, colorSpaceResourcesDictionary, 0, cancellationToken);
         }
 
-        private static ColorSpace ParseIndexed(object[] colorSpaceParams, PdfDictionary? colorSpaceResourcesDictionary, int recursionCount)
+        private static ColorSpace ParseIndexed(object[] colorSpaceParams, PdfDictionary? colorSpaceResourcesDictionary, int recursionCount, CancellationToken cancellationToken)
         {
             ColorSpace? baseSpace = null;
             var lookup = ArrayUtils.Empty<byte>();
@@ -129,7 +130,7 @@ namespace PdfToSvg.ColorSpaces
 
             if (colorSpaceParams.Length > 1)
             {
-                baseSpace = Parse(colorSpaceParams[1], colorSpaceResourcesDictionary, recursionCount + 1);
+                baseSpace = Parse(colorSpaceParams[1], colorSpaceResourcesDictionary, recursionCount + 1, cancellationToken);
 
                 if (colorSpaceParams.Length > 3)
                 {
@@ -138,7 +139,7 @@ namespace PdfToSvg.ColorSpaces
                     if (colorSpaceParams[3] is PdfDictionary lookupDict &&
                         lookupDict.Stream != null)
                     {
-                        using var lookupStream = lookupDict.Stream.OpenDecoded();
+                        using var lookupStream = lookupDict.Stream.OpenDecoded(cancellationToken);
 
                         var buffer = new byte[maxLookupLength];
                         var lookupLength = lookupStream.ReadAll(buffer, 0, buffer.Length);
@@ -166,7 +167,7 @@ namespace PdfToSvg.ColorSpaces
         }
 
 
-        private static ColorSpace Parse(object? definition, PdfDictionary? colorSpaceResourcesDictionary, int recursionCount)
+        private static ColorSpace Parse(object? definition, PdfDictionary? colorSpaceResourcesDictionary, int recursionCount, CancellationToken cancellationToken)
         {
             if (recursionCount > 10)
             {
@@ -194,7 +195,7 @@ namespace PdfToSvg.ColorSpaces
                 if (colorSpaceResourcesDictionary != null &&
                     colorSpaceResourcesDictionary.TryGetValue(singleColorSpaceName, out var colorSpaceResource))
                 {
-                    return Parse(colorSpaceResource, colorSpaceResourcesDictionary, recursionCount + 1);
+                    return Parse(colorSpaceResource, colorSpaceResourcesDictionary, recursionCount + 1, cancellationToken);
                 }
 
                 Log.WriteLine($"Unsupported color space: {singleColorSpaceName}.");
@@ -222,7 +223,7 @@ namespace PdfToSvg.ColorSpaces
 
                 if (colorSpaceName == Names.Indexed)
                 {
-                    return ParseIndexed(definitionArray, colorSpaceResourcesDictionary, recursionCount + 1);
+                    return ParseIndexed(definitionArray, colorSpaceResourcesDictionary, recursionCount + 1, cancellationToken);
                 }
 
                 if (colorSpaceName == Names.ICCBased &&
@@ -233,7 +234,7 @@ namespace PdfToSvg.ColorSpaces
                     // Use alternative approach described in PDF spec 1.7, Table 66, page 158
                     if (iccStreamDict.TryGetValue(Names.Alternate, out var alternate))
                     {
-                        return Parse(alternate, colorSpaceResourcesDictionary, recursionCount + 1);
+                        return Parse(alternate, colorSpaceResourcesDictionary, recursionCount + 1, cancellationToken);
                     }
 
                     return iccStreamDict.GetValueOrDefault(Names.N, 0) switch
@@ -249,8 +250,8 @@ namespace PdfToSvg.ColorSpaces
                 {
                     // PDF spec 1.7, 8.6.6.4, page 165
                     // TOOD implement colorant "None"
-                    var alternateSpace = Parse(definitionArray[2], colorSpaceResourcesDictionary, recursionCount + 1);
-                    var tintTransform = Function.Parse(definitionArray[3]);
+                    var alternateSpace = Parse(definitionArray[2], colorSpaceResourcesDictionary, recursionCount + 1, cancellationToken);
+                    var tintTransform = Function.Parse(definitionArray[3], cancellationToken);
                     return new SeparationColorSpace(alternateSpace, tintTransform);
                 }
 

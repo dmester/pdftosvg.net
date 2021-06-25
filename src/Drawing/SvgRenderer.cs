@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -57,16 +58,23 @@ namespace PdfToSvg.Drawing
 
         private TextBuilder textBuilder;
 
-        private readonly SvgConversionOptions options;
         private readonly PdfDictionary pageDict;
+        private readonly SvgConversionOptions options;
+        private readonly CancellationToken cancellationToken;
         private readonly Matrix originalTransform;
 
         private Dictionary<string, ClipPath> clipPaths = new Dictionary<string, ClipPath>();
 
-        private SvgRenderer(PdfDictionary pageDict, SvgConversionOptions options)
+        private SvgRenderer(PdfDictionary pageDict, SvgConversionOptions? options, CancellationToken cancellationToken)
         {
+            if (options == null)
+            {
+                options = new SvgConversionOptions();
+            }
+
             this.options = options;
             this.pageDict = pageDict;
+            this.cancellationToken = cancellationToken;
 
             textBuilder = new TextBuilder(
                 minSpaceEm: options.KerningThreshold,
@@ -142,6 +150,7 @@ namespace PdfToSvg.Drawing
 
             foreach (var op in ContentParser.Parse(contentStream))
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 dispatcher.Dispatch(this, op.Operator, op.Operands);
             }
 
@@ -270,18 +279,18 @@ namespace PdfToSvg.Drawing
             }
         }
 
-        public static XElement Convert(PdfDictionary pageDict, SvgConversionOptions options)
+        public static XElement Convert(PdfDictionary pageDict, SvgConversionOptions? options, CancellationToken cancellationToken)
         {
-            var renderer = new SvgRenderer(pageDict, options);
-            var contentStream = ContentStream.Combine(pageDict);
+            var renderer = new SvgRenderer(pageDict, options, cancellationToken);
+            var contentStream = ContentStream.Combine(pageDict, cancellationToken);
             renderer.Convert(contentStream);
             return renderer.svg;
         }
 
-        public static async Task<XElement> ConvertAsync(PdfDictionary pageDict, SvgConversionOptions options)
+        public static async Task<XElement> ConvertAsync(PdfDictionary pageDict, SvgConversionOptions? options, CancellationToken cancellationToken)
         {
-            var renderer = new SvgRenderer(pageDict, options);
-            var contentStream = await ContentStream.CombineAsync(pageDict).ConfigureAwait(false);
+            var renderer = new SvgRenderer(pageDict, options, cancellationToken);
+            var contentStream = await ContentStream.CombineAsync(pageDict, cancellationToken).ConfigureAwait(false);
             renderer.Convert(contentStream);
             return renderer.svg;
         }
@@ -410,7 +419,7 @@ namespace PdfToSvg.Drawing
                     // The key should be a combination of stroking color, image id, and some other data if it is an inline image.
 
                     var imageResolver = options.ImageResolver ?? new DataUriImageResolver();
-                    var imageUrl = imageResolver.ResolveImageUrl(image);
+                    var imageUrl = imageResolver.ResolveImageUrl(image, cancellationToken);
                     var imageId = StableID.Generate("im", imageUrl);
 
                     if (defIds.Add(imageId))
@@ -472,7 +481,7 @@ namespace PdfToSvg.Drawing
 
                 // Buffer content since we might need to access the input file while rendering the page
                 using var bufferedFormContent = new MemoryStream();
-                using (var decodedFormContent = xobject.Stream.OpenDecoded())
+                using (var decodedFormContent = xobject.Stream.OpenDecoded(cancellationToken))
                 {
                     decodedFormContent.CopyTo(bufferedFormContent);
                 }
@@ -977,10 +986,10 @@ namespace PdfToSvg.Drawing
         {
             if (definition is PdfName name)
             {
-                return resources.GetColorSpace(name);
+                return resources.GetColorSpace(name, cancellationToken);
             }
 
-            return ColorSpace.Parse(definition, resources.Dictionary.GetDictionaryOrNull(Names.ColorSpace));
+            return ColorSpace.Parse(definition, resources.Dictionary.GetDictionaryOrNull(Names.ColorSpace), cancellationToken);
         }
 
         [Operation("CS")]
@@ -1111,7 +1120,7 @@ namespace PdfToSvg.Drawing
         [Operation("Tf")]
         private void Tf_Font(PdfName fontName, double fontSize)
         {
-            textState.Font = resources.GetFont(fontName, options.FontResolver ?? DefaultFontResolver.Instance) ?? InternalFont.Fallback;
+            textState.Font = resources.GetFont(fontName, options.FontResolver ?? DefaultFontResolver.Instance, cancellationToken) ?? InternalFont.Fallback;
             textState.FontSize = fontSize;
 
             if (textState.Font == null)

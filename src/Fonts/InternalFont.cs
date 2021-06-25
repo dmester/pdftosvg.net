@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Fonts
@@ -28,12 +29,13 @@ namespace PdfToSvg.Fonts
                 { Names.Subtype, Names.Type1 },
                 { Names.BaseFont, StandardFonts.TimesRoman },
             },
-            DefaultFontResolver.Instance);
+            DefaultFontResolver.Instance,
+            CancellationToken.None);
 
         private readonly WidthMap widthMap;
         private readonly ITextDecoder textDecoder;
 
-        public InternalFont(PdfDictionary font, IFontResolver fontResolver)
+        public InternalFont(PdfDictionary font, IFontResolver fontResolver, CancellationToken cancellationToken)
         {
             if (font == null) throw new ArgumentNullException(nameof(font));
             if (fontResolver == null) throw new ArgumentNullException(nameof(fontResolver));
@@ -49,12 +51,12 @@ namespace PdfToSvg.Fonts
             }
             else
             {
-                SubstituteFont = fontResolver.ResolveFont(Name);
+                SubstituteFont = fontResolver.ResolveFont(Name, cancellationToken);
             }
 
             if (font.TryGetDictionary(Names.ToUnicode, out var toUnicode) && toUnicode.Stream != null)
             {
-                textDecoder = CMapParser.Parse(toUnicode.Stream);
+                textDecoder = CMapParser.Parse(toUnicode.Stream, cancellationToken);
             }
             else if (font.TryGetValue(Names.Encoding, out var encoding) && encoding != null)
             {

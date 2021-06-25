@@ -14,6 +14,7 @@ namespace PdfToSvg.IO
 {
     internal class InputFile : IDisposable
     {
+        private const int DefaultBufferSize = 4096;
         private const int OpenTimeout = 30000;
         private Stream? baseStream;
         private SemaphoreSlim? readSemaphore = new SemaphoreSlim(1, 1);
@@ -30,11 +31,16 @@ namespace PdfToSvg.IO
             this.baseStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
-        public async Task<BufferedReader> CreateExclusiveReaderAsync(int bufferSize = 4096)
+        public Task<BufferedReader> CreateExclusiveReaderAsync(CancellationToken cancellationToken)
+        {
+            return CreateExclusiveReaderAsync(DefaultBufferSize, cancellationToken);
+        }
+
+        public async Task<BufferedReader> CreateExclusiveReaderAsync(int bufferSize, CancellationToken cancellationToken)
         {
             if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
 
-            if (!await readSemaphore.WaitAsync(OpenTimeout).ConfigureAwait(false))
+            if (!await readSemaphore.WaitAsync(OpenTimeout, cancellationToken).ConfigureAwait(false))
             {
                 throw NewTimeoutException();
             }
@@ -58,11 +64,16 @@ namespace PdfToSvg.IO
             return reader;
         }
 
-        public BufferedReader CreateExclusiveReader(int bufferSize = 4096)
+        public BufferedReader CreateExclusiveReader(CancellationToken cancellationToken)
+        {
+            return CreateExclusiveReader(DefaultBufferSize, cancellationToken);
+        }
+
+        public BufferedReader CreateExclusiveReader(int bufferSize, CancellationToken cancellationToken)
         {
             if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
 
-            if (!readSemaphore.Wait(OpenTimeout))
+            if (!readSemaphore.Wait(OpenTimeout, cancellationToken))
             {
                 throw NewTimeoutException();
             }
@@ -86,11 +97,16 @@ namespace PdfToSvg.IO
             return reader;
         }
 
-        public async Task<BufferedReader> CreateExclusiveSliceReaderAsync(long offset, long length, int bufferSize = 4096)
+        public Task<BufferedReader> CreateExclusiveSliceReaderAsync(long offset, long length, CancellationToken cancellationToken)
+        {
+            return CreateExclusiveSliceReaderAsync(offset, length, DefaultBufferSize, cancellationToken);
+        }
+
+        public async Task<BufferedReader> CreateExclusiveSliceReaderAsync(long offset, long length, int bufferSize, CancellationToken cancellationToken)
         {
             if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
 
-            if (!await readSemaphore.WaitAsync(OpenTimeout).ConfigureAwait(false))
+            if (!await readSemaphore.WaitAsync(OpenTimeout, cancellationToken).ConfigureAwait(false))
             {
                 throw NewTimeoutException();
             }
@@ -115,11 +131,16 @@ namespace PdfToSvg.IO
             return reader;
         }
 
-        public BufferedReader CreateExclusiveSliceReader(long offset, long length, int bufferSize = 4096)
+        public BufferedReader CreateExclusiveSliceReader(long offset, long length, CancellationToken cancellationToken)
+        {
+            return CreateExclusiveSliceReader(offset, length, DefaultBufferSize, cancellationToken);
+        }
+
+        public BufferedReader CreateExclusiveSliceReader(long offset, long length, int bufferSize, CancellationToken cancellationToken)
         {
             if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
 
-            if (!readSemaphore.Wait(OpenTimeout))
+            if (!readSemaphore.Wait(OpenTimeout, cancellationToken))
             {
                 throw NewTimeoutException();
             }

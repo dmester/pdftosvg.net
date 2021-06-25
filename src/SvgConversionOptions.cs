@@ -45,5 +45,13 @@ namespace PdfToSvg
         /// The value is relative to the current font size, where 1.0 represents the font size.
         /// </summary>
         public double KerningThreshold { get; set; } = 0.2;
+
+        /// <summary>
+        /// Determines whether web links from the PDF will be included in the generated SVG.
+        /// </summary>
+        /// <remarks>
+        /// Note that other types of links, including links within the document, are currently not supported.
+        /// </remarks>
+        public bool IncludeLinks { get; set; } = true;
     }
 }

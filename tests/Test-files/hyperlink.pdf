@@ -1,0 +1,104 @@
+%PDF-1.7
+
+xref
+0 5
+0000000000 65535 f 
+0000000167 00000 n 
+0000000218 00000 n 
+0000000295 00000 n 
+0000001285 00000 n 
+trailer
+<< /Root 1 0 R  /Size 5 >>
+
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1  /Rotate 270 >> endobj
+
+3 0 obj 
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /FAnsi << /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /WinAnsiEncoding >>
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+   /Annots [
+      <<
+         /Subtype /Link
+         /Rect [122 790 272 760]
+         /A <<
+            /Type /Action
+            /S /URI
+            /URI (https://github.com/dmester/pdftosvg.net/)
+         >>
+      >>
+      <<
+         /Subtype /Link
+         /Rect [58.336 120.461 293.954 308.349]
+         /QuadPoints [
+            111.747 136.372
+            72.731 209.102
+            199.253 233.724
+            191.676 150.386
+            262.513 160.235
+            165.160 178.039
+            178.797 282.969
+            275.014 298.121
+         ]
+         /A <<
+            /Type /Action
+            /S /URI
+            /URI (https://www.example.com/)
+         >>
+      >>
+   ]
+>>
+endobj
+
+4 0 obj << /Length 504 >>
+stream
+   
+   0 0 1 RG
+   
+   BT
+      70 765 Td
+      
+      /FAnsi 24 Tf
+      
+      0 0 0 rg
+      (Visit ) Tj
+      
+      0 0 1 rg
+      (PdfToSvg.NET) Tj
+      
+      0 0 0 rg
+      ( repo) Tj
+   ET
+   
+   122 762 m
+   272 762 l
+   s
+   
+   0 0 1 rg
+   111.747 136.372 m
+   72.731 209.102 l
+   199.253 233.724 l
+   191.676 150.386 l
+   
+   262.513 160.235 m
+   165.160 178.039 l
+   178.797 282.969 l
+   275.014 298.121 l
+   f
+   
+   0 0 0 RG
+   10 10 575 822 re
+   s
+
+endstream
+endobj
+
+startxref
+8
+%%EOF

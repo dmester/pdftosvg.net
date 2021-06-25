@@ -25,7 +25,7 @@ namespace PdfToSvg.Drawing
     internal class SvgRenderer
     {
         private static readonly XNamespace ns = "http://www.w3.org/2000/svg";
-
+        private const string LinkStyle = "a:active path{fill:#ffe4002e;}";
         private TextState textState => graphicsState.TextState;
         private GraphicsState graphicsState = new GraphicsState();
 
@@ -57,13 +57,16 @@ namespace PdfToSvg.Drawing
 
         private TextBuilder textBuilder;
 
-        private SvgConversionOptions options;
+        private readonly SvgConversionOptions options;
+        private readonly PdfDictionary pageDict;
+        private readonly Matrix originalTransform;
 
         private Dictionary<string, ClipPath> clipPaths = new Dictionary<string, ClipPath>();
 
         private SvgRenderer(PdfDictionary pageDict, SvgConversionOptions options)
         {
             this.options = options;
+            this.pageDict = pageDict;
 
             textBuilder = new TextBuilder(
                 minSpaceEm: options.KerningThreshold,
@@ -127,6 +130,8 @@ namespace PdfToSvg.Drawing
 
             // Move origin
             graphicsState.Transform = Matrix.Translate(-cropBox.X1, -cropBox.Y1, graphicsState.Transform);
+
+            originalTransform = graphicsState.Transform;
         }
 
         private void Convert(Stream contentStream)
@@ -142,12 +147,93 @@ namespace PdfToSvg.Drawing
 
             SvgAttributeOptimizer.Optimize(rootGraphics);
 
-            // Add clip paths
             AddClipPaths(clipPaths.Values);
+
+            if (options.IncludeLinks)
+            {
+                AddHyperlinks();
+            }
 
             if (!defs.HasElements)
             {
                 defs.Remove();
+            }
+        }
+
+        private void AddHyperlinks()
+        {
+            if (pageDict.TryGetArray<PdfDictionary>(Names.Annots, out var annots))
+            {
+                var hasLink = false;
+
+                foreach (var annot in annots)
+                {
+                    // PDF spec 1.7, Table 173
+                    if (annot.GetNameOrNull(Names.Subtype) == Names.Link &&
+
+                        annot.TryGetArray<double>(Names.Rect, out var arrRect) &&
+                        arrRect.Length == 4 &&
+
+                        annot.TryGetDictionary(Names.A, out var action) &&
+                        action.GetNameOrNull(Names.S) == Names.URI &&
+                        action.TryGetValue<PdfString>(Names.URI, out var uri))
+                    {
+                        var rect = new Rectangle(arrRect[0], arrRect[1], arrRect[2], arrRect[3]);
+                        var path = new PathData();
+
+                        if (annot.TryGetArray<double>(Names.QuadPoints, out var quadPoints) &&
+                            quadPoints.Length >= 8)
+                        {
+                            var isValid = true;
+
+                            // The QuadPoints should be ignored according to the spec if any of the points is outside Rect
+                            for (var i = 0; isValid && i + 1 < quadPoints.Length; i += 2)
+                            {
+                                if (!rect.Contains(quadPoints[i], quadPoints[i + 1]))
+                                {
+                                    isValid = false;
+                                }
+                            }
+
+                            if (isValid)
+                            {
+                                for (var i = 0; i + 7 < quadPoints.Length; i += 8)
+                                {
+                                    path.MoveTo(quadPoints[i], quadPoints[i + 1]);
+
+                                    for (var offset = 2; offset < 8; offset += 2)
+                                    {
+                                        path.LineTo(quadPoints[i + offset], quadPoints[i + offset + 1]);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (path.Count == 0)
+                        {
+                            path.MoveTo(rect.X1, rect.Y1);
+                            path.LineTo(rect.X2, rect.Y1);
+                            path.LineTo(rect.X2, rect.Y2);
+                            path.LineTo(rect.X1, rect.Y2);
+                        }
+
+                        path = path.Transform(originalTransform);
+
+                        rootGraphics.Add(new XElement(ns + "a",
+                            new XAttribute("href", uri.ToString()),
+                            new XElement(ns + "path",
+                                new XAttribute("d", SvgConversion.PathData(path)),
+                                new XAttribute("fill", "transparent"))
+                            ));
+
+                        hasLink = true;
+                    }
+                }
+
+                if (hasLink)
+                {
+                    style.Add(LinkStyle);
+                }
             }
         }
 

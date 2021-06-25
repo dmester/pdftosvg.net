@@ -34,14 +34,7 @@ namespace PdfToSvg
         /// </summary>
         public PdfDocument Document => owner;
 
-        /// <summary>
-        /// Converts this page to an SVG string. The string can for example be saved to a file, or inlined in HTML.
-        /// </summary>
-        /// <returns>SVG fragment without XML declaration. The fragment can be saved to a file or included as inline SVG in HTML.</returns>
-        /// <remarks>
-        /// Note that if you parse the returned SVG fragment as XML, you need to preserve space and not add indentation. Text content
-        /// will otherwise not render correctly.
-        /// </remarks>
+        /// <inheritdoc cref="ToSvgString(SvgConversionOptions)"/>
         public string ToSvgString()
         {
             return ToSvgString(new SvgConversionOptions());
@@ -64,14 +57,7 @@ namespace PdfToSvg
             return ToString(SvgRenderer.Convert(page, options));
         }
 
-        /// <summary>
-        /// Converts this page to an SVG string asynchronously. The string can for example be saved to a file, or inlined in HTML.
-        /// </summary>
-        /// <returns>SVG fragment without XML declaration. The fragment can be saved to a file or included as inline SVG in HTML.</returns>
-        /// <remarks>
-        /// Note that if you parse the returned SVG fragment as XML, you need to preserve space and not add indentation. Text content
-        /// will otherwise not render correctly.
-        /// </remarks>
+        /// <inheritdoc cref="ToSvgStringAsync(SvgConversionOptions)"/>
         public Task<string> ToSvgStringAsync()
         {
             return ToSvgStringAsync(new SvgConversionOptions());
@@ -80,13 +66,7 @@ namespace PdfToSvg
         /// <summary>
         /// Converts this page to an SVG string asynchronously. The string can for example be saved to a file, or inlined in HTML.
         /// </summary>
-        /// <param name="options">Additional configuration options for the conversion.</param>
-        /// <returns>SVG fragment without XML declaration. The fragment can be saved to a file or included as inline SVG in HTML.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="options"/> is <c>null</c>.</exception>
-        /// <remarks>
-        /// Note that if you parse the returned SVG fragment as XML, you need to preserve space and not add indentation. Text content
-        /// will otherwise not render correctly.
-        /// </remarks>
+        /// <inheritdoc cref="ToSvgString(SvgConversionOptions)"/>
         public async Task<string> ToSvgStringAsync(SvgConversionOptions options)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
@@ -94,16 +74,10 @@ namespace PdfToSvg
             return ToString(await SvgRenderer.ConvertAsync(page, options).ConfigureAwait(false));
         }
 
-        /// <summary>
-        /// Saves the page as an SVG file.
-        /// </summary>
-        /// <param name="stream">Stream to write the SVG content to.</param>
+        /// <inheritdoc cref="SaveAsSvg(Stream, SvgConversionOptions)"/>
         public void SaveAsSvg(Stream stream) => SaveAsSvg(stream, new SvgConversionOptions());
 
-        /// <summary>
-        /// Saves the page as an SVG file.
-        /// </summary>
-        /// <param name="path">Path to SVG file. If the file already exists, it will be overwritten.</param>
+        /// <inheritdoc cref="SaveAsSvg(string, SvgConversionOptions)"/>
         public void SaveAsSvg(string path) => SaveAsSvg(path, new SvgConversionOptions());
 
         /// <summary>
@@ -133,16 +107,10 @@ namespace PdfToSvg
             SaveAsSvg(stream, options);
         }
 
-        /// <summary>
-        /// Saves the page as an SVG file asynchronously.
-        /// </summary>
-        /// <param name="stream">Stream to write the SVG content to.</param>
+        /// <inheritdoc cref="SaveAsSvgAsync(Stream, SvgConversionOptions)"/>
         public Task SaveAsSvgAsync(Stream stream) => SaveAsSvgAsync(stream, new SvgConversionOptions());
 
-        /// <summary>
-        /// Saves the page as an SVG file asynchronously.
-        /// </summary>
-        /// <param name="path">Path to SVG file. If the file already exists, it will be overwritten.</param>
+        /// <inheritdoc cref="SaveAsSvgAsync(string, SvgConversionOptions)"/>
         public Task SaveAsSvgAsync(string path) => SaveAsSvgAsync(path, new SvgConversionOptions());
 
         /// <summary>

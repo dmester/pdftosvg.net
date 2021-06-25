@@ -80,6 +80,8 @@ namespace PdfToSvg.Tests.IO
             using var stream = new MemoryStream(new byte[10000], false);
             using var file = new InputFile(stream, true);
 
+            stream.Position = 9999;
+
             InParallel(i =>
             {
                 var streamPosition = i * 100;
@@ -100,6 +102,8 @@ namespace PdfToSvg.Tests.IO
         {
             using var stream = new MemoryStream(new byte[10000], false);
             using var file = new InputFile(stream, true);
+
+            stream.Position = 9999;
 
             InParallel(async i =>
             {
@@ -122,6 +126,8 @@ namespace PdfToSvg.Tests.IO
             using var stream = new MemoryStream(new byte[10000], false);
             using var file = new InputFile(stream, true);
 
+            stream.Position = 9999;
+
             InParallel(i =>
             {
                 var sliceStartPosition = i * 100;
@@ -142,6 +148,8 @@ namespace PdfToSvg.Tests.IO
         {
             using var stream = new MemoryStream(new byte[10000], false);
             using var file = new InputFile(stream, true);
+
+            stream.Position = 9999;
 
             InParallel(async i =>
             {

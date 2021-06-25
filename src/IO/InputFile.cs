@@ -15,7 +15,7 @@ namespace PdfToSvg.IO
     internal class InputFile : IDisposable
     {
         private const int DefaultBufferSize = 4096;
-        private const int OpenTimeout = 30000;
+        private const int OpenTimeout = 60000;
         private Stream? baseStream;
         private SemaphoreSlim? readSemaphore = new SemaphoreSlim(1, 1);
         private readonly bool leaveOpen;
@@ -167,7 +167,7 @@ namespace PdfToSvg.IO
 
         private static Exception NewTimeoutException()
         {
-            return new TimeoutException("Failed to lock the input file within a reasonable time. This usually means a deadlock has occured.");
+            return new TimeoutException("Failed to lock the input file within a reasonable time.");
         }
 
         public void Dispose()

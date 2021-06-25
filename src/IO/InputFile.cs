@@ -66,7 +66,7 @@ namespace PdfToSvg.IO
             {
                 throw NewTimeoutException();
             }
-            
+
             BufferedStreamReader reader;
             var succeeded = false;
 

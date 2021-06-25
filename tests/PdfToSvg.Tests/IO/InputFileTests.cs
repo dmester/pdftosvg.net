@@ -110,7 +110,7 @@ namespace PdfToSvg.Tests.IO
                     reader.Position = streamPosition;
 
                     await Task.Delay(50);
-                    
+
                     Assert.AreEqual(streamPosition, stream.Position);
                 }
             });

@@ -85,7 +85,7 @@ namespace PdfToSvg
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (path.Length == 0) throw new ArgumentException("The path must not be empty.", nameof(path));
 
-            var file = new InputFile(path);
+            var file = new InputFile(path, useAsync: false);
 
             try
             {
@@ -119,7 +119,7 @@ namespace PdfToSvg
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (path.Length == 0) throw new ArgumentException("The path must not be empty.", nameof(path));
 
-            var file = new InputFile(path);
+            var file = new InputFile(path, useAsync: true);
 
             try
             {

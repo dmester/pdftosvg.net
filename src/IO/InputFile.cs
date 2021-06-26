@@ -26,9 +26,9 @@ namespace PdfToSvg.IO
             this.leaveOpen = leaveOpen;
         }
 
-        public InputFile(string path)
+        public InputFile(string path, bool useAsync)
         {
-            this.baseStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            this.baseStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync);
         }
 
         public Task<BufferedReader> CreateExclusiveReaderAsync(CancellationToken cancellationToken)

@@ -29,7 +29,7 @@ There are PDF features not yet implemented by this library. Don't use it as a ge
     <PackageIcon>logo.png</PackageIcon>
     <PackageIconUrl />
     <RepositoryType>git</RepositoryType>
-    <Version>0.1.0-alpha</Version>
+    <Version>0.2.0</Version>
     <Copyright>Copyright © Daniel Mester Pirttijärvi</Copyright>
   </PropertyGroup>
 

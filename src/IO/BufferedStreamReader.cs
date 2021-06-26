@@ -97,10 +97,13 @@ namespace PdfToSvg.IO
                 if (stream != null)
                 {
                     var bytesToRead = LimitReadByteCount(buffer.Length - bufferLength);
-                    var bytesRead = await stream.ReadAsync(buffer, bufferLength, bytesToRead).ConfigureAwait(false);
+                    if (bytesToRead > 0)
+                    {
+                        var bytesRead = await stream.ReadAsync(buffer, bufferLength, bytesToRead).ConfigureAwait(false);
 
-                    bufferLength += bytesRead;
-                    estimatedStreamPosition += bytesRead;
+                        bufferLength += bytesRead;
+                        estimatedStreamPosition += bytesRead;
+                    }
                 }
             }
         }
@@ -112,25 +115,36 @@ namespace PdfToSvg.IO
             if (stream != null)
             {
                 var bytesToRead = LimitReadByteCount(buffer.Length - bufferLength);
-                var bytesRead = stream.Read(buffer, bufferLength, bytesToRead);
+                if (bytesToRead > 0)
+                {
+                    var bytesRead = stream.Read(buffer, bufferLength, bytesToRead);
 
-                bufferLength += bytesRead;
-                estimatedStreamPosition += bytesRead;
+                    bufferLength += bytesRead;
+                    estimatedStreamPosition += bytesRead;
+                }
             }
         }
 
         protected override int ReadUnbuffered(byte[] buffer, int offset, int count)
         {
             if (stream == null) throw new ObjectDisposedException(nameof(BufferedStreamReader));
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
 
-            return stream.Read(buffer, offset, LimitReadByteCount(count));
+            count = LimitReadByteCount(count);
+
+            return count > 0 ? stream.Read(buffer, offset, count) : 0;
         }
 
         protected override Task<int> ReadUnbufferedAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             if (stream == null) throw new ObjectDisposedException(nameof(BufferedStreamReader));
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
 
-            return stream.ReadAsync(buffer, offset, LimitReadByteCount(count), cancellationToken);
+            count = LimitReadByteCount(count);
+
+            return count > 0 ?
+                stream.ReadAsync(buffer, offset, count, cancellationToken) :
+                Task.FromResult(0);
         }
 
         protected override void SeekCore(long position)

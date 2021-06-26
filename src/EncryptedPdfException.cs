@@ -13,7 +13,10 @@ namespace PdfToSvg
     /// <summary>
     /// Thrown when an encrypted PDF is opened.
     /// </summary>
-    public class EncryptedPdfException : Exception
+    /// <remarks>
+    /// Encrypted PDFs are currently not supported by PdfToSvg.NET. A PDF can be encrypted without requiring a password to open.
+    /// </remarks>
+    public class EncryptedPdfException : PdfConversionException
     {
         /// <summary>
         /// Creates a new instance of <see cref="EncryptedPdfException"/>.

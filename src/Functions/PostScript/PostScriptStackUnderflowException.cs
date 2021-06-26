@@ -12,7 +12,7 @@ namespace PdfToSvg.Functions.PostScript
 {
     internal class PostScriptStackUnderflowException : PostScriptFunctionException
     {
-        public PostScriptStackUnderflowException() : base("Attempt to get values from an empty stack.")
+        public PostScriptStackUnderflowException() : base("Attempt to get values from an empty stack in a PostScript function.")
         {
         }
     }

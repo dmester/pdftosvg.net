@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.ColorSpaces;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.IO;
 using System;
@@ -26,6 +27,11 @@ namespace PdfToSvg.Imaging
             }
 
             this.imageDictionaryStream = imageDictionary.Stream;
+        }
+
+        public static bool IsSupported(ColorSpace colorSpace)
+        {
+            return colorSpace is DeviceRgbColorSpace;
         }
 
         private Stream GetStream(CancellationToken cancellationToken)

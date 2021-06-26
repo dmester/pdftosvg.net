@@ -60,7 +60,7 @@ namespace PdfToSvg.Parsing
                 null;
 
             var outerFilter = Filter.ByName(outerFilterName);
-            if (outerFilter != null && outerFilter.CanDetectStreamLength)
+            if (outerFilter.CanDetectStreamLength)
             {
                 return outerFilter.DetectStreamLength(reader);
             }

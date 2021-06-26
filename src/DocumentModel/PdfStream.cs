@@ -92,21 +92,14 @@ namespace PdfToSvg.DocumentModel
                 if (untypedFilterName is PdfName filterName)
                 {
                     var filter = Filter.ByName(filterName);
-                    if (filter == null)
-                    {
-                        Log.WriteLine($"Unsupported filter {filterName}. Filter ignored.");
-                    }
-                    else
-                    {
-                        PdfDictionary? filterDecodeParms = null;
+                    PdfDictionary? filterDecodeParms = null;
 
-                        if (i < decodeParms.Length)
-                        {
-                            filterDecodeParms = decodeParms[i] as PdfDictionary;
-                        }
-
-                        result.Add(new PdfStreamFilter(filter, filterDecodeParms));
+                    if (i < decodeParms.Length)
+                    {
+                        filterDecodeParms = decodeParms[i] as PdfDictionary;
                     }
+
+                    result.Add(new PdfStreamFilter(filter, filterDecodeParms));
                 }
                 else if (untypedFilterName != null)
                 {

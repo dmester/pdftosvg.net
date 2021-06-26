@@ -26,7 +26,10 @@ namespace PdfToSvg.Drawing
     internal class SvgRenderer
     {
         private static readonly XNamespace ns = "http://www.w3.org/2000/svg";
+
         private const string LinkStyle = "a:active path{fill:#ffe4002e;}";
+        private const string BrokenImageSymbolId = "pdftosvg_brokenimg";
+
         private TextState textState => graphicsState.TextState;
         private GraphicsState graphicsState = new GraphicsState();
 
@@ -44,6 +47,7 @@ namespace PdfToSvg.Drawing
         private ResourceCache resources;
 
         private XElement defs = new XElement(ns + "defs");
+        private bool hasBrokenImage = false;
 
         private HashSet<string> defIds = new HashSet<string>();
 
@@ -412,6 +416,11 @@ namespace PdfToSvg.Drawing
                     colorSpace = GetColorSpace(imageObject[Names.ColorSpace]);
                 }
 
+                if (colorSpace is UnsupportedColorSpace)
+                {
+                    return null;
+                }
+
                 var image = ImageFactory.Create(imageObject, colorSpace);
                 if (image != null)
                 {
@@ -500,17 +509,43 @@ namespace PdfToSvg.Drawing
 
         private void RenderImage(PdfDictionary xobject)
         {
+            var imageTransform = Matrix.Translate(0, -1) * Matrix.Scale(1, -1) * graphicsState.Transform;
+            
             var imageId = GetSvgImageId(xobject, out var imageWidth, out var imageHeight);
             if (imageId == null)
             {
+                // Missing image
+                // Replace with broken image icon
+
+                if (!hasBrokenImage)
+                {
+                    var brokenImageSymbol = BrokenImageSymbol.Create();
+                    brokenImageSymbol.SetAttributeValue("id", BrokenImageSymbolId);
+                    defs.AddAfterSelf(brokenImageSymbol);
+                    hasBrokenImage = true;
+                }
+
+                AppendClipped(new XElement(ns + "g",
+                    new XAttribute("transform", SvgConversion.Matrix(imageTransform)),
+                    new XElement(ns + "rect",
+                        new XAttribute("width", "1"),
+                        new XAttribute("height", "1"),
+                        new XAttribute("fill", "#7773")
+                        ),
+                    new XElement(ns + "use",
+                        new XAttribute("x", "0.25"),
+                        new XAttribute("y", "0.25"),
+                        new XAttribute("width", "0.5"),
+                        new XAttribute("height", "0.5"),
+                        new XAttribute("href", "#" + BrokenImageSymbolId)
+                        )
+                    ));
                 return;
             }
 
             var imageAttributes = new List<XAttribute>();
 
             // Positioning
-            var imageTransform = Matrix.Translate(0, -1) * Matrix.Scale(1, -1) * graphicsState.Transform;
-
             imageAttributes.Add(new XAttribute("transform", SvgConversion.Matrix(imageTransform)));
 
             // Mask

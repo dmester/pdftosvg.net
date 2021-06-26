@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Tests.DocumentModel
 {
-    class PdfStreamTests
+    public class PdfStreamTests
     {
         [Test]
         public void NoFilter()
@@ -35,9 +35,10 @@ namespace PdfToSvg.Tests.DocumentModel
 
             var stream = new PdfMemoryStream(streamDictionary, new byte[0], 0);
 
-            Assert.AreEqual(2, stream.Filters.Count);
+            Assert.AreEqual(3, stream.Filters.Count);
             Assert.AreEqual(Filter.Ascii85Decode, stream.Filters[0].Filter);
-            Assert.AreEqual(Filter.FlateDecode, stream.Filters[1].Filter);
+            Assert.IsInstanceOf<UnsupportedFilter>(stream.Filters[1].Filter);
+            Assert.AreEqual(Filter.FlateDecode, stream.Filters[2].Filter);
         }
 
 

@@ -18,7 +18,7 @@
     <!-- NuGet package -->
     <Description>Open source library for converting PDF files to SVG.
 
-Note that this is a prerelease. There can be a lot of bugs, and the public API can have breaking changes without increasing the major version.</Description>
+There are PDF features not yet implemented by this library. Don't use it as a general PDF conversion tool for any PDF. However it should be fine if used on PDFs from a specific PDF producer, after thorough testing on PDFs created by that particular producer.</Description>
     <RepositoryUrl>https://github.com/dmester/pdftosvg.net/</RepositoryUrl>
     <PackageTags>pdf svg convert</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

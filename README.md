@@ -10,7 +10,9 @@
 Fully managed library for converting PDF files to SVG. Potential usage is embedding PDFs on your site without the need of loading a PDF reader.
 
 ## State
-The library is still under active development and should not yet be used in production code.
+There are PDF features not yet implemented by this library. Don't use it as a general PDF conversion tool for any PDF. However it should be fine if used on PDFs from a specific PDF producer, after thorough testing on PDFs created by that particular producer.
+
+New versions of the library might include breaking changes to the public API until version 1.0 is released.
 
 ## Install
 Install the [PdfToSvg.NET NuGet package](https://www.nuget.org/packages/PdfToSvg.NET/).

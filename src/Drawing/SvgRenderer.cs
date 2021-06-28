@@ -30,7 +30,6 @@ namespace PdfToSvg.Drawing
         private const string LinkStyle = "a:active path{fill:#ffe4002e;}";
         private const string BrokenImageSymbolId = "pdftosvg_brokenimg";
 
-        private TextState textState => graphicsState.TextState;
         private GraphicsState graphicsState = new GraphicsState();
 
         private Stack<GraphicsState> graphicsStateStack = new Stack<GraphicsState>();
@@ -329,35 +328,35 @@ namespace PdfToSvg.Drawing
         [Operation("gs/LW")]
         private void w_LineWidth(double lineWidth)
         {
-            graphicsState.LineWidth = lineWidth;
+            graphicsState.StrokeWidth = lineWidth;
         }
 
         [Operation("J")]
         [Operation("gs/LC")]
         private void J_LineCap(int lineCap)
         {
-            graphicsState.LineCap = lineCap;
+            graphicsState.StrokeLineCap = lineCap;
         }
 
         [Operation("j")]
         [Operation("gs/LJ")]
         private void j_LineJoin(int lineJoin)
         {
-            graphicsState.LineJoin = lineJoin;
+            graphicsState.StrokeLineJoin = lineJoin;
         }
 
         [Operation("M")]
         [Operation("gs/ML")]
         private void M_MiterLimit(double miterLimit)
         {
-            graphicsState.MiterLimit = miterLimit;
+            graphicsState.StrokeMiterLimit = miterLimit;
         }
 
         [Operation("d")]
         private void d_DashArray(int[] dashArray, int dashPhase)
         {
-            graphicsState.DashArray = dashArray;
-            graphicsState.DashPhase = dashPhase;
+            graphicsState.StrokeDashArray = dashArray;
+            graphicsState.StrokeDashPhase = dashPhase;
         }
 
         [Operation("gs/D")]
@@ -859,7 +858,7 @@ namespace PdfToSvg.Drawing
 
             if (stroke)
             {
-                var strokeWidth = graphicsState.LineWidth;
+                var strokeWidth = graphicsState.StrokeWidth;
                 var strokeWidthScale = pathTransformed ? 1d : Math.Min(scaleX, scaleY);
 
                 if (strokeWidth == 0)
@@ -881,20 +880,20 @@ namespace PdfToSvg.Drawing
                 attributes.Add(new XAttribute("stroke", SvgConversion.FormatColor(graphicsState.StrokeColor)));
                 attributes.Add(new XAttribute("stroke-width", SvgConversion.FormatCoordinate(strokeWidth)));
 
-                if (graphicsState.LineCap == 1)
+                if (graphicsState.StrokeLineCap == 1)
                 {
                     attributes.Add(new XAttribute("stroke-linecap", "round"));
                 }
-                else if (graphicsState.LineCap == 2)
+                else if (graphicsState.StrokeLineCap == 2)
                 {
                     attributes.Add(new XAttribute("stroke-linecap", "square"));
                 }
 
-                if (graphicsState.LineJoin == 1)
+                if (graphicsState.StrokeLineJoin == 1)
                 {
                     attributes.Add(new XAttribute("stroke-linejoin", "round"));
                 }
-                else if (graphicsState.LineJoin == 2)
+                else if (graphicsState.StrokeLineJoin == 2)
                 {
                     attributes.Add(new XAttribute("stroke-linejoin", "bevel"));
                 }
@@ -906,27 +905,27 @@ namespace PdfToSvg.Drawing
                     // Default in SVG: 4
                     // Default in PDF: 10 (PDF 1.7 spec, Table 52)
 
-                    if (graphicsState.MiterLimit != 10)
+                    if (graphicsState.StrokeMiterLimit != 10)
                     {
-                        attributes.Add(new XAttribute("stroke-miterlimit", SvgConversion.FormatCoordinate(graphicsState.MiterLimit)));
+                        attributes.Add(new XAttribute("stroke-miterlimit", SvgConversion.FormatCoordinate(graphicsState.StrokeMiterLimit)));
                     }
                     else if (!svgHasDefaultMiterLimit)
                     {
                         // Change default miter limit on root element
-                        rootGraphics.Add(new XAttribute("stroke-miterlimit", SvgConversion.FormatCoordinate(graphicsState.MiterLimit)));
+                        rootGraphics.Add(new XAttribute("stroke-miterlimit", SvgConversion.FormatCoordinate(graphicsState.StrokeMiterLimit)));
                         svgHasDefaultMiterLimit = true;
                     }
                 }
 
-                if (graphicsState.DashArray != null)
+                if (graphicsState.StrokeDashArray != null)
                 {
                     attributes.Add(new XAttribute("stroke-dasharray", string.Join(" ",
-                        graphicsState.DashArray.Select(x => x.ToString(CultureInfo.InvariantCulture)))));
+                        graphicsState.StrokeDashArray.Select(x => x.ToString(CultureInfo.InvariantCulture)))));
 
-                    if (graphicsState.DashPhase != 0)
+                    if (graphicsState.StrokeDashPhase != 0)
                     {
                         attributes.Add(new XAttribute("stroke-dashoffset",
-                            graphicsState.DashPhase.ToString(CultureInfo.InvariantCulture)));
+                            graphicsState.StrokeDashPhase.ToString(CultureInfo.InvariantCulture)));
                     }
                 }
             }
@@ -1128,20 +1127,20 @@ namespace PdfToSvg.Drawing
         [Operation("Tc")]
         private void Tc_CharSpace(double charSpace)
         {
-            textState.CharSpacing = charSpace;
+            graphicsState.TextCharSpacingPx = charSpace;
             textBuilder.InvalidateStyle();
         }
 
         [Operation("Tw")]
         private void Tw_WordSpace(double wordSpace)
         {
-            textState.WordSpacing = wordSpace;
+            graphicsState.TextWordSpacingPx = wordSpace;
         }
 
         [Operation("Tz")]
         private void Tz_Scale(double scale)
         {
-            textState.Scaling = scale;
+            graphicsState.TextScaling = scale;
             textBuilder.InvalidateStyle();
             textBuilder.UpdateLineMatrix(graphicsState);
         }
@@ -1149,19 +1148,19 @@ namespace PdfToSvg.Drawing
         [Operation("TL")]
         private void TL_Leading(double leading)
         {
-            textState.Leading = leading;
+            graphicsState.TextLeading = leading;
         }
 
         [Operation("Tf")]
         private void Tf_Font(PdfName fontName, double fontSize)
         {
-            textState.Font = resources.GetFont(fontName, options.FontResolver ?? DefaultFontResolver.Instance, cancellationToken) ?? InternalFont.Fallback;
-            textState.FontSize = fontSize;
+            graphicsState.Font = resources.GetFont(fontName, options.FontResolver ?? DefaultFontResolver.Instance, cancellationToken) ?? InternalFont.Fallback;
+            graphicsState.FontSize = fontSize;
 
-            if (textState.Font == null)
+            if (graphicsState.Font == null)
             {
                 Log.WriteLine($"Could not find a font replacement for {fontName}.");
-                textState.Font = InternalFont.Fallback;
+                graphicsState.Font = InternalFont.Fallback;
             }
 
             textBuilder.InvalidateStyle();
@@ -1171,7 +1170,7 @@ namespace PdfToSvg.Drawing
         [Operation("Tr")]
         private void Tr_Renderer(int renderer)
         {
-            textState.RenderingMode = renderer switch
+            graphicsState.TextRenderingMode = renderer switch
             {
                 0 => TextRenderingMode.Fill,
                 1 => TextRenderingMode.Stroke,
@@ -1189,7 +1188,7 @@ namespace PdfToSvg.Drawing
         [Operation("Ts")]
         private void Ts_Rise(double rise)
         {
-            textState.Rise = rise;
+            graphicsState.TextRisePx = rise;
             textBuilder.InvalidateStyle();
         }
 
@@ -1213,8 +1212,8 @@ namespace PdfToSvg.Drawing
         [Operation("\"")]
         private void MoveLine_Show(double wordSpacing, double charSpacing, PdfString text)
         {
-            textState.WordSpacing = wordSpacing;
-            textState.CharSpacing = charSpacing;
+            graphicsState.TextWordSpacingPx = wordSpacing;
+            graphicsState.TextCharSpacingPx = charSpacing;
             textBuilder.InvalidateStyle();
             MoveLine_Show(text);
         }
@@ -1246,8 +1245,8 @@ namespace PdfToSvg.Drawing
         [Operation("BT")]
         private void BT_BeginText()
         {
-            graphicsState.TextState.TextMatrix = Matrix.Identity;
-            graphicsState.TextState.LineMatrix = Matrix.Identity;
+            graphicsState.TextMatrix = Matrix.Identity;
+            graphicsState.LineMatrix = Matrix.Identity;
             textBuilder.Clear();
             textBuilder.UpdateLineMatrix(graphicsState);
         }
@@ -1268,11 +1267,11 @@ namespace PdfToSvg.Drawing
 
                 foreach (var span in paragraph.Content)
                 {
-                    if ((span.Style.RenderingMode & includedModes) != 0)
+                    if ((span.Style.TextRenderingMode & includedModes) != 0)
                     {
                         if (newParagraph == null ||
-                            newParagraph.Content.Last().Style.Scaling != 100 ||
-                            span.Style.Scaling != 100)
+                            newParagraph.Content.Last().Style.TextScaling != 100 ||
+                            span.Style.TextScaling != 100)
                         {
                             newParagraph = new TextParagraph
                             {
@@ -1293,26 +1292,26 @@ namespace PdfToSvg.Drawing
             return result;
         }
 
-        private string? BuildCssClass(TextStyle style)
+        private string? BuildCssClass(GraphicsState style)
         {
             var className = default(string);
             var cssClass = new CssPropertyCollection();
 
-            if (style.RenderingMode.HasFlag(TextRenderingMode.Fill))
+            if (style.TextRenderingMode.HasFlag(TextRenderingMode.Fill))
             {
-                if (style.Fill != RgbColor.Black)
+                if (style.FillColor != RgbColor.Black)
                 {
-                    cssClass["fill"] = SvgConversion.FormatColor(style.Fill);
+                    cssClass["fill"] = SvgConversion.FormatColor(style.FillColor);
                 }
             }
-            else if (style.RenderingMode.HasFlag(TextRenderingMode.Stroke))
+            else if (style.TextRenderingMode.HasFlag(TextRenderingMode.Stroke))
             {
                 cssClass["fill"] = "none";
             }
 
-            if (style.RenderingMode.HasFlag(TextRenderingMode.Stroke))
+            if (style.TextRenderingMode.HasFlag(TextRenderingMode.Stroke))
             {
-                cssClass["stroke"] = SvgConversion.FormatColor(style.Stroke);
+                cssClass["stroke"] = SvgConversion.FormatColor(style.StrokeColor);
                 // TODO specify width and other stroke related properties
             }
 
@@ -1355,9 +1354,9 @@ namespace PdfToSvg.Drawing
 
             cssClass["font-size"] = SvgConversion.FormatCoordinate(style.FontSize) + "px";
 
-            if (style.CharSpacingPx != 0)
+            if (style.TextCharSpacingPx != 0)
             {
-                cssClass["letter-spacing"] = SvgConversion.FormatCoordinate(style.CharSpacingPx) + "px";
+                cssClass["letter-spacing"] = SvgConversion.FormatCoordinate(style.TextCharSpacingPx) + "px";
             }
 
             if (cssClass.Count > 0)
@@ -1378,7 +1377,7 @@ namespace PdfToSvg.Drawing
         [Operation("ET")]
         private void ET_EndText()
         {
-            var styleToClassNameLookup = new Dictionary<TextStyle, string?>();
+            var styleToClassNameLookup = new Dictionary<object, string?>();
 
             foreach (var paragraph in PrepareSvgSpans(textBuilder.paragraphs, TextRenderingMode.Fill | TextRenderingMode.Stroke))
             {
@@ -1398,7 +1397,7 @@ namespace PdfToSvg.Drawing
                 if (singleSpan != null)
                 {
                     x += singleSpan.SpaceBefore;
-                    y += singleSpan.Style.RisePx;
+                    y += singleSpan.Style.TextRisePx;
                 }
 
                 if (paragraph.Matrix.IsIdentity)
@@ -1423,7 +1422,7 @@ namespace PdfToSvg.Drawing
                         textEl.SetAttributeValue("class", className);
                     }
 
-                    if (singleSpan.Style.Scaling != 100)
+                    if (singleSpan.Style.TextScaling != 100)
                     {
                         textEl.SetAttributeValue("textLength", SvgConversion.FormatCoordinate(singleSpan.Width) + "px");
                         textEl.SetAttributeValue("lengthAdjust", "spacingAndGlyphs");
@@ -1477,10 +1476,10 @@ namespace PdfToSvg.Drawing
                             tspan.SetAttributeValue("dx", SvgConversion.FormatCoordinate(span.SpaceBefore));
                         }
 
-                        if (span.Style.RisePx != currentYOffset)
+                        if (span.Style.TextRisePx != currentYOffset)
                         {
-                            tspan.SetAttributeValue("dy", SvgConversion.FormatCoordinate(currentYOffset - span.Style.RisePx));
-                            currentYOffset = span.Style.RisePx;
+                            tspan.SetAttributeValue("dy", SvgConversion.FormatCoordinate(currentYOffset - span.Style.TextRisePx));
+                            currentYOffset = span.Style.TextRisePx;
                         }
 
                         tspan.Value = span.Value;
@@ -1530,20 +1529,20 @@ namespace PdfToSvg.Drawing
         [Operation("Tm")]
         private void Tm_SetTextMatrix(double a, double b, double c, double d, double e, double f)
         {
-            textState.TextMatrix = textState.LineMatrix = new Matrix(a, b, c, d, e, f);
+            graphicsState.TextMatrix = graphicsState.LineMatrix = new Matrix(a, b, c, d, e, f);
             textBuilder.UpdateLineMatrix(graphicsState);
         }
 
         [Operation("T*")]
         private void Tx_StartOfLine()
         {
-            Td(0, -textState.Leading);
+            Td(0, -graphicsState.TextLeading);
         }
 
         [Operation("Td")]
         private void Td(double tx, double ty)
         {
-            textState.TextMatrix = textState.LineMatrix = Matrix.Translate(tx, ty, textState.LineMatrix);
+            graphicsState.TextMatrix = graphicsState.LineMatrix = Matrix.Translate(tx, ty, graphicsState.LineMatrix);
             textBuilder.UpdateLineMatrix(graphicsState);
         }
 

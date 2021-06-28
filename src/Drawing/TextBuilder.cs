@@ -17,7 +17,7 @@ namespace PdfToSvg.Drawing
 
         private readonly double minSpaceEm;
         private readonly double minSpacePx;
-        private TextStyle? textStyle;
+        private GraphicsState? textStyle;
         private double pendingSpace;
         private TextParagraph? currentParagraph;
 
@@ -57,7 +57,7 @@ namespace PdfToSvg.Drawing
 
         public void UpdateLineMatrix(GraphicsState graphicsState)
         {
-            var transform = graphicsState.TextState.TextMatrix * graphicsState.Transform;
+            var transform = graphicsState.TextMatrix * graphicsState.Transform;
 
             var previousScale = scale;
             var previousTranslateX = translateX;
@@ -72,7 +72,7 @@ namespace PdfToSvg.Drawing
 
             transform.DecomposeScale(out scale, out transform);
 
-            normalizedFontSize = graphicsState.TextState.FontSize * scale;
+            normalizedFontSize = graphicsState.FontSize * scale;
 
             // Force font size to be positive
             if (normalizedFontSize < 0)
@@ -83,7 +83,7 @@ namespace PdfToSvg.Drawing
             }
 
             // Force scaling to be positive
-            if (graphicsState.TextState.Scaling < 0)
+            if (graphicsState.TextScaling < 0)
             {
                 transform = Matrix.Scale(-1, 1, transform);
             }
@@ -118,7 +118,7 @@ namespace PdfToSvg.Drawing
                 return;
             }
 
-            var decodedText = graphicsState.TextState.Font.Decode(text, out var width);
+            var decodedText = graphicsState.Font.Decode(text, out var width);
 
             width *= normalizedFontSize;
 
@@ -129,9 +129,9 @@ namespace PdfToSvg.Drawing
                 NewParagraph();
             }
 
-            var totalWidth = width + text.Length * style.CharSpacingPx;
+            var totalWidth = width + text.Length * style.TextCharSpacingPx;
 
-            var wordSpacing = graphicsState.TextState.WordSpacing;
+            var wordSpacing = graphicsState.TextWordSpacingPx;
             if (wordSpacing != 0)
             {
                 // TODO not correct, scale is not horizontal
@@ -160,7 +160,7 @@ namespace PdfToSvg.Drawing
                 AddSpanNoSpacing(style, decodedText, width);
             }
 
-            totalWidth *= graphicsState.TextState.Scaling * ScalingMultiplier;
+            totalWidth *= graphicsState.TextScaling * ScalingMultiplier;
 
             Translate(graphicsState, totalWidth);
         }
@@ -171,17 +171,17 @@ namespace PdfToSvg.Drawing
             const double WidthMultiplier = -FontSizeMultiplier * ScalingMultiplier;
 
             var widthTextSpace = widthGlyphSpaceUnits *
-                graphicsState.TextState.FontSize *
-                graphicsState.TextState.Scaling * WidthMultiplier *
+                graphicsState.FontSize *
+                graphicsState.TextScaling * WidthMultiplier *
                 scale;
 
             pendingSpace += widthTextSpace;
             Translate(graphicsState, widthTextSpace);
         }
 
-        private void AddSpanNoSpacing(TextStyle style, string text, double width)
+        private void AddSpanNoSpacing(GraphicsState style, string text, double width)
         {
-            width *= style.Scaling * ScalingMultiplier;
+            width *= style.TextScaling * ScalingMultiplier;
 
             if (currentParagraph == null)
             {
@@ -228,14 +228,16 @@ namespace PdfToSvg.Drawing
         private void Translate(GraphicsState graphicsState, double dx)
         {
             translateX += dx;
-            graphicsState.TextState.TextMatrix = Matrix.Translate(dx / scale, 0, graphicsState.TextState.TextMatrix);
+            graphicsState.TextMatrix = Matrix.Translate(dx / scale, 0, graphicsState.TextMatrix);
         }
 
-        private TextStyle GetTextStyle(GraphicsState graphicsState)
+        private GraphicsState GetTextStyle(GraphicsState graphicsState)
         {
             if (textStyle == null)
             {
-                textStyle = new TextStyle(graphicsState, normalizedFontSize, Math.Abs(graphicsState.TextState.Scaling));
+                textStyle = graphicsState.Clone();
+                textStyle.FontSize = normalizedFontSize;
+                textStyle.TextScaling = Math.Abs(graphicsState.TextScaling);
             }
 
             return textStyle;

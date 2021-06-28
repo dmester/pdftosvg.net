@@ -15,9 +15,9 @@ namespace PdfToSvg.Drawing
         public string Value;
         public double Width;
         public double SpaceBefore;
-        public TextStyle Style;
+        public GraphicsState Style;
 
-        public TextSpan(double spaceBefore, TextStyle style, string value, double width)
+        public TextSpan(double spaceBefore, GraphicsState style, string value, double width)
         {
             SpaceBefore = spaceBefore;
             Style = style;

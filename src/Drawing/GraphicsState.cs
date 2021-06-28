@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.ColorSpaces;
+using PdfToSvg.Fonts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,41 +15,42 @@ namespace PdfToSvg.Drawing
     // TODO merge with TextState?
     internal class GraphicsState
     {
+        // Graphics state
         // PDF spec 1.7, Table 52, page 129
+        public Matrix Transform = Matrix.Identity;
 
-        public TextState TextState { get; set; } = new TextState();
+        public double Flatness;
+        public int Intent;
+        public ClipPath? ClipPath;
 
-        public Matrix Transform { get; set; } = Matrix.Identity;
+        public ColorSpace FillColorSpace = new DeviceRgbColorSpace();
+        public ColorSpace StrokeColorSpace = new DeviceRgbColorSpace();
+        public RgbColor FillColor = RgbColor.Black;
+        public RgbColor StrokeColor = RgbColor.Black;
 
-        public double Flatness { get; set; }
+        public double StrokeWidth = 1d;
+        public int StrokeLineJoin;
+        public int StrokeLineCap;
+        public int[]? StrokeDashArray;
+        public int StrokeDashPhase;
+        public double StrokeMiterLimit = 10d;
 
-        public int Intent { get; set; }
-
-        public ClipPath? ClipPath { get; set; }
-
-        public int[]? DashArray { get; set; }
-
-        public int DashPhase { get; set; }
-
-        public double MiterLimit { get; set; } = 10d;
-
-        public int LineJoin { get; set; }
-
-        public int LineCap { get; set; }
-
-        public double LineWidth { get; set; } = 1d;
-
-        public ColorSpace FillColorSpace { get; set; } = new DeviceRgbColorSpace();
-        public ColorSpace StrokeColorSpace { get; set; } = new DeviceRgbColorSpace();
-
-        public RgbColor FillColor { get; set; } = RgbColor.Black;
-        public RgbColor StrokeColor { get; set; } = RgbColor.Black;
+        // Text state
+        // PDF spec 1.7, Table 104, page 251
+        public Matrix TextMatrix = Matrix.Identity;
+        public Matrix LineMatrix = Matrix.Identity;
+        public double TextLeading;
+        public InternalFont Font = InternalFont.Fallback;
+        public double FontSize;
+        public double TextCharSpacingPx;
+        public double TextWordSpacingPx;
+        public TextRenderingMode TextRenderingMode = TextRenderingMode.Fill;
+        public double TextRisePx;
+        public double TextScaling = 100;
 
         public GraphicsState Clone()
         {
-            var clone = (GraphicsState)MemberwiseClone();
-            clone.TextState = TextState.Clone();
-            return clone;
+            return (GraphicsState)MemberwiseClone();
         }
     }
 }

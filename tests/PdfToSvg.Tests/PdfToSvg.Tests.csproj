@@ -5,7 +5,12 @@
     <IsPackable>false</IsPackable>
     <LangVersion>9.0</LangVersion>
   </PropertyGroup>
-
+  
+  <PropertyGroup Condition="$(Configuration) == 'Release' And $(PdfToSvgKeyFile) != ''">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(PdfToSvgKeyFile)</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />

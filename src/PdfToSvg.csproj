@@ -33,9 +33,12 @@ There are PDF features not yet implemented by this library. Don't use it as a ge
     <Copyright>Copyright © Daniel Mester Pirttijärvi</Copyright>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(Configuration) == 'Release'">
+  <PropertyGroup Condition="$(Configuration) == 'Release' And $(PdfToSvgKeyFile) != ''">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(PdfToSvgKeyFile)</AssemblyOriginatorKeyFile>
+    <DefineConstants>$(DefineConstants);SIGNED_ASSEMBLIES</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

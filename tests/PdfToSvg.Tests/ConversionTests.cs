@@ -132,6 +132,8 @@ namespace PdfToSvg.Tests
             foreach (var image in svg.Descendants(ns + "image"))
             {
                 var hrefAttribute = image.Attribute("href");
+                var imageRenderingAttribute = image.Attribute("image-rendering");
+                var interpolated = imageRenderingAttribute?.Value != "pixelated";
 
                 if (hrefAttribute != null && hrefAttribute.Value.StartsWith(DataUriPrefix))
                 {
@@ -140,7 +142,7 @@ namespace PdfToSvg.Tests
                     hrefAttribute.Value = DataUriPrefix + base64Png;
 
                     var oldId = image.Attribute("id").Value;
-                    var newId = StableID.Generate("im", hrefAttribute.Value);
+                    var newId = StableID.Generate("im", hrefAttribute.Value, interpolated);
 
                     image.SetAttributeValue("id", newId);
 

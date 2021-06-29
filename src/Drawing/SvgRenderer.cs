@@ -46,6 +46,7 @@ namespace PdfToSvg.Drawing
         private ResourceCache resources;
 
         private XElement defs = new XElement(ns + "defs");
+        private Dictionary<object, string?> imageIds = new Dictionary<object, string?>();
         private bool hasBrokenImage = false;
 
         private HashSet<string> defIds = new HashSet<string>();
@@ -398,6 +399,25 @@ namespace PdfToSvg.Drawing
 
         #region XObject operators
 
+        private static ColorSpace CreateImageMaskColorSpace(RgbColor strokeColor)
+        {
+            // PDF spec 1.7, Table 89
+            // Unmasked pixels should be rendered using the stroking color
+
+            static byte FloatToByte(float floatValue)
+            {
+                return (byte)MathUtils.Clamp(unchecked((int)(floatValue * 255f)), 0, 255);
+            }
+
+            var colorLookup = new byte[]
+            {
+                /* 0 */ FloatToByte(strokeColor.Red), FloatToByte(strokeColor.Green), FloatToByte(strokeColor.Blue),
+                /* 1 */ 255, 255, 255
+            };
+
+            return new IndexedColorSpace(new DeviceRgbColorSpace(), colorLookup);
+        }
+
         private string? GetSvgImageId(PdfDictionary imageObject, out int width, out int height)
         {
             if (imageObject.Stream != null &&
@@ -405,27 +425,36 @@ namespace PdfToSvg.Drawing
                 imageObject.TryGetInteger(Names.Width, out width) &&
                 imageObject.TryGetInteger(Names.Height, out height))
             {
+                // graphicsState may be accessed below
+                var strokeColor = imageObject.GetValueOrDefault(Names.ImageMask, false) ? graphicsState.StrokeColor : default;
+
+                var interpolate = imageObject.GetValueOrDefault(Names.Interpolate, false);
+                if (!interpolate)
+                {
+                    // Only respect disabling of interpolation for upscaled images.
+                    // Most readers does not seem to consider the /Interpolate option for downscaled images.
+                    graphicsState.Transform.DecomposeScaleXY(out var transformScaleX, out var transformScaleY);
+
+                    if (transformScaleX < width * 4 && transformScaleY < height * 4)
+                    {
+                        interpolate = true;
+                    }
+                }
+
+                var imageLookupKey = Tuple.Create(new ReferenceEquatableBox(imageObject), strokeColor, interpolate);
+
+                // graphicsState must not be accessed below this line
+
+                if (imageIds.TryGetValue(imageLookupKey, out var imageId))
+                {
+                    return imageId;
+                }
+
                 ColorSpace colorSpace;
 
                 if (imageObject.GetValueOrDefault(Names.ImageMask, false))
                 {
-                    // PDF spec 1.7, Table 89
-                    // Unmasked pixels should be rendered using the stroking color
-
-                    static byte FloatToByte(float floatValue)
-                    {
-                        return (byte)MathUtils.Clamp(unchecked((int)(floatValue * 255f)), 0, 255);
-                    }
-
-                    var strokeColor = graphicsState.StrokeColor;
-
-                    var colorLookup = new byte[]
-                    {
-                        /* 0 */ FloatToByte(strokeColor.Red), FloatToByte(strokeColor.Green), FloatToByte(strokeColor.Blue),
-                        /* 1 */ 255, 255, 255
-                    };
-
-                    colorSpace = new IndexedColorSpace(new DeviceRgbColorSpace(), colorLookup);
+                    colorSpace = CreateImageMaskColorSpace(strokeColor);
                 }
                 else
                 {
@@ -440,12 +469,12 @@ namespace PdfToSvg.Drawing
                 var image = ImageFactory.Create(imageObject, colorSpace);
                 if (image != null)
                 {
-                    // TODO add Dictinary<Image, string> to ensure stable ids.
-                    // The key should be a combination of stroking color, image id, and some other data if it is an inline image.
-
                     var imageResolver = options.ImageResolver ?? new DataUriImageResolver();
                     var imageUrl = imageResolver.ResolveImageUrl(image, cancellationToken);
-                    var imageId = StableID.Generate("im", imageUrl);
+
+                    // Note that the interpolation parameter unfortunately must be part of the id, since the image-rendering
+                    // attribute must be specified on the shared <image> element.
+                    imageId = StableID.Generate("im", imageUrl, interpolate);
 
                     if (defIds.Add(imageId))
                     {
@@ -457,23 +486,19 @@ namespace PdfToSvg.Drawing
                         svgImage.SetAttributeValue("height", "1");
                         svgImage.SetAttributeValue("preserveAspectRatio", "none");
 
-                        if (imageObject.GetValueOrDefault(Names.Interpolate, false) == false)
+                        if (!interpolate)
                         {
-                            // Only respect disabling of interpolation for upscaled images.
-                            // Most readers does not seem to consider the /Interpolate option for downscaled images.
-                            graphicsState.Transform.DecomposeScaleXY(out var transformScaleX, out var transformScaleY);
-
-                            if (transformScaleX > width * 4 && transformScaleY > height * 4)
-                            {
-                                svgImage.SetAttributeValue("image-rendering", "pixelated");
-                            }
+                            svgImage.SetAttributeValue("image-rendering", "pixelated");
                         }
 
                         defs.Add(svgImage);
                     }
-
-                    return imageId;
                 }
+
+                // Cache result to prevent having to recode the same image again if it is used multiple times on the
+                // same page.
+                imageIds[imageLookupKey] = imageId;
+                return imageId;
             }
 
             width = 0;
@@ -526,7 +551,7 @@ namespace PdfToSvg.Drawing
         private void RenderImage(PdfDictionary xobject)
         {
             var imageTransform = Matrix.Translate(0, -1) * Matrix.Scale(1, -1) * graphicsState.Transform;
-            
+
             var imageId = GetSvgImageId(xobject, out var imageWidth, out var imageHeight);
             if (imageId == null)
             {

@@ -1329,8 +1329,8 @@ namespace PdfToSvg.Drawing
                 {
                     var sourceFonts = new[]
                     {
-                        new { Format = "woff", Url = webFont.Woff2Url },
                         new { Format = "woff2", Url = webFont.Woff2Url },
+                        new { Format = "woff", Url = webFont.WoffUrl },
                         new { Format = "truetype", Url = webFont.TrueTypeUrl },
                     };
 

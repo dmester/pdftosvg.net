@@ -1356,12 +1356,21 @@ namespace PdfToSvg.Drawing
             if (style.Font.SubstituteFont is LocalFont localFont)
             {
                 cssClass["font-family"] = localFont.FontFamily;
-                cssClass["font-weight"] = localFont.FontWeight;
-                cssClass["font-style"] = localFont.FontStyle;
+                cssClass["font-weight"] = SvgConversion.FormatFontWeight(localFont.FontWeight);
+                cssClass["font-style"] = SvgConversion.FormatFontStyle(localFont.FontStyle);
             }
             else if (style.Font.SubstituteFont is WebFont webFont)
             {
-                cssClass["font-family"] = webFont.FontFamily;
+                if (webFont.FallbackFont == null)
+                {
+                    cssClass["font-family"] = webFont.FontFamily;
+                }
+                else
+                {
+                    cssClass["font-family"] = webFont.FontFamily + "," + webFont.FallbackFont.FontFamily;
+                    cssClass["font-weight"] = SvgConversion.FormatFontWeight(webFont.FallbackFont.FontWeight);
+                    cssClass["font-style"] = SvgConversion.FormatFontStyle(webFont.FallbackFont.FontStyle);
+                }
 
                 if (fontFaceNames.Add(webFont.FontFamily))
                 {
@@ -1379,6 +1388,8 @@ namespace PdfToSvg.Drawing
                     var fontFace = new CssPropertyCollection
                     {
                         { "font-family", webFont.FontFamily },
+                        { "font-weight", SvgConversion.FormatFontWeight(webFont.FallbackFont?.FontWeight) },
+                        { "font-style", SvgConversion.FormatFontStyle(webFont.FallbackFont?.FontStyle) },
                         { "src", src },
                     };
 

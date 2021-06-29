@@ -109,13 +109,18 @@ namespace PdfToSvg
         /// <inheritdoc/>
         public Font ResolveFont(string fontName, CancellationToken cancellationToken)
         {
+            var fontFamily = Match(0, fontFamilies, fontName.Replace("-", "").Replace(" ", ""));
+
             var styleStartIndex = fontName.IndexOfAny(new[] { ',', '-' });
 
-            var fontFamily = Match(0, fontFamilies, fontName.Replace("-", "").Replace(" ", ""));
-            var fontWeight = Match(styleStartIndex, fontWeights, fontName);
-            var fontStyle = Match(styleStartIndex, fontStyles, fontName);
+            var rawFontWeight = Match(styleStartIndex, fontWeights, fontName);
+            var rawFontStyle = Match(styleStartIndex, fontStyles, fontName);
 
             return new LocalFont(fontFamily ?? "Sans-Serif", fontWeight, fontStyle);
+            Enum.TryParse<FontWeight>(rawFontWeight, out var fontWeight);
+            Enum.TryParse<FontStyle>(rawFontStyle, out var fontStyle);
+
+            return new LocalFont(fontFamily ?? "sans-serif", fontWeight, fontStyle);
         }
 
         private static string? Match(int startIndex, string[] propertyMatchers, string fontName)

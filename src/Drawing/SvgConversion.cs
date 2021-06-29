@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.Drawing.Paths;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,38 @@ namespace PdfToSvg.Drawing
             }
 
             return "#" + r + g + b;
+        }
+
+        public static string? FormatFontStyle(FontStyle? fontStyle)
+        {
+            return fontStyle switch
+            {
+                FontStyle.Italic => "italic",
+                FontStyle.Oblique => "oblique",
+                _ => null,
+            };
+        }
+
+        public static string? FormatFontWeight(FontWeight? fontWeight)
+        {
+            if (fontWeight == FontWeight.Default || fontWeight == null)
+            {
+                return null;
+            }
+
+            var numericWeight = MathUtils.Clamp(((int)fontWeight + 50) / 100, 1, 9) * 100;
+
+            if (numericWeight == 400)
+            {
+                return null;
+            }
+
+            if (numericWeight == 700)
+            {
+                return "bold";
+            }
+
+            return numericWeight.ToString(CultureInfo.InvariantCulture);
         }
 
         public static string FormatCoordinate(double number)

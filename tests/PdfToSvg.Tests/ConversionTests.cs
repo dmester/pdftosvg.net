@@ -12,6 +12,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -154,6 +155,58 @@ namespace PdfToSvg.Tests
             }
 
             return svg.ToString(SaveOptions.DisableFormatting);
+        }
+
+        private class FontResolver : IFontResolver
+        {
+            public Font ResolveFont(string fontName, CancellationToken cancellationToken)
+            {
+                if (fontName == "Times-Bold")
+                {
+                    return new WebFont(
+                        fallbackFont: new LocalFont("'Times New Roman',sans-serif", FontWeight.Bold),
+                        woffUrl: "http://pdftosvg.net/assets/sourcesanspro-bold-webfont.woff",
+                        woff2Url: "http://pdftosvg.net/assets/sourcesanspro-bold-webfont.woff2",
+                        trueTypeUrl: "http://pdftosvg.net/assets/sourcesanspro-bold-webfont.ttf");
+                }
+                else
+                {
+                    return new WebFont(
+                        fallbackFont: new LocalFont("'Times New Roman',sans-serif"),
+                        woffUrl: "http://pdftosvg.net/assets/sourcesanspro-regular-webfont.woff",
+                        woff2Url: "http://pdftosvg.net/assets/sourcesanspro-regular-webfont.woff2",
+                        trueTypeUrl: "http://pdftosvg.net/assets/sourcesanspro-regular-webfont.ttf");
+                }
+            }
+        }
+
+        [Test]
+        public void WebFontConversion()
+        {
+            var testFileDirectory = GetTestFileDirectory();
+            var targetFramework = GetTargetFramework();
+
+            var pdfPath = Path.Combine(testFileDirectory, "encoding.pdf");
+            var expectedSvgPath = Path.Combine(testFileDirectory, "encoding-webfont.svg");
+            var actualSvgPath = Path.Combine(testFileDirectory, "encoding-webfont-actual-" + targetFramework + "-sync.svg");
+
+            string actual;
+            using (var doc = PdfDocument.Open(pdfPath))
+            {
+                actual = doc.Pages[0].ToSvgString(new SvgConversionOptions
+                {
+                    FontResolver = new FontResolver(),
+                });
+            }
+
+            actual = RecompressPngs(actual);
+            File.WriteAllText(actualSvgPath, actual, Encoding.UTF8);
+
+            var expected = File.Exists(expectedSvgPath) ?
+                RecompressPngs(File.ReadAllText(expectedSvgPath, Encoding.UTF8)) :
+                "<non-existing>";
+
+            Assert.AreEqual(expected, actual);
         }
 
         [TestCaseSource(nameof(TestCases))]

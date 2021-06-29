@@ -1,0 +1,37 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<style>text{white-space:pre;}
+@font-face{font-family:fkVqfaN;font-weight:bold;src:url('http://pdftosvg.net/assets/sourcesanspro-bold-webfont.woff2') format('woff2'),url('http://pdftosvg.net/assets/sourcesanspro-bold-webfont.woff') format('woff'),url('http://pdftosvg.net/assets/sourcesanspro-bold-webfont.ttf') format('truetype');}
+.txg17bn{font-family:fkVqfaN,'Times New Roman',sans-serif;font-weight:bold;font-size:12px;}
+@font-face{font-family:fAE1y1M;src:url('http://pdftosvg.net/assets/sourcesanspro-regular-webfont.woff2') format('woff2'),url('http://pdftosvg.net/assets/sourcesanspro-regular-webfont.woff') format('woff'),url('http://pdftosvg.net/assets/sourcesanspro-regular-webfont.ttf') format('truetype');}
+.tx1Qn1o{font-family:fAE1y1M,'Times New Roman',sans-serif;font-size:12px;}
+</style>
+<g>
+<text x="70" y="68.92" class="txg17bn">WinAnsiEncoding</text>
+<g class="tx1Qn1o">
+<text x="70" y="95.92">ABC abc 123 ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
+<text x="70" y="122.92">ABC abc 123 ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
+<text x="70" y="149.92">€ • ‚ ƒ „ … † ‡ ˆ ‰ Š ‹ Œ • Ž • • ‘ ’ “ ” • – — ˜ ™ š › œ • ž Ÿ</text>
+<text x="70" y="176.92">  ¡ ¢ £ ¤ ¥ ¦ § ¨ © ª « ¬ - ® ¯ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿</text>
+<text x="70" y="203.92">À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß</text>
+<text x="70" y="230.92">à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ÷ ø ù ú û ü ý þ ÿ</text>
+</g>
+<text x="70" y="284.92" class="txg17bn">MacRomanEncoding</text>
+<g class="tx1Qn1o">
+<text x="70" y="311.92">ABC abc 123 ¿¡¬√ƒ≈∆«»… ÀÃÕŒœ</text>
+<text x="70" y="338.92">ABC abc 123 ¿¡¬√ƒ≈∆«»… ÀÃÕŒœ</text>
+<text x="70" y="365.92">Ä Å Ç É Ñ Ö Ü á à â ä ã å ç é è ê ë í ì î ï ñ ó ò ô ö õ ú ù û ü</text>
+<text x="70" y="392.92">† ° ¢ £ § • ¶ ß ® © ™ ´ ¨ ≠ Æ Ø ∞ ± ≤ ≥ ¥ µ ∂ ∑ ∏ π ∫ ª º Ω æ ø</text>
+<text x="70" y="419.92">¿ ¡ ¬ √ ƒ ≈ ∆ « » …   À Ã Õ Œ œ – — “ ” ‘ ’ ÷ ◊ ÿ Ÿ ⁄ ¤ ‹ › ﬁ ﬂ</text>
+<text x="70" y="446.92">‡ · ‚ „ ‰ Â Ê Á Ë È Í Î Ï Ì Ó Ô  Ò Ú Û Ù ı ˆ ˜ ¯ ˘ ˙ ˚ ¸ ˝ ˛ ˇ</text>
+</g>
+<text x="70" y="500.92" class="txg17bn">Custom</text>
+<g class="tx1Qn1o">
+<text x="70" y="527.92">ÆBC abc 123 À∆ŨÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
+<text x="70" y="554.92">ÆBC abc 123 À∆ŨÃÄÅÆÇÈÉÊËÌÍÎÏ</text>
+<text x="70" y="581.92">€ • ‚ ƒ „ … † ‡ ˆ ‰ Š ‹ Œ • Ž • • ‘ ’ “ ” • – — ˜ ™ š › œ • ž Ÿ</text>
+<text x="70" y="608.92">  ¡ ¢ £ ¤ ¥ ¦ § ¨ © ª « ¬ - ® ¯ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿</text>
+<text x="70" y="635.92">À ∆ Ũ Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß</text>
+<text x="70" y="662.92">à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ÷ ø ù ú û ü ý þ ÿ</text>
+</g>
+</g>
+</svg>

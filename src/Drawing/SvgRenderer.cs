@@ -172,6 +172,23 @@ namespace PdfToSvg.Drawing
             }
         }
 
+        private void AddStyle(string defintion)
+        {
+            style.Add("\n" + defintion);
+        }
+
+        private void AddStyle(string prefix, CssPropertyCollection content, out string className)
+        {
+            var styleString = content.ToString();
+
+            className = StableID.Generate(prefix, styleString);
+
+            if (styleClassIds.Add(className))
+            {
+                style.Add("\n." + className + "{" + styleString + "}");
+            }
+        }
+
         private void AddHyperlinks()
         {
             if (pageDict.TryGetArray<PdfDictionary>(Names.Annots, out var annots))
@@ -244,7 +261,7 @@ namespace PdfToSvg.Drawing
 
                 if (hasLink)
                 {
-                    style.Add(LinkStyle);
+                    AddStyle(LinkStyle);
                 }
             }
         }
@@ -1344,7 +1361,7 @@ namespace PdfToSvg.Drawing
                         { "src", src },
                     };
 
-                    this.style.Add("@font-face{" + fontFace + "}");
+                    AddStyle("@font-face{" + fontFace + "}");
                 }
             }
             else
@@ -1361,14 +1378,7 @@ namespace PdfToSvg.Drawing
 
             if (cssClass.Count > 0)
             {
-                var styleString = cssClass.ToString();
-
-                className = StableID.Generate("tx", styleString);
-
-                if (styleClassIds.Add(className))
-                {
-                    this.style.Add("." + className + "{" + styleString + "}");
-                }
+                AddStyle("tx", cssClass, out className);
             }
 
             return className;

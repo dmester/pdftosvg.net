@@ -27,7 +27,7 @@ trailer
 >>
 endobj
 
-4 0 obj << /Length 2605 >>
+4 0 obj << /Length 2627 >>
 stream
 
    0 0 0 rg
@@ -134,6 +134,8 @@ stream
    
    /F1 80 Tf
    150 Tz
+   [5 3] 6 d
+   2 w
    
    % Render mode 4 - Fill and clip
    q

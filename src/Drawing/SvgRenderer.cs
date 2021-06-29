@@ -1309,29 +1309,12 @@ namespace PdfToSvg.Drawing
             return result;
         }
 
-        private string? BuildCssClass(GraphicsState style)
+        private string? BuildTextCssClass(GraphicsState style)
         {
             var className = default(string);
             var cssClass = new CssPropertyCollection();
 
-            if (style.TextRenderingMode.HasFlag(TextRenderingMode.Fill))
-            {
-                if (style.FillColor != RgbColor.Black)
-                {
-                    cssClass["fill"] = SvgConversion.FormatColor(style.FillColor);
-                }
-            }
-            else if (style.TextRenderingMode.HasFlag(TextRenderingMode.Stroke))
-            {
-                cssClass["fill"] = "none";
-            }
-
-            if (style.TextRenderingMode.HasFlag(TextRenderingMode.Stroke))
-            {
-                cssClass["stroke"] = SvgConversion.FormatColor(style.StrokeColor);
-                // TODO specify width and other stroke related properties
-            }
-
+            // Font
             if (style.Font.SubstituteFont is LocalFont localFont)
             {
                 cssClass["font-family"] = localFont.FontFamily;
@@ -1374,6 +1357,86 @@ namespace PdfToSvg.Drawing
             if (style.TextCharSpacingPx != 0)
             {
                 cssClass["letter-spacing"] = SvgConversion.FormatCoordinate(style.TextCharSpacingPx) + "px";
+            }
+
+            // Word spacing is precalcualted and applied by the <text> position, since PDF and CSS don't
+            // interpret word spacing the same way.
+
+            // Fill
+            if (style.TextRenderingMode.HasFlag(TextRenderingMode.Fill))
+            {
+                if (style.FillColor != RgbColor.Black)
+                {
+                    cssClass["fill"] = SvgConversion.FormatColor(style.FillColor);
+                }
+            }
+            else if (style.TextRenderingMode.HasFlag(TextRenderingMode.Stroke))
+            {
+                cssClass["fill"] = "none";
+            }
+
+            // Stroke
+            if (style.TextRenderingMode.HasFlag(TextRenderingMode.Stroke))
+            {
+                // Color
+                cssClass["stroke"] = SvgConversion.FormatColor(style.StrokeColor);
+
+                // Width
+                if (style.StrokeWidth != 1d)
+                {
+                    cssClass["stroke-width"] = SvgConversion.FormatCoordinate(style.StrokeWidth);
+                }
+
+                // Line cap
+                if (style.StrokeLineCap == 1)
+                {
+                    cssClass["stroke-linecap"] = "round";
+                }
+                else if (style.StrokeLineCap == 2)
+                {
+                    cssClass["stroke-linecap"] = "square";
+                }
+
+                // Line join
+                if (style.StrokeLineJoin == 1)
+                {
+                    cssClass["stroke-linejoin"] = "round";
+                }
+                else if (style.StrokeLineJoin == 2)
+                {
+                    cssClass["stroke-linejoin"] = "bevel";
+                }
+                else
+                {
+                    // Default to miter join
+
+                    // Miter limit is applicable
+                    // Default in SVG: 4
+                    // Default in PDF: 10 (PDF 1.7 spec, Table 52)
+
+                    if (style.StrokeMiterLimit != 10)
+                    {
+                        cssClass["stroke-miterlimit"] = SvgConversion.FormatCoordinate(style.StrokeMiterLimit);
+                    }
+                    else if (!svgHasDefaultMiterLimit)
+                    {
+                        // Change default miter limit on root element
+                        rootGraphics.Add(new XAttribute("stroke-miterlimit", SvgConversion.FormatCoordinate(style.StrokeMiterLimit)));
+                        svgHasDefaultMiterLimit = true;
+                    }
+                }
+
+                // Dash
+                if (style.StrokeDashArray != null)
+                {
+                    cssClass["stroke-dasharray"] = string.Join(" ",
+                        style.StrokeDashArray.Select(x => x.ToString(CultureInfo.InvariantCulture)));
+
+                    if (style.StrokeDashPhase != 0)
+                    {
+                        cssClass["stroke-dashoffset"] = style.StrokeDashPhase.ToString(CultureInfo.InvariantCulture);
+                    }
+                }
             }
 
             if (cssClass.Count > 0)
@@ -1424,7 +1487,7 @@ namespace PdfToSvg.Drawing
                 {
                     if (!styleToClassNameLookup.TryGetValue(singleSpan.Style, out string? className))
                     {
-                        styleToClassNameLookup[singleSpan.Style] = className = BuildCssClass(singleSpan.Style);
+                        styleToClassNameLookup[singleSpan.Style] = className = BuildTextCssClass(singleSpan.Style);
                     }
 
                     if (className != null)
@@ -1455,7 +1518,7 @@ namespace PdfToSvg.Drawing
 
                         if (!styleToClassNameLookup.TryGetValue(style, out var className))
                         {
-                            styleToClassNameLookup[style] = className = BuildCssClass(style);
+                            styleToClassNameLookup[style] = className = BuildTextCssClass(style);
                         }
 
                         classNames[i] = className;

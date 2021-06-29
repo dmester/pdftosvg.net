@@ -19,29 +19,29 @@
 .txqvSwY{font-family:Gadugi,sans-serif;font-weight:bold;font-size:21.96px;}
 .tx8HWeW{font-family:Gadugi,sans-serif;font-size:21.96px;letter-spacing:-0.0335px;}
 .txvp7gW{font-family:'Ink Free',cursive;font-size:21.96px;}
-.tx7Lamf{stroke:#000;font-family:'Ink Free',cursive;font-size:21.96px;}
+.txMLjq2{font-family:'Ink Free',cursive;font-size:21.96px;stroke:#000;stroke-width:0.6274;}
 .txgu21N{font-family:'Franklin Gothic',sans-serif;font-size:21.96px;}
-.txnI2kt{stroke:#000;font-family:'Franklin Gothic',sans-serif;font-size:21.96px;}
+.txytNA5{font-family:'Franklin Gothic',sans-serif;font-size:21.96px;stroke:#000;stroke-width:0.6274;}
 .txs8eRq{font-family:'Franklin Gothic',sans-serif;font-style:italic;font-size:21.96px;}
 .tx8GCRJ{font-family:Gabriola,cursive;font-size:27.96px;letter-spacing:0.0284px;}
-.txGli27{stroke:#000;font-family:Gabriola,cursive;font-size:27.96px;}
+.txmn8AS{font-family:Gabriola,cursive;font-size:27.96px;stroke:#000;stroke-width:0.7989;}
 .txJhYHy{font-family:Gabriola,cursive;font-size:27.96px;}
 .txou39R{font-family:Ebrima,sans-serif;font-size:21.96px;}
 .tx3lFcG{font-family:Ebrima,sans-serif;font-weight:bold;font-size:21.96px;}
 .txrnfQP{font-family:Ebrima,sans-serif;font-size:21.96px;letter-spacing:-0.0335px;}
 .txj9TAR{font-family:'Lucida Console',monospace;font-size:21.96px;}
-.txNypaR{stroke:#000;font-family:'Lucida Console',monospace;font-size:21.96px;}
+.txnZWPW{font-family:'Lucida Console',monospace;font-size:21.96px;stroke:#000;stroke-width:0.6274;}
 .txuH4x0{font-family:'Lucida Sans Unicode','Lucida Sans',sans-serif;font-size:21.96px;}
-.tx0TpI6{stroke:#000;font-family:'Lucida Sans Unicode','Lucida Sans',sans-serif;font-size:21.96px;}
+.txbjCPJ{font-family:'Lucida Sans Unicode','Lucida Sans',sans-serif;font-size:21.96px;stroke:#000;stroke-width:0.6274;}
 .txLYBf1{font-family:'Lucida Sans Unicode','Lucida Sans',sans-serif;font-size:21.96px;letter-spacing:-0.0413px;}
 .txxRjap{font-family:Marlett;font-size:15.96px;}
 .txwunJ7{font-family:'Microsoft Himalaya',sans-serif;font-size:36px;}
-.txa00Af{stroke:#000;font-family:'Microsoft Himalaya',sans-serif;font-size:36px;}
+.tx70YyL{font-family:'Microsoft Himalaya',sans-serif;font-size:36px;stroke:#000;stroke-width:1.0286;}
 .txwKJd6{font-family:'MS Gothic',sans-serif;font-size:21.96px;letter-spacing:0.06px;}
-.txd25Ka{stroke:#000;font-family:'MS Gothic',sans-serif;font-size:21.96px;}
+.txVmvET{font-family:'MS Gothic',sans-serif;font-size:21.96px;stroke:#000;stroke-width:0.6274;}
 .txeYFp8{font-family:'MS Gothic',sans-serif;font-size:21.96px;}
 .txBDnw8{font-family:'MV Boli',cursive;font-size:21.96px;}
-.tx8LIai{stroke:#000;font-family:'MV Boli',cursive;font-size:21.96px;}
+.txgCJGP{font-family:'MV Boli',cursive;font-size:21.96px;stroke:#000;stroke-width:0.6274;}
 .txIJb0d{font-family:'Myanmar Text','Myanmar Unicode',sans-serif;font-size:21.96px;}
 .txdfFxp{font-family:'Myanmar Text','Myanmar Unicode',sans-serif;font-weight:bold;font-size:21.96px;}
 .tx0hq8B{font-family:'Myanmar Text','Myanmar Unicode',sans-serif;font-size:21.96px;letter-spacing:-0.0335px;}
@@ -53,13 +53,13 @@
 .tx0dw78{font-family:'Segoe Script',cursive;font-size:21.96px;}
 .txMcaDj{font-family:'Segoe Script',cursive;font-weight:bold;font-size:21.96px;}
 .txcHvPk{font-family:SimSun,serif;font-size:21.96px;letter-spacing:0.06px;}
-.txd6v30{stroke:#000;font-family:SimSun,serif;font-size:21.96px;}
+.tx6yS6h{font-family:SimSun,serif;font-size:21.96px;stroke:#000;stroke-width:0.6274;}
 .txK773x{font-family:SimSun,serif;font-size:21.96px;}
 .txpnVtk{font-family:Sitka,serif;font-size:21.96px;}
 .txBod3I{font-family:Sitka,serif;font-weight:bold;font-size:21.96px;}
 .txYuATI{font-family:Sitka,serif;font-style:italic;font-size:21.96px;}
 .tx0z6Dq{font-family:Sylfaen,serif;font-size:21.96px;}
-.txec5WN{stroke:#000;font-family:Sylfaen,serif;font-size:21.96px;}
+.txlBing{font-family:Sylfaen,serif;font-size:21.96px;stroke:#000;stroke-width:0.6274;}
 .txQY1yP{font-family:Tahoma,sans-serif;font-size:21.96px;}
 .tx57LMq{font-family:Tahoma,sans-serif;font-weight:bold;font-size:21.96px;}
 .txfmChd{font-family:Sans-Serif;font-size:21.96px;}
@@ -77,7 +77,7 @@
 <rect x="0" y="0" width="595.32" height="841.92" />
 </clipPath>
 </defs>
-<g>
+<g stroke-miterlimit="10">
 <text x="35.4" y="91.46" class="tx1UF4m">The </text>
 <text x="79.464" y="91.46" class="txOhbb1">quick brown</text>
 <text x="208.97" y="91.46" class="txKzlat"> </text>
@@ -117,19 +117,19 @@
 </g>
 <text x="241.61" y="278.09" class="txOT5Jb"> </text>
 <text x="35.4" y="313.97" class="txvp7gW">The </text>
-<text x="79.704" y="313.97" class="tx7Lamf">quick brown</text>
+<text x="79.704" y="313.97" class="txMLjq2">quick brown</text>
 <text x="186.98" y="313.97" class="txvp7gW"> </text>
 <g clip-path="url(#clBUA5n)">
 <text transform="matrix(1 0 -0.3333 1 193.37 313.97)" class="txvp7gW">fox</text>
 <text transform="matrix(1 0 -0.3333 1 220.37 313.97)" class="txvp7gW"> </text>
 </g>
 <text x="35.4" y="351.53" class="txgu21N">The </text>
-<text x="75.024" y="351.53" class="txnI2kt">quick brown</text>
+<text x="75.024" y="351.53" class="txytNA5">quick brown</text>
 <text x="189.89" y="351.53" class="txgu21N"> </text>
 <text x="195.41" y="351.53" class="txs8eRq">fox</text>
 <text x="223.85" y="351.53" class="txgu21N"> </text>
 <text x="35.4" y="405.05" class="tx8GCRJ">The </text>
-<text x="72.024" y="405.05" class="txGli27">quick brown</text>
+<text x="72.024" y="405.05" class="txmn8AS">quick brown</text>
 <text x="179.66" y="405.05" class="txJhYHy"> </text>
 <g clip-path="url(#clBUA5n)">
 <text transform="matrix(1 0 -0.3333 1 184.58 405.05)" class="txJhYHy">fox</text>
@@ -143,14 +143,14 @@
 </g>
 <text x="241.61" y="449.95" class="txou39R"> </text>
 <text x="35.4" y="483.31" class="txj9TAR">The </text>
-<text x="88.344" y="483.31" class="txNypaR">quick brown</text>
+<text x="88.344" y="483.31" class="txnZWPW">quick brown</text>
 <text x="234.53" y="483.31" class="txj9TAR"> </text>
 <g clip-path="url(#clBUA5n)">
 <text transform="matrix(1 0 -0.3333 1 247.73 483.31)" class="txj9TAR">fox</text>
 </g>
 <text x="287.45" y="483.31" class="txj9TAR"> </text>
 <text x="35.4" y="521.71" class="txuH4x0">The </text>
-<text x="82.224" y="521.71" class="tx0TpI6">quick brown</text>
+<text x="82.224" y="521.71" class="txbjCPJ">quick brown</text>
 <text x="214.49" y="521.71" class="txuH4x0"> </text>
 <g clip-path="url(#clBUA5n)">
 <text transform="matrix(1 0 -0.3333 1 221.45 521.71)" class="txLYBf1">fox</text>
@@ -174,21 +174,21 @@
 <text x="243.41" y="558.19"></text>
 </g>
 <text x="35.4" y="588.79" class="txwunJ7">The </text>
-<text x="78.864" y="588.79" class="txa00Af">quick brown</text>
+<text x="78.864" y="588.79" class="tx70YyL">quick brown</text>
 <text x="200.57" y="588.79" class="txwunJ7"> </text>
 <g clip-path="url(#clBUA5n)">
 <text transform="matrix(1 0 -0.3333 1 206.57 588.79)" class="txwunJ7">fox</text>
 </g>
 <text x="238.61" y="588.79" class="txwunJ7"> </text>
 <text x="35.4" y="636.46" class="txwKJd6">The </text>
-<text x="79.464" y="636.46" class="txd25Ka">quick brown</text>
+<text x="79.464" y="636.46" class="txVmvET">quick brown</text>
 <text x="201.41" y="636.46" class="txeYFp8"> </text>
 <g clip-path="url(#clBUA5n)">
 <text transform="matrix(1 0 -0.3333 1 212.45 636.46)" class="txeYFp8">fox</text>
 </g>
 <text x="245.33" y="636.46" class="txeYFp8"> </text>
 <text x="35.4" y="678.1" class="txBDnw8">The </text>
-<text x="83.064" y="678.1" class="tx8LIai">quick brown</text>
+<text x="83.064" y="678.1" class="txgCJGP">quick brown</text>
 <text x="204.65" y="678.1" class="txBDnw8"> </text>
 <g clip-path="url(#clBUA5n)">
 <text transform="matrix(1 0 -0.3333 1 215.33 678.1)" class="txBDnw8">fox</text>
@@ -221,7 +221,7 @@
 </g>
 <text x="562.78" y="185.3" class="tx0dw78"> </text>
 <text x="311.93" y="229.1" class="txcHvPk">The </text>
-<text x="355.99" y="229.1" class="txd6v30">quick brown</text>
+<text x="355.99" y="229.1" class="tx6yS6h">quick brown</text>
 <text x="477.94" y="229.1" class="txK773x"> </text>
 <g clip-path="url(#clBUA5n)">
 <text transform="matrix(1 0 -0.3333 1 488.98 229.1)" class="txK773x">fox</text>
@@ -233,7 +233,7 @@
 <text x="466.06" y="268.01" class="txYuATI">fox</text>
 <text x="491.62" y="268.01" class="txpnVtk"> </text>
 <text x="311.93" y="305.69" class="tx0z6Dq">The </text>
-<text x="353.23" y="305.69" class="txec5WN">quick brown</text>
+<text x="353.23" y="305.69" class="txlBing">quick brown</text>
 <text x="470.62" y="305.69" class="tx0z6Dq"> </text>
 <g clip-path="url(#clBUA5n)">
 <text transform="matrix(1 0 -0.3333 1 476.14 305.69)" class="tx0z6Dq">fox</text>

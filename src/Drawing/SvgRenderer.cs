@@ -273,27 +273,10 @@ namespace PdfToSvg.Drawing
             {
                 if (path.Referenced && defIds.Add(path.Id))
                 {
-                    XElement content;
-
-                    if (path.IsRectangle)
-                    {
-                        content = new XElement(ns + "rect",
-                            new XAttribute("x", SvgConversion.FormatCoordinate(path.Rectangle.X1)),
-                            new XAttribute("y", SvgConversion.FormatCoordinate(path.Rectangle.Y1)),
-                            new XAttribute("width", SvgConversion.FormatCoordinate(path.Rectangle.Width)),
-                            new XAttribute("height", SvgConversion.FormatCoordinate(path.Rectangle.Height)));
-                    }
-                    else
-                    {
-                        content = new XElement(ns + "path",
-                            new XAttribute("d", SvgConversion.PathData(path.Data)),
-                            path.EvenOdd ? new XAttribute("fill-rule", "evenodd") : null);
-                    }
-
                     defs.Add(new XElement(ns + "clipPath",
                         new XAttribute("id", path.Id),
                         path.Parent != null ? new XAttribute("clip-path", "url(#" + path.Parent.Id + ")") : null,
-                        content));
+                        path.ClipElement));
 
                     AddClipPaths(path.Children.Values);
                 }
@@ -660,43 +643,8 @@ namespace PdfToSvg.Drawing
 
         #region Clipping path operators
 
-        private void AppendClipping(bool evenOdd)
+        private void AppendClipping(ClipPath clipPath)
         {
-            var path = currentPath.Transform(graphicsState.Transform);
-
-            var clipPath = new ClipPath(path, evenOdd)
-            {
-                Parent = graphicsState.ClipPath,
-            };
-
-            if (PathConverter.TryConvertToRectangle(path, out var rect))
-            {
-                clipPath.Rectangle = rect;
-                clipPath.IsRectangle = true;
-
-                if (clipPath.Parent != null && clipPath.IsRectangle)
-                {
-                    clipPath.Rectangle = Rectangle.Intersection(rect, clipPath.Parent.Rectangle);
-                    clipPath.Parent = clipPath.Parent.Parent;
-                }
-
-                clipPath.Id = StableID.Generate("cl",
-                    clipPath.Parent?.Id,
-                    "rect",
-                    clipPath.Rectangle.X1,
-                    clipPath.Rectangle.X2,
-                    clipPath.Rectangle.Y1,
-                    clipPath.Rectangle.Y2
-                    );
-            }
-            else
-            {
-                clipPath.Id = StableID.Generate("cl",
-                    clipPath.Parent?.Id,
-                    evenOdd,
-                    clipPath.Data);
-            }
-
             var targetDictionary = clipPath.Parent?.Children ?? clipPaths;
 
             if (targetDictionary.TryGetValue(clipPath.Id, out var existing))
@@ -709,6 +657,60 @@ namespace PdfToSvg.Drawing
             }
 
             graphicsState.ClipPath = clipPath;
+        }
+
+        private void AppendClipping(XElement element)
+        {
+            var parent = graphicsState.ClipPath;
+
+            var id = StableID.Generate("cl",
+                "el",
+                parent?.Id,
+                element);
+
+            AppendClipping(new ClipPath(parent, id, element));
+        }
+
+        private void AppendClipping(bool evenOdd)
+        {
+            var path = currentPath.Transform(graphicsState.Transform);
+            var parent = graphicsState.ClipPath;
+
+            if (PathConverter.TryConvertToRectangle(path, out var rect))
+            {
+                // Merge with parent if possible
+                if (parent != null && parent.IsRectangle)
+                {
+                    rect = Rectangle.Intersection(rect, parent.Rectangle);
+                    parent = parent.Parent;
+                }
+
+                var id = StableID.Generate("cl",
+                    "rect",
+                    parent?.Id,
+                    rect.X1, rect.X2, rect.Y1, rect.Y2);
+
+                var element = new XElement(ns + "rect",
+                    new XAttribute("x", SvgConversion.FormatCoordinate(rect.X1)),
+                    new XAttribute("y", SvgConversion.FormatCoordinate(rect.Y1)),
+                    new XAttribute("width", SvgConversion.FormatCoordinate(rect.Width)),
+                    new XAttribute("height", SvgConversion.FormatCoordinate(rect.Height)));
+
+                AppendClipping(new ClipPath(parent, id, element, rect));
+            }
+            else
+            {
+                var id = StableID.Generate("cl",
+                    "pathdata",
+                    parent?.Id,
+                    path, evenOdd);
+
+                var element = new XElement(ns + "path",
+                    new XAttribute("d", SvgConversion.PathData(path)),
+                    evenOdd ? new XAttribute("fill-rule", "evenodd") : null);
+
+                AppendClipping(new ClipPath(parent, id, element));
+            }
         }
 
         [Operation("W")]
@@ -1293,7 +1295,7 @@ namespace PdfToSvg.Drawing
             textBuilder.UpdateLineMatrix(graphicsState);
         }
 
-        private static List<TextParagraph> PrepareSvgSpans(List<TextParagraph> paragraphs, TextRenderingMode includedModes)
+        private static List<TextParagraph> PrepareSvgSpans(List<TextParagraph> paragraphs)
         {
             // Horizontal scaling is resalized using the textLength attribute, which ensures any stroke
             // is not affected by the scaling. However, the support for textLength is rather buggy in 
@@ -1309,17 +1311,28 @@ namespace PdfToSvg.Drawing
 
                 foreach (var span in paragraph.Content)
                 {
-                    if ((span.Style.TextRenderingMode & includedModes) != 0)
+                    var visible = (span.Style.TextRenderingMode & (TextRenderingMode.Fill | TextRenderingMode.Stroke)) != 0;
+                    var appendClipping = (span.Style.TextRenderingMode & TextRenderingMode.Clip) != 0;
+
+                    if (visible || appendClipping)
                     {
                         if (newParagraph == null ||
+
+                            // Scaling is realized using textLength, which some renderers only reliable support on <text> elements, not <tspan>.
                             newParagraph.Content.Last().Style.TextScaling != 100 ||
-                            span.Style.TextScaling != 100)
+                            span.Style.TextScaling != 100 ||
+
+                            // Split spans with separate display modes into separate paragraphs
+                            visible != newParagraph.Visible ||
+                            appendClipping != newParagraph.AppendClipping)
                         {
                             newParagraph = new TextParagraph
                             {
                                 Matrix = paragraph.Matrix,
                                 X = x,
                                 Y = paragraph.Y,
+                                Visible = visible,
+                                AppendClipping = appendClipping,
                             };
                             result.Add(newParagraph);
                         }
@@ -1477,7 +1490,7 @@ namespace PdfToSvg.Drawing
         {
             var styleToClassNameLookup = new Dictionary<object, string?>();
 
-            foreach (var paragraph in PrepareSvgSpans(textBuilder.paragraphs, TextRenderingMode.Fill | TextRenderingMode.Stroke))
+            foreach (var paragraph in PrepareSvgSpans(textBuilder.paragraphs))
             {
                 if (paragraph.Content.Count == 0)
                 {
@@ -1587,36 +1600,44 @@ namespace PdfToSvg.Drawing
                     }
                 }
 
-                // TODO test simplification of clip path
-                if (paragraph.Matrix.IsIdentity &&
+                if (paragraph.Visible)
+                {
+                    // TODO test simplification of clip path
+                    if (paragraph.Matrix.IsIdentity &&
                     graphicsState.ClipPath != null &&
                     graphicsState.ClipPath.Parent == null &&
                     graphicsState.ClipPath.IsRectangle)
-                {
-                    var maxFontSize = paragraph.Content.Max(span => span.Style.FontSize);
-
-                    // This is an approximation of the text bounding rectangle. It is not entirely correct since
-                    // we don't have all the font metrics to determine the height above and below the baseline.
-                    var textBoundingRect = RectangleUtils.GetBoundingRectangleAfterTransform(
-                        new Rectangle(
-                            paragraph.X, paragraph.Y - maxFontSize,
-                            paragraph.X + paragraphWidth, paragraph.Y + maxFontSize / 2
-                        ),
-                        paragraph.Matrix);
-
-                    if (graphicsState.ClipPath.Rectangle.Contains(textBoundingRect))
                     {
-                        // We can be reasonably sure the text is entiely contained within the clip rectangle.
-                        // Skip clipping. This significally increases the print quality in Internet Explorer, 
-                        // which seems to rasterize all clipped graphics before printing.
-                        clipWrapper = null;
-                        clipWrapperId = null;
-                        rootGraphics.Add(textEl);
-                        continue;
+                        var maxFontSize = paragraph.Content.Max(span => span.Style.FontSize);
+
+                        // This is an approximation of the text bounding rectangle. It is not entirely correct since
+                        // we don't have all the font metrics to determine the height above and below the baseline.
+                        var textBoundingRect = RectangleUtils.GetBoundingRectangleAfterTransform(
+                            new Rectangle(
+                                paragraph.X, paragraph.Y - maxFontSize,
+                                paragraph.X + paragraphWidth, paragraph.Y + maxFontSize / 2
+                            ),
+                            paragraph.Matrix);
+
+                        if (graphicsState.ClipPath.Rectangle.Contains(textBoundingRect))
+                        {
+                            // We can be reasonably sure the text is entiely contained within the clip rectangle.
+                            // Skip clipping. This significally increases the print quality in Internet Explorer, 
+                            // which seems to rasterize all clipped graphics before printing.
+                            clipWrapper = null;
+                            clipWrapperId = null;
+                            rootGraphics.Add(textEl);
+                            continue;
+                        }
                     }
+
+                    AppendClipped(textEl);
                 }
 
-                AppendClipped(textEl);
+                if (paragraph.AppendClipping)
+                {
+                    AppendClipping(textEl);
+                }
             }
         }
 

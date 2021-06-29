@@ -8,24 +8,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace PdfToSvg.Drawing
 {
     internal class ClipPath
     {
-        public string Id = "";
-        public ClipPath? Parent;
-        public PathData Data;
-        public bool IsRectangle;
-        public Rectangle Rectangle;
-        public bool Referenced;
-        public bool EvenOdd;
-        public Dictionary<string, ClipPath> Children = new Dictionary<string, ClipPath>();
+        public readonly string Id;
+        public readonly ClipPath? Parent;
 
-        public ClipPath(PathData data, bool evenOdd)
+        public readonly XElement ClipElement;
+
+        public readonly bool IsRectangle;
+        public readonly Rectangle Rectangle;
+
+        public readonly Dictionary<string, ClipPath> Children = new Dictionary<string, ClipPath>();
+        public bool Referenced;
+
+        public ClipPath(ClipPath? parent, string id, XElement element)
         {
-            Data = data;
-            EvenOdd = evenOdd;
+            Parent = parent;
+            Id = id;
+            ClipElement = element;
+        }
+
+        public ClipPath(ClipPath? parent, string id, XElement element, Rectangle rectangle)
+        {
+            Parent = parent;
+            Id = id;
+            ClipElement = element;
+            IsRectangle = true;
+            Rectangle = rectangle;
         }
     }
 }

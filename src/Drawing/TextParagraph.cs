@@ -16,5 +16,7 @@ namespace PdfToSvg.Drawing
         public Matrix Matrix = Matrix.Identity;
         public double X;
         public double Y;
+        public bool Visible;
+        public bool AppendClipping;
     }
 }

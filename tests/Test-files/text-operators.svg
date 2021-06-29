@@ -14,6 +14,20 @@
 .tx3WbNR{font-family:'Times New Roman',serif;font-size:80px;stroke:#f00;stroke-width:2;stroke-dasharray:5 3;stroke-dashoffset:6;}
 .tx6zuDE{font-family:'Times New Roman',serif;font-size:20.0024px;}
 </style>
+<defs>
+<clipPath id="cl0jiCQ">
+<text x="70" y="561.92" class="txcBATn" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+</clipPath>
+<clipPath id="clH4Xbe">
+<text x="70" y="631.92" class="txSAIl8" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+</clipPath>
+<clipPath id="clP2ZC2">
+<text x="70" y="701.92" class="tx3WbNR" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+</clipPath>
+<clipPath id="clizfMn">
+<text x="70" y="771.92" class="txcBATn" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+</clipPath>
+</defs>
 <g stroke-miterlimit="10">
 <g class="tx96X5e">
 <text x="30" y="91.92"><tspan>Multiple spans, same line:</tspan><tspan dx="10.2">Abc</tspan><tspan dx="20.4">def</tspan><tspan dx="-10.2">ghi jkl</tspan></text>
@@ -40,13 +54,19 @@
 </g>
 <path d="M70 91.92h330" fill="none" stroke="#f00" stroke-width="1" />
 <text x="70" y="561.92" class="txcBATn" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<g clip-path="url(#cl0jiCQ)">
 <path d="M100 556.92h400v-43h-400z" fill="#0f0" />
+</g>
 <text x="70" y="631.92" class="txSAIl8" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<g clip-path="url(#clH4Xbe)">
 <path d="M100 626.92h400v-43h-400z" fill="#0f0" />
+</g>
 <text x="70" y="701.92" class="tx3WbNR" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
-<g fill="#0f0">
-<path d="M100 696.92h400v-43h-400z" />
-<path d="M100 766.92h400v-43h-400z" />
+<g clip-path="url(#clP2ZC2)">
+<path d="M100 696.92h400v-43h-400z" fill="#0f0" />
+</g>
+<g clip-path="url(#clizfMn)">
+<path d="M100 766.92h400v-43h-400z" fill="#0f0" />
 </g>
 <text transform="matrix(0.5739 -0.8189 0.8189 0.5739 420 461.92)" class="tx6zuDE" textLength="74.6728px" lengthAdjust="spacingAndGlyphs">Rotated</text>
 <text transform="matrix(0.5739 -0.8189 0.8189 0.5739 477.4 380.02)" class="tx6zuDE" textLength="24.0028px" lengthAdjust="spacingAndGlyphs">60</text>

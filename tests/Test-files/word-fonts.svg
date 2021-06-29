@@ -4,8 +4,8 @@
 .txOhbb1{font-family:Arial,sans-serif;font-weight:bold;font-size:21.96px;letter-spacing:0.0224px;}
 .txKzlat{font-family:Arial,sans-serif;font-size:21.96px;}
 .txd5DWN{font-family:Arial,sans-serif;font-style:italic;font-size:21.96px;}
-.txxngAO{font-family:'Arial Black',Arial,sans-serif;font-size:21.96px;letter-spacing:-0.0151px;}
-.txfb7bm{font-family:'Arial Black',Arial,sans-serif;font-size:21.96px;}
+.txX2z4I{font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:21.96px;letter-spacing:-0.0151px;}
+.tx5xGZL{font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:21.96px;}
 .txkT3V6{font-family:'Courier New',Courier,monospace;font-size:21.96px;letter-spacing:0.024px;}
 .txPbGO8{font-family:'Courier New',Courier,monospace;font-weight:bold;font-size:21.96px;letter-spacing:0.024px;}
 .tx2E1va{font-family:'Courier New',Courier,monospace;font-size:21.96px;}
@@ -20,9 +20,9 @@
 .tx8HWeW{font-family:Gadugi,sans-serif;font-size:21.96px;letter-spacing:-0.0335px;}
 .txvp7gW{font-family:'Ink Free',cursive;font-size:21.96px;}
 .txMLjq2{font-family:'Ink Free',cursive;font-size:21.96px;stroke:#000;stroke-width:0.6274;}
-.txgu21N{font-family:'Franklin Gothic',sans-serif;font-size:21.96px;}
-.txytNA5{font-family:'Franklin Gothic',sans-serif;font-size:21.96px;stroke:#000;stroke-width:0.6274;}
-.txs8eRq{font-family:'Franklin Gothic',sans-serif;font-style:italic;font-size:21.96px;}
+.txN0EH3{font-family:'Franklin Gothic',sans-serif;font-weight:500;font-size:21.96px;}
+.tx4xFYD{font-family:'Franklin Gothic',sans-serif;font-weight:500;font-size:21.96px;stroke:#000;stroke-width:0.6274;}
+.txmZfT5{font-family:'Franklin Gothic',sans-serif;font-weight:500;font-style:italic;font-size:21.96px;}
 .tx8GCRJ{font-family:Gabriola,cursive;font-size:27.96px;letter-spacing:0.0284px;}
 .txmn8AS{font-family:Gabriola,cursive;font-size:27.96px;stroke:#000;stroke-width:0.7989;}
 .txJhYHy{font-family:Gabriola,cursive;font-size:27.96px;}
@@ -62,9 +62,9 @@
 .txlBing{font-family:Sylfaen,serif;font-size:21.96px;stroke:#000;stroke-width:0.6274;}
 .txQY1yP{font-family:Tahoma,sans-serif;font-size:21.96px;}
 .tx57LMq{font-family:Tahoma,sans-serif;font-weight:bold;font-size:21.96px;}
-.txfmChd{font-family:Sans-Serif;font-size:21.96px;}
-.txgQATr{font-family:Sans-Serif;font-weight:bold;font-size:21.96px;}
-.txC7wXJ{font-family:Sans-Serif;font-style:italic;font-size:21.96px;}
+.txBuC0Z{font-family:'Trebuchet MS',sans-serif;font-size:21.96px;}
+.tx3h19p{font-family:'Trebuchet MS',sans-serif;font-weight:bold;font-size:21.96px;}
+.txBWz4b{font-family:'Trebuchet MS',sans-serif;font-style:italic;font-size:21.96px;}
 .txFB5pp{font-family:Verdana,sans-serif;font-size:21.96px;}
 .txNUbcN{font-family:Verdana,sans-serif;font-weight:bold;font-size:21.96px;}
 .txvXI5U{font-family:Verdana,sans-serif;font-style:italic;font-size:21.96px;}
@@ -83,15 +83,15 @@
 <text x="208.97" y="91.46" class="txKzlat"> </text>
 <text x="215.09" y="91.46" class="txd5DWN">fox</text>
 <text x="244.49" y="91.46" class="txKzlat"> </text>
-<text x="35.4" y="130.46" class="txxngAO">The </text>
-<g class="txfb7bm">
+<text x="35.4" y="130.46" class="txX2z4I">The </text>
+<g class="tx5xGZL">
 <text x="87.864" y="130.46">quick brown</text>
 <text x="235.85" y="130.46"> </text>
 </g>
 <g clip-path="url(#clcbE3L)">
-<text transform="matrix(1 0 -0.3333 1 243.17 130.46)" class="txfb7bm">fox</text>
+<text transform="matrix(1 0 -0.3333 1 243.17 130.46)" class="tx5xGZL">fox</text>
 </g>
-<text x="281.09" y="130.46" class="txfb7bm"> </text>
+<text x="281.09" y="130.46" class="tx5xGZL"> </text>
 <text x="35.4" y="165.98" class="txkT3V6">The </text>
 <text x="88.224" y="165.98" class="txPbGO8">quick brown</text>
 <text x="233.45" y="165.98" class="tx2E1va"> </text>
@@ -123,11 +123,11 @@
 <text transform="matrix(1 0 -0.3333 1 193.37 313.97)" class="txvp7gW">fox</text>
 <text transform="matrix(1 0 -0.3333 1 220.37 313.97)" class="txvp7gW"> </text>
 </g>
-<text x="35.4" y="351.53" class="txgu21N">The </text>
-<text x="75.024" y="351.53" class="txytNA5">quick brown</text>
-<text x="189.89" y="351.53" class="txgu21N"> </text>
-<text x="195.41" y="351.53" class="txs8eRq">fox</text>
-<text x="223.85" y="351.53" class="txgu21N"> </text>
+<text x="35.4" y="351.53" class="txN0EH3">The </text>
+<text x="75.024" y="351.53" class="tx4xFYD">quick brown</text>
+<text x="189.89" y="351.53" class="txN0EH3"> </text>
+<text x="195.41" y="351.53" class="txmZfT5">fox</text>
+<text x="223.85" y="351.53" class="txN0EH3"> </text>
 <text x="35.4" y="405.05" class="tx8GCRJ">The </text>
 <text x="72.024" y="405.05" class="txmn8AS">quick brown</text>
 <text x="179.66" y="405.05" class="txJhYHy"> </text>
@@ -246,11 +246,11 @@
 <text transform="matrix(1 0 -0.3333 1 498.94 344.69)" class="txQY1yP">fox</text>
 </g>
 <text x="528.82" y="344.69" class="txQY1yP"> </text>
-<text x="311.93" y="379.97" class="txfmChd">The </text>
-<text x="355.27" y="379.97" class="txgQATr">quick brown</text>
-<text x="482.5" y="379.97" class="txfmChd"> </text>
-<text x="489.22" y="379.97" class="txC7wXJ">fox</text>
-<text x="520.9" y="379.97" class="txfmChd"> </text>
+<text x="311.93" y="379.97" class="txBuC0Z">The </text>
+<text x="355.27" y="379.97" class="tx3h19p">quick brown</text>
+<text x="482.5" y="379.97" class="txBuC0Z"> </text>
+<text x="489.22" y="379.97" class="txBWz4b">fox</text>
+<text x="520.9" y="379.97" class="txBuC0Z"> </text>
 <text x="311.93" y="417.17" class="txFB5pp">The </text>
 <text x="360.19" y="417.17" class="txNUbcN">quick brown</text>
 <text x="512.74" y="417.17" class="txFB5pp"> </text>

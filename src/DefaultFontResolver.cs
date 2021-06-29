@@ -17,16 +17,53 @@ namespace PdfToSvg
     /// </summary>
     public class DefaultFontResolver : IFontResolver
     {
+        // Information about abbreviated font styles and weights:
+        // https://cdn2.hubspot.net/hubfs/1740477/Definitive-Guide-To-Font-Abbreviations.pdf
+
         private static readonly string[] fontWeights = new string[]
         {
+            "demibold", "600",
             "semibold", "600",
-            "bold", "bold",
+            "extrabold", "800",
+            "ultrabold", "800",
+            "xtbold", "800",
+            "utbold", "800",
+            "ultralight", "200",
+            "extralight", "200",
+            "utlight", "200",
+            "xtlight", "200",
+            "normal", "400",
+            "regular", "400",
+            "roman", "400",
+            "medium", "500",
+            "thin", "100",
+            "hairline", "100",
+            "black", "900",
+            "light", "300",
+            "bold", "700",
+        };
+
+        private static readonly string[] shortFontWeights = new string[]
+        {
+            "th", "100",
+            "lt", "300",
+            "md", "500",
+            "dm", "600",
+            "sm", "600",
+            "bd", "700",
+            "bl", "900",
         };
 
         private static readonly string[] fontStyles = new string[]
         {
-            "oblique", "oblique",
-            "italic", "italic",
+            "oblique", "Oblique",
+            "italic", "Italic",
+        };
+
+        private static readonly string[] shortFontStyles = new string[]
+        {
+            "ob", "Oblique",
+            "it", "Italic",
         };
 
         private static readonly string[] fontFamilies = new string[]
@@ -74,6 +111,7 @@ namespace PdfToSvg
             "MingLiU", "'MingLiU-ExtB',serif",
             "MongolianBaiti", "'Mongolian Baiti',sans-serif",
             "MSGothic", "'MS Gothic',sans-serif",
+            "MSPGothic", "'MS Gothic',sans-serif",
             "MVBoli", "'MV Boli',cursive",
             "Myanmar", "'Myanmar Text','Myanmar Unicode',sans-serif",
             "Nirmala", "'Nirmala UI',sans-serif",
@@ -85,7 +123,7 @@ namespace PdfToSvg
             "Sitka", "Sitka,serif",
             "Sylfaen", "Sylfaen,serif",
             "Tahoma", "Tahoma,sans-serif",
-            "Trebuchet MS", "'Trebuchet MS',Trebuchet,sans-serif",
+            "Trebuchet", "'Trebuchet MS',sans-serif",
             "Verdana", "Verdana,sans-serif",
             "Webdings", "Webdings",
             "Wingdings", "Wingdings",
@@ -95,6 +133,7 @@ namespace PdfToSvg
             "sans", "sans-serif",
             "roman", "serif",
             "serif", "serif",
+            "book", "serif",
             "source", "monospace",
             "code", "monospace",
             "consol", "monospace",
@@ -116,7 +155,21 @@ namespace PdfToSvg
             var rawFontWeight = Match(styleStartIndex, fontWeights, fontName);
             var rawFontStyle = Match(styleStartIndex, fontStyles, fontName);
 
-            return new LocalFont(fontFamily ?? "Sans-Serif", fontWeight, fontStyle);
+            // Only match abbreviatons if the remaining part of the font name is short
+            if (styleStartIndex > 0 &&
+                styleStartIndex + 5 >= fontName.Length &&
+                rawFontWeight == null)
+            {
+                rawFontWeight = Match(styleStartIndex, shortFontWeights, fontName);
+            }
+
+            if (styleStartIndex > 0 &&
+                styleStartIndex + 20 >= fontName.Length &&
+                rawFontStyle == null)
+            {
+                rawFontStyle = Match(styleStartIndex, shortFontStyles, fontName);
+            }
+
             Enum.TryParse<FontWeight>(rawFontWeight, out var fontWeight);
             Enum.TryParse<FontStyle>(rawFontStyle, out var fontStyle);
 

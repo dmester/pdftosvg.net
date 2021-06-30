@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <VersionPrefix>0.2.0</VersionPrefix>
+    <Product>PdfToSvg.NET</Product>
+    <Authors>Daniel Mester Pirttijärvi</Authors>
+    <Copyright>Copyright © Daniel Mester Pirttijärvi $([System.DateTime]::Now.Year)</Copyright>
+  </PropertyGroup>
+
+  <!-- Code -->
+  <PropertyGroup>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- Strong name signing -->
+  <PropertyGroup Condition="$(Configuration) == 'Release' And $(PdfToSvgKeyFile) != ''">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(PdfToSvgKeyFile)</AssemblyOriginatorKeyFile>
+    <DefineConstants>$(DefineConstants);SIGNED_ASSEMBLIES</DefineConstants>
+  </PropertyGroup>
+
+  <Target Name="WarnMissingPdfToSvgKeyFile" AfterTargets="Build">
+    <Warning
+      Text="Release build missing the PdfToSvgKeyFile property. The easiest way of configuring it is as an environment variable. The assemblies won't be signed."
+      Condition="$(Configuration) == 'Release' And $(PdfToSvgKeyFile) == ''" />
+  </Target>
+
+</Project>

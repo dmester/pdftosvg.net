@@ -1,28 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Version>0.2.0</Version>
-  </PropertyGroup>
-    
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard2.0;netstandard2.1</TargetFrameworks>
-    <PackageId>PdfToSvg.NET</PackageId>
-    <Authors>Daniel Mester Pirttijärvi</Authors>
-    <Product>PdfToSvg.NET</Product>
-    <AssemblyVersion>$(Version).0</AssemblyVersion>
-    <FileVersion>$(Version).0</FileVersion>
-    <LangVersion>9.0</LangVersion>
-    <Nullable>enable</Nullable>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>5</AnalysisLevel>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyTitle>PdfToSvg.NET</AssemblyTitle>
   </PropertyGroup>
 
+  <!-- NuGet package -->
   <PropertyGroup>
-    <!-- NuGet package -->
-    <Description>Open source library for converting PDF files to SVG.
+    <PackageId>PdfToSvg.NET</PackageId>
+    <PackageDescription>
+      <![CDATA[Open source library for converting PDF files to SVG.
 
-There are PDF features not yet implemented by this library. Don't use it as a general PDF conversion tool for any PDF. However it should be fine if used on PDFs from a specific PDF producer, after thorough testing on PDFs created by that particular producer.</Description>
+There are PDF features not yet implemented by this library. Don't use it as a general PDF conversion tool for any PDF. However it should be fine if used on PDFs from a specific PDF producer, after thorough testing on PDFs created by that particular producer.]]>
+    </PackageDescription>
     <RepositoryUrl>https://github.com/dmester/pdftosvg.net/</RepositoryUrl>
     <PackageTags>pdf svg convert</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -33,15 +25,12 @@ There are PDF features not yet implemented by this library. Don't use it as a ge
     <PackageIcon>logo.png</PackageIcon>
     <PackageIconUrl />
     <RepositoryType>git</RepositoryType>
-    <Copyright>Copyright © Daniel Mester Pirttijärvi</Copyright>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(Configuration) == 'Release' And $(PdfToSvgKeyFile) != ''">
+  <PropertyGroup Condition="$(Configuration) == 'Release'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>$(PdfToSvgKeyFile)</AssemblyOriginatorKeyFile>
-    <DefineConstants>$(DefineConstants);SIGNED_ASSEMBLIES</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

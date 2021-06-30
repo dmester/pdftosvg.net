@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\PdfToSvg.csproj" />
+    <ProjectReference Include="..\..\src\PdfToSvg\PdfToSvg.csproj" />
   </ItemGroup>
 
   <ItemGroup>

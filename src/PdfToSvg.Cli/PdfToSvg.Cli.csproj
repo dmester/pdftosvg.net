@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net45</TargetFramework>
+    <AssemblyName>pdftosvg</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\PdfToSvg\**\*.cs" Visible="false"/>
+    <Compile Remove="..\PdfToSvg\bin\**\*.cs" Visible="false"/>
+    <Compile Remove="..\PdfToSvg\obj\**\*.cs" Visible="false"/>
+  </ItemGroup>
+
+</Project>

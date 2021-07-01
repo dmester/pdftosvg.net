@@ -20,28 +20,43 @@ namespace PdfToSvg.Tests
 {
     public class ConversionTests
     {
-        private static string GetTargetFramework()
-        {
-            var directory = TestContext.CurrentContext.WorkDirectory;
-            return Path.GetFileName(directory).Replace(".", "");
-        }
+        private const string TestFilesDir = "TestFiles";
+        private const string OwnTestFilesDir = "Own";
+        private const string InputDir = "input";
+        private const string ExpectedDir = "expected";
 
-        private static string GetTestFileDirectory()
+        private static readonly string testDir;
+
+#if NET40
+        private const string TargetFramework = "net40";
+#elif NET45
+        private const string TargetFramework = "net45";
+#elif NETCOREAPP2_1
+        private const string TargetFramework = "netstandard16";
+#elif NET5_0
+        private const string TargetFramework = "netstandard21";
+#endif
+
+        static ConversionTests()
         {
             var directory = TestContext.CurrentContext.WorkDirectory;
 
             for (var i = 0; i < 8 && !string.IsNullOrEmpty(directory); i++)
             {
-                var potentialTestFileDirectory = Path.Combine(directory, "Test-files");
+                var potentialTestFileDirectory = Path.Combine(directory, TestFilesDir);
                 if (Directory.Exists(potentialTestFileDirectory))
                 {
-                    return potentialTestFileDirectory;
+                    testDir = directory;
+                    break;
                 }
 
                 directory = Path.GetDirectoryName(directory);
             }
 
-            throw new DirectoryNotFoundException("Could not find test files directory.");
+            if (testDir == null)
+            {
+                throw new DirectoryNotFoundException("Could not find test files directory.");
+            }
         }
 
         private static byte[] RecompressPng(byte[] pngData)
@@ -180,15 +195,29 @@ namespace PdfToSvg.Tests
             }
         }
 
+        private static string GetInputFilePath(string fileName)
+        {
+            return Path.Combine(testDir, TestFilesDir, OwnTestFilesDir, InputDir, fileName);
+        }
+
+        private static string GetExpectedFilePath(string fileName)
+        {
+            return Path.Combine(testDir, TestFilesDir, OwnTestFilesDir, ExpectedDir, Path.ChangeExtension(fileName, ".svg"));
+        }
+
+        private static string GetActualFilePath(string category, string fileName)
+        {
+            return Path.Combine(testDir, TestFilesDir, OwnTestFilesDir, "actual-" + TargetFramework + "-" + category, Path.ChangeExtension(fileName, ".svg"));
+        }
+
         [Test]
         public void WebFontConversion()
         {
-            var testFileDirectory = GetTestFileDirectory();
-            var targetFramework = GetTargetFramework();
+            var expectedSvgPath = GetExpectedFilePath("encoding-webfont.svg");
+            var actualSvgPath = GetActualFilePath("sync", "encoding-webfont.svg");
+            var pdfPath = GetInputFilePath("encoding.pdf");
 
-            var pdfPath = Path.Combine(testFileDirectory, "encoding.pdf");
-            var expectedSvgPath = Path.Combine(testFileDirectory, "encoding-webfont.svg");
-            var actualSvgPath = Path.Combine(testFileDirectory, "encoding-webfont-actual-" + targetFramework + "-sync.svg");
+            Directory.CreateDirectory(Path.GetDirectoryName(actualSvgPath));
 
             string actual;
             using (var doc = PdfDocument.Open(pdfPath))
@@ -202,9 +231,7 @@ namespace PdfToSvg.Tests
             actual = RecompressPngs(actual);
             File.WriteAllText(actualSvgPath, actual, Encoding.UTF8);
 
-            var expected = File.Exists(expectedSvgPath) ?
-                RecompressPngs(File.ReadAllText(expectedSvgPath, Encoding.UTF8)) :
-                "<non-existing>";
+            var expected = File.Exists(expectedSvgPath) ? RecompressPngs(File.ReadAllText(expectedSvgPath, Encoding.UTF8)) : null;
 
             Assert.AreEqual(expected, actual);
         }
@@ -212,15 +239,14 @@ namespace PdfToSvg.Tests
         [TestCaseSource(nameof(TestCases))]
         public void ConvertSync(string fileName)
         {
-            var testFileDirectory = GetTestFileDirectory();
-            var targetFramework = GetTargetFramework();
+            var expectedSvgPath = GetExpectedFilePath(fileName);
+            var actualSvgPath = GetActualFilePath("sync", fileName);
+            var pdfPath = GetInputFilePath(fileName);
 
-            var expectedSvgPath = Path.Combine(testFileDirectory, Path.ChangeExtension(fileName, ".svg"));
-            var actualSvgPath = Path.Combine(testFileDirectory, Path.ChangeExtension(fileName, null)) + "-actual-" + targetFramework + "-sync.svg";
+            Directory.CreateDirectory(Path.GetDirectoryName(actualSvgPath));
 
             string actual;
 
-            var pdfPath = Path.Combine(testFileDirectory, fileName);
             using (var doc = PdfDocument.Open(pdfPath))
             {
                 actual = doc.Pages[0].ToSvgString();
@@ -229,9 +255,7 @@ namespace PdfToSvg.Tests
             actual = RecompressPngs(actual);
             File.WriteAllText(actualSvgPath, actual, Encoding.UTF8);
 
-            var expected = File.Exists(expectedSvgPath) ?
-                RecompressPngs(File.ReadAllText(expectedSvgPath, Encoding.UTF8)) :
-                "<non-existing>";
+            var expected = File.Exists(expectedSvgPath) ? RecompressPngs(File.ReadAllText(expectedSvgPath, Encoding.UTF8)) : null;
 
             Assert.AreEqual(expected, actual);
         }
@@ -240,17 +264,13 @@ namespace PdfToSvg.Tests
         [TestCaseSource(nameof(TestCases))]
         public async Task ConvertAsync(string fileName)
         {
-            var testFileDirectory = GetTestFileDirectory();
-            var targetFramework = GetTargetFramework();
+            var expectedSvgPath = GetExpectedFilePath(fileName);
+            var actualSvgPath = GetActualFilePath("async", fileName);
+            var pdfPath = GetInputFilePath(fileName);
 
-            var expectedSvgPath = Path.Combine(testFileDirectory, Path.ChangeExtension(fileName, ".svg"));
-            var actualSvgPath = Path.Combine(testFileDirectory, Path.ChangeExtension(fileName, null)) + "-actual-" + targetFramework + "-async.svg";
-
-            var expected = File.Exists(expectedSvgPath) ? File.ReadAllText(expectedSvgPath, Encoding.UTF8) : "<non-existing>";
+            Directory.CreateDirectory(Path.GetDirectoryName(actualSvgPath));
 
             string actual;
-
-            var pdfPath = Path.Combine(testFileDirectory, fileName);
 
             using (var doc = await PdfDocument.OpenAsync(pdfPath))
             {
@@ -258,9 +278,10 @@ namespace PdfToSvg.Tests
             }
 
             actual = RecompressPngs(actual);
-            expected = RecompressPngs(expected);
-
             File.WriteAllText(actualSvgPath, actual, Encoding.UTF8);
+
+            var expected = File.Exists(expectedSvgPath) ? RecompressPngs(File.ReadAllText(expectedSvgPath, Encoding.UTF8)) : null;
+
             Assert.AreEqual(expected, actual);
         }
 #endif
@@ -270,7 +291,7 @@ namespace PdfToSvg.Tests
             get
             {
                 return Directory
-                    .EnumerateFiles(GetTestFileDirectory(), "*.pdf")
+                    .EnumerateFiles(Path.Combine(testDir, TestFilesDir, OwnTestFilesDir, InputDir), "*.pdf")
                     .Select(path => new TestCaseData(Path.GetFileName(path)))
                     .ToList();
             }

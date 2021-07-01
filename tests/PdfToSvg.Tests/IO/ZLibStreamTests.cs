@@ -32,6 +32,7 @@ namespace PdfToSvg.Tests.IO
             }
         }
 
+#if !NET40
         private async Task<byte[]> DeflateAsync(byte[] data)
         {
             using (var memoryStream = new MemoryStream())
@@ -59,6 +60,7 @@ namespace PdfToSvg.Tests.IO
                 return memoryStream.ToArray();
             }
         }
+#endif
 
         private byte[] Inflate(byte[] data)
         {
@@ -84,6 +86,7 @@ namespace PdfToSvg.Tests.IO
             }
         }
 
+#if !NET40
         private async Task<byte[]> InflateAsync(byte[] data)
         {
             using (var inStream = new NoSeekMemoryStream(data))
@@ -134,6 +137,7 @@ namespace PdfToSvg.Tests.IO
                 }
             }
         }
+#endif
 
         [TestCase("ZLib_WindowBits8.bin")]
         [TestCase("ZLib_WindowBits15.bin")]
@@ -146,6 +150,7 @@ namespace PdfToSvg.Tests.IO
             Assert.AreEqual(actualUncompressed, expectedUncompressed);
         }
 
+#if !NET40
         [TestCase("ZLib_WindowBits8.bin")]
         [TestCase("ZLib_WindowBits15.bin")]
         public async Task InflateAsync(string compressedFileName)
@@ -167,6 +172,7 @@ namespace PdfToSvg.Tests.IO
 
             Assert.AreEqual(actualUncompressed, expectedUncompressed);
         }
+#endif
 
         [Test]
         public void Deflate()
@@ -179,6 +185,7 @@ namespace PdfToSvg.Tests.IO
             Assert.AreEqual(uncompressed, actualUncompressed);
         }
 
+#if !NET40
         [Test]
         public async Task DeflateAsync()
         {
@@ -200,6 +207,7 @@ namespace PdfToSvg.Tests.IO
 
             Assert.AreEqual(uncompressed, actualUncompressed);
         }
+#endif
 
         [Test]
         public void EmptyStream()

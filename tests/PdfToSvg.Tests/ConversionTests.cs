@@ -236,6 +236,7 @@ namespace PdfToSvg.Tests
             Assert.AreEqual(expected, actual);
         }
 
+#if !NET40
         [TestCaseSource(nameof(TestCases))]
         public async Task ConvertAsync(string fileName)
         {
@@ -262,6 +263,7 @@ namespace PdfToSvg.Tests
             File.WriteAllText(actualSvgPath, actual, Encoding.UTF8);
             Assert.AreEqual(expected, actual);
         }
+#endif
 
         public static List<TestCaseData> TestCases
         {

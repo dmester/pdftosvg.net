@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp2.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>net40;net45;netcoreapp2.1;net5.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <LangVersion>9.0</LangVersion>
   </PropertyGroup>
@@ -15,11 +15,14 @@
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
-    <PackageReference Condition="$(TargetFramework) != 'net45'" Include="System.Text.Encoding.CodePages" Version="5.0.0" />
+    <PackageReference Condition="'$(TargetFramework)' != 'net40' And '$(TargetFramework)' != 'net45'" Include="System.Text.Encoding.CodePages" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\PdfToSvg\PdfToSvg.csproj" />
+    <ProjectReference Condition="'$(TargetFramework)' == 'netcoreapp2.1'" Include="..\..\src\PdfToSvg\PdfToSvg.csproj">
+      <SetTargetFramework>TargetFramework=netstandard1.6</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Condition="'$(TargetFramework)' != 'netcoreapp2.1'" Include="..\..\src\PdfToSvg\PdfToSvg.csproj"></ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

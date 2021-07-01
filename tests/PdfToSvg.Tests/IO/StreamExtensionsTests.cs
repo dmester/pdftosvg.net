@@ -38,6 +38,7 @@ namespace PdfToSvg.Tests.IO
             Assert.AreEqual(new byte[] { 7, 8, 9, 4, 5 }, buffer);
         }
 
+#if !NET40
         [Test]
         public async Task ReadAllAsync()
         {
@@ -60,6 +61,7 @@ namespace PdfToSvg.Tests.IO
             Assert.AreEqual(0, await stream.ReadAllAsync(buffer, 0, buffer.Length));
             Assert.AreEqual(new byte[] { 7, 8, 9, 4, 5 }, buffer);
         }
+#endif
 
         [Test]
         public void Skip()

@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#if !NET40
 namespace PdfToSvg.Tests.IO
 {
     public class StripTrailerStreamTests
@@ -170,3 +171,4 @@ namespace PdfToSvg.Tests.IO
         }
     }
 }
+#endif

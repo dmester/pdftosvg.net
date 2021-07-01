@@ -97,6 +97,7 @@ namespace PdfToSvg.Tests.IO
             });
         }
 
+#if !NET40
         [Test]
         public void CreateExclusiveReaderAsync()
         {
@@ -119,6 +120,7 @@ namespace PdfToSvg.Tests.IO
                 }
             });
         }
+#endif
 
         [Test]
         public void CreateExclusiveSliceReader()
@@ -143,6 +145,7 @@ namespace PdfToSvg.Tests.IO
             });
         }
 
+#if !NET40
         [Test]
         public void CreateExclusiveSliceReaderAsync()
         {
@@ -165,5 +168,6 @@ namespace PdfToSvg.Tests.IO
                 }
             });
         }
+#endif
     }
 }

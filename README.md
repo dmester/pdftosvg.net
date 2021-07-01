@@ -8,11 +8,6 @@
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](https://github.com/dmester/pdftosvg.net/blob/master/LICENSE)
 
 </div>
-<div align="center">
-
-[**Online demo**](https://pdftosvg.net)
-
-</div>
 
 # PdfToSvg.NET
 Fully managed library for converting PDF files to SVG. Potential usage is embedding PDFs on your site without the need of loading a PDF reader.

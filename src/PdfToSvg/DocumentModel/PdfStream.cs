@@ -20,7 +20,7 @@ namespace PdfToSvg.DocumentModel
     internal abstract class PdfStream
     {
         protected readonly PdfDictionary owner;
-        private IReadOnlyList<PdfStreamFilter>? filters;
+        private IList<PdfStreamFilter>? filters;
 
         public PdfStream(PdfDictionary owner)
         {
@@ -30,7 +30,7 @@ namespace PdfToSvg.DocumentModel
         /// <summary>
         /// Gets a list of the filters to be applied on the content of this stream.
         /// </summary>
-        public IReadOnlyList<PdfStreamFilter> Filters
+        public IList<PdfStreamFilter> Filters
         {
             get => filters ??= GetFilters();
         }
@@ -41,17 +41,18 @@ namespace PdfToSvg.DocumentModel
         public abstract Stream Open(CancellationToken cancellationToken);
 
         /// <summary>
-        /// Opens the raw, potentially encoded, stream.
-        /// </summary>
-        public abstract Task<Stream> OpenAsync(CancellationToken cancellationToken);
-
-        /// <summary>
         /// Opens the stream with all the decode filters applied.
         /// </summary>
         public Stream OpenDecoded(CancellationToken cancellationToken)
         {
             return Filters.Decode(Open(cancellationToken));
         }
+
+#if HAVE_ASYNC
+        /// <summary>
+        /// Opens the raw, potentially encoded, stream.
+        /// </summary>
+        public abstract Task<Stream> OpenAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Opens the stream with all the decode filters applied.
@@ -60,6 +61,7 @@ namespace PdfToSvg.DocumentModel
         {
             return Filters.Decode(await OpenAsync(cancellationToken).ConfigureAwait(false));
         }
+#endif
 
         private static object[] GetAsArray(PdfDictionary dict, PdfName key)
         {
@@ -78,7 +80,7 @@ namespace PdfToSvg.DocumentModel
             return new[] { value };
         }
 
-        private IReadOnlyList<PdfStreamFilter> GetFilters()
+        private IList<PdfStreamFilter> GetFilters()
         {
             var filterNames = GetAsArray(owner, Names.Filter);
             var decodeParms = GetAsArray(owner, Names.DecodeParms);

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFrameworks>net40</TargetFrameworks>
     <AssemblyName>pdftosvg</AssemblyName>
   </PropertyGroup>
 

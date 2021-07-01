@@ -69,7 +69,9 @@ namespace PdfToSvg.IO
             }
         }
 
+#if HAVE_ASYNC
         public abstract Task FillBufferAsync();
+#endif
 
         public abstract void FillBuffer();
 
@@ -150,7 +152,9 @@ namespace PdfToSvg.IO
 
         protected abstract int ReadUnbuffered(byte[] buffer, int offset, int count);
 
+#if HAVE_ASYNC
         protected abstract Task<int> ReadUnbufferedAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken);
+#endif
 
         private void ReadFromBuffer(byte[] buffer, ref int read, ref int offset, ref int count)
         {
@@ -167,6 +171,7 @@ namespace PdfToSvg.IO
             }
         }
 
+#if HAVE_ASYNC
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             var read = 0;
@@ -195,6 +200,7 @@ namespace PdfToSvg.IO
 
             return read;
         }
+#endif
 
         public override int Read(byte[] buffer, int offset, int count)
         {

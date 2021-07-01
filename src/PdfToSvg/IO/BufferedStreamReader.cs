@@ -88,6 +88,7 @@ namespace PdfToSvg.IO
             return desiredCount;
         }
 
+#if HAVE_ASYNC
         public override async Task FillBufferAsync()
         {
             if (bufferLength == 0 || readCursor > bufferLength / 2)
@@ -107,6 +108,7 @@ namespace PdfToSvg.IO
                 }
             }
         }
+#endif
 
         public override void FillBuffer()
         {
@@ -135,6 +137,7 @@ namespace PdfToSvg.IO
             return count > 0 ? stream.Read(buffer, offset, count) : 0;
         }
 
+#if HAVE_ASYNC
         protected override Task<int> ReadUnbufferedAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             if (stream == null) throw new ObjectDisposedException(nameof(BufferedStreamReader));
@@ -146,6 +149,7 @@ namespace PdfToSvg.IO
                 stream.ReadAsync(buffer, offset, count, cancellationToken) :
                 Task.FromResult(0);
         }
+#endif
 
         protected override void SeekCore(long position)
         {

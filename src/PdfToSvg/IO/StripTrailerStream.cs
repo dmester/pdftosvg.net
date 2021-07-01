@@ -51,7 +51,9 @@ namespace PdfToSvg.IO
 
         public override void Flush() { }
 
+#if HAVE_AGGRESSIVE_INLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static void LoopCopy(byte[] src, int srcOffset, byte[] dst, int dstOffset, int count)
         {
             for (var i = 0; i < count; i++)
@@ -117,6 +119,7 @@ namespace PdfToSvg.IO
             return returnBytes;
         }
 
+#if HAVE_ASYNC
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             if (buffer == null) throw new ArgumentNullException(nameof(count));
@@ -183,6 +186,7 @@ namespace PdfToSvg.IO
         {
             return TaskAsyncResult<StripTrailerStream, int>.End(asyncResult);
         }
+#endif
 
         public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
         public override void SetLength(long value) => throw new NotSupportedException();

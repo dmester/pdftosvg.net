@@ -22,6 +22,7 @@ namespace PdfToSvg.Functions.PostScript
 
         static PostScriptOperators()
         {
+
             operators = typeof(PostScriptOperators)
                 .GetMethods(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod)
                 .Select(method => new
@@ -32,7 +33,7 @@ namespace PdfToSvg.Functions.PostScript
                 .Where(method => method.Parameters.Length == 1 && method.Parameters[0].ParameterType == typeof(PostScriptStack))
                 .ToDictionary(
                     method => method.Method.Name.ToLowerInvariant(),
-                    method => (PostScriptInstruction)method.Method.CreateDelegate(typeof(PostScriptInstruction))
+                    method => (PostScriptInstruction)Delegate.CreateDelegate(typeof(PostScriptInstruction), method.Method)
                     );
         }
 

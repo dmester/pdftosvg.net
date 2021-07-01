@@ -62,6 +62,7 @@ namespace PdfToSvg.Imaging
             return memoryStream.ToArray();
         }
 
+#if HAVE_ASYNC
         public override async Task<byte[]> GetContentAsync(CancellationToken cancellationToken)
         {
             var memoryStream = new MemoryStream();
@@ -73,5 +74,6 @@ namespace PdfToSvg.Imaging
 
             return memoryStream.ToArray();
         }
+#endif
     }
 }

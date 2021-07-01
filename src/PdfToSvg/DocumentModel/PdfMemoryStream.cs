@@ -31,9 +31,11 @@ namespace PdfToSvg.DocumentModel
             return new MemoryStream(content, 0, length, false);
         }
 
+#if HAVE_ASYNC
         public override Task<Stream> OpenAsync(CancellationToken cancellationToken)
         {
             return Task.FromResult(Open(cancellationToken));
         }
+#endif
     }
 }

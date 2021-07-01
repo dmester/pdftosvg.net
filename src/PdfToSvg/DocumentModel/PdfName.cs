@@ -16,7 +16,7 @@ namespace PdfToSvg.DocumentModel
 #pragma warning disable 8602,8619
         private static Dictionary<string, PdfName> knownNames = typeof(Names)
             .GetProperties(BindingFlags.Public | BindingFlags.Static | BindingFlags.GetProperty)
-            .Select(x => x.GetValue(null) as PdfName)
+            .Select(x => x.GetValue(null, null) as PdfName)
             .Where(x => x != null)
             .ToDictionary(x => x.Value, x => x);
 #pragma warning restore 8602,8619

@@ -44,6 +44,7 @@ namespace PdfToSvg.Parsing
             return new MemoryStream(memoryStream.GetBuffer(), 0, (int)memoryStream.Length, false);
         }
 
+#if HAVE_ASYNC
         public static async Task<Stream> CombineAsync(PdfDictionary pageDict, CancellationToken cancellationToken)
         {
             var contents = GetContents(pageDict);
@@ -61,6 +62,7 @@ namespace PdfToSvg.Parsing
 
             return CreateReadOnlyStream(combinedBuffer);
         }
+#endif
 
         public static Stream Combine(PdfDictionary pageDict, CancellationToken cancellationToken)
         {

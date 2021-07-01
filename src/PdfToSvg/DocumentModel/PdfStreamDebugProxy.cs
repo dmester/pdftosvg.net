@@ -22,7 +22,7 @@ namespace PdfToSvg.DocumentModel
             this.streamInfo = streamInfo;
         }
 
-        public IReadOnlyList<PdfStreamFilter> Filters => streamInfo.Filters;
+        public IList<PdfStreamFilter> Filters => streamInfo.Filters;
 
         public string Content
         {

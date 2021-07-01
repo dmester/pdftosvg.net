@@ -195,7 +195,8 @@ namespace PdfToSvg.Drawing
                     }
 
                     // Is params ...[] parameter?
-                    if (parameter.GetCustomAttribute<ParamArrayAttribute>(false) != null)
+                    var paramArrayAttributes = parameter.GetCustomAttributes(typeof(ParamArrayAttribute), true);
+                    if (paramArrayAttributes.Length > 0)
                     {
                         object rest = operands;
 
@@ -212,7 +213,7 @@ namespace PdfToSvg.Drawing
                     }
 
                     // Has default value?
-                    if (parameter.HasDefaultValue)
+                    if (!(parameter.DefaultValue is DBNull))
                     {
                         castedArguments[i] = parameter.DefaultValue;
                         continue;

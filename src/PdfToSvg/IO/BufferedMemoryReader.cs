@@ -31,6 +31,7 @@ namespace PdfToSvg.IO
             return 0;
         }
 
+#if HAVE_ASYNC
         protected override Task<int> ReadUnbufferedAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             return Task.FromResult(0);
@@ -40,6 +41,7 @@ namespace PdfToSvg.IO
         {
             return Task.FromResult(true);
         }
+#endif
 
         public override void FillBuffer()
         {

@@ -41,9 +41,6 @@ namespace PdfToSvg.IO
         public override void Flush()
             => baseStream.Flush();
 
-        public override Task FlushAsync(CancellationToken cancellationToken)
-            => baseStream.FlushAsync(cancellationToken);
-
         public override int Read(byte[] buffer, int offset, int count)
             => baseStream.Read(buffer, offset, count);
 
@@ -52,9 +49,6 @@ namespace PdfToSvg.IO
 
         public override int EndRead(IAsyncResult asyncResult)
             => baseStream.EndRead(asyncResult);
-
-        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-            => baseStream.ReadAsync(buffer, offset, count, cancellationToken);
 
         public override long Seek(long offset, SeekOrigin origin)
             => baseStream.Seek(offset, origin);
@@ -71,7 +65,15 @@ namespace PdfToSvg.IO
         public override void EndWrite(IAsyncResult asyncResult)
             => baseStream.EndWrite(asyncResult);
 
+#if HAVE_ASYNC
+        public override Task FlushAsync(CancellationToken cancellationToken)
+            => baseStream.FlushAsync(cancellationToken);
+
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+            => baseStream.ReadAsync(buffer, offset, count, cancellationToken);
+
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
             => baseStream.WriteAsync(buffer, offset, count, cancellationToken);
+#endif
     }
 }

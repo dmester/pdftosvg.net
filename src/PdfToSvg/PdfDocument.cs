@@ -98,6 +98,7 @@ namespace PdfToSvg
             }
         }
 
+#if HAVE_ASYNC
         /// <summary>
         /// Loads a PDF file from a stream asynchronously.
         /// </summary>
@@ -131,6 +132,7 @@ namespace PdfToSvg
                 throw;
             }
         }
+#endif
 
         /// <summary>
         /// Gets the title of the document.

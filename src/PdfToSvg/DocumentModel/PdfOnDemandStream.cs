@@ -30,6 +30,7 @@ namespace PdfToSvg.DocumentModel
             return file.CreateExclusiveSliceReader(Offset, Length, cancellationToken);
         }
 
+#if HAVE_ASYNC
         public override async Task<Stream> OpenAsync(CancellationToken cancellationToken)
         {
             var reader = await file.CreateExclusiveSliceReaderAsync(Offset, Length, (int)Math.Min(8 * 1024, Length), cancellationToken).ConfigureAwait(false);
@@ -44,5 +45,6 @@ namespace PdfToSvg.DocumentModel
                 throw;
             }
         }
+#endif
     }
 }

@@ -47,12 +47,14 @@ namespace PdfToSvg
             stream.Flush();
         }
 
+#if HAVE_ASYNC
         public override Task FlushAsync(CancellationToken cancellationToken)
         {
             if (stream == null) throw new ObjectDisposedException(nameof(StreamSlice));
 
             return stream.FlushAsync(cancellationToken);
         }
+#endif
 
         private int LimitCount(int count)
         {
@@ -95,6 +97,7 @@ namespace PdfToSvg
             return read;
         }
 
+#if HAVE_ASYNC
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             if (stream == null) throw new ObjectDisposedException(nameof(StreamSlice));
@@ -103,6 +106,7 @@ namespace PdfToSvg
             cursor += read;
             return read;
         }
+#endif
 
         public override long Seek(long offset, SeekOrigin origin)
         {

@@ -12,6 +12,11 @@
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  
+  <!-- Feature defines -->
+  <PropertyGroup>
+    <DefineConstants Condition="'$(TargetFramework)' != 'net40'">$(DefineConstants);HAVE_ASYNC;HAVE_AGGRESSIVE_INLINING</DefineConstants>
+  </PropertyGroup>
 
   <!-- Strong name signing -->
   <PropertyGroup Condition="$(Configuration) == 'Release' And $(PdfToSvgKeyFile) != ''">

@@ -291,6 +291,7 @@ namespace PdfToSvg.Drawing
             return renderer.svg;
         }
 
+#if HAVE_ASYNC
         public static async Task<XElement> ConvertAsync(PdfDictionary pageDict, SvgConversionOptions? options, CancellationToken cancellationToken)
         {
             var renderer = new SvgRenderer(pageDict, options, cancellationToken);
@@ -298,6 +299,7 @@ namespace PdfToSvg.Drawing
             renderer.Convert(contentStream);
             return renderer.svg;
         }
+#endif
 
 
         #region Graphics state operators

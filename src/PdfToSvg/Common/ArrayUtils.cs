@@ -12,7 +12,7 @@ namespace PdfToSvg.Common
 {
     internal static class ArrayUtils
     {
-#if NET45
+#if (NET40 || NET45)
         private class EmptyArrayHolder<T>
         {
             public static readonly T[] Empty = new T[0];

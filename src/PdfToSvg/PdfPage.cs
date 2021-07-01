@@ -51,6 +51,7 @@ namespace PdfToSvg
             return ToString(SvgRenderer.Convert(page, options, cancellationToken));
         }
 
+#if HAVE_ASYNC
         /// <summary>
         /// Converts this page to an SVG string asynchronously. The string can for example be saved to a file, or inlined in HTML.
         /// </summary>
@@ -60,6 +61,7 @@ namespace PdfToSvg
             var element = await SvgRenderer.ConvertAsync(page, options, cancellationToken).ConfigureAwait(false);
             return ToString(element);
         }
+#endif
 
         /// <summary>
         /// Saves the page as an SVG file.
@@ -88,6 +90,7 @@ namespace PdfToSvg
             SaveAsSvg(stream, options, cancellationToken);
         }
 
+#if HAVE_ASYNC
         /// <summary>
         /// Saves the page as an SVG file asynchronously.
         /// </summary>
@@ -121,6 +124,7 @@ namespace PdfToSvg
             using var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
             await SaveAsSvgAsync(stream, options, cancellationToken).ConfigureAwait(false);
         }
+#endif
 
         private static string ToString(XNode el)
         {

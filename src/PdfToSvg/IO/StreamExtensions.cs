@@ -32,10 +32,12 @@ namespace PdfToSvg.IO
             while (read > 0);
         }
 
+#if HAVE_ASYNC
         public static Task CopyToAsync(this Stream stream, Stream destination, CancellationToken cancellationToken)
         {
             return stream.CopyToAsync(destination, DefaultCopyToBuffer, cancellationToken);
         }
+#endif
 
         public static int ReadAll(this Stream stream, byte[] buffer, int offset, int count)
         {
@@ -54,6 +56,7 @@ namespace PdfToSvg.IO
             return totalRead;
         }
 
+#if HAVE_ASYNC
         public static async Task<int> ReadAllAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken = default)
         {
             var totalRead = 0;
@@ -70,6 +73,7 @@ namespace PdfToSvg.IO
 
             return totalRead;
         }
+#endif
 
         public static void Skip(this Stream stream, long offset)
         {

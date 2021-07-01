@@ -65,12 +65,14 @@ namespace PdfToSvg.Parsing
             ReadFileHeader(buffer, 0, readBytes);
         }
 
+#if HAVE_ASYNC
         public async Task ReadFileHeaderAsync()
         {
             var buffer = new byte[1024];
             var readBytes = await lexer.Stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
             ReadFileHeader(buffer, 0, readBytes);
         }
+#endif
 
         private static long ReadStartXRef(byte[] buffer, int offset, int count)
         {
@@ -95,6 +97,7 @@ namespace PdfToSvg.Parsing
             return ReadStartXRef(buffer, 0, readBytes);
         }
 
+#if HAVE_ASYNC
         public async Task<long> ReadStartXRefAsync()
         {
             lexer.Stream.Seek(-1024, SeekOrigin.End);
@@ -104,6 +107,7 @@ namespace PdfToSvg.Parsing
 
             return ReadStartXRef(buffer, 0, readBytes);
         }
+#endif
 
         public IndirectObject? ReadIndirectObject(Dictionary<PdfObjectId, object?>? objectTable = null)
         {

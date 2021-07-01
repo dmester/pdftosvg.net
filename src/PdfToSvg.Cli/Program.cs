@@ -19,7 +19,7 @@ namespace PdfToSvg.Cli
         {
             var assembly = typeof(Program).Assembly;
             var version = assembly
-                .GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute))
+                .GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), true)
                 .OfType<AssemblyInformationalVersionAttribute>()
                 .Select(attr => attr.InformationalVersion)
                 .FirstOrDefault();

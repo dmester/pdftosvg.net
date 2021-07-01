@@ -31,6 +31,7 @@ namespace PdfToSvg.IO
             this.baseStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync);
         }
 
+#if HAVE_ASYNC
         public Task<BufferedReader> CreateExclusiveReaderAsync(CancellationToken cancellationToken)
         {
             return CreateExclusiveReaderAsync(DefaultBufferSize, cancellationToken);
@@ -63,6 +64,7 @@ namespace PdfToSvg.IO
 
             return reader;
         }
+#endif
 
         public BufferedReader CreateExclusiveReader(CancellationToken cancellationToken)
         {
@@ -97,6 +99,7 @@ namespace PdfToSvg.IO
             return reader;
         }
 
+#if HAVE_ASYNC
         public Task<BufferedReader> CreateExclusiveSliceReaderAsync(long offset, long length, CancellationToken cancellationToken)
         {
             return CreateExclusiveSliceReaderAsync(offset, length, DefaultBufferSize, cancellationToken);
@@ -130,6 +133,7 @@ namespace PdfToSvg.IO
 
             return reader;
         }
+#endif
 
         public BufferedReader CreateExclusiveSliceReader(long offset, long length, CancellationToken cancellationToken)
         {

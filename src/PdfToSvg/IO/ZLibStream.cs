@@ -98,7 +98,7 @@ namespace PdfToSvg.IO
 
                 // Important to leave the stream open, since we need to dispose the DeflateStream
                 // before being able to write the checksum.
-                deflateStream = new DeflateStream(stream, CompressionLevel.Optimal, leaveOpen: true);
+                deflateStream = new DeflateStream(stream, CompressionMode.Compress, leaveOpen: true);
             }
             else
             {
@@ -210,6 +210,7 @@ namespace PdfToSvg.IO
             return read;
         }
 
+#if HAVE_ASYNC
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
             return TaskAsyncResult<ZLibStream, int>.Begin(ReadAsync(buffer, offset, count), callback, state);
@@ -234,6 +235,7 @@ namespace PdfToSvg.IO
 
             return read;
         }
+#endif
 
         public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 

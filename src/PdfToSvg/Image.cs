@@ -39,11 +39,13 @@ namespace PdfToSvg
         /// <returns>Binary content of the image.</returns>
         public abstract byte[] GetContent(CancellationToken cancellationToken);
 
+#if HAVE_ASYNC
         /// <summary>
         /// Gets the binary content of the image asynchronously.
         /// </summary>
         /// <returns>Binary content of the image.</returns>
         public abstract Task<byte[]> GetContentAsync(CancellationToken cancellationToken);
+#endif
 
         /// <summary>
         /// Generates a data URI for this image.
@@ -54,6 +56,7 @@ namespace PdfToSvg
             return "data:" + ContentType + ";base64," + Convert.ToBase64String(GetContent(cancellationToken));
         }
 
+#if HAVE_ASYNC
         /// <summary>
         /// Generates a data URI for this image asynchronously.
         /// </summary>
@@ -62,5 +65,6 @@ namespace PdfToSvg
         {
             return "data:" + ContentType + ";base64," + Convert.ToBase64String(await GetContentAsync(cancellationToken).ConfigureAwait(false));
         }
+#endif
     }
 }

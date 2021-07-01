@@ -55,6 +55,7 @@ namespace PdfToSvg.Parsing
             return new PdfDocument(file, xrefTable.Trailer);
         }
 
+#if HAVE_ASYNC
         public static async Task<PdfDocument> ReadAsync(InputFile file, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -80,6 +81,7 @@ namespace PdfToSvg.Parsing
 
             return new PdfDocument(file, xrefTable.Trailer);
         }
+#endif
 
         public static IList<PdfDictionary> GetFlattenedPages(PdfDictionary root)
         {

@@ -172,9 +172,11 @@ namespace PdfToSvg.Imaging
             return pngStream.ToArray();
         }
 
+#if HAVE_ASYNC
         public override Task<byte[]> GetContentAsync(CancellationToken cancellationToken)
         {
             return Task.FromResult(GetContent(cancellationToken));
         }
+#endif
     }
 }

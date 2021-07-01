@@ -21,7 +21,7 @@ There are PDF features not yet implemented by this library. Don't use it as a ge
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <PackageProjectUrl>https://github.com/dmester/pdftosvg.net/</PackageProjectUrl>
+    <PackageProjectUrl>https://pdftosvg.net/</PackageProjectUrl>
     <PackageIcon>logo.png</PackageIcon>
     <PackageIconUrl />
     <RepositoryType>git</RepositoryType>
@@ -34,7 +34,7 @@ There are PDF features not yet implemented by this library. Don't use it as a ge
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="logo.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\docs\images\logo.png" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>

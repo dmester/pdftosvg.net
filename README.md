@@ -1,11 +1,11 @@
 <div align="center">
-    <img src="src/logo.svg" alt="PdfToSvg.NET Logo" width="200" height="200">
+    <img src="docs/images/banner.png" alt="PdfToSvg.NET Logo" width="1000" height="313" style="width: 100%">
 </div>
-
-# PdfToSvg.NET
+<div align="center">
 [![Tests](https://img.shields.io/github/workflow/status/dmester/pdftosvg.net/Build%20and%20test/master?style=flat-square)](https://github.com/dmester/pdftosvg.net/actions)
 [![NuGet](https://img.shields.io/nuget/vpre/PdfToSvg.NET?style=flat-square)](https://www.nuget.org/packages/PdfToSvg.NET/)
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](https://github.com/dmester/pdftosvg.net/blob/master/LICENSE)
+</div>
 
 Fully managed library for converting PDF files to SVG. Potential usage is embedding PDFs on your site without the need of loading a PDF reader.
 

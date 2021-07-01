@@ -81,6 +81,7 @@ namespace PdfToSvg
             return 0;
         }
 
+#if HAVE_STREAM_BEGINEND
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
             if (stream == null) throw new ObjectDisposedException(nameof(StreamSlice));
@@ -96,6 +97,7 @@ namespace PdfToSvg
             cursor += read;
             return read;
         }
+#endif
 
 #if HAVE_ASYNC
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)

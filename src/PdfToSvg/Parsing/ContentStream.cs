@@ -41,7 +41,8 @@ namespace PdfToSvg.Parsing
 
         private static MemoryStream CreateReadOnlyStream(MemoryStream memoryStream)
         {
-            return new MemoryStream(memoryStream.GetBuffer(), 0, (int)memoryStream.Length, false);
+            var buffer = memoryStream.GetBufferOrArray();
+            return new MemoryStream(buffer, 0, (int)memoryStream.Length, false);
         }
 
 #if HAVE_ASYNC

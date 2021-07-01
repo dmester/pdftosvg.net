@@ -110,7 +110,7 @@ namespace PdfToSvg
             document.WriteTo(writer);
             writer.Flush();
 
-            var buffer = memoryStream.GetBuffer();
+            var buffer = memoryStream.GetBufferOrArray();
             await stream.WriteAsync(buffer, 0, (int)memoryStream.Length, cancellationToken).ConfigureAwait(false);
         }
 

@@ -177,6 +177,7 @@ namespace PdfToSvg.IO
             return returnBytes;
         }
 
+#if HAVE_STREAM_BEGINEND
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
             return TaskAsyncResult<StripTrailerStream, int>.Begin(ReadAsync(buffer, offset, count), callback, state);
@@ -186,6 +187,7 @@ namespace PdfToSvg.IO
         {
             return TaskAsyncResult<StripTrailerStream, int>.End(asyncResult);
         }
+#endif
 #endif
 
         public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -92,6 +93,18 @@ namespace PdfToSvg.IO
                     offset -= read;
                 }
             }
+        }
+
+#if HAVE_AGGRESSIVE_INLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        public static byte[] GetBufferOrArray(this MemoryStream stream)
+        {
+#if NETSTANDARD1_6
+            return stream.ToArray();
+#else
+            return stream.GetBuffer();
+#endif
         }
 
         /// <summary>

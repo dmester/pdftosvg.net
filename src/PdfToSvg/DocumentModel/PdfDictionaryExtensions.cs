@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace PdfToSvg.DocumentModel
@@ -261,10 +262,10 @@ namespace PdfToSvg.DocumentModel
             if (value == null)
             {
                 result = null;
-                return nullableType != null || !destinationType.IsValueType;
+                return nullableType != null || !destinationType.GetTypeInfo().IsValueType;
             }
 
-            if (destinationType.IsAssignableFrom(value.GetType()))
+            if (destinationType.GetTypeInfo().IsAssignableFrom(value.GetType()))
             {
                 result = value;
                 return true;

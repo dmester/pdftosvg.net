@@ -15,6 +15,7 @@ namespace PdfToSvg.DocumentModel
         // Lower memory usage by interning common names
 #pragma warning disable 8602,8619
         private static Dictionary<string, PdfName> knownNames = typeof(Names)
+            .GetTypeInfo()
             .GetProperties(BindingFlags.Public | BindingFlags.Static | BindingFlags.GetProperty)
             .Select(x => x.GetValue(null, null) as PdfName)
             .Where(x => x != null)

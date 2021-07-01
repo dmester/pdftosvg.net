@@ -28,11 +28,22 @@ namespace PdfToSvg.Common
                 const string Chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
                 var buffer = new byte[BufferSize];
-                Update(sha1, inputs, buffer);
 
-                sha1.TransformFinalBlock(ArrayUtils.Empty<byte>(), 0, 0);
+#if NETSTANDARD1_6
+                var memoryStream = new MemoryStream();
+
+                Update(memoryStream, inputs, buffer);
+
+                memoryStream.Position = 0;
+                var hashBytes = sha1.ComputeHash(memoryStream);
+#else
+                using (var cryptoStream = new CryptoStream(Stream.Null, sha1, CryptoStreamMode.Write))
+                {
+                    Update(cryptoStream, inputs, buffer);
+                }
 
                 var hashBytes = sha1.Hash;
+#endif
 
                 var result = new char[IdLength];
                 prefix.CopyTo(0, result, 0, prefix.Length);
@@ -51,7 +62,7 @@ namespace PdfToSvg.Common
             return Generate(prefix, (object)inputs);
         }
 
-        private static void Update(HashAlgorithm hashAlgorithm, object? input, byte[] buffer)
+        private static void Update(Stream hashStream, object? input, byte[] buffer)
         {
             if (input != null)
             {
@@ -64,14 +75,14 @@ namespace PdfToSvg.Common
                 }
                 else if (input is byte[] byteArray)
                 {
-                    hashAlgorithm.TransformBlock(byteArray, 0, byteArray.Length, null, 0);
+                    hashStream.Write(byteArray, 0, byteArray.Length);
                 }
                 else if (input is IEnumerable enumerable)
                 {
                     foreach (var item in enumerable)
                     {
-                        Update(hashAlgorithm, item, buffer);
-                        hashAlgorithm.TransformBlock(Separator, 0, Separator.Length, null, 0);
+                        Update(hashStream, item, buffer);
+                        hashStream.Write(Separator, 0, Separator.Length);
                     }
                 }
                 else if (input is double inputDbl)
@@ -91,7 +102,7 @@ namespace PdfToSvg.Common
                     do
                     {
                         read = stream.Read(buffer, 0, buffer.Length);
-                        hashAlgorithm.TransformBlock(buffer, 0, read, null, 0);
+                        hashStream.Write(buffer, 0, read);
                     }
                     while (read > 0);
                 }
@@ -102,8 +113,7 @@ namespace PdfToSvg.Common
 
                 if (sValue != null)
                 {
-                    var encoding = new UnicodeEncoding(false, false);
-                    //var encoding = Encoding.Unicode;
+                    var encoding = Encoding.Unicode;
                     var maxCharsPerIteration = buffer.Length >> 1;
 
                     for (var stringCursor = 0; stringCursor < sValue.Length;)
@@ -111,7 +121,7 @@ namespace PdfToSvg.Common
                         var charCount = Math.Min(sValue.Length - stringCursor, maxCharsPerIteration);
                         var bytesWritten = encoding.GetBytes(sValue, stringCursor, charCount, buffer, 0);
 
-                        hashAlgorithm.TransformBlock(buffer, 0, bytesWritten, null, 0);
+                        hashStream.Write(buffer, 0, bytesWritten);
 
                         stringCursor += charCount;
                     }

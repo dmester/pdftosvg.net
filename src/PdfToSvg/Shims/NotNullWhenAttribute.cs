@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-#if NETFRAMEWORK || NETSTANDARD2_0
+#if !HAVE_NULLABLE
 namespace System.Diagnostics.CodeAnalysis
 {
     /// <exclude/>

@@ -32,7 +32,7 @@ namespace PdfToSvg.Imaging.Png
 
             if (disposing)
             {
-                var data = buffer.GetBuffer();
+                var data = buffer.GetBufferOrArray();
 
                 var dataLength = (int)buffer.Length;
                 var crc = new Crc32();

@@ -16,6 +16,8 @@
   <!-- Feature defines -->
   <PropertyGroup>
     <DefineConstants Condition="'$(TargetFramework)' != 'net40'">$(DefineConstants);HAVE_ASYNC;HAVE_AGGRESSIVE_INLINING</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.1'">$(DefineConstants);HAVE_NULLABLE</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)' != 'netstandard1.6'">$(DefineConstants);HAVE_STREAM_BEGINEND</DefineConstants>
   </PropertyGroup>
 
   <!-- Strong name signing -->

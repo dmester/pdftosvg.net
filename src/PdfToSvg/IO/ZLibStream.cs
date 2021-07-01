@@ -211,6 +211,7 @@ namespace PdfToSvg.IO
         }
 
 #if HAVE_ASYNC
+#if HAVE_STREAM_BEGINEND
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
             return TaskAsyncResult<ZLibStream, int>.Begin(ReadAsync(buffer, offset, count), callback, state);
@@ -220,6 +221,7 @@ namespace PdfToSvg.IO
         {
             return TaskAsyncResult<ZLibStream, int>.End(asyncResult);
         }
+#endif
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {

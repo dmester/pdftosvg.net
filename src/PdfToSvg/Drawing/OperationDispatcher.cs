@@ -34,6 +34,7 @@ namespace PdfToSvg.Drawing
         public OperationDispatcher(Type instanceType)
         {
             handlers = instanceType
+                .GetTypeInfo()
                 .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                 .SelectMany(method => GetHandler(method))
 
@@ -47,8 +48,12 @@ namespace PdfToSvg.Drawing
 
         private static IEnumerable<Handler> GetHandler(MethodInfo method)
         {
-            var operations = method.GetCustomAttributes(typeof(OperationAttribute), false);
-            if (operations.Length > 0)
+            using var operations = method
+                .GetCustomAttributes(typeof(OperationAttribute), false)
+                .OfType<OperationAttribute>()
+                .GetEnumerator();
+
+            if (operations.MoveNext())
             {
                 var parameters = method.GetParameters();
                 var instance = Expression.Parameter(typeof(object));
@@ -67,10 +72,11 @@ namespace PdfToSvg.Drawing
                 var body = Expression.Call(Expression.Convert(instance, method.DeclaringType), method, callArguments);
                 var invoke = Expression.Lambda<Action<object, object?[]>>(body, instance, argumentArray).Compile();
 
-                foreach (OperationAttribute operation in operations)
+                do
                 {
-                    yield return new Handler(operation.Name, invoke, parameters);
+                    yield return new Handler(operations.Current.Name, invoke, parameters);
                 }
+                while (operations.MoveNext());
             }
         }
 
@@ -110,14 +116,14 @@ namespace PdfToSvg.Drawing
         {
             if (value == null)
             {
-                var isNullableTargetType = !targetType.IsValueType || Nullable.GetUnderlyingType(targetType) != null;
+                var isNullableTargetType = !targetType.GetTypeInfo().IsValueType || Nullable.GetUnderlyingType(targetType) != null;
                 if (isNullableTargetType)
                 {
                     return true;
                 }
             }
 
-            else if (targetType.IsAssignableFrom(value.GetType()))
+            else if (targetType.GetTypeInfo().IsAssignableFrom(value.GetType()))
             {
                 return true;
             }
@@ -196,7 +202,7 @@ namespace PdfToSvg.Drawing
 
                     // Is params ...[] parameter?
                     var paramArrayAttributes = parameter.GetCustomAttributes(typeof(ParamArrayAttribute), true);
-                    if (paramArrayAttributes.Length > 0)
+                    if (paramArrayAttributes.Any())
                     {
                         object rest = operands;
 
@@ -213,7 +219,11 @@ namespace PdfToSvg.Drawing
                     }
 
                     // Has default value?
+#if NET40
                     if (!(parameter.DefaultValue is DBNull))
+#else
+                    if (parameter.HasDefaultValue)
+#endif
                     {
                         castedArguments[i] = parameter.DefaultValue;
                         continue;

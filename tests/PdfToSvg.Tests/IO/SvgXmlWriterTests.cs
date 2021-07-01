@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace PdfToSvg.Tests.IO
@@ -26,7 +27,7 @@ namespace PdfToSvg.Tests.IO
 
             using (var stringWriter = new StringWriter())
             {
-                using (var xmlWriter = new SvgXmlWriter(stringWriter))
+                using (var xmlWriter = new SvgXmlWriter(stringWriter, ConformanceLevel.Fragment))
                 {
                     xml.WriteTo(xmlWriter);
                 }

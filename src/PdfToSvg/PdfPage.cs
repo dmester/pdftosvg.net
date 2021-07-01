@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace PdfToSvg
@@ -74,7 +75,7 @@ namespace PdfToSvg
             var content = SvgRenderer.Convert(page, options, cancellationToken);
             var document = new XDocument(content);
 
-            using var writer = new SvgXmlWriter(stream, Encoding.UTF8);
+            using var writer = new SvgXmlWriter(stream, ConformanceLevel.Document);
             document.WriteTo(writer);
         }
 
@@ -104,7 +105,7 @@ namespace PdfToSvg
 
             // XmlTextWriter does not support async, so buffer the file before writing it to the output stream.
             using var memoryStream = new MemoryStream();
-            using var writer = new SvgXmlWriter(memoryStream, Encoding.UTF8);
+            using var writer = new SvgXmlWriter(memoryStream, ConformanceLevel.Document);
 
             document.WriteTo(writer);
             writer.Flush();
@@ -129,7 +130,7 @@ namespace PdfToSvg
         private static string ToString(XNode el)
         {
             using var stringWriter = new StringWriter();
-            using var writer = new SvgXmlWriter(stringWriter);
+            using var writer = new SvgXmlWriter(stringWriter, ConformanceLevel.Fragment);
 
             el.WriteTo(writer);
             writer.Flush();

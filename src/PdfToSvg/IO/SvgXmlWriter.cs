@@ -17,33 +17,60 @@ namespace PdfToSvg.IO
     /// formatting makes it harder to vreify the output XML. This implementation inserts line breaks in contexts where
     /// space is not preserved.
     /// </summary>
-    internal class SvgXmlWriter : XmlTextWriter
+    internal class SvgXmlWriter : XmlWriter
     {
+        private readonly XmlWriter writer;
         private readonly Stack<bool> preserveSpaceState = new Stack<bool>();
         private readonly HashSet<string> preserveSpaceElements = new HashSet<string> { "tspan", "text" };
 
-        public SvgXmlWriter(TextWriter writer) : base(writer)
+        public SvgXmlWriter(TextWriter writer, ConformanceLevel conformanceLevel)
         {
-            Formatting = Formatting.None;
             preserveSpaceState.Push(false);
+
+            var settings = new XmlWriterSettings
+            {
+                Indent = false,
+                NewLineChars = "\n",
+                NewLineHandling = NewLineHandling.None,
+                ConformanceLevel = conformanceLevel,
+            };
+
+            this.writer = Create(writer, settings);
         }
 
-        public SvgXmlWriter(Stream stream, Encoding encoding) : base(stream, encoding)
+        public SvgXmlWriter(Stream stream, ConformanceLevel conformanceLevel) :
+            this(new StreamWriter(stream, Encoding.UTF8), conformanceLevel)
         {
-            Formatting = Formatting.None;
-            preserveSpaceState.Push(false);
+        }
+
+        public override WriteState WriteState => writer.WriteState;
+
+        public override void WriteEndElement()
+        {
+            preserveSpaceState.Pop();
+            writer.WriteEndElement();
+        }
+
+        public override void WriteFullEndElement()
+        {
+            if (!preserveSpaceState.Pop())
+            {
+                writer.WriteRaw("\n");
+            }
+
+            writer.WriteFullEndElement();
         }
 
         public override void WriteStartDocument()
         {
-            base.WriteStartDocument();
-            WriteRaw("\n");
+            writer.WriteStartDocument();
+            writer.WriteRaw("\n");
         }
 
         public override void WriteStartDocument(bool standalone)
         {
-            base.WriteStartDocument(standalone);
-            WriteRaw("\n");
+            writer.WriteStartDocument(standalone);
+            writer.WriteRaw("\n");
         }
 
         public override void WriteStartElement(string prefix, string localName, string ns)
@@ -57,23 +84,58 @@ namespace PdfToSvg.IO
             var continuePreserveSpace = currentlyPreservingSpace || preserveSpaceElements.Contains(localName);
             preserveSpaceState.Push(continuePreserveSpace);
 
-            base.WriteStartElement(prefix, localName, ns);
+            writer.WriteStartElement(prefix, localName, ns);
         }
 
-        public override void WriteEndElement()
-        {
-            preserveSpaceState.Pop();
-            base.WriteEndElement();
-        }
+        public override void Flush() => writer.Flush();
 
-        public override void WriteFullEndElement()
+        public override string LookupPrefix(string ns) => writer.LookupPrefix(ns);
+
+        public override void WriteBase64(byte[] buffer, int index, int count) => writer.WriteBase64(buffer, index, count);
+
+        public override void WriteCData(string text) => writer.WriteCData(text);
+
+        public override void WriteCharEntity(char ch) => writer.WriteCharEntity(ch);
+
+        public override void WriteChars(char[] buffer, int index, int count) => writer.WriteChars(buffer, index, count);
+
+        public override void WriteComment(string text) => writer.WriteComment(text);
+
+        public override void WriteDocType(string name, string pubid, string sysid, string subset) => writer.WriteDocType(name, pubid, sysid, subset);
+
+        public override void WriteEndAttribute() => writer.WriteEndAttribute();
+
+        public override void WriteEndDocument() => writer.WriteEndDocument();
+
+        public override void WriteEntityRef(string name) => writer.WriteEntityRef(name);
+
+        public override void WriteProcessingInstruction(string name, string text) => writer.WriteProcessingInstruction(name, text);
+
+        public override void WriteRaw(char[] buffer, int index, int count) => writer.WriteRaw(buffer, index, count);
+
+        public override void WriteRaw(string data) => writer.WriteRaw(data);
+
+        public override void WriteStartAttribute(string prefix, string localName, string ns) => writer.WriteStartAttribute(prefix, localName, ns);
+
+        public override void WriteString(string text) => writer.WriteString(text);
+
+        public override void WriteSurrogateCharEntity(char lowChar, char highChar) => writer.WriteSurrogateCharEntity(lowChar, highChar);
+
+        public override void WriteWhitespace(string ws) => writer.WriteWhitespace(ws);
+
+#if NETFRAMEWORK
+        public override void Close()
         {
-            if (!preserveSpaceState.Pop())
+            writer.Close();
+        }
+#endif
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                WriteRaw("\n");
+                ((IDisposable)writer).Dispose();
             }
-
-            base.WriteFullEndElement();
         }
     }
 }

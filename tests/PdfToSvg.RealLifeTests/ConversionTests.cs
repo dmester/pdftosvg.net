@@ -79,8 +79,28 @@ namespace PdfToSvg.RealLifeTests
         [OneTimeTearDown]
         public void TearDown()
         {
-            foreach (var oldTestResult in previousResultsDirs.Skip(2))
+            var testFilesDir = Path.Combine(testDir, TestFilesDir, ThirdPartyTestFilesDir);
+
+            var expectedResultsCount =
+                Directory.EnumerateFiles(testFilesDir, "*.pdf").Count();
+
+            var fullResultsCount = 0;
+
+            foreach (var oldTestResult in previousResultsDirs)
             {
+                if (fullResultsCount < 2)
+                {
+                    var fileCount = Directory.EnumerateFiles(oldTestResult, "*.svg").Count();
+                    var isFullResult = fileCount > expectedResultsCount / 2;
+
+                    if (isFullResult)
+                    {
+                        fullResultsCount++;
+                    }
+
+                    continue;
+                }
+
                 try
                 {
                     Directory.Delete(oldTestResult, true);

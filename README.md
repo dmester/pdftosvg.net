@@ -47,24 +47,4 @@ Note that if you parse the XML returned from PdfToSvg.NET, you need to preserve 
 Otherwise text will not be rendered correctly in the modified markup.
 
 ## Limitations
-Not all PDF features are supported. Here is a summary of non-supported features:
-
-* Embedded fonts from the PDF are not exported to the SVG. There is however an API for specifying substitute fonts during the conversion.
-* Opening encrypted PDF files.
-* Blending modes.
-* PDF forms.
-* JavaScript embedded in the PDF.
-
-Non-supported image formats:
-* CCITT Fax
-* JPEG 2000
-* CMYK JPEG
-* JBIG2
-
-Non-supported color spaces:
-* CalGray
-* CalRGB
-* Lab
-* DeviceN
-* Pattern
-* ICCBased
+Not all PDF features are supported. See more information in [Limitations](docs/limitations.md).

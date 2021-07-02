@@ -1629,14 +1629,16 @@ namespace PdfToSvg.Drawing
                             tspan.SetAttributeValue("class", classNames[i]);
                         }
 
-                        if (span.SpaceBefore != 0)
+                        var dx = SvgConversion.FormatCoordinate(span.SpaceBefore);
+                        if (dx != "0")
                         {
-                            tspan.SetAttributeValue("dx", SvgConversion.FormatCoordinate(span.SpaceBefore));
+                            tspan.SetAttributeValue("dx", dx);
                         }
 
-                        if (span.Style.TextRisePx != currentYOffset)
+                        var dy = SvgConversion.FormatCoordinate(currentYOffset - span.Style.TextRisePx);
+                        if (dy != "0")
                         {
-                            tspan.SetAttributeValue("dy", SvgConversion.FormatCoordinate(currentYOffset - span.Style.TextRisePx));
+                            tspan.SetAttributeValue("dy", dy);
                             currentYOffset = span.Style.TextRisePx;
                         }
 

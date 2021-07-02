@@ -66,5 +66,35 @@ namespace PdfToSvg
         /// Gets an URL to a TrueType font file to be included as a @font-face.
         /// </summary>
         public string? TrueTypeUrl { get; }
+
+        /// <summary>
+        /// Determines whether the specified font is equal to the current one.
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            return
+                obj is WebFont font &&
+                font.FontFamily == FontFamily &&
+                font.WoffUrl == WoffUrl &&
+                font.Woff2Url == Woff2Url &&
+                font.TrueTypeUrl == TrueTypeUrl &&
+                Equals(font.FallbackFont, FallbackFont);
+        }
+
+        /// <summary>
+        /// Gets a hash code for this font.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return FontFamily.GetHashCode();
+        }
+
+        /// <summary>
+        /// Gets a string representation of this font.
+        /// </summary>
+        public override string ToString()
+        {
+            return FontFamily;
+        }
     }
 }

@@ -9,6 +9,7 @@ using PdfToSvg.Fonts;
 using PdfToSvg.Parsing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,7 @@ using System.Threading.Tasks;
 namespace PdfToSvg.Fonts
 {
     // TODO Create document wide font cache
+    [DebuggerDisplay("{Name,nq}")]
     internal class InternalFont
     {
         public string? Name { get; }

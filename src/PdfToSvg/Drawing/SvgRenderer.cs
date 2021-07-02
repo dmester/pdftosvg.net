@@ -1072,98 +1072,104 @@ namespace PdfToSvg.Drawing
             return ColorSpace.Parse(definition, resources.Dictionary.GetDictionaryOrNull(Names.ColorSpace), cancellationToken);
         }
 
+        private void SetFillColor(RgbColor newColor)
+        {
+            if (graphicsState.FillColor != newColor)
+            {
+                graphicsState.FillColor = newColor;
+                textBuilder.InvalidateStyle();
+            }
+        }
+
+        private void SetStrokeColor(RgbColor newColor)
+        {
+            if (graphicsState.StrokeColor != newColor)
+            {
+                graphicsState.StrokeColor = newColor;
+                textBuilder.InvalidateStyle();
+            }
+        }
+
         [Operation("CS")]
         private void CS_StrokeColorSpace(PdfName name)
         {
             graphicsState.StrokeColorSpace = GetColorSpace(name);
-            graphicsState.StrokeColor = graphicsState.StrokeColorSpace.GetDefaultRgbColor();
-            textBuilder.InvalidateStyle();
+            SetStrokeColor(graphicsState.StrokeColorSpace.GetDefaultRgbColor());
         }
 
         [Operation("cs")]
         private void cs_FillColorSpace(PdfName name)
         {
             graphicsState.FillColorSpace = GetColorSpace(name);
-            graphicsState.FillColor = graphicsState.FillColorSpace.GetDefaultRgbColor();
-            textBuilder.InvalidateStyle();
+            SetFillColor(graphicsState.FillColorSpace.GetDefaultRgbColor());
         }
 
         [Operation("SC")]
         public void SC_StrokeColor(params float[] components)
         {
-            graphicsState.StrokeColor = new RgbColor(graphicsState.StrokeColorSpace, components);
-            textBuilder.InvalidateStyle();
+            SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, components));
         }
 
         [Operation("sc")]
         public void sc_FillColor(params float[] components)
         {
-            graphicsState.FillColor = new RgbColor(graphicsState.FillColorSpace, components);
-            textBuilder.InvalidateStyle();
+            SetFillColor(new RgbColor(graphicsState.FillColorSpace, components));
         }
 
         [Operation("SCN")]
         public void SCN_StrokeColor(params float[] components)
         {
             // TODO Should also accept a trailing name argument
-            graphicsState.StrokeColor = new RgbColor(graphicsState.StrokeColorSpace, components);
-            textBuilder.InvalidateStyle();
+            SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, components));
         }
 
         [Operation("scn")]
         public void scn_FillColor(params float[] components)
         {
             // TODO Should also accept a trailing name argument
-            graphicsState.FillColor = new RgbColor(graphicsState.FillColorSpace, components);
-            textBuilder.InvalidateStyle();
+            SetFillColor(new RgbColor(graphicsState.FillColorSpace, components));
         }
 
         [Operation("G")]
         private void G_StrokeGray(float gray)
         {
             graphicsState.StrokeColorSpace = new DeviceGrayColorSpace();
-            graphicsState.StrokeColor = new RgbColor(graphicsState.StrokeColorSpace, gray);
-            textBuilder.InvalidateStyle();
+            SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, gray));
         }
 
         [Operation("g")]
         private void g_FillGray(float gray)
         {
             graphicsState.FillColorSpace = new DeviceGrayColorSpace();
-            graphicsState.FillColor = new RgbColor(graphicsState.FillColorSpace, gray);
-            textBuilder.InvalidateStyle();
+            SetFillColor(new RgbColor(graphicsState.FillColorSpace, gray));
         }
 
         [Operation("RG")]
         private void RG_StrokeRgb(float r, float g, float b)
         {
             graphicsState.StrokeColorSpace = new DeviceRgbColorSpace();
-            graphicsState.StrokeColor = new RgbColor(graphicsState.StrokeColorSpace, r, g, b);
-            textBuilder.InvalidateStyle();
+            SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, r, g, b));
         }
 
         [Operation("rg")]
         private void rg_FillRgb(float r, float g, float b)
         {
             graphicsState.FillColorSpace = new DeviceRgbColorSpace();
-            graphicsState.FillColor = new RgbColor(graphicsState.FillColorSpace, r, g, b);
-            textBuilder.InvalidateStyle();
+            SetFillColor(new RgbColor(graphicsState.FillColorSpace, r, g, b));
         }
 
         [Operation("K")]
         private void K_StrokeCmyk(float c, float m, float y, float k)
         {
             graphicsState.StrokeColorSpace = new DeviceCmykColorSpace();
-            graphicsState.StrokeColor = new RgbColor(graphicsState.StrokeColorSpace, c, m, y, k);
-            textBuilder.InvalidateStyle();
+            SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, c, m, y, k));
         }
 
         [Operation("k")]
         private void k_FillCmyk(float c, float m, float y, float k)
         {
             graphicsState.FillColorSpace = new DeviceCmykColorSpace();
-            graphicsState.FillColor = new RgbColor(graphicsState.FillColorSpace, c, m, y, k);
-            textBuilder.InvalidateStyle();
+            SetFillColor(new RgbColor(graphicsState.FillColorSpace, c, m, y, k));
         }
 
         #endregion
@@ -1173,8 +1179,11 @@ namespace PdfToSvg.Drawing
         [Operation("Tc")]
         private void Tc_CharSpace(double charSpace)
         {
-            graphicsState.TextCharSpacingPx = charSpace;
-            textBuilder.InvalidateStyle();
+            if (graphicsState.TextCharSpacingPx != charSpace)
+            {
+                graphicsState.TextCharSpacingPx = charSpace;
+                textBuilder.InvalidateStyle();
+            }
         }
 
         [Operation("Tw")]
@@ -1186,9 +1195,12 @@ namespace PdfToSvg.Drawing
         [Operation("Tz")]
         private void Tz_Scale(double scale)
         {
-            graphicsState.TextScaling = scale;
-            textBuilder.InvalidateStyle();
-            textBuilder.UpdateLineMatrix(graphicsState);
+            if (graphicsState.TextScaling != scale)
+            {
+                graphicsState.TextScaling = scale;
+                textBuilder.InvalidateStyle();
+                textBuilder.UpdateLineMatrix(graphicsState);
+            }
         }
 
         [Operation("TL")]
@@ -1200,23 +1212,32 @@ namespace PdfToSvg.Drawing
         [Operation("Tf")]
         private void Tf_Font(PdfName fontName, double fontSize)
         {
-            graphicsState.Font = resources.GetFont(fontName, options.FontResolver ?? DefaultFontResolver.Instance, cancellationToken) ?? InternalFont.Fallback;
-            graphicsState.FontSize = fontSize;
-
-            if (graphicsState.Font == null)
+            var newFont = resources.GetFont(fontName, options.FontResolver ?? DefaultFontResolver.Instance, cancellationToken) ?? InternalFont.Fallback;
+            if (newFont == null)
             {
                 Log.WriteLine($"Could not find a font replacement for {fontName}.");
-                graphicsState.Font = InternalFont.Fallback;
+                newFont = InternalFont.Fallback;
             }
 
-            textBuilder.InvalidateStyle();
+            var outputStyleChanged = 
+                graphicsState.FontSize != fontSize ||
+                !graphicsState.Font.SubstituteFont.Equals(newFont.SubstituteFont);
+
+            graphicsState.Font = newFont;
+            graphicsState.FontSize = fontSize;
+
+            if (outputStyleChanged)
+            {
+                textBuilder.InvalidateStyle();
+            }
+
             textBuilder.UpdateLineMatrix(graphicsState);
         }
 
         [Operation("Tr")]
         private void Tr_Renderer(int renderer)
         {
-            graphicsState.TextRenderingMode = renderer switch
+            var newRenderingMode = renderer switch
             {
                 0 => TextRenderingMode.Fill,
                 1 => TextRenderingMode.Stroke,
@@ -1228,14 +1249,22 @@ namespace PdfToSvg.Drawing
                 7 => TextRenderingMode.Clip,
                 _ => TextRenderingMode.Fill,
             };
-            textBuilder.InvalidateStyle();
+
+            if (graphicsState.TextRenderingMode != newRenderingMode)
+            {
+                graphicsState.TextRenderingMode = newRenderingMode;
+                textBuilder.InvalidateStyle();
+            }
         }
 
         [Operation("Ts")]
         private void Ts_Rise(double rise)
         {
-            graphicsState.TextRisePx = rise;
-            textBuilder.InvalidateStyle();
+            if (graphicsState.TextRisePx != rise)
+            {
+                graphicsState.TextRisePx = rise;
+                textBuilder.InvalidateStyle();
+            }
         }
 
         #endregion
@@ -1259,8 +1288,13 @@ namespace PdfToSvg.Drawing
         private void MoveLine_Show(double wordSpacing, double charSpacing, PdfString text)
         {
             graphicsState.TextWordSpacingPx = wordSpacing;
-            graphicsState.TextCharSpacingPx = charSpacing;
-            textBuilder.InvalidateStyle();
+
+            if (graphicsState.TextCharSpacingPx != charSpacing)
+            {
+                graphicsState.TextCharSpacingPx = charSpacing;
+                textBuilder.InvalidateStyle();
+            }
+
             MoveLine_Show(text);
         }
 

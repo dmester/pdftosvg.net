@@ -48,5 +48,33 @@ namespace PdfToSvg
         /// Gets the CSS font style to use.
         /// </summary>
         public FontStyle FontStyle { get; }
+
+        /// <summary>
+        /// Determines whether the specified font is equal to the current one.
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            return
+                obj is LocalFont font &&
+                font.FontFamily == FontFamily &&
+                font.FontWeight == FontWeight &&
+                font.FontStyle == FontStyle;
+        }
+
+        /// <summary>
+        /// Gets a hash code for this font.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return FontFamily.GetHashCode() ^ ((int)FontWeight * 6047) ^ ((int)FontStyle * 7723);
+        }
+
+        /// <summary>
+        /// Gets a string representation of this font.
+        /// </summary>
+        public override string ToString()
+        {
+            return FontFamily + " " + FontWeight + " " + FontStyle;
+        }
     }
 }

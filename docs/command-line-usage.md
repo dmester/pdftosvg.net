@@ -2,7 +2,7 @@
 
 There is a command line tool for PdfToSvg.NET that can be used for converting PDF files to SVG.
 
-[**Download latest Windows binaries**](https://github.com/dmester/pdftosvg.net/releases/latest)
+[**Download latest Windows binaries**](https://github.com/dmester/pdftosvg.net/releases/latest/download/pdftosvg.exe)
 
 .NET Framework 4.0 is required to run the tool.
 

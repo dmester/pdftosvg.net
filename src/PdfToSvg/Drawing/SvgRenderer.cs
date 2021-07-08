@@ -454,7 +454,7 @@ namespace PdfToSvg.Drawing
                 var image = ImageFactory.Create(imageObject, colorSpace);
                 if (image != null)
                 {
-                    var imageResolver = options.ImageResolver ?? new DataUriImageResolver();
+                    var imageResolver = options.ImageResolver;
                     var imageUrl = imageResolver.ResolveImageUrl(image, cancellationToken);
 
                     // Note that the interpolation parameter unfortunately must be part of the id, since the image-rendering
@@ -1212,7 +1212,7 @@ namespace PdfToSvg.Drawing
         [Operation("Tf")]
         private void Tf_Font(PdfName fontName, double fontSize)
         {
-            var newFont = resources.GetFont(fontName, options.FontResolver ?? DefaultFontResolver.Instance, cancellationToken) ?? InternalFont.Fallback;
+            var newFont = resources.GetFont(fontName, options.FontResolver, cancellationToken) ?? InternalFont.Fallback;
             if (newFont == null)
             {
                 Log.WriteLine($"Could not find a font replacement for {fontName}.");

@@ -26,7 +26,7 @@ namespace PdfToSvg.Drawing
 
         public PdfDictionary Dictionary { get; }
 
-        public InternalFont? GetFont(PdfName fontName, IFontResolver fontResolver, CancellationToken cancellationToken)
+        public InternalFont? GetFont(PdfName fontName, FontResolver fontResolver, CancellationToken cancellationToken)
         {
             if (!fonts.TryGetValue(fontName, out var font))
             {

@@ -2,9 +2,9 @@
 
 Fonts embedded in a PDF file are not extracted by PdfToSvg.NET. By default PdfToSvg.NET will try to detect commonly used fonts and replace them with an appropriate substitute font, but you can also specify a custom font resolver to specify which font to be used as substitute for the embedded fonts.
 
-A font resolver is implemented as a class implementing the `IFontResolver` interface.
+A font resolver is implemented as a class inheriting from the `FontResolver` base class.
 
-## Interface `IFontResolver`
+## Abstract class `FontResolver`
 
 ### `Font ResolveFont(string fontName, CancellationToken cancellationToken)`
 Method called by PdfToSvg.NET to resolve a substitute font by a font name specified in the PDF file.
@@ -14,11 +14,11 @@ Method called by PdfToSvg.NET to resolve a substitute font by a font name specif
 Here is a simple implementation overriding the custom behavior to support Open Sans.
 
 ```csharp
-class MyFontResolver : IFontResolver 
+class MyFontResolver : FontResolver 
 {
-    public Font ResolveFont(string fontName, CancellationToken cancellationToken)
+    public override Font ResolveFont(string fontName, CancellationToken cancellationToken)
     {
-        var font = DefaultFontResolver.Instance.ResolveFont(fontName, cancellationToken);
+        var font = FontResolver.Default.ResolveFont(fontName, cancellationToken);
 
         if (fontName.Contains("OpenSans", StringComparison.InvariantCultureIgnoreCase) &&
             font is LocalFont localFont)

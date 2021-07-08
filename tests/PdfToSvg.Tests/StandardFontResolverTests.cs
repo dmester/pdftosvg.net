@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Tests
 {
-    public class DefaultFontResolverTests
+    public class StandardFontResolverTests
     {
         // This list is compiled from some random real life pdfs.
         [TestCase("Arial", "Arial,sans-serif", FontWeight.Regular, FontStyle.Normal)]
@@ -109,7 +109,7 @@ namespace PdfToSvg.Tests
         [TestCase("YuGothic-Regular", "'Yu Gothic',sans-serif", FontWeight.Regular, FontStyle.Normal)]
         public void Resolve(string pdfFontName, string fontFamily, FontWeight fontWeight, FontStyle fontStyle)
         {
-            var font = (LocalFont)DefaultFontResolver.Instance.ResolveFont(pdfFontName, default);
+            var font = (LocalFont)new StandardFontResolver().ResolveFont(pdfFontName, default);
             var actualFontWeight = font.FontWeight == FontWeight.Default ? FontWeight.Regular : font.FontWeight;
 
             Assert.AreEqual(fontFamily, font.FontFamily);

@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 namespace PdfToSvg
 {
     /// <summary>
-    /// The default font resolver which will try to match font names against commonly available fonts.
+    /// A font resolver trying to match font names against commonly available fonts.
     /// </summary>
-    public class DefaultFontResolver : IFontResolver
+    public class StandardFontResolver : FontResolver
     {
         // Information about abbreviated font styles and weights:
         // https://cdn2.hubspot.net/hubfs/1740477/Definitive-Guide-To-Font-Abbreviations.pdf
@@ -140,13 +140,8 @@ namespace PdfToSvg
             "mono", "monospace",
         };
 
-        /// <summary>
-        /// Gets an instance of the <see cref="DefaultFontResolver"/>.
-        /// </summary>
-        public static DefaultFontResolver Instance { get; } = new DefaultFontResolver();
-
         /// <inheritdoc/>
-        public Font ResolveFont(string fontName, CancellationToken cancellationToken)
+        public override Font ResolveFont(string fontName, CancellationToken cancellationToken)
         {
             var fontFamily = Match(0, fontFamilies, fontName.Replace("-", "").Replace(" ", ""));
 

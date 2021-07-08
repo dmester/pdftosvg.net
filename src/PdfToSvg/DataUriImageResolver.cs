@@ -14,10 +14,10 @@ namespace PdfToSvg
     /// <summary>
     /// Creates data URIs for images.
     /// </summary>
-    public class DataUriImageResolver : IImageResolver
+    public class DataUriImageResolver : ImageResolver
     {
         /// <inheritdoc/>
-        public string ResolveImageUrl(Image image, CancellationToken cancellationToken)
+        public override string ResolveImageUrl(Image image, CancellationToken cancellationToken)
         {
             return image.ToDataUri(cancellationToken);
         }

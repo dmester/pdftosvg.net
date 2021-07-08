@@ -14,14 +14,19 @@ namespace PdfToSvg
     /// <summary>
     /// Resolves an image URL for an image encountered in a PDF document.
     /// </summary>
-    public interface IImageResolver
+    public abstract class ImageResolver
     {
+        /// <summary>
+        /// Gets the default image resolver used when no resolver is explicitly specified.
+        /// </summary>
+        public static ImageResolver Default { get; } = new DataUriImageResolver();
+
         /// <summary>
         /// Creates an URL for the specified image.
         /// </summary>
         /// <param name="image">Found image.</param>
         /// <param name="cancellationToken">Token for monitoring cancellation requests.</param>
         /// <returns>URL for the specified image.</returns>
-        string ResolveImageUrl(Image image, CancellationToken cancellationToken);
+        public abstract string ResolveImageUrl(Image image, CancellationToken cancellationToken);
     }
 }

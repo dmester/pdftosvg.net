@@ -172,9 +172,9 @@ namespace PdfToSvg.Tests
             return svg.ToString(SaveOptions.DisableFormatting);
         }
 
-        private class FontResolver : IFontResolver
+        private class TestFontResolver : FontResolver
         {
-            public Font ResolveFont(string fontName, CancellationToken cancellationToken)
+            public override Font ResolveFont(string fontName, CancellationToken cancellationToken)
             {
                 if (fontName == "Times-Bold")
                 {
@@ -224,7 +224,7 @@ namespace PdfToSvg.Tests
             {
                 actual = doc.Pages[0].ToSvgString(new SvgConversionOptions
                 {
-                    FontResolver = new FontResolver(),
+                    FontResolver = new TestFontResolver(),
                 });
             }
 

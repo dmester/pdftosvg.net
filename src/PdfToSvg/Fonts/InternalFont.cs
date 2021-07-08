@@ -31,13 +31,13 @@ namespace PdfToSvg.Fonts
                 { Names.Subtype, Names.Type1 },
                 { Names.BaseFont, StandardFonts.TimesRoman },
             },
-            DefaultFontResolver.Instance,
+            FontResolver.Default,
             CancellationToken.None);
 
         private readonly WidthMap widthMap;
         private readonly ITextDecoder textDecoder;
 
-        public InternalFont(PdfDictionary font, IFontResolver fontResolver, CancellationToken cancellationToken)
+        public InternalFont(PdfDictionary font, FontResolver fontResolver, CancellationToken cancellationToken)
         {
             if (font == null) throw new ArgumentNullException(nameof(font));
             if (fontResolver == null) throw new ArgumentNullException(nameof(fontResolver));

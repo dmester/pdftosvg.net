@@ -31,7 +31,7 @@ namespace PdfToSvg.Drawing
         private const double MinAlpha = 0.001;
 
         private const string LinkStyle = "a:active path{fill:#ffe4002e;}";
-        private const string BrokenImageSymbolId = "pdftosvg_brokenimg";
+        private static readonly string BrokenImageSymbolId = StableID.Generate("im", "brokenimg");
 
         private GraphicsState graphicsState = new GraphicsState();
 
@@ -50,7 +50,6 @@ namespace PdfToSvg.Drawing
 
         private XElement defs = new XElement(ns + "defs");
         private Dictionary<object, string?> imageIds = new Dictionary<object, string?>();
-        private bool hasBrokenImage = false;
 
         private HashSet<string> defIds = new HashSet<string>();
 
@@ -572,12 +571,11 @@ namespace PdfToSvg.Drawing
                 // Missing image
                 // Replace with broken image icon
 
-                if (!hasBrokenImage)
+                if (defIds.Add(BrokenImageSymbolId))
                 {
                     var brokenImageSymbol = BrokenImageSymbol.Create();
                     brokenImageSymbol.SetAttributeValue("id", BrokenImageSymbolId);
                     defs.AddAfterSelf(brokenImageSymbol);
-                    hasBrokenImage = true;
                 }
 
                 AppendClipped(new XElement(ns + "g",

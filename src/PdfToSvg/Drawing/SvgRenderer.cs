@@ -30,8 +30,11 @@ namespace PdfToSvg.Drawing
         private const double MaxAlpha = 0.999;
         private const double MinAlpha = 0.001;
 
-        private const string LinkStyle = "a:active path{fill:#ffe4002e;}";
         private static readonly string BrokenImageSymbolId = StableID.Generate("im", "brokenimg");
+        private static readonly string RootClassName = StableID.Generate("g", "PdfToSvg_Root");
+
+        private static readonly string LinkStyle = $"." + RootClassName + " a:active path{fill:#ffe4002e;}";
+        private static readonly string TextStyle = $"." + RootClassName + " text{white-space:pre;}";
 
         private GraphicsState graphicsState = new GraphicsState();
 
@@ -58,11 +61,13 @@ namespace PdfToSvg.Drawing
 
         private static readonly OperationDispatcher dispatcher = new OperationDispatcher(typeof(SvgRenderer));
 
-        private XElement style = new XElement(ns + "style", "text{white-space:pre;}");
+        private XElement style = new XElement(ns + "style");
+
         private HashSet<string> styleClassNames = new HashSet<string>();
         private HashSet<string> fontFaceNames = new HashSet<string>();
 
         private TextBuilder textBuilder;
+        private bool hasTextStyle;
 
         private readonly PdfDictionary pageDict;
         private readonly SvgConversionOptions options;
@@ -172,6 +177,11 @@ namespace PdfToSvg.Drawing
             if (!defs.HasElements)
             {
                 defs.Remove();
+            }
+
+            if (style.IsEmpty)
+            {
+                style.Remove();
             }
         }
 
@@ -1598,6 +1608,13 @@ namespace PdfToSvg.Drawing
         private void ET_EndText()
         {
             var styleToClassNameLookup = new Dictionary<object, string?>();
+
+            if (!hasTextStyle)
+            {
+                AddStyle(TextStyle);
+                rootGraphics.SetAttributeValue("class", RootClassName);
+                hasTextStyle = true;
+            }
 
             foreach (var paragraph in PrepareSvgSpans(textBuilder.paragraphs))
             {

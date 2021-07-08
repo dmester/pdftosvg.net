@@ -1,11 +1,12 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
-<style>text{white-space:pre;}
+<style>
+.gt4EC2H text{white-space:pre;}
 @font-face{font-family:fkVqfaN;font-weight:bold;src:url('http://pdftosvg.net/assets/sourcesanspro-bold-webfont.woff2') format('woff2'),url('http://pdftosvg.net/assets/sourcesanspro-bold-webfont.woff') format('woff'),url('http://pdftosvg.net/assets/sourcesanspro-bold-webfont.ttf') format('truetype');}
 .txg17bn{font-family:fkVqfaN,'Times New Roman',sans-serif;font-weight:bold;font-size:12px;}
 @font-face{font-family:fAE1y1M;src:url('http://pdftosvg.net/assets/sourcesanspro-regular-webfont.woff2') format('woff2'),url('http://pdftosvg.net/assets/sourcesanspro-regular-webfont.woff') format('woff'),url('http://pdftosvg.net/assets/sourcesanspro-regular-webfont.ttf') format('truetype');}
 .tx1Qn1o{font-family:fAE1y1M,'Times New Roman',sans-serif;font-size:12px;}
 </style>
-<g>
+<g class="gt4EC2H">
 <text x="70" y="68.92" class="txg17bn">WinAnsiEncoding</text>
 <g class="tx1Qn1o">
 <text x="70" y="95.92">ABC abc 123 ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ</text>

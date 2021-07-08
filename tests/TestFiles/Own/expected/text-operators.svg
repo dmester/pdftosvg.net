@@ -1,5 +1,6 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
-<style>text{white-space:pre;}
+<style>
+.gt4EC2H text{white-space:pre;}
 .tx96X5e{font-family:'Times New Roman',serif;font-size:20.4px;}
 .txIs9CX{font-family:'Times New Roman',serif;font-size:40.8px;}
 .txhuuNB{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:10px;}
@@ -28,7 +29,7 @@
 <text x="70" y="771.92" class="txcBATn" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
 </clipPath>
 </defs>
-<g stroke-miterlimit="10">
+<g class="gt4EC2H" stroke-miterlimit="10">
 <g class="tx96X5e">
 <text x="30" y="91.92"><tspan>Multiple spans, same line:</tspan><tspan dx="10.2">Abc</tspan><tspan dx="20.4">def</tspan><tspan dx="-10.2">ghi jkl</tspan></text>
 <text x="407.9508" y="91.92" textLength="54.4068px" lengthAdjust="spacingAndGlyphs">mno</text>

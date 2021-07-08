@@ -1,8 +1,9 @@
 ﻿<svg width="842" height="595" preserveAspectRatio="xMidYMid meet" viewBox="0 0 841.92 594.96" xmlns="http://www.w3.org/2000/svg">
-<style>text{white-space:pre;}
+<style>
+.gt4EC2H text{white-space:pre;}
 .tx1n16W{font-family:'Times New Roman',serif;font-size:24px;}
 </style>
-<g transform="matrix(0 -1 1 0 0 594.96)" stroke-miterlimit="10">
+<g transform="matrix(0 -1 1 0 0 594.96)" class="gt4EC2H" stroke-miterlimit="10">
 <g class="tx1n16W">
 <text x="70" y="76.92">This page is rotated</text>
 <text x="70" y="111.92">270 degrees</text>

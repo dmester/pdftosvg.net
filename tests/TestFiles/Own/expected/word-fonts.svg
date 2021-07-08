@@ -1,5 +1,6 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 595.32 841.92" xmlns="http://www.w3.org/2000/svg">
-<style>text{white-space:pre;}
+<style>
+.gt4EC2H text{white-space:pre;}
 .tx1UF4m{font-family:Arial,sans-serif;font-size:21.96px;letter-spacing:0.0224px;}
 .txOhbb1{font-family:Arial,sans-serif;font-weight:bold;font-size:21.96px;letter-spacing:0.0224px;}
 .txKzlat{font-family:Arial,sans-serif;font-size:21.96px;}
@@ -77,7 +78,7 @@
 <rect x="0" y="0" width="595.32" height="841.92" />
 </clipPath>
 </defs>
-<g stroke-miterlimit="10">
+<g class="gt4EC2H" stroke-miterlimit="10">
 <text x="35.4" y="91.46" class="tx1UF4m">The </text>
 <text x="79.464" y="91.46" class="txOhbb1">quick brown</text>
 <text x="208.97" y="91.46" class="txKzlat"> </text>

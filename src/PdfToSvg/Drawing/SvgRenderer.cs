@@ -343,28 +343,44 @@ namespace PdfToSvg.Drawing
         [Operation("gs/LW")]
         private void w_LineWidth(double lineWidth)
         {
-            graphicsState.StrokeWidth = lineWidth;
+            if (graphicsState.StrokeWidth != lineWidth)
+            {
+                graphicsState.StrokeWidth = lineWidth;
+                textBuilder.InvalidateStyle();
+            }
         }
 
         [Operation("J")]
         [Operation("gs/LC")]
         private void J_LineCap(int lineCap)
         {
-            graphicsState.StrokeLineCap = lineCap;
+            if (graphicsState.StrokeLineCap != lineCap)
+            {
+                graphicsState.StrokeLineCap = lineCap;
+                textBuilder.InvalidateStyle();
+            }
         }
 
         [Operation("j")]
         [Operation("gs/LJ")]
         private void j_LineJoin(int lineJoin)
         {
-            graphicsState.StrokeLineJoin = lineJoin;
+            if (graphicsState.StrokeLineJoin != lineJoin)
+            {
+                graphicsState.StrokeLineJoin = lineJoin;
+                textBuilder.InvalidateStyle();
+            }
         }
 
         [Operation("M")]
         [Operation("gs/ML")]
         private void M_MiterLimit(double miterLimit)
         {
-            graphicsState.StrokeMiterLimit = miterLimit;
+            if (graphicsState.StrokeMiterLimit != miterLimit)
+            {
+                graphicsState.StrokeMiterLimit = miterLimit;
+                textBuilder.InvalidateStyle();
+            }
         }
 
         [Operation("d")]
@@ -372,6 +388,7 @@ namespace PdfToSvg.Drawing
         {
             graphicsState.StrokeDashArray = dashArray;
             graphicsState.StrokeDashPhase = dashPhase;
+            textBuilder.InvalidateStyle();
         }
 
         [Operation("gs/D")]
@@ -383,13 +400,21 @@ namespace PdfToSvg.Drawing
         [Operation("gs/CA")]
         private void gs_CA_StrokeAlpha(double alpha)
         {
-            graphicsState.StrokeAlpha = alpha;
+            if (graphicsState.StrokeAlpha != alpha)
+            {
+                graphicsState.StrokeAlpha = alpha;
+                textBuilder.InvalidateStyle();
+            }
         }
 
         [Operation("gs/ca")]
         private void gs_ca_FillAlpha(double alpha)
         {
-            graphicsState.FillAlpha = alpha;
+            if (graphicsState.FillAlpha != alpha)
+            {
+                graphicsState.FillAlpha = alpha;
+                textBuilder.InvalidateStyle();
+            }
         }
 
         [Operation("gs")]

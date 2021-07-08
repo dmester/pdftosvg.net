@@ -59,7 +59,7 @@ namespace PdfToSvg.Drawing
         private static readonly OperationDispatcher dispatcher = new OperationDispatcher(typeof(SvgRenderer));
 
         private XElement style = new XElement(ns + "style", "text{white-space:pre;}");
-        private HashSet<string> styleClassIds = new HashSet<string>();
+        private HashSet<string> styleClassNames = new HashSet<string>();
         private HashSet<string> fontFaceNames = new HashSet<string>();
 
         private TextBuilder textBuilder;
@@ -186,7 +186,7 @@ namespace PdfToSvg.Drawing
 
             className = StableID.Generate(prefix, styleString);
 
-            if (styleClassIds.Add(className))
+            if (styleClassNames.Add(className))
             {
                 style.Add("\n." + className + "{" + styleString + "}");
             }

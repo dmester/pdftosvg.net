@@ -19,7 +19,7 @@ namespace PdfToSvg
         private FontResolver fontResolver = FontResolver.Default;
 
         /// <summary>
-        /// Gets or sets a class that is used to resolve ULRs for images.
+        /// Gets or sets a class that is used to resolve URLs for images.
         /// </summary>
         /// <remarks>
         /// The default implementation <see cref="DataUriImageResolver"/> embeds all images as data URIs.

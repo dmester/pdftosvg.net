@@ -25,8 +25,12 @@ namespace PdfToSvg.Drawing
 
         public ColorSpace FillColorSpace = new DeviceRgbColorSpace();
         public ColorSpace StrokeColorSpace = new DeviceRgbColorSpace();
+
         public RgbColor FillColor = RgbColor.Black;
+        public double FillAlpha = 1d;
+
         public RgbColor StrokeColor = RgbColor.Black;
+        public double StrokeAlpha = 1d;
 
         public double StrokeWidth = 1d;
         public int StrokeLineJoin;

@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Parsing;
 using System;
 using System.Collections.Generic;
 using System.IO;

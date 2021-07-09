@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using NUnit.Framework;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;

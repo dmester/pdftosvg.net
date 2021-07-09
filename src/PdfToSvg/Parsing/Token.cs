@@ -2,7 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
-namespace PdfToSvg
+namespace PdfToSvg.Parsing
 {
     internal enum Token
     {

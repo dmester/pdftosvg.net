@@ -6,7 +6,7 @@ using PdfToSvg.DocumentModel;
 using System;
 using System.Globalization;
 
-namespace PdfToSvg
+namespace PdfToSvg.Parsing
 {
     internal struct Lexeme : IEquatable<Lexeme>
     {

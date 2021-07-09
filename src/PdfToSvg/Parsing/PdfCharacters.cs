@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PdfToSvg
+namespace PdfToSvg.Parsing
 {
     internal static class PdfCharacters
     {

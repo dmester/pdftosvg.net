@@ -1,15 +1,16 @@
 %PDF-1.7
 
 xref
-0 5
+0 6
 0000000000 65535 f
-0000000167 00000 n
-0000000218 00000 n
-0000000282 00000 n
-0000000563 00000 n
+0000000182 00000 n
+0000000233 00000 n
+0000000297 00000 n
+0000000651 00000 n
+0000000773 00000 n
 trailer
-<< /Root 1 0 R  /Size 5 >>
-     
+<< /Root 1 0 R  /Size 6 >>
+
 1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
 2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >> endobj
 
@@ -20,14 +21,27 @@ trailer
    /Resources <<
       /Font <<
          /F1 << /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /WinAnsiEncoding >>
-      >> >>
+      >>
+      /ExtGState <<
+         /GS1 << /Font [4 0 R 15] >>
+      >>
+   >>
    /MediaBox [ 0 0 594.96 841.92 ]
-   /Contents [ 4 0 R ]
+   /Contents [ 5 0 R ]
    /Rotate 0
 >>
 endobj
 
-4 0 obj << /Length 2627 >>
+4 0 obj
+<<
+   /Type /Font
+   /Subtype /Type1
+   /BaseFont /Courier-Bold
+   /Encoding /WinAnsiEncoding
+>>
+endobj
+
+5 0 obj << /Length 2963 >>
 stream
 
    0 0 0 rg
@@ -93,16 +107,25 @@ stream
          (subscripted) Tj
       Q
       
-      (This is a line of text using the ' operator) '
+      % Note about the ExtGState test case:
+      % It renders as intended in Pdf.js and Adobe Reader, but not in Pdfium.
+      % The latter seems to handle the first Font argument in ExtGState as a
+      % name instead of an indirect reference, as specified in
+      % PDF spec 1.7, p.137.
       
-      5 5 (and with extra spacing using the " operator) "
+      /GS1 gs
+      (' operator with Courier specified in ExtGState) '
+      /F1 12 Tf
+      
+      5 5 (" operator with extra space) "
       0 Tw
       0 Tc
+      40 TL
       
       T*
       1 Tr
       /F1 30 Tf
-      40 TL
+      35 TL
       (Outlined text) Tj
       
       T*

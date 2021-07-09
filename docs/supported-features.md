@@ -75,7 +75,7 @@ Impl | Key | Description
 ❌ | OP | Overprinting
 ❌ | op | Overprinting
 ❌ | OPM | Overprint mode
-❌ | Font | [font size]
+❎ | Font | [font size]
 ❌ | BG | Black generation func (RGB->CMYK)
 ❌ | BG2 | Black generation func (RGB->CMYK)
 ❌ | UCR | Undercolor-removal func (RGB->CMYK)

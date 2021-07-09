@@ -1294,6 +1294,30 @@ namespace PdfToSvg.Drawing
                 newFont = InternalFont.Fallback;
             }
 
+            SetFont(newFont, fontSize);
+        }
+
+        [Operation("gs/Font")]
+        private void gs_Font(object[] args)
+        {
+            var font = graphicsState.Font;
+            var fontSize = graphicsState.FontSize;
+
+            if (args.Length > 0 && args[0] is PdfDictionary fontDict)
+            {
+                font = new InternalFont(fontDict, options.FontResolver, cancellationToken);
+            }
+
+            if (args.Length > 1 && MathUtils.ToDouble(args[1], out var dblFontSize))
+            {
+                fontSize = dblFontSize;
+            }
+
+            SetFont(font, fontSize);
+        }
+
+        private void SetFont(InternalFont newFont, double fontSize)
+        {
             var outputStyleChanged =
                 graphicsState.FontSize != fontSize ||
                 !graphicsState.Font.SubstituteFont.Equals(newFont.SubstituteFont);

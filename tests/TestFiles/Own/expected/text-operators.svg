@@ -5,6 +5,7 @@
 .txIs9CX{font-family:'Times New Roman',serif;font-size:40.8px;}
 .txhuuNB{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:10px;}
 .txs8vHo{font-family:'Times New Roman',serif;font-size:12px;}
+.txDzGGM{font-family:'Courier New',Courier,monospace;font-weight:bold;font-size:15px;}
 .txR0aSQ{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:5px;}
 .txGjN5v{font-family:'Times New Roman',serif;font-size:30px;fill:none;stroke:#f00;}
 .txdQJ4x{font-family:'Times New Roman',serif;font-size:30px;stroke:#f00;}
@@ -42,16 +43,16 @@
 <g class="txs8vHo">
 <text x="70" y="177.92"><tspan dx="10"> </tspan><tspan dx="10"> with</tspan><tspan dx="10"> </tspan><tspan dx="10"> extra</tspan><tspan dx="10"> word</tspan><tspan dx="10"> space</tspan></text>
 <text x="70" y="203.92"><tspan>This</tspan><tspan dx="10"> is</tspan><tspan dx="10"> </tspan><tspan dy="-5">superscripted</tspan><tspan dx="10" dy="5"> and</tspan><tspan dx="10"> </tspan><tspan dy="5">subscripted</tspan></text>
-<text x="70" y="229.92">This is a line of text using the ' operator</text>
 </g>
-<text x="70" y="255.92" class="txR0aSQ"><tspan>and</tspan><tspan dx="5"> with</tspan><tspan dx="5"> extra</tspan><tspan dx="5"> spacing</tspan><tspan dx="5"> using</tspan><tspan dx="5"> the</tspan><tspan dx="5"> "</tspan><tspan dx="5"> operator</tspan></text>
-<text x="70" y="281.92" class="txGjN5v">Outlined text</text>
-<text x="70" y="321.92" class="txdQJ4x">Outlined and filled text</text>
-<text x="70" y="401.92" class="txcw26F">filled again</text>
+<text x="70" y="229.92" class="txDzGGM">' operator with Courier specified in ExtGState</text>
+<text x="70" y="255.92" class="txR0aSQ"><tspan>"</tspan><tspan dx="5"> operator</tspan><tspan dx="5"> with</tspan><tspan dx="5"> extra</tspan><tspan dx="5"> space</tspan></text>
+<text x="70" y="295.92" class="txGjN5v">Outlined text</text>
+<text x="70" y="330.92" class="txdQJ4x">Outlined and filled text</text>
+<text x="70" y="400.92" class="txcw26F">filled again</text>
 <text x="211" y="401.92" class="tx82Lag">smaller</text>
 <g class="txcw26F">
-<text x="70" y="441.92" textLength="131.64px" lengthAdjust="spacingAndGlyphs">wide </text>
-<text x="70" y="481.92" textLength="67.89px" lengthAdjust="spacingAndGlyphs">and narrow</text>
+<text x="70" y="436.92" textLength="131.64px" lengthAdjust="spacingAndGlyphs">wide </text>
+<text x="70" y="471.92" textLength="67.89px" lengthAdjust="spacingAndGlyphs">and narrow</text>
 </g>
 <path d="M70 91.92h330" fill="none" stroke="#f00" stroke-width="1" />
 <text x="70" y="561.92" class="txcBATn" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>

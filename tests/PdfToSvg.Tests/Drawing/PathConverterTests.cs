@@ -123,6 +123,11 @@ namespace PdfToSvg.Tests.Drawing
 
                 Assert.IsFalse(PathConverter.TryConvertToRectangle(path, out var rect));
             }
+
+            {
+                var path = new PathData();
+                Assert.IsFalse(PathConverter.TryConvertToRectangle(path, out var rect));
+            }
         }
 
     }

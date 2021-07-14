@@ -735,6 +735,12 @@ namespace PdfToSvg.Drawing
             var path = currentPath.Transform(graphicsState.Transform);
             var parent = graphicsState.ClipPath;
 
+            if (path.Count == 0)
+            {
+                Log.WriteLine("Encountered a zero length clipping path. The path is ignored.");
+                return;
+            }
+
             if (PathConverter.TryConvertToRectangle(path, out var rect))
             {
                 // Merge with parent if possible

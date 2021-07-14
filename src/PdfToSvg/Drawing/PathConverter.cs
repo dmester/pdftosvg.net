@@ -17,7 +17,7 @@ namespace PdfToSvg.Drawing
         {
             result = default(Rectangle);
 
-            if (data.Count >= 4 || data.Count <= 6)
+            if (data.Count >= 4 && data.Count <= 6)
             {
                 if (data[0] is MoveToCommand move)
                 {

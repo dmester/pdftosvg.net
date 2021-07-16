@@ -130,7 +130,25 @@ namespace PdfToSvg.Fonts
                 }
                 else
                 {
-                    sb.Append(character.DestinationString);
+                    for (var outIndex = 0; outIndex < character.DestinationString.Length; outIndex++)
+                    {
+                        var ch = character.DestinationString[outIndex];
+                        if (ch > '\ufffe' ||
+                            ch < '\u0020' &&
+                            ch != '\u0009' &&
+                            ch != '\u000A' &&
+                            ch != '\u000D')
+                        {
+                            // Invalid XML char according to 
+                            // https://www.w3.org/TR/REC-xml/#charsets
+                            sb.Append('\ufffd');
+                        }
+                        else
+                        {
+                            sb.Append(ch);
+                        }
+                    }
+
                     i += character.SourceLength;
                     width += widthMap.GetWidth(character);
                 }

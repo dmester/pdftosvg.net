@@ -1,0 +1,195 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 595.32 841.92" xmlns="http://www.w3.org/2000/svg">
+<style>
+.gt4EC2H text{white-space:pre;}
+.txrvMId{font-family:Arial,sans-serif;font-size:21.9608px;}
+.txk7H19{font-family:Arial,sans-serif;font-weight:bold;font-size:21.9608px;}
+.txX2R80{font-family:Arial,sans-serif;font-style:italic;font-size:21.9608px;}
+.tx15BRh{font-family:'Arial Black',Arial,sans-serif;font-size:21.9608px;}
+.tx2Ppnn{font-family:'Courier New',Courier,monospace;font-size:21.9608px;}
+.txkSKC6{font-family:'Courier New',Courier,monospace;font-weight:bold;font-size:21.9608px;}
+.txaHIxR{font-family:'Courier New',Courier,monospace;font-style:italic;font-size:21.9608px;}
+.txTdy5S{font-family:'Times New Roman',serif;font-size:21.9608px;}
+.txm5jCu{font-family:'Times New Roman',serif;font-weight:bold;font-size:21.9608px;}
+.txq4bko{font-family:'Times New Roman',serif;font-style:italic;font-size:21.9608px;}
+.txglQfJ{font-family:Bahnschrift,sans-serif;font-size:21.9608px;}
+.tx9JkPD{font-family:Gadugi,sans-serif;font-size:21.9608px;}
+.txah6AB{font-family:Gadugi,sans-serif;font-weight:bold;font-size:21.9608px;}
+.txeslyl{font-family:'Ink Free',cursive;font-size:21.9608px;}
+.tx5bH9q{font-family:'Ink Free',cursive;font-size:21.9608px;stroke:#000;stroke-width:0.293;}
+.txSakae{font-family:'Franklin Gothic',sans-serif;font-size:21.9608px;}
+.txXgYPo{font-family:'Franklin Gothic',sans-serif;font-size:21.9608px;stroke:#000;stroke-width:0.293;}
+.txvsaUW{font-family:'Franklin Gothic',sans-serif;font-style:italic;font-size:21.9608px;}
+.tx719Wo{font-family:Gabriola,cursive;font-size:27.961px;}
+.txv4gev{font-family:Gabriola,cursive;font-size:27.961px;stroke:#000;stroke-width:0.373;}
+.txm9MJw{font-family:Ebrima,sans-serif;font-size:21.9608px;}
+.tx4lvak{font-family:Ebrima,sans-serif;font-weight:bold;font-size:21.9608px;}
+.txCO395{font-family:'Lucida Console',monospace;font-size:21.9608px;}
+.txXlP4A{font-family:'Lucida Console',monospace;font-size:21.9608px;stroke:#000;stroke-width:0.293;}
+.txaBoA9{font-family:'Lucida Sans Unicode','Lucida Sans',sans-serif;font-size:21.9608px;}
+.txx0k3N{font-family:'Lucida Sans Unicode','Lucida Sans',sans-serif;font-size:21.9608px;stroke:#000;stroke-width:0.293;}
+.txOeijs{font-family:Marlett;font-size:15.9606px;}
+.txGUUQ5{font-family:'Microsoft Himalaya',sans-serif;font-size:36.0014px;}
+.txlGqww{font-family:'Microsoft Himalaya',sans-serif;font-size:36.0014px;stroke:#000;stroke-width:0.48;}
+.txSJz9o{font-family:'MS Gothic',sans-serif;font-size:21.9608px;}
+.txeLtih{font-family:'MS Gothic',sans-serif;font-size:21.9608px;stroke:#000;stroke-width:0.293;}
+.txBdsMV{font-family:'MV Boli',cursive;font-size:21.9608px;}
+.tx1OxBj{font-family:'MV Boli',cursive;font-size:21.9608px;stroke:#000;stroke-width:0.293;}
+.tx6bEP7{font-family:'Myanmar Text','Myanmar Unicode',sans-serif;font-size:21.9608px;}
+.txj97C4{font-family:'Myanmar Text','Myanmar Unicode',sans-serif;font-weight:bold;font-size:21.9608px;}
+.txIn2sP{font-family:'Palatino Linotype',Palatino,serif;font-size:21.9608px;}
+.txe9q75{font-family:'Palatino Linotype',Palatino,serif;font-weight:bold;font-size:21.9608px;}
+.txxdzoZ{font-family:'Palatino Linotype',Palatino,serif;font-style:italic;font-size:21.9608px;}
+.txZIWCo{font-family:'Segoe Print',cursive;font-size:21.9608px;}
+.txYyhKX{font-family:'Segoe Print',cursive;font-weight:bold;font-size:21.9608px;}
+.txEU44w{font-family:'Segoe Script',cursive;font-size:21.9608px;}
+.txD0hF3{font-family:'Segoe Script',cursive;font-weight:bold;font-size:21.9608px;}
+.tx7eTgb{font-family:SimSun,serif;font-size:21.9608px;}
+.txtVWOV{font-family:SimSun,serif;font-size:21.9608px;stroke:#000;stroke-width:0.293;}
+.txEGFRY{font-family:Sitka,serif;font-size:21.9608px;}
+.txRuWwm{font-family:Sitka,serif;font-weight:bold;font-size:21.9608px;}
+.txpXZF4{font-family:Sitka,serif;font-style:italic;font-size:21.9608px;}
+.txqr2ZK{font-family:Sylfaen,serif;font-size:21.9608px;}
+.txOCTvm{font-family:Sylfaen,serif;font-size:21.9608px;stroke:#000;stroke-width:0.293;}
+.tx5QE3Z{font-family:Tahoma,sans-serif;font-size:21.9608px;}
+.tx2Oz5n{font-family:Tahoma,sans-serif;font-weight:bold;font-size:21.9608px;}
+.txpOg8X{font-family:'Trebuchet MS',sans-serif;font-size:21.9608px;}
+.tx878am{font-family:'Trebuchet MS',sans-serif;font-weight:bold;font-size:21.9608px;}
+.txEqvOq{font-family:'Trebuchet MS',sans-serif;font-style:italic;font-size:21.9608px;}
+.tx1yRaq{font-family:Verdana,sans-serif;font-size:21.9608px;}
+.txGH65Z{font-family:Verdana,sans-serif;font-weight:bold;font-size:21.9608px;}
+.txJWCma{font-family:Verdana,sans-serif;font-style:italic;font-size:21.9608px;}
+.txkLR7u{font-family:Webdings;font-size:15.9606px;}
+.txek4I7{font-family:Wingdings;font-size:15.9606px;}
+.tx1ZpkU{font-family:Calibri,sans-serif;font-size:21.9608px;}
+</style>
+<g class="gt4EC2H" stroke-miterlimit="10">
+<text x="35.4" y="91.44" class="txrvMId">The </text>
+<text x="79.44" y="91.44" class="txk7H19">quick brown</text>
+<text x="208.92" y="91.44" class="txrvMId"> </text>
+<text x="215.04" y="91.44" class="txX2R80">fox</text>
+<text x="244.44" y="91.44" class="txrvMId"> </text>
+<text x="35.4" y="130.44" class="tx15BRh">The quick brown </text>
+<text transform="matrix(1 0 -0.342 1 243.12 130.44)" class="tx15BRh">fox</text>
+<text x="281.04" y="130.44" class="tx15BRh"> </text>
+<text x="35.4" y="165.96" class="tx2Ppnn">The </text>
+<text x="88.2" y="165.96" class="txkSKC6">quick brown</text>
+<text x="233.4" y="165.96" class="tx2Ppnn"> </text>
+<text x="246.6" y="165.96" class="txaHIxR">fox</text>
+<text x="286.2" y="165.96" class="tx2Ppnn"> </text>
+<text x="35.4" y="203.04" class="txTdy5S">The </text>
+<text x="75.12" y="203.04" class="txm5jCu">quick brown</text>
+<text x="194.28" y="203.04" class="txTdy5S"> </text>
+<text x="199.8" y="203.04" class="txq4bko">fox</text>
+<text x="226.68" y="203.04" class="txTdy5S"> </text>
+<g class="txglQfJ">
+<text x="35.4" y="239.64">The </text>
+<text x="75.84" y="239.64">quick brown</text>
+<text x="196.8" y="239.64"> </text>
+</g>
+<text transform="matrix(1 0 -0.342 1 202.68 239.64)" class="txglQfJ">fox</text>
+<text x="233.04" y="239.64" class="txglQfJ"> </text>
+<text x="35.4" y="278.04" class="tx9JkPD">The </text>
+<text x="76.92" y="278.04" class="txah6AB">quick brown</text>
+<text x="205.68" y="278.04" class="tx9JkPD"> </text>
+<text transform="matrix(1 0 -0.342 1 211.68 278.04)" class="tx9JkPD">fox</text>
+<text x="241.56" y="278.04" class="tx9JkPD"> </text>
+<text x="35.4" y="313.92" class="txeslyl">The </text>
+<text x="79.68" y="313.92" class="tx5bH9q">quick brown</text>
+<text x="186.96" y="313.92" class="txeslyl"> </text>
+<text transform="matrix(1 0 -0.342 1 193.32 313.92)" class="txeslyl">fox </text>
+<text x="35.4" y="351.48" class="txSakae">The </text>
+<text x="75" y="351.48" class="txXgYPo">quick brown</text>
+<text x="189.84" y="351.48" class="txSakae"> </text>
+<text x="195.36" y="351.48" class="txvsaUW">fox</text>
+<text x="223.8" y="351.48" class="txSakae"> </text>
+<text x="35.4" y="405" class="tx719Wo">The </text>
+<text x="72" y="405" class="txv4gev">quick brown</text>
+<text x="179.64" y="405" class="tx719Wo"> </text>
+<text transform="matrix(1 0 -0.342 1 184.56 405)" class="tx719Wo">fox</text>
+<text x="211.68" y="405" class="tx719Wo"> </text>
+<text x="35.4" y="449.88" class="txm9MJw">The </text>
+<text x="76.92" y="449.88" class="tx4lvak">quick brown</text>
+<text x="205.68" y="449.88" class="txm9MJw"> </text>
+<text transform="matrix(1 0 -0.342 1 211.68 449.88)" class="txm9MJw">fox</text>
+<text x="241.56" y="449.88" class="txm9MJw"> </text>
+<text x="35.4" y="483.24" class="txCO395">The </text>
+<text x="88.32" y="483.24" class="txXlP4A">quick brown</text>
+<text x="234.48" y="483.24" class="txCO395"> </text>
+<text transform="matrix(1 0 -0.342 1 247.68 483.24)" class="txCO395">fox</text>
+<text x="287.4" y="483.24" class="txCO395"> </text>
+<text x="35.4" y="521.64" class="txaBoA9">The </text>
+<text x="82.2" y="521.64" class="txx0k3N">quick brown</text>
+<text x="214.44" y="521.64" class="txaBoA9"> </text>
+<text transform="matrix(1 0 -0.342 1 221.4 521.64)" class="txaBoA9">fox</text>
+<text x="256.32" y="521.64" class="txaBoA9"> </text>
+<text x="35.4" y="558.12" class="txOeijs"></text>
+<text x="35.4" y="588.72" class="txGUUQ5">The </text>
+<text x="78.84" y="588.72" class="txlGqww">quick brown</text>
+<text x="200.52" y="588.72" class="txGUUQ5"> </text>
+<text transform="matrix(1 0 -0.342 1 206.52 588.72)" class="txGUUQ5">fox</text>
+<text x="238.56" y="588.72" class="txGUUQ5"> </text>
+<text x="35.4" y="636.36" class="txSJz9o">The </text>
+<text x="79.44" y="636.36" class="txeLtih">quick brown</text>
+<text x="201.36" y="636.36" class="txSJz9o"> </text>
+<text transform="matrix(1 0 -0.342 1 212.4 636.36)" class="txSJz9o">fox</text>
+<text x="245.28" y="636.36" class="txSJz9o"> </text>
+<text x="35.4" y="678" class="txBdsMV">The </text>
+<text x="83.04" y="678" class="tx1OxBj">quick brown</text>
+<text x="204.6" y="678" class="txBdsMV"> </text>
+<text transform="matrix(1 0 -0.342 1 215.28 678)" class="txBdsMV">fox</text>
+<text x="246.24" y="678" class="txBdsMV"> </text>
+<text x="35.4" y="723" class="tx6bEP7">The </text>
+<text x="76.92" y="723" class="txj97C4">quick brown</text>
+<text x="205.68" y="723" class="tx6bEP7"> </text>
+<text transform="matrix(1 0 -0.342 1 211.68 723)" class="tx6bEP7">fox</text>
+<text x="241.56" y="723" class="tx6bEP7"> </text>
+<text x="311.88" y="93.96" class="txIn2sP">The </text>
+<text x="354.24" y="93.96" class="txe9q75">quick brown</text>
+<text x="483" y="93.96" class="txIn2sP"> </text>
+<text x="488.52" y="93.96" class="txxdzoZ">fox</text>
+<text x="515.52" y="93.96" class="txIn2sP"> </text>
+<text x="311.88" y="138.84" class="txZIWCo">The </text>
+<text x="360.6" y="138.84" class="txYyhKX">quick brown</text>
+<text x="495.84" y="138.84" class="txZIWCo"> </text>
+<text transform="matrix(1 0 -0.342 1 504.72 138.84)" class="txZIWCo">fox</text>
+<text x="537.24" y="138.84" class="txZIWCo"> </text>
+<text x="311.88" y="185.28" class="txEU44w">The </text>
+<text x="365.16" y="185.28" class="txD0hF3">quick brown</text>
+<text x="517.44" y="185.28" class="txEU44w"> </text>
+<text transform="matrix(1 0 -0.342 1 526.2 185.28)" class="txEU44w">fox</text>
+<text x="562.68" y="185.28" class="txEU44w"> </text>
+<text x="311.88" y="229.08" class="tx7eTgb">The </text>
+<text x="355.92" y="229.08" class="txtVWOV">quick brown</text>
+<text x="477.84" y="229.08" class="tx7eTgb"> </text>
+<text transform="matrix(1 0 -0.342 1 488.88 229.08)" class="tx7eTgb">fox</text>
+<text x="521.76" y="229.08" class="tx7eTgb"> </text>
+<text x="311.88" y="267.96" class="txEGFRY">The </text>
+<text x="348.96" y="267.96" class="txRuWwm">quick brown</text>
+<text x="460.92" y="267.96" class="txEGFRY"> </text>
+<text x="465.96" y="267.96" class="txpXZF4">fox</text>
+<text x="491.52" y="267.96" class="txEGFRY"> </text>
+<text x="311.88" y="305.64" class="txqr2ZK">The </text>
+<text x="353.16" y="305.64" class="txOCTvm">quick brown</text>
+<text x="470.52" y="305.64" class="txqr2ZK"> </text>
+<text transform="matrix(1 0 -0.342 1 476.04 305.64)" class="txqr2ZK">fox</text>
+<text x="504.84" y="305.64" class="txqr2ZK"> </text>
+<text x="311.88" y="344.64" class="tx5QE3Z">The </text>
+<text x="355.44" y="344.64" class="tx2Oz5n">quick brown</text>
+<text x="491.88" y="344.64" class="tx5QE3Z"> </text>
+<text transform="matrix(1 0 -0.342 1 498.84 344.64)" class="tx5QE3Z">fox</text>
+<text x="528.72" y="344.64" class="tx5QE3Z"> </text>
+<text x="311.88" y="379.92" class="txpOg8X">The </text>
+<text x="355.2" y="379.92" class="tx878am">quick brown</text>
+<text x="482.4" y="379.92" class="txpOg8X"> </text>
+<text x="489.12" y="379.92" class="txEqvOq">fox</text>
+<text x="520.8" y="379.92" class="txpOg8X"> </text>
+<text x="311.88" y="417.12" class="tx1yRaq">The </text>
+<text x="360.12" y="417.12" class="txGH65Z">quick brown</text>
+<text x="512.64" y="417.12" class="tx1yRaq"> </text>
+<text x="520.32" y="417.12" class="txJWCma">fox</text>
+<text x="554.52" y="417.12" class="tx1yRaq"> </text>
+<text x="311.88" y="444.6" class="txkLR7u"></text>
+<text x="311.88" y="471.36" class="txek4I7"></text>
+<text x="311.88" y="505.2" class="tx1ZpkU"> </text>
+</g>
+</svg>

@@ -62,6 +62,11 @@ namespace PdfToSvg.Fonts
             if (font.TryGetName(Names.BaseFont, out var name))
             {
                 Name = name.Value;
+
+                if ((string.IsNullOrEmpty(Name) || Name.StartsWith("CIDFont+")) && trueTypeFont != null)
+                {
+                    Name = trueTypeFont.FontFamily + "-" + trueTypeFont.FontSubfamily;
+                }
             }
 
             if (Name == null)

@@ -31,6 +31,11 @@ namespace PdfToSvg.Encodings
                 {
                     return new MacRomanEncoding();
                 }
+
+                if (encodingName == Names.IdentityH || encodingName == Names.IdentityV)
+                {
+                    return new Utf16Encoding();
+                }
             }
             else if (definition is PdfDictionary encodingDict)
             {

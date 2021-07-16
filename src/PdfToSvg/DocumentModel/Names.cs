@@ -15,6 +15,8 @@ namespace PdfToSvg.DocumentModel
         public static PdfName WinAnsiEncoding { get; } = new PdfName("WinAnsiEncoding");
         public static PdfName MacRomanEncoding { get; } = new PdfName("MacRomanEncoding");
         public static PdfName MacExpertEncoding { get; } = new PdfName("MacExpertEncoding");
+        public static PdfName IdentityH { get; } = new PdfName("Identity-H");
+        public static PdfName IdentityV { get; } = new PdfName("Identity-V");
 
         public static PdfName Info { get; } = new PdfName("Info");
         public static PdfName Root { get; } = new PdfName("Root");
@@ -66,6 +68,9 @@ namespace PdfToSvg.DocumentModel
         public static PdfName ToUnicode { get; } = new PdfName("ToUnicode");
         public static PdfName DescendantFonts { get; } = new PdfName("DescendantFonts");
         public static PdfName FontDescriptor { get; } = new PdfName("FontDescriptor");
+        public static PdfName CIDToGIDMap { get; } = new PdfName("CIDToGIDMap");
+        public static PdfName FontFile2 { get; } = new PdfName("FontFile2");
+        public static PdfName FontFile3 { get; } = new PdfName("FontFile3");
         public static PdfName W { get; } = new PdfName("W");
         public static PdfName MissingWidth { get; } = new PdfName("MissingWidth");
         public static PdfName Widths { get; } = new PdfName("Widths");

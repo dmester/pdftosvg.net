@@ -2,10 +2,12 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Drawing;
 using PdfToSvg.Encodings;
 using PdfToSvg.Fonts;
+using PdfToSvg.Fonts.OpenType;
 using PdfToSvg.Parsing;
 using System;
 using System.Collections.Generic;
@@ -42,6 +44,21 @@ namespace PdfToSvg.Fonts
             if (font == null) throw new ArgumentNullException(nameof(font));
             if (fontResolver == null) throw new ArgumentNullException(nameof(fontResolver));
 
+            OpenTypeFont? trueTypeFont = null;
+
+            if (font.TryGetStream(Names.DescendantFonts / Indexes.First / Names.FontDescriptor / Names.FontFile2, out var fontFile2))
+            {
+                try
+                {
+                    using var fontFileStream = fontFile2.OpenDecoded(cancellationToken);
+                    trueTypeFont = OpenTypeFont.Parse(fontFileStream);
+                }
+                catch (Exception ex)
+                {
+                    Log.WriteLine("Failed to parse TrueType font. {0}", ex);
+                }
+            }
+
             if (font.TryGetName(Names.BaseFont, out var name))
             {
                 Name = name.Value;
@@ -62,7 +79,26 @@ namespace PdfToSvg.Fonts
             }
             else if (font.TryGetValue(Names.Encoding, out var encoding) && encoding != null)
             {
-                textDecoder = EncodingFactory.Create(encoding);
+                // If ToUnicode is missing, we might be able to extract unicode mapping from a TrueType font.
+                // The same could probably be implemented for the other font types but we need to start somewhere.
+                if (trueTypeFont != null &&
+                    encoding is PdfName encodingName &&
+                    (encodingName == Names.IdentityH || encodingName == Names.IdentityV))
+                {
+                    if (font.TryGetStream(Names.DescendantFonts / Indexes.First / Names.CIDToGIDMap, out var cidToGidMapStream))
+                    {
+                        using var stream = cidToGidMapStream.OpenDecoded(cancellationToken);
+                        textDecoder = TrueTypeEncoding.Create(trueTypeFont, stream) ?? (ITextDecoder)new Utf16Encoding();
+                    }
+                    else
+                    {
+                        textDecoder = TrueTypeEncoding.Create(trueTypeFont, Stream.Null) ?? (ITextDecoder)new Utf16Encoding();
+                    }
+                }
+                else
+                {
+                    textDecoder = EncodingFactory.Create(encoding);
+                }
             }
             else
             {

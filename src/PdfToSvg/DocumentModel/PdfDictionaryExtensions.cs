@@ -158,6 +158,11 @@ namespace PdfToSvg.DocumentModel
             return false;
         }
 
+        public static bool TryGetStream(this PdfDictionary? dict, PdfNamePath path, [NotNullWhen(true)] out PdfStream? stream)
+        {
+            return TryGetValue(dict, path, out stream);
+        }
+
         private static bool TryParseDate(object? value, out DateTimeOffset result)
         {
             // PDF spec 1.7, 7.9.4, page 95
@@ -319,6 +324,14 @@ namespace PdfToSvg.DocumentModel
                 if (TryParseDate(value, out var dto))
                 {
                     result = dto.DateTime;
+                    return true;
+                }
+            }
+            else if (destinationType == typeof(PdfStream))
+            {
+                if (value is PdfDictionary dict && dict.Stream != null)
+                {
+                    result = dict.Stream;
                     return true;
                 }
             }

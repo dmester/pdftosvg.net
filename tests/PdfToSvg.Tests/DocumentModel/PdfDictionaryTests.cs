@@ -13,8 +13,28 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Tests.DocumentModel
 {
-    class PdfDictionaryTests
+    internal class PdfDictionaryTests
     {
+        [Test]
+        public void GetStream()
+        {
+            var dict = new PdfDictionary();
+
+            var subdictWithStream = new PdfDictionary();
+            var subdictWithoutStream = new PdfDictionary();
+
+            var stream = new PdfMemoryStream(subdictWithStream, new byte[0], 0);
+            subdictWithStream.MakeIndirectObject(new PdfObjectId(), stream);
+
+            dict[new PdfName("withstream")] = subdictWithStream;
+            dict[new PdfName("withoutstream")] = subdictWithoutStream;
+
+            Assert.IsFalse(dict.TryGetStream(new PdfName("withoutstream22"), out var _));
+            Assert.IsFalse(dict.TryGetStream(new PdfName("withoutstream"), out var _));
+            Assert.IsTrue(dict.TryGetStream(new PdfName("withstream"), out var actual));
+            Assert.AreEqual(stream, actual);
+        }
+
         [TestCase(42.1)]
         [TestCase(42)]
         public void GetInteger(object value)

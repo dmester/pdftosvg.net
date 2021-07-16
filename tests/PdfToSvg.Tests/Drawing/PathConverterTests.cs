@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Tests.Drawing
 {
-    class PathConverterTests
+    public class PathConverterTests
     {
         [Test]
         public void ConvertToRectangle_CounterClockwise_Closed()

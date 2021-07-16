@@ -13,8 +13,8 @@ namespace PdfToSvg.DocumentModel
     [DebuggerDisplay("{DebugView,nq}")]
     internal class PdfDictionary : IDictionary<PdfName, object?>
     {
-        List<KeyValuePair<PdfName, object?>> ordered = new List<KeyValuePair<PdfName, object?>>();
-        Dictionary<PdfName, object?> lookup = new Dictionary<PdfName, object?>();
+        private readonly List<KeyValuePair<PdfName, object?>> ordered = new List<KeyValuePair<PdfName, object?>>();
+        private readonly Dictionary<PdfName, object?> lookup = new Dictionary<PdfName, object?>();
 
         public object? this[PdfName key]
         {

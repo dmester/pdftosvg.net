@@ -10,7 +10,7 @@ namespace PdfToSvg.Parsing
 {
     internal struct Lexeme : IEquatable<Lexeme>
     {
-        long position;
+        private long position;
 
         public Lexeme(Token token)
         {

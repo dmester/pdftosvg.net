@@ -76,6 +76,51 @@ namespace PdfToSvg.IO
         }
 #endif
 
+        /// <summary>
+        /// Reads the stream to a byte array. If the stream is seekable, it will first be rewinded
+        /// to its start.
+        /// </summary>
+        public static byte[] ToArray(this Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Position = 0;
+            }
+
+            var length = -1L;
+
+            try
+            {
+                length = stream.Length;
+            }
+            catch
+            {
+            }
+
+            if (length >= 0)
+            {
+                if (length > int.MaxValue)
+                {
+                    throw new ArgumentException("The stream is too large to be converted to an array.", nameof(stream));
+                }
+
+                var buffer = new byte[(int)length];
+                var read = stream.ReadAll(buffer, 0, buffer.Length);
+                if (read == buffer.Length)
+                {
+                    return buffer;
+                }
+
+                var newBuffer = new byte[read];
+                Buffer.BlockCopy(buffer, 0, newBuffer, 0, read);
+                return newBuffer;
+            }
+
+            using var memoryStream = new MemoryStream();
+            stream.CopyTo(memoryStream);
+            return memoryStream.ToArray();
+        }
+
         public static void Skip(this Stream stream, long offset)
         {
             if (stream.CanSeek)

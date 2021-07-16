@@ -63,6 +63,54 @@ namespace PdfToSvg.Tests.IO
         }
 #endif
 
+        private class WrongLengthStream : MemoryStream
+        {
+            public WrongLengthStream(byte[] data) : base(data) { }
+            public override long Length => 10;
+        }
+
+        private class UnknownLengthStream : MemoryStream
+        {
+            public UnknownLengthStream(byte[] data) : base(data) { }
+            public override long Length => throw new NotSupportedException();
+        }
+
+        [Test]
+        public void ToArray_MemoryStream()
+        {
+            var data = new byte[] { 1, 2, 3, 4, 5, 6 };
+            var stream = (Stream)new MemoryStream(data);
+            stream.Position = 3;
+            Assert.AreEqual(data, stream.ToArray());
+        }
+
+        [Test]
+        public void ToArray_WrongLength()
+        {
+            var data = new byte[] { 1, 2, 3, 4, 5, 6 };
+            var stream = (Stream)new WrongLengthStream(data);
+            stream.Position = 3;
+            Assert.AreEqual(data, stream.ToArray());
+        }
+
+        [Test]
+        public void ToArray_UnknownLength()
+        {
+            var data = new byte[] { 1, 2, 3, 4, 5, 6 };
+            var stream = (Stream)new UnknownLengthStream(data);
+            stream.Position = 3;
+            Assert.AreEqual(data, stream.ToArray());
+        }
+
+        [Test]
+        public void ToArray_NonSeekableStream()
+        {
+            var data = new byte[] { 1, 2, 3, 4, 5, 6 };
+            var stream = (Stream)new NoSeekMemoryStream(data);
+            stream.Skip(2);
+            Assert.AreEqual(new byte[] { 3, 4, 5, 6 }, stream.ToArray());
+        }
+
         [Test]
         public void Skip()
         {

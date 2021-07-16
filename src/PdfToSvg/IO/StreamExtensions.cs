@@ -85,20 +85,9 @@ namespace PdfToSvg.IO
             if (stream.CanSeek)
             {
                 stream.Position = 0;
-            }
 
-            var length = -1L;
+                var length = stream.Length;
 
-            try
-            {
-                length = stream.Length;
-            }
-            catch
-            {
-            }
-
-            if (length >= 0)
-            {
                 if (length > int.MaxValue)
                 {
                     throw new ArgumentException("The stream is too large to be converted to an array.", nameof(stream));
@@ -115,10 +104,12 @@ namespace PdfToSvg.IO
                 Buffer.BlockCopy(buffer, 0, newBuffer, 0, read);
                 return newBuffer;
             }
-
-            using var memoryStream = new MemoryStream();
-            stream.CopyTo(memoryStream);
-            return memoryStream.ToArray();
+            else
+            {
+                using var memoryStream = new MemoryStream();
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
 
         public static void Skip(this Stream stream, long offset)

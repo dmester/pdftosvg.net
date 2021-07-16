@@ -18,7 +18,26 @@ namespace PdfToSvg.DocumentModel
 
             foreach (var name in path)
             {
-                if (value is PdfDictionary subdict)
+                if (value is object[] arr)
+                {
+                    if (arr.Length == 0)
+                    {
+                        return false;
+                    }
+                    else if (name == Indexes.First)
+                    {
+                        value = arr[0];
+                    }
+                    else if (name == Indexes.Last)
+                    {
+                        value = arr[arr.Length - 1];
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if (value is PdfDictionary subdict)
                 {
                     if (!subdict.TryGetValue(name, out value))
                     {

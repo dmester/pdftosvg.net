@@ -96,5 +96,50 @@ namespace PdfToSvg.Tests.DocumentModel
 
             Assert.IsFalse(dict.TryGetValue<DateTimeOffset>(new PdfName("name"), out var _));
         }
+
+        [TestCase("Alternate", true)]
+        [TestCase("Decode/DescendantFonts/FIRST/DeviceCMYK", 42)]
+        [TestCase("Decode/DescendantFonts/LAST/DeviceCMYK", 84)]
+        [TestCase("Decode/Differences/FIRST/DeviceCMYK", null)]
+        [TestCase("Decode/Differences/LAST/DeviceCMYK", null)]
+        [TestCase("Decode/NotAProp/FIRST/DeviceCMYK", null)]
+        [TestCase("Decode/NotAProp/LAST/DeviceCMYK", null)]
+        public void GetPath(string path, object expectedValue)
+        {
+            var namePath = new PdfNamePath(path
+                .Replace("FIRST", Indexes.First.Value)
+                .Replace("LAST", Indexes.Last.Value)
+                .Split('/')
+                .Select(name => new PdfName(name))
+                .ToArray());
+
+            var dict = new PdfDictionary
+            {
+                { Names.Alternate, true },
+                { Names.Decode, new PdfDictionary {
+                    { Names.DescendantFonts, new object[] {
+                        new PdfDictionary
+                        {
+                            { Names.DeviceCMYK, 42 },
+                        },
+                        new PdfDictionary
+                        {
+                            { Names.DeviceCMYK, 84 },
+                        }
+                    } },
+                    { Names.Differences, new object[0] },
+                } }
+            };
+
+            if (expectedValue == null)
+            {
+                Assert.IsFalse(dict.TryGetValue(namePath, out var actualValue), "TryGetValue");
+            }
+            else
+            {
+                Assert.IsTrue(dict.TryGetValue(namePath, out var actualValue), "TryGetValue");
+                Assert.AreEqual(expectedValue, actualValue);
+            }
+        }
     }
 }

@@ -51,7 +51,7 @@ namespace PdfToSvg.DocumentModel
         {
             var newPath = new PdfName[path.path.Length + 1];
             path.path.CopyTo(newPath, 0);
-            newPath[path.path.Length - 1] = name;
+            newPath[path.path.Length] = name;
             return new PdfNamePath(newPath, false);
         }
 

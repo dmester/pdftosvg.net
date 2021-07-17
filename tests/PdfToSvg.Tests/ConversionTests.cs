@@ -145,6 +145,10 @@ namespace PdfToSvg.Tests
                 .Descendants(ns + "use")
                 .ToLookup(el => el.Attribute("href").Value);
 
+            var maskReferences = svg
+                .Descendants(ns + "g")
+                .ToLookup(el => el.Attribute("mask")?.Value);
+
             foreach (var image in svg.Descendants(ns + "image"))
             {
                 var hrefAttribute = image.Attribute("href");
@@ -165,6 +169,19 @@ namespace PdfToSvg.Tests
                     foreach (var reference in useElements["#" + oldId])
                     {
                         reference.SetAttributeValue("href", "#" + newId);
+
+                        if (reference.Parent.Name.LocalName == "mask")
+                        {
+                            var newMaskId = StableID.Generate("m", newId);
+                            var oldMaskId = reference.Parent.Attribute("id").Value;
+
+                            reference.Parent.SetAttributeValue("id", newMaskId);
+
+                            foreach (var maskReference in maskReferences["url(#" + oldMaskId + ")"])
+                            {
+                                maskReference.SetAttributeValue("mask", "url(#" + newMaskId + ")");
+                            }
+                        }
                     }
                 }
             }

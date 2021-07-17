@@ -433,35 +433,14 @@ namespace PdfToSvg.Drawing
 
         #region XObject operators
 
-        private static ColorSpace CreateImageMaskColorSpace(RgbColor strokeColor)
-        {
-            // PDF spec 1.7, Table 89
-            // Unmasked pixels should be rendered using the stroking color
-
-            static byte FloatToByte(float floatValue)
-            {
-                return (byte)MathUtils.Clamp(unchecked((int)(floatValue * 255f)), 0, 255);
-            }
-
-            var colorLookup = new byte[]
-            {
-                /* 0 */ FloatToByte(strokeColor.Red), FloatToByte(strokeColor.Green), FloatToByte(strokeColor.Blue),
-                /* 1 */ 255, 255, 255
-            };
-
-            return new IndexedColorSpace(new DeviceRgbColorSpace(), colorLookup);
-        }
-
-        private string? GetSvgImageId(PdfDictionary imageObject, out int width, out int height)
+        private string? GetSvgImageId(PdfDictionary imageObject)
         {
             if (imageObject.Stream != null &&
                 imageObject.TryGetName(Names.Subtype, out var subtype) && subtype == Names.Image &&
-                imageObject.TryGetInteger(Names.Width, out width) &&
-                imageObject.TryGetInteger(Names.Height, out height))
+                imageObject.TryGetInteger(Names.Width, out var width) &&
+                imageObject.TryGetInteger(Names.Height, out var height))
             {
                 // graphicsState may be accessed below
-                var strokeColor = imageObject.GetValueOrDefault(Names.ImageMask, false) ? graphicsState.StrokeColor : default;
-
                 var interpolate = imageObject.GetValueOrDefault(Names.Interpolate, false);
                 if (!interpolate)
                 {
@@ -475,7 +454,7 @@ namespace PdfToSvg.Drawing
                     }
                 }
 
-                var imageLookupKey = Tuple.Create(new ReferenceEquatableBox(imageObject), strokeColor, interpolate);
+                var imageLookupKey = Tuple.Create(new ReferenceEquatableBox(imageObject), interpolate);
 
                 // graphicsState must not be accessed below this line
 
@@ -488,16 +467,20 @@ namespace PdfToSvg.Drawing
 
                 if (imageObject.GetValueOrDefault(Names.ImageMask, false))
                 {
-                    colorSpace = CreateImageMaskColorSpace(strokeColor);
+                    colorSpace = new IndexedColorSpace(new DeviceRgbColorSpace(), new byte[]
+                    {
+                        /* 0 */ 255, 255, 255,
+                        /* 1 */ 0, 0, 0,
+                    });
                 }
                 else
                 {
                     colorSpace = GetColorSpace(imageObject[Names.ColorSpace]);
-                }
 
-                if (colorSpace is UnsupportedColorSpace)
-                {
-                    return null;
+                    if (colorSpace is UnsupportedColorSpace)
+                    {
+                        return null;
+                    }
                 }
 
                 var image = ImageFactory.Create(imageObject, colorSpace);
@@ -535,8 +518,6 @@ namespace PdfToSvg.Drawing
                 return imageId;
             }
 
-            width = 0;
-            height = 0;
             return null;
         }
 
@@ -600,7 +581,7 @@ namespace PdfToSvg.Drawing
                 imageAttributes.Add(new XAttribute("opacity", SvgConversion.FormatCoordinate(graphicsState.FillAlpha)));
             }
 
-            var imageId = GetSvgImageId(xobject, out var imageWidth, out var imageHeight);
+            var imageId = GetSvgImageId(xobject);
             if (imageId == null)
             {
                 // Missing image
@@ -631,46 +612,65 @@ namespace PdfToSvg.Drawing
                 return;
             }
 
-            // Mask
-            if (xobject.TryGetDictionary(Names.SMask, out var smask))
+            var isStencilMask = xobject.GetValueOrDefault(Names.ImageMask, false);
+
+            // Decide mask
+            PdfDictionary? maskImage;
+
+            if (isStencilMask)
             {
-                var maskImageId = GetSvgImageId(smask, out var maskWidth, out var maskHeight);
+                maskImage = xobject;
+            }
+            else if (xobject.TryGetDictionary(Names.SMask, out var smask))
+            {
+                maskImage = smask;
+            }
+            else if (xobject.TryGetDictionary(Names.Mask, out var stencilMask))
+            {
+                maskImage = stencilMask;
+            }
+            else
+            {
+                maskImage = null;
+            }
+
+            // Create mask definition
+            if (maskImage != null)
+            {
+                var maskImageId = GetSvgImageId(maskImage);
                 if (maskImageId != null)
                 {
-                    var maskId = StableID.Generate("m",
-                        maskImageId + ";" +
-                        imageWidth.ToString(CultureInfo.InvariantCulture) + ";" +
-                        imageHeight.ToString(CultureInfo.InvariantCulture));
+                    var maskId = StableID.Generate("m", maskImageId);
 
                     if (defIds.Add(maskId))
                     {
-                        var use = new XElement(
-                            ns + "use",
-                            new XAttribute("href", "#" + maskImageId));
-
-                        if (imageWidth != maskWidth || imageHeight != maskHeight)
-                        {
-                            var scaleX = (double)imageWidth / maskWidth;
-                            var scaleY = (double)imageHeight / maskHeight;
-
-                            use.Add(new XAttribute("transform", "scale(" +
-                                SvgConversion.FormatCoordinate(scaleX) + " " +
-                                SvgConversion.FormatCoordinate(scaleY) + ")"));
-                        }
-
                         defs.Add(new XElement(
                             ns + "mask",
                             new XAttribute("id", maskId),
-                            use));
+                            new XElement(
+                                ns + "use",
+                                new XAttribute("href", "#" + maskImageId))));
                     }
 
                     imageAttributes.Add(new XAttribute("mask", "url(#" + maskId + ")"));
                 }
             }
 
-            AppendClipped(new XElement(ns + "g", imageAttributes,
-                new XElement(ns + "use", new XAttribute("href", "#" + imageId))
-                ));
+            // Output
+            if (isStencilMask)
+            {
+                AppendClipped(new XElement(ns + "g", imageAttributes,
+                    new XElement(ns + "path",
+                        new XAttribute("d", "M0 0V1H1V-1z"),
+                        new XAttribute("fill", SvgConversion.FormatColor(graphicsState.FillColor)))
+                    ));
+            }
+            else
+            {
+                AppendClipped(new XElement(ns + "g", imageAttributes,
+                    new XElement(ns + "use", new XAttribute("href", "#" + imageId))
+                    ));
+            }
         }
 
         [Operation("Do")]

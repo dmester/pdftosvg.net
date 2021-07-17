@@ -68,6 +68,11 @@ namespace PdfToSvg.DocumentModel
             return GetValueOrDefault<PdfDictionary?>(dict, path, null) ?? new PdfDictionary();
         }
 
+        public static T[]? GetArrayOrNull<T>(this PdfDictionary? dict, PdfNamePath path)
+        {
+            return TryGetArray<T>(dict, path, out var arr) ? arr : null;
+        }
+
         public static T GetValueOrDefault<T>(this PdfDictionary? dict, PdfNamePath path, T defaultValue = default!)
         {
             if (TryGetValue(dict, path, out var objValue) && TryConvert(objValue, typeof(T), out var convertedValue))

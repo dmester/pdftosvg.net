@@ -66,6 +66,12 @@ namespace PdfToSvg.Imaging
                 return false;
             }
 
+            // Images with a color key mask must be rebuilt.
+            if (imageDictionary.TryGetValue(Names.Mask, out var mask) && mask is object[])
+            {
+                return false;
+            }
+
             if (colorSpace is DeviceRgbColorSpace)
             {
                 return

@@ -111,6 +111,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName DeviceCMYK { get; } = new PdfName("DeviceCMYK");
         public static PdfName Indexed { get; } = new PdfName("Indexed");
         public static PdfName CalGray { get; } = new PdfName("CalGray");
+        public static PdfName CalRGB { get; } = new PdfName("CalRGB");
         public static PdfName ICCBased { get; } = new PdfName("ICCBased");
         public static PdfName Separation { get; } = new PdfName("Separation");
 

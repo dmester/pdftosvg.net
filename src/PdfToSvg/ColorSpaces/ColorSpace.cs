@@ -119,6 +119,28 @@ namespace PdfToSvg.ColorSpaces
             return Parse(definition, colorSpaceResourcesDictionary, 0, cancellationToken);
         }
 
+        private static ColorSpace ParseCalRgb(object[] colorSpaceParams)
+        {
+            PdfDictionary? labDict = null;
+
+            if (colorSpaceParams.Length > 1)
+            {
+                labDict = colorSpaceParams[1] as PdfDictionary;
+            }
+
+            if (labDict == null)
+            {
+                Log.WriteLine($"/CalRgb color space: Missing dictionary argument.");
+                labDict = new PdfDictionary();
+            }
+
+            return new CalRgbColorSpace(
+                whitePoint: labDict.GetValueOrDefault<Matrix1x3?>(Names.WhitePoint),
+                gamma: labDict.GetArrayOrNull<double>(Names.Gamma),
+                matrix: labDict.GetValueOrDefault<Matrix3x3?>(Names.Matrix)?.Transpose()
+                );
+        }
+
         private static ColorSpace ParseCalGray(object[] colorSpaceParams)
         {
             PdfDictionary? labDict = null;
@@ -185,7 +207,6 @@ namespace PdfToSvg.ColorSpaces
             return new IndexedColorSpace(baseSpace ?? new DeviceRgbColorSpace(), lookup);
         }
 
-
         private static ColorSpace Parse(object? definition, PdfDictionary? colorSpaceResourcesDictionary, int recursionCount, CancellationToken cancellationToken)
         {
             if (recursionCount > 10)
@@ -243,6 +264,11 @@ namespace PdfToSvg.ColorSpaces
                 if (colorSpaceName == Names.CalGray)
                 {
                     return ParseCalGray(definitionArray);
+                }
+
+                if (colorSpaceName == Names.CalRGB)
+                {
+                    return ParseCalRgb(definitionArray);
                 }
 
                 if (colorSpaceName == Names.Indexed)

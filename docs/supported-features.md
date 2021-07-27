@@ -55,7 +55,7 @@ Impl | Description
 ❎ | DeviceGray
 ❎ | CalRGB
 ❎ | CalGray
-❌ | Lab
+❎ | Lab
 ❌ | ICCBased
 ❌ | Pattern
 ❎ | Indexed

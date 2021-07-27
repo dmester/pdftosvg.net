@@ -119,6 +119,26 @@ namespace PdfToSvg.ColorSpaces
             return Parse(definition, colorSpaceResourcesDictionary, 0, cancellationToken);
         }
 
+        private static ColorSpace ParseLab(object[] colorSpaceParams)
+        {
+            PdfDictionary? labDict = null;
+
+            if (colorSpaceParams.Length > 1)
+            {
+                labDict = colorSpaceParams[1] as PdfDictionary;
+            }
+
+            if (labDict == null)
+            {
+                Log.WriteLine($"/Lab color space: Missing dictionary argument.");
+                labDict = new PdfDictionary();
+            }
+
+            return new LabColorSpace(
+                whitePoint: labDict.GetValueOrDefault<Matrix1x3?>(Names.WhitePoint),
+                range: labDict.GetArrayOrNull<double>(Names.Range));
+        }
+
         private static ColorSpace ParseCalRgb(object[] colorSpaceParams)
         {
             PdfDictionary? labDict = null;
@@ -259,6 +279,11 @@ namespace PdfToSvg.ColorSpaces
                 if (colorSpaceName == Names.DeviceGray)
                 {
                     return new DeviceGrayColorSpace();
+                }
+
+                if (colorSpaceName == Names.Lab)
+                {
+                    return ParseLab(definitionArray);
                 }
 
                 if (colorSpaceName == Names.CalGray)

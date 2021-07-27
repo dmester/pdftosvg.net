@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Tests.Drawing
 {
-    class MatrixTests
+    public class MatrixTests
     {
         [Test]
         public void Translate()

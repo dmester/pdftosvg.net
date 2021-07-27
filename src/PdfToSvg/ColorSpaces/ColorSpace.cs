@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -118,6 +119,24 @@ namespace PdfToSvg.ColorSpaces
             return Parse(definition, colorSpaceResourcesDictionary, 0, cancellationToken);
         }
 
+        private static ColorSpace ParseCalGray(object[] colorSpaceParams)
+        {
+            PdfDictionary? labDict = null;
+
+            if (colorSpaceParams.Length > 1)
+            {
+                labDict = colorSpaceParams[1] as PdfDictionary;
+            }
+
+            if (labDict == null)
+            {
+                Log.WriteLine($"/CalGray color space: Missing dictionary argument.");
+                labDict = new PdfDictionary();
+            }
+
+            return new CalGrayColorSpace(labDict.GetValueOrDefault<double>(Names.Gamma, 1));
+        }
+
         private static ColorSpace ParseIndexed(object[] colorSpaceParams, PdfDictionary? colorSpaceResourcesDictionary, int recursionCount, CancellationToken cancellationToken)
         {
             ColorSpace? baseSpace = null;
@@ -221,6 +240,11 @@ namespace PdfToSvg.ColorSpaces
                     return new DeviceGrayColorSpace();
                 }
 
+                if (colorSpaceName == Names.CalGray)
+                {
+                    return ParseCalGray(definitionArray);
+                }
+
                 if (colorSpaceName == Names.Indexed)
                 {
                     return ParseIndexed(definitionArray, colorSpaceResourcesDictionary, recursionCount + 1, cancellationToken);
@@ -263,6 +287,9 @@ namespace PdfToSvg.ColorSpaces
             return new UnsupportedColorSpace(new PdfName("Undefined"));
         }
 
+#if HAVE_AGGRESSIVE_INLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static byte ToRgb8Component(float value)
         {
             var intValue = unchecked((int)(value * 255f + 0.5f));
@@ -279,6 +306,9 @@ namespace PdfToSvg.ColorSpaces
             return unchecked((byte)intValue);
         }
 
+#if HAVE_AGGRESSIVE_INLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static int ToRgb16Component(float value)
         {
             var intValue = unchecked((int)(value * ushort.MaxValue + 0.5f));

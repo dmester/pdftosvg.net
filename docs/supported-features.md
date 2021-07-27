@@ -54,7 +54,7 @@ Impl | Description
 ❎ | DeviceCMYK
 ❎ | DeviceGray
 ❌ | CalRGB
-❌ | CalGray
+❎ | CalGray
 ❌ | Lab
 ❌ | ICCBased
 ❌ | Pattern

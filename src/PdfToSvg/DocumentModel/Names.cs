@@ -110,11 +110,15 @@ namespace PdfToSvg.DocumentModel
         public static PdfName DeviceRGB { get; } = new PdfName("DeviceRGB");
         public static PdfName DeviceCMYK { get; } = new PdfName("DeviceCMYK");
         public static PdfName Indexed { get; } = new PdfName("Indexed");
+        public static PdfName CalGray { get; } = new PdfName("CalGray");
         public static PdfName ICCBased { get; } = new PdfName("ICCBased");
         public static PdfName Separation { get; } = new PdfName("Separation");
 
         public static PdfName Alternate { get; } = new PdfName("Alternate");
         public static PdfName N { get; } = new PdfName("N");
+        public static PdfName WhitePoint { get; } = new PdfName("WhitePoint");
+        public static PdfName BlackPoint { get; } = new PdfName("BlackPoint");
+        public static PdfName Gamma { get; } = new PdfName("Gamma");
 
         public static PdfName FunctionType { get; } = new PdfName("FunctionType");
         public static PdfName Functions { get; } = new PdfName("Functions");

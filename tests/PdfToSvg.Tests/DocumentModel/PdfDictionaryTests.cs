@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using NUnit.Framework;
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using System;
 using System.Collections.Generic;
@@ -64,6 +65,38 @@ namespace PdfToSvg.Tests.DocumentModel
             Assert.AreEqual(42.0, actual);
 
             Assert.AreEqual(42.0, dict.GetValueOrDefault(new PdfName("name"), 55.0));
+        }
+
+        [TestCase(1.0d, 2.1d, 3.1d)]
+        [TestCase(1, 2.1d, 3.1d)]
+        public void GetMatrix1x3(object[] arr)
+        {
+            var dict = new PdfDictionary();
+
+            dict[new PdfName("name")] = arr;
+
+            var expected = new Matrix1x3(1f, 2.1f, 3.1f);
+
+            Assert.IsTrue(dict.TryGetValue<Matrix1x3>(new PdfName("name"), out var actual));
+            Assert.AreEqual(expected, actual);
+
+            Assert.AreEqual(expected, dict.GetValueOrDefault(new PdfName("name"), new Matrix1x3()));
+        }
+
+        [TestCase(1.0d, 2.1d, 3.1d, 4d, 5.1d, 6.1d, 7d, 8.1d, 9.1d)]
+        [TestCase(1, 2.1d, 3.1d, 4, 5.1d, 6.1d, 7, 8.1d, 9.1d)]
+        public void GetMatrix3x3(object[] arr)
+        {
+            var dict = new PdfDictionary();
+
+            dict[new PdfName("name")] = arr;
+
+            var expected = new Matrix3x3(1f, 2.1f, 3.1f, 4f, 5.1f, 6.1f, 7f, 8.1f, 9.1f);
+
+            Assert.IsTrue(dict.TryGetValue<Matrix3x3>(new PdfName("name"), out var actual));
+            Assert.AreEqual(expected, actual);
+
+            Assert.AreEqual(expected, dict.GetValueOrDefault(new PdfName("name"), new Matrix3x3()));
         }
 
         [TestCase("2021-05-03 15:27:12 +00:00", "D:20210503152712+00'00'")]

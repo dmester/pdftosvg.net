@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -88,7 +89,7 @@ namespace PdfToSvg.DocumentModel
             if (TryGetValue(dict, path, out object? objValue) &&
                 TryConvert(objValue, typeof(T), out var convertedValue))
             {
-                value = (T)convertedValue!;
+                value = (T)convertedValue;
                 return true;
             }
 
@@ -121,7 +122,7 @@ namespace PdfToSvg.DocumentModel
                 {
                     if (TryConvert(objArray[i], typeof(T), out var convertedValue))
                     {
-                        value[i] = (T)convertedValue!;
+                        value[i] = (T)convertedValue;
                     }
                     else
                     {
@@ -280,7 +281,33 @@ namespace PdfToSvg.DocumentModel
             return false;
         }
 
-        private static bool TryConvert(object? value, Type destinationType, out object? result)
+        private static bool TryConvertFloatArray(object? value, int minLength, [NotNullWhen(true)] out float[]? result)
+        {
+            if (value is object[] objArray && objArray.Length >= minLength)
+            {
+                result = new float[objArray.Length];
+
+                for (var i = 0; i < objArray.Length; i++)
+                {
+                    if (TryConvert(objArray[i], typeof(double), out var convertedValue))
+                    {
+                        result[i] = (float)(double)convertedValue;
+                    }
+                    else
+                    {
+                        result = null;
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            result = null;
+            return false;
+        }
+
+        private static bool TryConvert(object? value, Type destinationType, [NotNullWhen(true)] out object? result)
         {
             var nullableType = Nullable.GetUnderlyingType(destinationType);
             if (nullableType != null)
@@ -337,6 +364,25 @@ namespace PdfToSvg.DocumentModel
                 if (value is PdfDictionary dict && dict.Stream != null)
                 {
                     result = dict.Stream;
+                    return true;
+                }
+            }
+            else if (destinationType == typeof(Matrix1x3))
+            {
+                if (TryConvertFloatArray(value, 3, out var arr))
+                {
+                    result = new Matrix1x3(arr[0], arr[1], arr[2]);
+                    return true;
+                }
+            }
+            else if (destinationType == typeof(Matrix3x3))
+            {
+                if (TryConvertFloatArray(value, 9, out var arr))
+                {
+                    result = new Matrix3x3(
+                        arr[0], arr[1], arr[2],
+                        arr[3], arr[4], arr[5],
+                        arr[6], arr[7], arr[8]);
                     return true;
                 }
             }

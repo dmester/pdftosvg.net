@@ -218,7 +218,7 @@ namespace PdfToSvg.Parsing
                     {
                         lexer.Read();
 
-                        xrefTable.Add(new XRef
+                        xrefTable.TryAdd(new XRef
                         {
                             ObjectNumber = startObjectNumber + i,
                             ByteOffset = byteOffset,
@@ -236,16 +236,24 @@ namespace PdfToSvg.Parsing
 
         public void ReadXRefStream(XRefTable xrefTable, PdfDictionary xrefDict, CancellationToken cancellationToken)
         {
-            if (xrefDict.TryGetArray<int>(Names.W, out var widths) && xrefDict.Stream != null)
-            {
-                var nextObjectNumber = 0;
+            const int ColumnCount = 3;
+            const int TypeColumnIndex = 0;
+            const int DefaultType = 1;
 
-                if (xrefDict.TryGetArray(Names.Index, out var indexArr) &&
-                    indexArr.Length > 1 &&
-                    indexArr[0] is int startIndexInt)
+            // PDF spec 1.7, Table 17, Page 58
+            if (xrefDict.TryGetArray<int>(Names.W, out var widths) &&
+                widths.Length >= ColumnCount &&
+                xrefDict.Stream != null)
+            {
+                if (!xrefDict.TryGetArray<int>(Names.Index, out var indexArr))
                 {
-                    nextObjectNumber = startIndexInt;
+                    indexArr = new[] { 0, int.MaxValue };
                 }
+
+                var indexArrCursor = 0;
+
+                var nextObjectNumber = 0;
+                var maxObjectNumber = -1;
 
                 var entryBuffer = new byte[widths.Sum()];
 
@@ -259,35 +267,58 @@ namespace PdfToSvg.Parsing
                         break;
                     }
 
-                    var cursor = 0;
-                    var values = new long[widths.Length];
-
-                    for (var column = 0; column < widths.Length; column++)
+                    // Advance index array
+                    if (nextObjectNumber > maxObjectNumber)
                     {
-                        for (var i = 0; i < widths[column]; i++)
+                        if (indexArrCursor + 1 < indexArr.Length)
                         {
-                            values[column] = (values[column] << 8) | entryBuffer[cursor++];
+                            nextObjectNumber = indexArr[indexArrCursor];
+                            maxObjectNumber = nextObjectNumber - 1 + indexArr[indexArrCursor + 1];
+                            indexArrCursor += 2;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    var cursor = 0;
+                    var values = new long[ColumnCount];
+
+                    for (var column = 0; column < ColumnCount; column++)
+                    {
+                        if (widths[column] > 0)
+                        {
+                            for (var i = 0; i < widths[column]; i++)
+                            {
+                                values[column] = (values[column] << 8) | entryBuffer[cursor++];
+                            }
+                        }
+                        else if (column == TypeColumnIndex)
+                        {
+                            values[TypeColumnIndex] = DefaultType;
                         }
                     }
 
                     var xref = new XRef
                     {
                         ObjectNumber = nextObjectNumber++,
-                        Type = (XRefEntryType)values[0],
+                        Type = (XRefEntryType)values[TypeColumnIndex],
                     };
 
+                    // PDF spec 1.7, Table 18, Page 59
                     if (xref.Type == XRefEntryType.Compressed)
                     {
                         xref.CompressedObjectNumber = (int)values[1];
                         xref.CompressedObjectElementIndex = (int)values[2];
                     }
-                    else
+                    else if (xref.Type == XRefEntryType.NotFree)
                     {
                         xref.ByteOffset = values[1];
                         xref.Generation = unchecked((int)values[2]);
                     }
 
-                    xrefTable.Add(xref);
+                    xrefTable.TryAdd(xref);
                 }
             }
         }
@@ -312,13 +343,20 @@ namespace PdfToSvg.Parsing
         {
             var objects = new Dictionary<PdfObjectId, object?>();
 
-            foreach (var xref in xrefTable
+            var uncompressedObjectRefs = xrefTable
                 .Where(xref => xref.Type == XRefEntryType.NotFree)
-                .OrderBy(xref => xref.ByteOffset))
+                .OrderBy(xref => xref.ByteOffset);
+
+            var compressedObjects = xrefTable
+                .Where(xref => xref.Type == XRefEntryType.Compressed)
+                .GroupBy(xref => new PdfObjectId(xref.CompressedObjectNumber, 0))
+                .OrderBy(group => xrefTable.TryGetValue(group.Key, out var container) ? container.ByteOffset : 0);
+
+            foreach (var uncompressedObjectRef in uncompressedObjectRefs)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                lexer.Seek(xref.ByteOffset, SeekOrigin.Begin);
+                lexer.Seek(uncompressedObjectRef.ByteOffset, SeekOrigin.Begin);
 
                 var obj = ReadIndirectObject(objects);
                 if (obj != null)
@@ -327,16 +365,11 @@ namespace PdfToSvg.Parsing
                 }
             }
 
-            foreach (var group in xrefTable
-                .Where(xref => xref.Type == XRefEntryType.Compressed)
-                .GroupBy(xref => xref.CompressedObjectNumber)
-                .OrderBy(group => group.Key))
+            foreach (var compressedObject in compressedObjects)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var containerId = new PdfObjectId(group.Key, 0);
-
-                if (objects.TryGetValue(containerId, out var maybeObjStream) &&
+                if (objects.TryGetValue(compressedObject.Key, out var maybeObjStream) &&
                     maybeObjStream is PdfDictionary objStream &&
                     objStream.Stream != null)
                 {
@@ -349,17 +382,17 @@ namespace PdfToSvg.Parsing
 
                         var parser = new DocumentParser(file, objStreamContent);
 
-                        var maxIndex = group.Max(x => x.CompressedObjectElementIndex) + 1;
+                        var maxIndex = compressedObject.Max(x => x.CompressedObjectElementIndex) + 1;
                         for (var i = 0; i < maxIndex; i++)
                         {
                             contentObjects.Add(parser.ReadValue());
                         }
                     }
 
-                    foreach (var xref in group)
+                    foreach (var compressedObjectRef in compressedObject)
                     {
-                        var objectId = new PdfObjectId(xref.ObjectNumber, 0);
-                        objects[objectId] = contentObjects[xref.CompressedObjectElementIndex];
+                        var objectId = new PdfObjectId(compressedObjectRef.ObjectNumber, 0);
+                        objects[objectId] = contentObjects[compressedObjectRef.CompressedObjectElementIndex];
                     }
                 }
             }

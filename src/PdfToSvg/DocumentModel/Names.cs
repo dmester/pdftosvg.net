@@ -21,6 +21,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Info { get; } = new PdfName("Info");
         public static PdfName Root { get; } = new PdfName("Root");
         public static PdfName Encrypt { get; } = new PdfName("Encrypt");
+        public static PdfName XRef { get; } = new PdfName("XRef");
 
         public static PdfName Type { get; } = new PdfName("Type");
         public static PdfName Subtype { get; } = new PdfName("Subtype");

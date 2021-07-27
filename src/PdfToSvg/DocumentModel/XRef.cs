@@ -10,6 +10,8 @@ namespace PdfToSvg.DocumentModel
 {
     internal class XRef : IEquatable<XRef?>
     {
+        public PdfObjectId ObjectId => new PdfObjectId(ObjectNumber, Generation);
+
         public int ObjectNumber;
 
         public XRefEntryType Type;

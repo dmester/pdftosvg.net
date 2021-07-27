@@ -37,13 +37,14 @@ namespace PdfToSvg.Fonts
             CancellationToken.None);
 
         private readonly WidthMap widthMap;
-        private readonly ITextDecoder textDecoder;
+        private readonly ITextDecoder[] textDecoders;
 
         public InternalFont(PdfDictionary font, FontResolver fontResolver, CancellationToken cancellationToken)
         {
             if (font == null) throw new ArgumentNullException(nameof(font));
             if (fontResolver == null) throw new ArgumentNullException(nameof(fontResolver));
 
+            // Parse TTF
             OpenTypeFont? trueTypeFont = null;
 
             if (font.TryGetStream(Names.DescendantFonts / Indexes.First / Names.FontDescriptor / Names.FontFile2, out var fontFile2))
@@ -59,6 +60,7 @@ namespace PdfToSvg.Fonts
                 }
             }
 
+            // Name
             if (font.TryGetName(Names.BaseFont, out var name))
             {
                 Name = name.Value;
@@ -69,6 +71,7 @@ namespace PdfToSvg.Fonts
                 }
             }
 
+            // Substitute font
             if (Name == null)
             {
                 SubstituteFont = new LocalFont("Sans-Serif");
@@ -78,11 +81,18 @@ namespace PdfToSvg.Fonts
                 SubstituteFont = fontResolver.ResolveFont(Name, cancellationToken);
             }
 
+            // Create text decoders
+            // The second and following decoders are used as fallback if the primary decoder fails to decode a
+            // character. Some test PDFs had incomplete /ToUnicode maps, but the text might still be decoded properly
+            // using a fallback decoder.
+            var textDecoders = new List<ITextDecoder>();
+
             if (font.TryGetDictionary(Names.ToUnicode, out var toUnicode) && toUnicode.Stream != null)
             {
-                textDecoder = CMapParser.Parse(toUnicode.Stream, cancellationToken);
+                textDecoders.Add(CMapParser.Parse(toUnicode.Stream, cancellationToken));
             }
-            else if (font.TryGetValue(Names.Encoding, out var encoding) && encoding != null)
+
+            if (font.TryGetValue(Names.Encoding, out var encoding) && encoding != null)
             {
                 // If ToUnicode is missing, we might be able to extract unicode mapping from a TrueType font.
                 // The same could probably be implemented for the other font types but we need to start somewhere.
@@ -93,25 +103,26 @@ namespace PdfToSvg.Fonts
                     if (font.TryGetStream(Names.DescendantFonts / Indexes.First / Names.CIDToGIDMap, out var cidToGidMapStream))
                     {
                         using var stream = cidToGidMapStream.OpenDecoded(cancellationToken);
-                        textDecoder = TrueTypeEncoding.Create(trueTypeFont, stream) ?? (ITextDecoder)new Utf16Encoding();
+                        textDecoders.Add(TrueTypeEncoding.Create(trueTypeFont, stream) ?? (ITextDecoder)new Utf16Encoding());
                     }
                     else
                     {
-                        textDecoder = TrueTypeEncoding.Create(trueTypeFont, Stream.Null) ?? (ITextDecoder)new Utf16Encoding();
+                        textDecoders.Add(TrueTypeEncoding.Create(trueTypeFont, Stream.Null) ?? (ITextDecoder)new Utf16Encoding());
                     }
                 }
                 else
                 {
-                    textDecoder = EncodingFactory.Create(encoding);
+                    textDecoders.Add(EncodingFactory.Create(encoding));
                 }
             }
-            else
+
+            if (textDecoders.Count == 0)
             {
-                // TODO check
-                textDecoder = new WinAnsiEncoding();
+                textDecoders.Add(new WinAnsiEncoding());
             }
 
-            widthMap = WidthMap.Parse(font);
+            this.textDecoders = textDecoders.ToArray();
+            this.widthMap = WidthMap.Parse(font);
         }
 
         public string Decode(PdfString value, out double width)
@@ -121,7 +132,13 @@ namespace PdfToSvg.Fonts
 
             for (var i = 0; i < value.Length;)
             {
-                var character = textDecoder.GetCharacter(value, i);
+                CharacterCode character = default;
+
+                for (var ti = 0; ti < textDecoders.Length && character.IsEmpty; ti++)
+                {
+                    character = textDecoders[ti].GetCharacter(value, i);
+                }
+
                 if (character.IsEmpty)
                 {
                     // TODO width

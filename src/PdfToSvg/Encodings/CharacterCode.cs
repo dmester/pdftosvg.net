@@ -38,6 +38,6 @@ namespace PdfToSvg.Encodings
 
         public static CharacterCode Empty => new CharacterCode();
 
-        public override string ToString() => DestinationString;
+        public override string ToString() => IsEmpty ? "\ufffd" : DestinationString;
     }
 }

@@ -66,7 +66,8 @@ namespace PdfToSvg.Functions
 
             if (range.Length != stack.Count * 2)
             {
-                throw new PostScriptFunctionException($"The resulting PostScript stack had an unexpected length.");
+                throw new PostScriptFunctionException(
+                    $"Expected a resulting PostScript stack of {range.Length / 2} elements but found {stack.Count}.");
             }
 
             var result = stack.ToDoubleArray();

@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <ReleaseDir>$(SolutionDir)releases/</ReleaseDir>
+    <NuGetDownloadUrl>https://dist.nuget.org/win-x86-commandline/latest/nuget.exe</NuGetDownloadUrl>
+  </PropertyGroup>
+
+  <Target Name="CopyReleaseFiles" AfterTargets="Build" Condition=" $(Configuration) == 'Release' And $(PdfToSvgKeyFile) != '' ">
+    <PropertyGroup>
+      <_ZipContentDir>$(IntermediateOutputPath)ZipContent/</_ZipContentDir>
+      <_ReleaseDir>$(ReleaseDir)$(VersionPrefix)/</_ReleaseDir>
+      <_NuGetExePath>$(IntermediateOutputPath)nuget.exe</_NuGetExePath>
+      <_LibOutDir>$(SolutionDir)src/PdfToSvg/bin/$(Configuration)/</_LibOutDir>
+      <_CliOutDir>$(SolutionDir)src/PdfToSvg.Cli/bin/$(Configuration)/net40/</_CliOutDir>
+      <_PublishScript>
+        <![CDATA[
+@echo off
+cd /D %~dp0
+echo You will now publish version $(VersionPrefix) to NuGet
+pause
+"$([System.IO.Path]::GetFullPath('$(_NuGetExePath)'))" push "PdfToSvg.NET.$(VersionPrefix).nupkg" -Source https://api.nuget.org/v3/index.json
+]]>
+      </_PublishScript>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <_FilesToDelete Include="$(_ReleaseDir)/*" />
+      <_FilesToDelete Include="$(_ZipContentDir)**/*" />
+
+      <_ZipContent Include="$(_LibOutDir)**/*.dll" />
+      <_ZipContent Include="$(_LibOutDir)**/*.xml" />
+      <_ZipContent Include="$(_LibOutDir)**/*.pdb" />
+      <_ZipContent Include="$(_CliOutDir)*.exe" />
+
+      <_ReleaseContent Include="$(_CliOutDir)*.exe" />
+      
+      <_NuGetPackages Include="$(_LibOutDir)PdfToSvg.NET.$(Version).nupkg" />
+      <_NuGetPackages Include="$(_LibOutDir)PdfToSvg.NET.$(Version).snupkg" />
+    </ItemGroup>
+
+    <DownloadFile Condition="!Exists('$(_NuGetExePath)')" SourceUrl="$(NuGetDownloadUrl)" DestinationFolder="$(IntermediateOutputPath)" />
+    
+    <Delete Files="@(_FilesToDelete)" />
+    
+    <Copy SourceFiles="@(_NuGetPackages)" DestinationFolder="$(_ReleaseDir)" />
+    <Copy SourceFiles="@(_ZipContent)" DestinationFolder="$(_ZipContentDir)%(RecursiveDir)" />
+    <Copy SourceFiles="@(_ReleaseContent)" DestinationFolder="$(_ReleaseDir)" />
+    
+    <ZipDirectory SourceDirectory="$(_ZipContentDir)" DestinationFile="$(_ReleaseDir)PdfToSvg.NET.$(VersionPrefix).zip" />
+    
+    <WriteLinesToFile File="$(_ReleaseDir)PublishNuGet.bat" Lines="$(_PublishScript)" Overwrite="true" />
+
+    <Message Importance="high" Text="Release package created in file:///$([System.IO.Path]::GetFullPath('$(_ReleaseDir)'))" />
+  </Target>
+
+</Project>

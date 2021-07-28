@@ -19,11 +19,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		src\Directory.Build.props = src\Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApproximateCmyk", "tools\ApproximateCmyk\ApproximateCmyk.csproj", "{F84FBE74-2436-4EF5-A70A-A115EA28A604}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApproximateCmyk", "tools\ApproximateCmyk\ApproximateCmyk.csproj", "{F84FBE74-2436-4EF5-A70A-A115EA28A604}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfToSvg.Cli", "src\PdfToSvg.Cli\PdfToSvg.Cli.csproj", "{CAACAF0A-B183-4CFB-A3C1-90DD18E56328}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfToSvg.RealLifeTests", "tests\PdfToSvg.RealLifeTests\PdfToSvg.RealLifeTests.csproj", "{8732CD16-810E-406E-A962-BAEB6E8AE3A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfToSvg.RealLifeTests", "tests\PdfToSvg.RealLifeTests\PdfToSvg.RealLifeTests.csproj", "{8732CD16-810E-406E-A962-BAEB6E8AE3A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfToSvg.Packer", "src\PdfToSvg.Packer\PdfToSvg.Packer.csproj", "{899BB00E-2396-499D-8934-FE1965DBD0B9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CAACAF0A-B183-4CFB-A3C1-90DD18E56328} = {CAACAF0A-B183-4CFB-A3C1-90DD18E56328}
+		{B2F05434-2A26-43A3-B016-52BFDEE736D0} = {B2F05434-2A26-43A3-B016-52BFDEE736D0}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +65,10 @@ Global
 		{8732CD16-810E-406E-A962-BAEB6E8AE3A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8732CD16-810E-406E-A962-BAEB6E8AE3A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8732CD16-810E-406E-A962-BAEB6E8AE3A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{899BB00E-2396-499D-8934-FE1965DBD0B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{899BB00E-2396-499D-8934-FE1965DBD0B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{899BB00E-2396-499D-8934-FE1965DBD0B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{899BB00E-2396-499D-8934-FE1965DBD0B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

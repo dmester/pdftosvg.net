@@ -8,6 +8,7 @@ Thumbs.db
 [Bb]in
 obj/
 .vs/
+releases/
 
 #Nuget packages folder
 packages/

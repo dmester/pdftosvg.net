@@ -2,7 +2,7 @@
 
 There is a command line tool for PdfToSvg.NET that can be used for converting PDF files to SVG.
 
-[**Download latest Windows binaries**](https://github.com/dmester/pdftosvg.net/releases/latest/download/pdftosvg.exe)
+📥 [**Download latest Windows binaries**](https://github.com/dmester/pdftosvg.net/releases/latest/download/pdftosvg.exe)
 
 .NET Framework 4.0 is required to run the tool.
 
@@ -13,15 +13,15 @@ pdftosvg.exe <input> [<output>] [<pages>]
 
 ## Options
 
-### `<input>`
+#### `<input>`
 Path to the input PDF file.
 
-### `<output>`
+#### `<output>`
 Path to the output SVG file(s). A page number will be appended to the filename.
 
-Default: Same as `<input>`, but with `.svg` as extension.
+**Default:** Same as `<input>`, but with `.svg` as extension.
 
-### `<pages>`
+#### `<pages>`
 Pages to convert.
 
 Syntax:
@@ -33,7 +33,7 @@ Syntax:
 | `12..`   | Converts page 12 and forward. |
 | `..15`   | Converts page 1 to 15.        |
 
-Default: all pages
+**Default:** all pages
 
 ## Examples
 

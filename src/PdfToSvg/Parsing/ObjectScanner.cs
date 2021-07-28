@@ -15,6 +15,11 @@ using System.Threading;
 
 namespace PdfToSvg.Parsing
 {
+    /// <summary>
+    /// Scanner used to find objects within a PDF file without using a cross-reference table.
+    /// This is used as fallback when the xref table is either missing or corrupt.
+    /// See PDF spec 1.7, page 658.
+    /// </summary>
     internal static class ObjectScanner
     {
         private enum ScanToken

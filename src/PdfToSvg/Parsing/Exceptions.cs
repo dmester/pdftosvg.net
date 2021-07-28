@@ -19,9 +19,9 @@ namespace PdfToSvg.Parsing
             return new EncryptedPdfException();
         }
 
-        public static Exception CircularXref(long byteOffsetXRef)
+        public static Exception CorruptPdf()
         {
-            return new PdfParserException("Circular xref in pdf.", byteOffsetXRef);
+            return new PdfParserException("The PDF file is corrupt and could not be read.", 0);
         }
 
         public static Exception MissingTrailer(long byteOffsetXRef)
@@ -55,11 +55,6 @@ namespace PdfToSvg.Parsing
         public static Exception HeaderNotFound()
         {
             return new PdfParserException("The specified file is not a valid PDF file. No file header was found.", 0);
-        }
-
-        public static Exception XRefTableNotFound()
-        {
-            return new PdfParserException("The specified file is not a valid PDF file. No XRef table was found.", 0);
         }
 
         public static Exception UnexpectedCharacter(BufferedReader reader, char unexpectedChar)

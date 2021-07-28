@@ -81,7 +81,7 @@ namespace PdfToSvg.Parsing
             var eof = Regex.Match(str, "startxref[\0\t\n\f\r ]*([0-9]+)[\0\t\n\f\r ]*%%EOF", RegexOptions.RightToLeft);
             if (!eof.Success)
             {
-                throw Exceptions.XRefTableNotFound();
+                return -1;
             }
 
             return long.Parse(eof.Groups[1].Value, CultureInfo.InvariantCulture);
@@ -400,6 +400,33 @@ namespace PdfToSvg.Parsing
             return objects;
         }
 
+        private XRefTable RebuildXRefTable(CancellationToken cancellationToken)
+        {
+            if (ObjectScanner.TryScanObjects(lexer.Stream, out var xrefTable, out var trailerPositions, cancellationToken))
+            {
+                for (var i = trailerPositions.Count - 1; i >= 0; i--)
+                {
+                    lexer.Seek(trailerPositions[i], SeekOrigin.Begin);
+
+                    if (lexer.Read().Token == Token.Trailer)
+                    {
+                        var trailerDict = ReadDictionary();
+                        if (trailerDict.ContainsKey(Names.Root))
+                        {
+                            xrefTable.Trailer = trailerDict;
+                            return xrefTable;
+                        }
+                    }
+                }
+
+                throw Exceptions.MissingTrailer(trailerPositions.First());
+            }
+            else
+            {
+                throw Exceptions.CorruptPdf();
+            }
+        }
+
         public XRefTable ReadXRefTables(long byteOffsetLastXRef, CancellationToken cancellationToken)
         {
             var xrefTable = new XRefTable();
@@ -407,13 +434,20 @@ namespace PdfToSvg.Parsing
 
             var byteOffsets = new HashSet<long>();
 
+            if (byteOffsetLastXRef < 0)
+            {
+                Log.WriteLine("Missing file trailer in PDF. Indexing all objects.");
+                return RebuildXRefTable(cancellationToken);
+            }
+
             while (byteOffsetLastXRef >= 0)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 if (!byteOffsets.Add(byteOffsetLastXRef))
                 {
-                    throw Exceptions.CircularXref(byteOffsetLastXRef);
+                    Log.WriteLine("Circular xref in PDF. Indexing all objects.");
+                    return RebuildXRefTable(cancellationToken);
                 }
 
                 lexer.Seek(byteOffsetLastXRef, SeekOrigin.Begin);
@@ -440,7 +474,8 @@ namespace PdfToSvg.Parsing
                     }
                     else
                     {
-                        throw Exceptions.MissingTrailer(byteOffsetLastXRef);
+                        Log.WriteLine("Missing trailer after cross-reference table at position {0}. Indexing all objects.", byteOffsetLastXRef);
+                        return RebuildXRefTable(cancellationToken);
                     }
                 }
                 else if (nextLexeme.Token == Token.Integer)
@@ -462,8 +497,14 @@ namespace PdfToSvg.Parsing
                     }
                     else
                     {
-                        throw Exceptions.MissingTrailer(byteOffsetLastXRef);
+                        Log.WriteLine("Missing trailer after cross-reference stream at position {0}. Indexing all objects.", byteOffsetLastXRef);
+                        return RebuildXRefTable(cancellationToken);
                     }
+                }
+                else
+                {
+                    Log.WriteLine("Corrupt PDF file. Indexing all objects.");
+                    return RebuildXRefTable(cancellationToken);
                 }
             }
 

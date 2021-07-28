@@ -1,0 +1,33 @@
+%PDF-1.7
+
+trailer<</Root 11 6 R>>
+
+11 6 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >> endobj
+
+3 0 obj 
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /FH1 << /Type /Font /Subtype /Type1 /BaseFont /Times-Bold /Encoding /WinAnsiEncoding >>
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj << /Length 132 >>
+stream
+   0 0 0 rg
+
+   BT
+      70 800 Td
+      27 TL
+     
+      /FH1 12 Tf
+      (This PDF lacks a cross-reference table) '
+   ET
+endstream
+endobj

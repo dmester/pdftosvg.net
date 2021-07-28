@@ -1150,7 +1150,8 @@ namespace PdfToSvg.Drawing
                 return resources.GetColorSpace(name, cancellationToken);
             }
 
-            return ColorSpace.Parse(definition, resources.Dictionary.GetDictionaryOrNull(Names.ColorSpace), cancellationToken);
+            return ColorSpaceParser.Parse(
+                definition, resources.Dictionary.GetDictionaryOrNull(Names.ColorSpace), cancellationToken);
         }
 
         private void SetFillColor(RgbColor newColor)

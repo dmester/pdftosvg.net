@@ -152,29 +152,49 @@ namespace PdfToSvg.DocumentModel
         // PDF spec 1.7, table 93, page 223
         // Abbreviations used in inline images
 
+        public static PdfName BPC { get; } = new PdfName("BPC");
+        public static PdfName CS { get; } = new PdfName("CS");
+        public static PdfName D { get; } = new PdfName("D");
+        public static PdfName DP { get; } = new PdfName("DP");
+        public static PdfName F { get; } = new PdfName("F");
+        public static PdfName H { get; } = new PdfName("H");
+        public static PdfName IM { get; } = new PdfName("IM");
+        public static PdfName I { get; } = new PdfName("I");
+        public static PdfName W { get; } = new PdfName("W");
+        public static PdfName G { get; } = new PdfName("G");
+        public static PdfName RGB { get; } = new PdfName("RGB");
+        public static PdfName CMYK { get; } = new PdfName("CMYK");
+        public static PdfName AHx { get; } = new PdfName("AHx");
+        public static PdfName A85 { get; } = new PdfName("A85");
+        public static PdfName LZW { get; } = new PdfName("LZW");
+        public static PdfName Fl { get; } = new PdfName("Fl");
+        public static PdfName RL { get; } = new PdfName("RL");
+        public static PdfName CCF { get; } = new PdfName("CCF");
+        public static PdfName DCT { get; } = new PdfName("DCT");
+
         public static PdfName Translate(PdfName input, bool isRootDictionary)
         {
             switch (input.Value)
             {
-                case "BPC": return Names.BitsPerComponent;
-                case "CS": return Names.ColorSpace;
-                case "D": return Names.Decode;
-                case "DP": return Names.DecodeParms;
-                case "F": return Names.Filter;
-                case "H": return Names.Height;
-                case "IM": return Names.ImageMask;
-                case "I": return isRootDictionary ? Names.Interpolate : Names.Indexed;
-                case "W": return Names.Width;
-                case "G": return Names.DeviceGray;
-                case "RGB": return Names.DeviceRGB;
-                case "CMYK": return Names.DeviceCMYK;
-                case "AHx": return Names.ASCIIHexDecode;
-                case "A85": return Names.ASCII85Decode;
-                case "LZW": return Names.LZWDecode;
-                case "Fl": return Names.FlateDecode;
-                case "RL": return Names.RunLengthDecode;
-                case "CCF": return Names.CCITTFaxDecode;
-                case "DCT": return Names.DCTDecode;
+                case nameof(BPC): return Names.BitsPerComponent;
+                case nameof(CS): return Names.ColorSpace;
+                case nameof(D): return Names.Decode;
+                case nameof(DP): return Names.DecodeParms;
+                case nameof(F): return Names.Filter;
+                case nameof(H): return Names.Height;
+                case nameof(IM): return Names.ImageMask;
+                case nameof(I): return isRootDictionary ? Names.Interpolate : Names.Indexed;
+                case nameof(W): return Names.Width;
+                case nameof(G): return Names.DeviceGray;
+                case nameof(RGB): return Names.DeviceRGB;
+                case nameof(CMYK): return Names.DeviceCMYK;
+                case nameof(AHx): return Names.ASCIIHexDecode;
+                case nameof(A85): return Names.ASCII85Decode;
+                case nameof(LZW): return Names.LZWDecode;
+                case nameof(Fl): return Names.FlateDecode;
+                case nameof(RL): return Names.RunLengthDecode;
+                case nameof(CCF): return Names.CCITTFaxDecode;
+                case nameof(DCT): return Names.DCTDecode;
                 default: return input;
             }
         }

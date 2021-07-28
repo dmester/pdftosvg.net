@@ -45,7 +45,8 @@ namespace PdfToSvg.Drawing
         {
             if (!colorSpaces.TryGetValue(colorSpaceName, out var colorSpace))
             {
-                colorSpace = ColorSpace.Parse(colorSpaceName, Dictionary.GetDictionaryOrNull(Names.ColorSpace), cancellationToken);
+                colorSpace = ColorSpaceParser.Parse(
+                    colorSpaceName, Dictionary.GetDictionaryOrNull(Names.ColorSpace), cancellationToken);
                 colorSpaces[colorSpaceName] = colorSpace;
             }
 

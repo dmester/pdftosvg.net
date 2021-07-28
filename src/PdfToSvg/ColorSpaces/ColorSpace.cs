@@ -324,10 +324,19 @@ namespace PdfToSvg.ColorSpaces
                     definitionArray.Length > 3)
                 {
                     // PDF spec 1.7, 8.6.6.4, page 165
-                    // TOOD implement colorant "None"
                     var alternateSpace = Parse(definitionArray[2], colorSpaceResourcesDictionary, recursionCount + 1, cancellationToken);
                     var tintTransform = Function.Parse(definitionArray[3], cancellationToken);
                     return new SeparationColorSpace(alternateSpace, tintTransform);
+                }
+
+                if (colorSpaceName == Names.DeviceN &&
+                    definitionArray.Length > 3)
+                {
+                    // PDF spec 1.7, 8.6.6.5, page 167
+                    var componentsPerSample = definitionArray[1] is object[] names ? names.Length : 1;
+                    var alternateSpace = Parse(definitionArray[2], colorSpaceResourcesDictionary, recursionCount + 1, cancellationToken);
+                    var tintTransform = Function.Parse(definitionArray[3], cancellationToken);
+                    return new DeviceNColorSpace(componentsPerSample, alternateSpace, tintTransform);
                 }
 
                 Log.WriteLine("Unsupported color space: {0}.", colorSpaceName);

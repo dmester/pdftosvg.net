@@ -116,6 +116,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Lab { get; } = new PdfName("Lab");
         public static PdfName ICCBased { get; } = new PdfName("ICCBased");
         public static PdfName Separation { get; } = new PdfName("Separation");
+        public static PdfName DeviceN { get; } = new PdfName("DeviceN");
 
         public static PdfName Alternate { get; } = new PdfName("Alternate");
         public static PdfName N { get; } = new PdfName("N");

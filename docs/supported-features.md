@@ -60,7 +60,7 @@ Impl | Description
 ❌ | Pattern
 ❎ | Indexed
 ❎ | Separation
-❌ | DeviceN
+❎ | DeviceN
 
 ## Graphics state parameter dictionary
 

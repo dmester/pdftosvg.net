@@ -14,6 +14,9 @@ namespace PdfToSvg.ColorSpaces
 {
     internal class SeparationColorSpace : ColorSpace
     {
+        // Implementation limitation:
+        // The `name` parameter of the colorspace does not affect generated colors.
+
         private readonly Function tintTransform;
 
         public SeparationColorSpace(ColorSpace alternateSpace, Function tintTransform)

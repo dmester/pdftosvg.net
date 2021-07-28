@@ -29,7 +29,6 @@ The commonly used color spaces are supported and transformed to RGB. PDF does ho
 
 Non-supported color spaces:
 
-* DeviceN
 * Pattern
 * ICCBased
 

@@ -36,18 +36,24 @@ namespace PdfToSvg.Imaging
 
         private Stream GetStream(CancellationToken cancellationToken)
         {
-            var filters = imageDictionaryStream.Filters;
+            Stream? resultStream = null;
 
-            var readStream = imageDictionaryStream.Open(cancellationToken);
+            var filters = imageDictionaryStream.Filters;
+            var encodedStream = imageDictionaryStream.Open(cancellationToken);
+
             try
             {
-                return filters.Take(filters.Count - 1).Decode(readStream);
+                resultStream = filters.Take(filters.Count - 1).Decode(encodedStream);
             }
-            catch
+            finally
             {
-                readStream.Dispose();
-                throw;
+                if (resultStream == null)
+                {
+                    encodedStream.Dispose();
+                }
             }
+
+            return resultStream;
         }
 
         public override byte[] GetContent(CancellationToken cancellationToken)

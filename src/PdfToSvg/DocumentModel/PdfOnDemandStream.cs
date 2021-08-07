@@ -34,16 +34,22 @@ namespace PdfToSvg.DocumentModel
         public override async Task<Stream> OpenAsync(CancellationToken cancellationToken)
         {
             var reader = await file.CreateExclusiveSliceReaderAsync(Offset, Length, (int)Math.Min(8 * 1024, Length), cancellationToken).ConfigureAwait(false);
+            var success = false;
+
             try
             {
                 await reader.FillBufferAsync().ConfigureAwait(false);
-                return reader;
+                success = true;
             }
-            catch
+            finally
             {
-                reader.Dispose();
-                throw;
+                if (!success)
+                {
+                    reader.Dispose();
+                }
             }
+
+            return reader;
         }
 #endif
     }

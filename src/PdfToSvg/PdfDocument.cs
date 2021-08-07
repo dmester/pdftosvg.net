@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.IO;
 using PdfToSvg.Parsing;
@@ -85,17 +86,23 @@ namespace PdfToSvg
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (path.Length == 0) throw new ArgumentException("The path must not be empty.", nameof(path));
 
+            PdfDocument? result = null;
+
             var file = new InputFile(path, useAsync: false);
 
             try
             {
-                return PdfReader.Read(file, cancellationToken);
+                result = PdfReader.Read(file, cancellationToken);
             }
-            catch
+            finally
             {
-                file.Dispose();
-                throw;
+                if (result == null)
+                {
+                    file.Dispose();
+                }
             }
+
+            return result;
         }
 
 #if HAVE_ASYNC
@@ -120,17 +127,23 @@ namespace PdfToSvg
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (path.Length == 0) throw new ArgumentException("The path must not be empty.", nameof(path));
 
+            PdfDocument? result = null;
+
             var file = new InputFile(path, useAsync: true);
 
             try
             {
-                return await PdfReader.ReadAsync(file, cancellationToken).ConfigureAwait(false);
+                result = await PdfReader.ReadAsync(file, cancellationToken).ConfigureAwait(false);
             }
-            catch
+            finally
             {
-                file.Dispose();
-                throw;
+                if (result == null)
+                {
+                    file.Dispose();
+                }
             }
+
+            return result;
         }
 #endif
 

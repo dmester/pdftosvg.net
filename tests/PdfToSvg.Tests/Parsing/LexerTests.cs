@@ -129,7 +129,7 @@ namespace PdfToSvg.Tests.Parsing
         [Test]
         public void Real()
         {
-            var lexer = new Lexer(" 0.0  .12345 42.0+.4567 -.4567 +23.4567 -23.4567 4. ", basicKeywords);
+            var lexer = new Lexer(" 0.0  .12345 42.0+.4567 -.4567 +23.4567 -23.4567 4. 77777777777777777777  ", basicKeywords);
 
             Assert.AreEqual(new Lexeme(Token.Real, "0.0"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Real, ".12345"), lexer.Read());
@@ -139,6 +139,9 @@ namespace PdfToSvg.Tests.Parsing
             Assert.AreEqual(new Lexeme(Token.Real, "+23.4567"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Real, "-23.4567"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Real, "4."), lexer.Read());
+
+            // 7777777777 is interpreted as a real since it is out of the value range of Int32
+            Assert.AreEqual(new Lexeme(Token.Real, "77777777777777777777"), lexer.Read());
 
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());

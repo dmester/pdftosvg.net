@@ -6,6 +6,7 @@ using PdfToSvg.DocumentModel;
 using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -189,7 +190,19 @@ namespace PdfToSvg.Parsing
             }
             while (proceed);
 
-            return CreateLexeme(inDecimal ? Token.Real : Token.Integer, startPosition);
+            var value = new PdfString(stringBuffer);
+            stringBuffer.SetLength(0);
+
+            // Let integers that are outside the range of Int32 to be typed as reals
+            var token = Token.Real;
+
+            if (!inDecimal && value.Length < 20 &&
+                int.TryParse(value.ToString(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out _))
+            {
+                token = Token.Integer;
+            }
+
+            return new Lexeme(token, startPosition, value);
         }
 
         protected byte ReadOctalByte()

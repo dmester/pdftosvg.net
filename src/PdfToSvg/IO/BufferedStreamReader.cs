@@ -30,11 +30,11 @@ namespace PdfToSvg.IO
             this.offset = offset;
             this.length = length;
 
-            try
+            if (stream.CanSeek)
             {
                 estimatedStreamPosition = stream.Position - offset;
             }
-            catch
+            else
             {
                 estimatedStreamPosition = 0;
             }
@@ -48,11 +48,11 @@ namespace PdfToSvg.IO
             this.offset = 0;
             this.length = -1;
 
-            try
+            if (stream.CanSeek)
             {
                 estimatedStreamPosition = stream.Position;
             }
-            catch
+            else
             {
                 estimatedStreamPosition = 0;
             }

@@ -102,44 +102,34 @@ namespace PdfToSvg.Functions.PostScript
             return stack[index];
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public void Push(object value)
         {
             stack.Add(value);
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public void Pop(out int int1, out int int2)
         {
             Pop(out int2);
             Pop(out int1);
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public void Pop(out double num1, out double num2)
         {
             Pop(out num2);
             Pop(out num1);
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public void Pop(out object any1, out object any2)
         {
             Pop(out any2);
             Pop(out any1);
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public void Pop(out object any)
         {
             var index = stack.Count - 1;
@@ -154,9 +144,7 @@ namespace PdfToSvg.Functions.PostScript
             }
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public object Peek()
         {
             var index = stack.Count - 1;
@@ -170,17 +158,13 @@ namespace PdfToSvg.Functions.PostScript
             }
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public void Pop()
         {
             Pop(out object _);
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public void Pop(out bool bool1, out PostScriptExpression block1, out PostScriptExpression block2)
         {
             Pop(out block2);
@@ -188,27 +172,21 @@ namespace PdfToSvg.Functions.PostScript
             Pop(out bool1);
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public void Pop(out bool bool1, out PostScriptExpression block1)
         {
             Pop(out block1);
             Pop(out bool1);
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public void Pop(out bool bool1, out bool bool2)
         {
             Pop(out bool2);
             Pop(out bool1);
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public void Pop(out PostScriptExpression result)
         {
             Pop(out object value);

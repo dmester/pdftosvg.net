@@ -131,9 +131,7 @@ namespace PdfToSvg.IO
             }
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public static byte[] GetBufferOrArray(this MemoryStream stream)
         {
 #if NETSTANDARD1_6

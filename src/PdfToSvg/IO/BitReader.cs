@@ -164,9 +164,7 @@ namespace PdfToSvg.IO
             while (readBufferLength < readBuffer.Length);
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         private bool EnsureBufferBytes(int bytes)
         {
             if (byteCursor + bytes > readBufferLength)
@@ -182,9 +180,7 @@ namespace PdfToSvg.IO
             return true;
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         private uint ReadBits(int bits)
         {
             var result = 0u;

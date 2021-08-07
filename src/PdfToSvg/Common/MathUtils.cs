@@ -16,9 +16,7 @@ namespace PdfToSvg.Common
         // The Clamp methods are signature compatible with the Math.Clamp methods in .NET Core.
         // Included for compatibility with .NET Framework.
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public static float Clamp(float value, float min, float max)
         {
             return
@@ -27,9 +25,7 @@ namespace PdfToSvg.Common
                 value;
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public static double Clamp(double value, double min, double max)
         {
             return
@@ -38,9 +34,7 @@ namespace PdfToSvg.Common
                 value;
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public static int Clamp(int value, int min, int max)
         {
             return
@@ -85,17 +79,13 @@ namespace PdfToSvg.Common
             return false;
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public static double Interpolate(double x, double xmin, double xmax, double ymin, double ymax)
         {
             return ymin + ((x - xmin) * (ymax - ymin) / (xmax - xmin));
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public static int BitsToBytes(int bits)
         {
             return (bits + 7) >> 3;

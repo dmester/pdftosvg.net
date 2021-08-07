@@ -51,9 +51,7 @@ namespace PdfToSvg.IO
 
         public override void Flush() { }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         private static void LoopCopy(byte[] src, int srcOffset, byte[] dst, int dstOffset, int count)
         {
             for (var i = 0; i < count; i++)

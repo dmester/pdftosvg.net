@@ -114,9 +114,7 @@ namespace PdfToSvg.ColorSpaces
 
         public abstract float[] DefaultColor { get; }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         private static byte ToRgb8Component(float value)
         {
             var intValue = unchecked((int)(value * 255f + 0.5f));
@@ -133,9 +131,7 @@ namespace PdfToSvg.ColorSpaces
             return unchecked((byte)intValue);
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         private static int ToRgb16Component(float value)
         {
             var intValue = unchecked((int)(value * ushort.MaxValue + 0.5f));

@@ -38,9 +38,7 @@ namespace PdfToSvg.ColorSpaces
             +0.0557101f, -0.2040211f, +1.0569959f
         );
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public static float LinearRgbToSRgb(float v)
         {
             return v <= 0.0031308f

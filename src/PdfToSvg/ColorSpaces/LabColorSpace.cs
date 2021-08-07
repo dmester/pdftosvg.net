@@ -85,9 +85,7 @@ namespace PdfToSvg.ColorSpaces
             blue = ColorConversion.LinearRgbToSRgb(rgb.M31);
         }
 
-#if HAVE_AGGRESSIVE_INLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         private static float g(float x)
         {
             return x >= 6f / 29f

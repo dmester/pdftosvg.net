@@ -23,7 +23,7 @@ namespace PdfToSvg.Imaging.Png
         public void WriteSignature()
         {
             var signature = new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 };
-            output.Write(signature, 0, signature.Length);
+            output.Write(signature);
         }
 
         public void WriteImageHeader(int width, int height, PngColorType colorType, int bitDepth)
@@ -44,7 +44,7 @@ namespace PdfToSvg.Imaging.Png
         {
             using (var chunk = new PngChunkStream(output, PngChunkIdentifier.Palette))
             {
-                chunk.Write(palette, 0, palette.Length);
+                chunk.Write(palette);
             }
         }
 

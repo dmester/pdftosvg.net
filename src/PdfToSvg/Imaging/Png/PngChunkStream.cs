@@ -42,7 +42,7 @@ namespace PdfToSvg.Imaging.Png
 
                 // Name
                 var binaryName = Encoding.UTF8.GetBytes(name);
-                outputStream.Write(binaryName, 0, binaryName.Length);
+                outputStream.Write(binaryName);
                 crc.Update(binaryName, 0, binaryName.Length);
 
                 // Data

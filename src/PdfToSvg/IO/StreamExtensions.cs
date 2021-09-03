@@ -142,6 +142,28 @@ namespace PdfToSvg.IO
         }
 
         /// <summary>
+        /// Writes all bytes from a specified buffer to the stream.
+        /// </summary>
+        /// <param name="buffer">Buffer whose content will be written to the stream.</param>
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static void Write(this Stream stream, byte[] buffer)
+        {
+            stream.Write(buffer, 0, buffer.Length);
+        }
+
+#if HAVE_ASYNC
+        /// <summary>
+        /// Asynchronously writes all bytes from a specified buffer to the stream.
+        /// </summary>
+        /// <param name="buffer">Buffer whose content will be written to the stream.</param>
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static Task WriteAsync(this Stream stream, byte[] buffer, CancellationToken cancellationToken = default)
+        {
+            return stream.WriteAsync(buffer, 0, buffer.Length, cancellationToken);
+        }
+#endif
+
+        /// <summary>
         /// Writes an <see cref="int"/> in big-endian format to the stream.
         /// </summary>
         public static void WriteBigEndian(this Stream stream, int value)

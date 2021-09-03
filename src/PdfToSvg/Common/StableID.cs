@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.IO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -75,14 +76,14 @@ namespace PdfToSvg.Common
                 }
                 else if (input is byte[] byteArray)
                 {
-                    hashStream.Write(byteArray, 0, byteArray.Length);
+                    hashStream.Write(byteArray);
                 }
                 else if (input is IEnumerable enumerable)
                 {
                     foreach (var item in enumerable)
                     {
                         Update(hashStream, item, buffer);
-                        hashStream.Write(Separator, 0, Separator.Length);
+                        hashStream.Write(Separator);
                     }
                 }
                 else if (input is double inputDbl)

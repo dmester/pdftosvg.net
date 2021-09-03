@@ -7,6 +7,7 @@ using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Filters;
 using PdfToSvg.Imaging.Png;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -164,7 +165,7 @@ namespace PdfToSvg.Imaging
                     }
                     while (read > 0 && rowCursor < row.Length);
 
-                    pngDataStream.Write(row, 0, row.Length);
+                    pngDataStream.Write(row);
 
                     if ((y & 0x3f) == 0)
                     {

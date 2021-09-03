@@ -147,7 +147,7 @@ namespace PdfToSvg.Imaging
                 }
                 while (pngRgbRowCursor < pngRgbRow.Length);
 
-                outputStream.Write(pngRgbRow, 0, pngRgbRow.Length);
+                outputStream.Write(pngRgbRow);
 
                 if ((y & 0x3f) == 0)
                 {
@@ -231,7 +231,7 @@ namespace PdfToSvg.Imaging
                 }
                 while (pngRgbRowCursor < pngRgbRow.Length);
 
-                outputStream.Write(pngRgbRow, 0, pngRgbRow.Length);
+                outputStream.Write(pngRgbRow);
 
                 if ((y & 0x3f) == 0)
                 {

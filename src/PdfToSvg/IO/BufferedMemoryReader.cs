@@ -16,13 +16,30 @@ namespace PdfToSvg.IO
     [DebuggerDisplay("{DebugView,nq}")]
     internal class BufferedMemoryReader : BufferedReader
     {
+        private readonly long length;
+
         public BufferedMemoryReader(byte[] data) : base(data)
         {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+
             bufferLength = data.Length;
             estimatedStreamPosition = data.Length;
+            length = data.Length;
         }
 
-        public override long Length => buffer.Length;
+        public BufferedMemoryReader(byte[] data, int offset, int count) : base(data)
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (offset < 0) throw new ArgumentOutOfRangeException(nameof(offset));
+            if (count < 0 || offset + count > data.Length) throw new ArgumentOutOfRangeException(nameof(count));
+
+            bufferLength = offset + count;
+            readCursor = offset;
+            estimatedStreamPosition = count;
+            length = count;
+        }
+
+        public override long Length => length;
 
         protected override void SeekCore(long position) { }
 

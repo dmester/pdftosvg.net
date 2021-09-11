@@ -32,14 +32,23 @@ namespace PdfToSvg.IO
         }
 
 #if HAVE_ASYNC
-        public Task<BufferedReader> CreateExclusiveReaderAsync(CancellationToken cancellationToken)
+        public Task<BufferedReader> CreateReaderAsync(CancellationToken cancellationToken)
         {
-            return CreateExclusiveReaderAsync(DefaultBufferSize, cancellationToken);
+            return CreateReaderAsync(DefaultBufferSize, cancellationToken);
         }
 
-        public async Task<BufferedReader> CreateExclusiveReaderAsync(int bufferSize, CancellationToken cancellationToken)
+        public async Task<BufferedReader> CreateReaderAsync(int bufferSize, CancellationToken cancellationToken)
         {
             if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
+
+            // If the base stream is a MemoryStream, read synchronization is not needed, since we can construct as many
+            // streams we need around the same buffer.
+#if !NETFRAMEWORK
+            if (baseStream is MemoryStream baseMemoryStream && baseMemoryStream.TryGetBuffer(out var buffer))
+            {
+                return new BufferedMemoryReader(buffer.Array, buffer.Offset, buffer.Count);
+            }
+#endif
 
             if (!await readSemaphore.WaitAsync(OpenTimeout, cancellationToken).ConfigureAwait(false))
             {
@@ -66,14 +75,23 @@ namespace PdfToSvg.IO
         }
 #endif
 
-        public BufferedReader CreateExclusiveReader(CancellationToken cancellationToken)
+        public BufferedReader CreateReader(CancellationToken cancellationToken)
         {
-            return CreateExclusiveReader(DefaultBufferSize, cancellationToken);
+            return CreateReader(DefaultBufferSize, cancellationToken);
         }
 
-        public BufferedReader CreateExclusiveReader(int bufferSize, CancellationToken cancellationToken)
+        public BufferedReader CreateReader(int bufferSize, CancellationToken cancellationToken)
         {
             if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
+
+            // If the base stream is a MemoryStream, read synchronization is not needed, since we can construct as many
+            // streams we need around the same buffer.
+#if !NETFRAMEWORK
+            if (baseStream is MemoryStream baseMemoryStream && baseMemoryStream.TryGetBuffer(out var buffer))
+            {
+                return new BufferedMemoryReader(buffer.Array, buffer.Offset, buffer.Count);
+            }
+#endif
 
             if (!readSemaphore.Wait(OpenTimeout, cancellationToken))
             {
@@ -100,14 +118,23 @@ namespace PdfToSvg.IO
         }
 
 #if HAVE_ASYNC
-        public Task<BufferedReader> CreateExclusiveSliceReaderAsync(long offset, long length, CancellationToken cancellationToken)
+        public Task<BufferedReader> CreateSliceReaderAsync(long offset, long length, CancellationToken cancellationToken)
         {
-            return CreateExclusiveSliceReaderAsync(offset, length, DefaultBufferSize, cancellationToken);
+            return CreateSliceReaderAsync(offset, length, DefaultBufferSize, cancellationToken);
         }
 
-        public async Task<BufferedReader> CreateExclusiveSliceReaderAsync(long offset, long length, int bufferSize, CancellationToken cancellationToken)
+        public async Task<BufferedReader> CreateSliceReaderAsync(long offset, long length, int bufferSize, CancellationToken cancellationToken)
         {
             if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
+
+            // If the base stream is a MemoryStream, read synchronization is not needed, since we can construct as many
+            // streams we need around the same buffer.
+#if !NETFRAMEWORK
+            if (baseStream is MemoryStream baseMemoryStream && baseMemoryStream.TryGetBuffer(out var buffer))
+            {
+                return new BufferedMemoryReader(buffer.Array, buffer.Offset + (int)offset, (int)length);
+            }
+#endif
 
             if (!await readSemaphore.WaitAsync(OpenTimeout, cancellationToken).ConfigureAwait(false))
             {
@@ -135,14 +162,23 @@ namespace PdfToSvg.IO
         }
 #endif
 
-        public BufferedReader CreateExclusiveSliceReader(long offset, long length, CancellationToken cancellationToken)
+        public BufferedReader CreateSliceReader(long offset, long length, CancellationToken cancellationToken)
         {
-            return CreateExclusiveSliceReader(offset, length, DefaultBufferSize, cancellationToken);
+            return CreateSliceReader(offset, length, DefaultBufferSize, cancellationToken);
         }
 
-        public BufferedReader CreateExclusiveSliceReader(long offset, long length, int bufferSize, CancellationToken cancellationToken)
+        public BufferedReader CreateSliceReader(long offset, long length, int bufferSize, CancellationToken cancellationToken)
         {
             if (baseStream == null || readSemaphore == null) throw new ObjectDisposedException(nameof(InputFile));
+
+            // If the base stream is a MemoryStream, read synchronization is not needed, since we can construct as many
+            // streams we need around the same buffer.
+#if !NETFRAMEWORK
+            if (baseStream is MemoryStream baseMemoryStream && baseMemoryStream.TryGetBuffer(out var buffer))
+            {
+                return new BufferedMemoryReader(buffer.Array, buffer.Offset + (int)offset, (int)length);
+            }
+#endif
 
             if (!readSemaphore.Wait(OpenTimeout, cancellationToken))
             {

@@ -33,7 +33,7 @@ namespace PdfToSvg.Parsing
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            using var reader = file.CreateExclusiveReader(cancellationToken);
+            using var reader = file.CreateReader(cancellationToken);
             var parser = new DocumentParser(file, reader);
 
             parser.ReadFileHeader();
@@ -60,7 +60,7 @@ namespace PdfToSvg.Parsing
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            using var reader = await file.CreateExclusiveReaderAsync(cancellationToken).ConfigureAwait(false);
+            using var reader = await file.CreateReaderAsync(cancellationToken).ConfigureAwait(false);
 
             var parser = new DocumentParser(file, reader);
 

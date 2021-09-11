@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Tests.IO
 {
-    public class BufferedReaderTests
+    public class BufferedStreamReaderTests
     {
         private static BufferedStreamReader Create(string content, int bufferSize)
         {

@@ -27,13 +27,13 @@ namespace PdfToSvg.DocumentModel
 
         public override Stream Open(CancellationToken cancellationToken)
         {
-            return file.CreateExclusiveSliceReader(Offset, Length, cancellationToken);
+            return file.CreateSliceReader(Offset, Length, cancellationToken);
         }
 
 #if HAVE_ASYNC
         public override async Task<Stream> OpenAsync(CancellationToken cancellationToken)
         {
-            var reader = await file.CreateExclusiveSliceReaderAsync(Offset, Length, (int)Math.Min(8 * 1024, Length), cancellationToken).ConfigureAwait(false);
+            var reader = await file.CreateSliceReaderAsync(Offset, Length, (int)Math.Min(8 * 1024, Length), cancellationToken).ConfigureAwait(false);
             var success = false;
 
             try

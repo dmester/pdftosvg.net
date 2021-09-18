@@ -20,12 +20,9 @@ namespace PdfToSvg.Tests
 {
     public class ConversionTests
     {
-        private const string TestFilesDir = "TestFiles";
         private const string OwnTestFilesDir = "Own";
         private const string InputDir = "input";
         private const string ExpectedDir = "expected";
-
-        private static readonly string testDir;
 
 #if NET40
         private const string TargetFramework = "net40";
@@ -36,28 +33,6 @@ namespace PdfToSvg.Tests
 #elif NET5_0
         private const string TargetFramework = "netstandard21";
 #endif
-
-        static ConversionTests()
-        {
-            var directory = TestContext.CurrentContext.WorkDirectory;
-
-            for (var i = 0; i < 8 && !string.IsNullOrEmpty(directory); i++)
-            {
-                var potentialTestFileDirectory = Path.Combine(directory, TestFilesDir);
-                if (Directory.Exists(potentialTestFileDirectory))
-                {
-                    testDir = directory;
-                    break;
-                }
-
-                directory = Path.GetDirectoryName(directory);
-            }
-
-            if (testDir == null)
-            {
-                throw new DirectoryNotFoundException("Could not find test files directory.");
-            }
-        }
 
         private static byte[] RecompressPng(byte[] pngData)
         {
@@ -214,17 +189,17 @@ namespace PdfToSvg.Tests
 
         private static string GetInputFilePath(string fileName)
         {
-            return Path.Combine(testDir, TestFilesDir, OwnTestFilesDir, InputDir, fileName);
+            return Path.Combine(TestFiles.TestFilesPath, OwnTestFilesDir, InputDir, fileName);
         }
 
         private static string GetExpectedFilePath(string fileName)
         {
-            return Path.Combine(testDir, TestFilesDir, OwnTestFilesDir, ExpectedDir, Path.ChangeExtension(fileName, ".svg"));
+            return Path.Combine(TestFiles.TestFilesPath, OwnTestFilesDir, ExpectedDir, Path.ChangeExtension(fileName, ".svg"));
         }
 
         private static string GetActualFilePath(string category, string fileName)
         {
-            return Path.Combine(testDir, TestFilesDir, OwnTestFilesDir, "actual-" + TargetFramework + "-" + category, Path.ChangeExtension(fileName, ".svg"));
+            return Path.Combine(TestFiles.TestFilesPath, OwnTestFilesDir, "actual-" + TargetFramework + "-" + category, Path.ChangeExtension(fileName, ".svg"));
         }
 
         [Test]
@@ -308,7 +283,7 @@ namespace PdfToSvg.Tests
             get
             {
                 return Directory
-                    .EnumerateFiles(Path.Combine(testDir, TestFilesDir, OwnTestFilesDir, InputDir), "*.pdf")
+                    .EnumerateFiles(Path.Combine(TestFiles.TestFilesPath, OwnTestFilesDir, InputDir), "*.pdf")
                     .Select(path => new TestCaseData(Path.GetFileName(path)))
                     .ToList();
             }

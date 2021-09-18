@@ -90,5 +90,18 @@ namespace PdfToSvg.Common
         {
             return (bits + 7) >> 3;
         }
+
+        public static int ModBE(byte[] dividend, byte divisor)
+        {
+            // Adapted from https://stackoverflow.com/a/10441333
+            var result = 0;
+
+            for (var i = 0; i < dividend.Length; i++)
+            {
+                result = (result * (256 % divisor) + (dividend[i] % divisor)) % divisor;
+            }
+
+            return result;
+        }
     }
 }

@@ -80,13 +80,13 @@ namespace PdfToSvg.Parsing
 
                 if (srcLexeme.Token != Token.HexString)
                 {
-                    throw Exceptions.UnexpectedToken(lexer.Stream, srcLexeme);
+                    throw ParserExceptions.UnexpectedToken(lexer.Stream, srcLexeme);
                 }
 
                 var dstLexeme = lexer.Read();
                 if (dstLexeme.Token != Token.HexString)
                 {
-                    throw Exceptions.UnexpectedToken(lexer.Stream, srcLexeme);
+                    throw ParserExceptions.UnexpectedToken(lexer.Stream, srcLexeme);
                 }
 
                 cmap.AddBfChar(srcLexeme.Value, dstLexeme.Value);
@@ -105,13 +105,13 @@ namespace PdfToSvg.Parsing
 
                 if (srcLexemeLo.Token != Token.HexString)
                 {
-                    throw Exceptions.UnexpectedToken(lexer.Stream, srcLexemeLo);
+                    throw ParserExceptions.UnexpectedToken(lexer.Stream, srcLexemeLo);
                 }
 
                 var srcLexemeHi = lexer.Read();
                 if (srcLexemeHi.Token != Token.HexString)
                 {
-                    throw Exceptions.UnexpectedToken(lexer.Stream, srcLexemeHi);
+                    throw ParserExceptions.UnexpectedToken(lexer.Stream, srcLexemeHi);
                 }
 
                 var nextLexeme = lexer.Read();
@@ -133,7 +133,7 @@ namespace PdfToSvg.Parsing
                         }
                         else
                         {
-                            throw Exceptions.UnexpectedToken(lexer.Stream, nextLexeme);
+                            throw ParserExceptions.UnexpectedToken(lexer.Stream, nextLexeme);
                         }
                     }
 
@@ -145,7 +145,7 @@ namespace PdfToSvg.Parsing
                 }
                 else
                 {
-                    throw Exceptions.UnexpectedToken(lexer.Stream, nextLexeme);
+                    throw ParserExceptions.UnexpectedToken(lexer.Stream, nextLexeme);
                 }
             }
         }

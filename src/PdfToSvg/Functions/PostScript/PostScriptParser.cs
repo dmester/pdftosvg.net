@@ -34,7 +34,7 @@ namespace PdfToSvg.Functions.PostScript
 
             if (nextLexeme.Token != Token.BeginBlock)
             {
-                throw new PdfParserException($"Expected starting '{{' but found {nextLexeme} in PostScript function.", nextLexeme.Position);
+                throw new ParserException($"Expected starting '{{' but found {nextLexeme} in PostScript function.", nextLexeme.Position);
             }
 
             return ReadBlock();
@@ -82,12 +82,12 @@ namespace PdfToSvg.Functions.PostScript
                         }
                         else
                         {
-                            throw new PdfParserException($"Unknown PostScript function operator {operatorName}.", nextLexeme.Position);
+                            throw new ParserException($"Unknown PostScript function operator {operatorName}.", nextLexeme.Position);
                         }
                         break;
 
                     default:
-                        throw new PdfParserException($"Unexpected token {nextLexeme} in PostScript function.", nextLexeme.Position);
+                        throw new ParserException($"Unexpected token {nextLexeme} in PostScript function.", nextLexeme.Position);
                 }
             }
             while (continueReading);

@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Parsing
 {
-    internal class PdfParserException : PdfException
+    internal class ParserException : PdfException
     {
-        public PdfParserException(string message, long position) : base(message)
+        public ParserException(string message, long position) : base(message)
         {
             Position = position;
         }

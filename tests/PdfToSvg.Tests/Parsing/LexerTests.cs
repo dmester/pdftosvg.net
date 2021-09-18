@@ -173,7 +173,7 @@ namespace PdfToSvg.Tests.Parsing
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
 
             var lexerInvalid = new Lexer("(abc");
-            Assert.Throws<PdfParserException>(() => lexerInvalid.Read());
+            Assert.Throws<ParserException>(() => lexerInvalid.Read());
         }
 
         [Test]
@@ -192,10 +192,10 @@ namespace PdfToSvg.Tests.Parsing
             Assert.AreEqual(new Lexeme(Token.EndOfInput, 35), lexer.Read());
 
             var lexerInvalidChars = new Lexer("< 4XXX 14 ### \0 \na  \t \f 4A 5  >");
-            Assert.Throws<PdfParserException>(() => lexerInvalidChars.Read());
+            Assert.Throws<ParserException>(() => lexerInvalidChars.Read());
 
             var lexerUnclosed = new Lexer("<414a4A50");
-            Assert.Throws<PdfParserException>(() => lexerUnclosed.Read());
+            Assert.Throws<ParserException>(() => lexerUnclosed.Read());
         }
 
         [Test]

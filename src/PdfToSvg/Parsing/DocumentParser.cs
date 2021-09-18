@@ -54,7 +54,7 @@ namespace PdfToSvg.Parsing
             var version = Regex.Match(str, "%PDF-1.\\d");
             if (!version.Success)
             {
-                throw Exceptions.HeaderNotFound();
+                throw ParserExceptions.HeaderNotFound();
             }
         }
 
@@ -419,11 +419,11 @@ namespace PdfToSvg.Parsing
                     }
                 }
 
-                throw Exceptions.MissingTrailer(trailerPositions.First());
+                throw ParserExceptions.MissingTrailer(trailerPositions.First());
             }
             else
             {
-                throw Exceptions.CorruptPdf();
+                throw ParserExceptions.CorruptPdf();
             }
         }
 

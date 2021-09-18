@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Parsing
 {
-    internal static class Exceptions
+    internal static class ParserExceptions
     {
         public static Exception EncryptedPdf()
         {
@@ -21,12 +21,12 @@ namespace PdfToSvg.Parsing
 
         public static Exception CorruptPdf()
         {
-            return new PdfParserException("The PDF file is corrupt and could not be read.", 0);
+            return new ParserException("The PDF file is corrupt and could not be read.", 0);
         }
 
         public static Exception MissingTrailer(long byteOffsetXRef)
         {
-            return new PdfParserException("Missing or corrupt trailer in xref.", byteOffsetXRef);
+            return new ParserException("Missing or corrupt trailer in xref.", byteOffsetXRef);
         }
 
         public static Exception UnexpectedToken(BufferedReader reader, Lexeme unexpectedLexeme)
@@ -49,12 +49,12 @@ namespace PdfToSvg.Parsing
                 extract.Substring((int)(unexpectedLexeme.Position - extractPosition))
             );
 
-            return new PdfParserException(errorMessage, unexpectedLexeme.Position);
+            return new ParserException(errorMessage, unexpectedLexeme.Position);
         }
 
         public static Exception HeaderNotFound()
         {
-            return new PdfParserException("The specified file is not a valid PDF file. No file header was found.", 0);
+            return new ParserException("The specified file is not a valid PDF file. No file header was found.", 0);
         }
 
         public static Exception UnexpectedCharacter(BufferedReader reader, char unexpectedChar)
@@ -80,7 +80,7 @@ namespace PdfToSvg.Parsing
                 extract.Substring((int)(errorPosition - extractPosition))
             );
 
-            return new PdfParserException(errorMessage, errorPosition);
+            return new ParserException(errorMessage, errorPosition);
         }
     }
 }

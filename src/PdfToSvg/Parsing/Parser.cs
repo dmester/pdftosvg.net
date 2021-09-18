@@ -246,7 +246,7 @@ namespace PdfToSvg.Parsing
                     return PdfName.Create(nextLexeme.Value.ToString());
 
                 default:
-                    throw Exceptions.UnexpectedToken(lexer.Stream, nextLexeme);
+                    throw ParserExceptions.UnexpectedToken(lexer.Stream, nextLexeme);
             }
         }
     }

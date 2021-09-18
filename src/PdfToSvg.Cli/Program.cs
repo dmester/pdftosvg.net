@@ -32,23 +32,25 @@ namespace PdfToSvg.Cli
             Console.WriteLine("Converts an input PDF file to one or multiple SVG files.");
             Console.WriteLine();
             Console.WriteLine("Usage:");
-            Console.WriteLine("  pdftosvg.exe <input> [<output>] [<pages>]");
+            Console.WriteLine("  pdftosvg.exe <input> [--password <password>] [<output>] [<pages>]");
             Console.WriteLine();
             Console.WriteLine("Options:");
-            Console.WriteLine("  <input>   Path to the input PDF file.");
+            Console.WriteLine("  <input>     Path to the input PDF file.");
             Console.WriteLine();
-            Console.WriteLine("  <output>  Path to the output SVG file(s). A page number will be appended to ");
-            Console.WriteLine("            the filename.");
-            Console.WriteLine("            Default: Same as <input>, but with \".svg\" as extension.");
+            Console.WriteLine("  --password  Owner or user password for opening the document.");
             Console.WriteLine();
-            Console.WriteLine("  <pages>   Pages to convert. Syntax:");
+            Console.WriteLine("  <output>    Path to the output SVG file(s). A page number will be appended to");
+            Console.WriteLine("              the filename.");
+            Console.WriteLine("              Default: Same as <input>, but with \".svg\" as extension.");
             Console.WriteLine();
-            Console.WriteLine("              12..15  Converts page 12 to 15.");
-            Console.WriteLine("              12,15   Converts page 12 and 15.");
-            Console.WriteLine("              12..    Converts page 12 and forward.");
-            Console.WriteLine("              ..15    Converts page 1 to 15.");
+            Console.WriteLine("  <pages>     Pages to convert. Syntax:");
             Console.WriteLine();
-            Console.WriteLine("            Default: all pages");
+            Console.WriteLine("                12..15  Converts page 12 to 15.");
+            Console.WriteLine("                12,15   Converts page 12 and 15.");
+            Console.WriteLine("                12..    Converts page 12 and forward.");
+            Console.WriteLine("                ..15    Converts page 1 to 15.");
+            Console.WriteLine();
+            Console.WriteLine("              Default: all pages");
             Console.WriteLine();
             Console.WriteLine("Example:");
             Console.WriteLine("  pdftosvg.exe input.pdf output.svg 1..2,9");
@@ -111,7 +113,7 @@ namespace PdfToSvg.Cli
 
             try
             {
-                using (var doc = PdfDocument.Open(commandLine.InputPath!))
+                using (var doc = PdfDocument.Open(commandLine.InputPath!, new OpenOptions { Password = commandLine.Password }))
                 {
                     IEnumerable<int> pageNumbers;
 
@@ -133,9 +135,24 @@ namespace PdfToSvg.Cli
                     }
                 }
             }
-            catch (EncryptedPdfException)
+            catch (PermissionException)
             {
-                Console.Error.WriteLine("ERROR Input file is encrypted and cannot be converted.");
+                Console.Error.WriteLine("ERROR The document author does not allow extraction of content from the");
+                Console.Error.WriteLine("  specified document. If you are the author, you can specify the owner password");
+                Console.Error.WriteLine("  using the --password command line option to proceed with the conversion.");
+                return 5;
+            }
+            catch (InvalidCredentialException)
+            {
+                if (string.IsNullOrEmpty(commandLine.Password))
+                {
+                    Console.Error.WriteLine("ERROR Input file is encrypted and requires a password to open. You can specify");
+                    Console.Error.WriteLine("  the password by using the --password command line option.");
+                }
+                else
+                {
+                    Console.Error.WriteLine("ERROR The specified password is not correct.");
+                }
                 return 4;
             }
 

@@ -81,6 +81,42 @@ namespace PdfToSvg.DocumentModel
             return new PdfString(Encoding.BigEndianUnicode.GetBytes(str), true);
         }
 
+        public bool StartsWith(byte[] buffer, int offset, int count)
+        {
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (offset < 0) throw new ArgumentOutOfRangeException(nameof(offset));
+            if (count < 0 || offset + count > buffer.Length) throw new ArgumentOutOfRangeException(nameof(count));
+
+            if (data.Length < count)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < count; i++)
+            {
+                if (data[i] != buffer[offset + i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool StartsWith(byte[] value)
+        {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
+            return StartsWith(value, 0, value.Length);
+        }
+
+        public bool StartsWith(PdfString value)
+        {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
+            return StartsWith(value.data, 0, value.data.Length);
+        }
+
         public bool Equals(PdfString? other)
         {
             if ((object?)other == null)
@@ -129,6 +165,16 @@ namespace PdfToSvg.DocumentModel
         }
 
         public byte[] ToByteArray() => (byte[])data.Clone();
+
+        public byte[] ToByteArray(int startIndex, int count)
+        {
+            if (startIndex < 0) throw new ArgumentOutOfRangeException(nameof(startIndex));
+            if (count < 0 || startIndex + count > data.Length) throw new ArgumentOutOfRangeException(nameof(count));
+
+            var result = new byte[count];
+            Buffer.BlockCopy(data, startIndex, result, 0, count);
+            return result;
+        }
 
         public override string ToString()
         {

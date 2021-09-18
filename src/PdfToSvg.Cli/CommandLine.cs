@@ -26,6 +26,12 @@ namespace PdfToSvg.Cli
                     break;
                 }
 
+                if (arg == "--password" && i + 1 < args.Length)
+                {
+                    Password = args[++i];
+                    continue;
+                }
+
                 if (InputPath != null && PageRange.TryParse(arg, out var ranges))
                 {
                     PageRanges.AddRange(ranges);
@@ -53,6 +59,8 @@ namespace PdfToSvg.Cli
         public string? InputPath { get; }
 
         public string? OutputPath { get; }
+
+        public string? Password { get; }
 
         public List<PageRange> PageRanges { get; } = new List<PageRange>();
     }

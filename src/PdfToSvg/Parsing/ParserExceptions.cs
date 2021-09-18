@@ -14,11 +14,6 @@ namespace PdfToSvg.Parsing
 {
     internal static class ParserExceptions
     {
-        public static Exception EncryptedPdf()
-        {
-            return new EncryptedPdfException();
-        }
-
         public static Exception CorruptPdf()
         {
             return new ParserException("The PDF file is corrupt and could not be read.", 0);

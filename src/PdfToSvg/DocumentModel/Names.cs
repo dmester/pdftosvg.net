@@ -10,6 +10,13 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.DocumentModel
 {
+    internal static class InternalNames
+    {
+        public static PdfName SecurityHandler { get; } = new PdfName("$$SecurityHandler");
+        public static PdfName ObjectId { get; } = new PdfName("$$ObjectId");
+        public static PdfName Implicit { get; } = new PdfName("$$Implicit");
+    }
+
     internal static class Names
     {
         public static PdfName WinAnsiEncoding { get; } = new PdfName("WinAnsiEncoding");
@@ -21,6 +28,27 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Info { get; } = new PdfName("Info");
         public static PdfName Root { get; } = new PdfName("Root");
         public static PdfName Encrypt { get; } = new PdfName("Encrypt");
+        public static PdfName Standard { get; } = new PdfName("Standard");
+        public static PdfName ID { get; } = new PdfName("ID");
+        public static PdfName R { get; } = new PdfName("R");
+        public static PdfName V { get; } = new PdfName("V");
+        public static PdfName O { get; } = new PdfName("O");
+        public static PdfName U { get; } = new PdfName("U");
+        public static PdfName OE { get; } = new PdfName("OE");
+        public static PdfName UE { get; } = new PdfName("UE");
+        public static PdfName P { get; } = new PdfName("P");
+        public static PdfName CF { get; } = new PdfName("CF");
+        public static PdfName CFM { get; } = new PdfName("CFM");
+        public static PdfName None { get; } = new PdfName("None");
+        public static PdfName V2 { get; } = new PdfName("V2");
+        public static PdfName AESV2 { get; } = new PdfName("AESV2");
+        public static PdfName AESV3 { get; } = new PdfName("AESV3");
+        public static PdfName StmF { get; } = new PdfName("StmF");
+        public static PdfName StrF { get; } = new PdfName("StrF");
+        public static PdfName Name { get; } = new PdfName("Name");
+        public static PdfName Perms { get; } = new PdfName("Perms");
+        public static PdfName Identity { get; } = new PdfName("Identity");
+        public static PdfName EncryptMetadata { get; } = new PdfName("EncryptMetadata");
         public static PdfName XRef { get; } = new PdfName("XRef");
 
         public static PdfName Type { get; } = new PdfName("Type");
@@ -90,6 +118,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Decode { get; } = new PdfName("Decode");
 
         public static PdfName Filter { get; } = new PdfName("Filter");
+        public static PdfName Crypt { get; } = new PdfName("Crypt");
         public static PdfName DCTDecode { get; } = new PdfName("DCTDecode");
         public static PdfName FlateDecode { get; } = new PdfName("FlateDecode");
         public static PdfName ASCIIHexDecode { get; } = new PdfName("ASCIIHexDecode");

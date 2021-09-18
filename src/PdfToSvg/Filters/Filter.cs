@@ -16,6 +16,7 @@ namespace PdfToSvg.Filters
     {
         public static Filter Ascii85Decode { get; } = new Ascii85DecodeFilter();
         public static Filter AsciiHexDecode { get; } = new AsciiHexDecodeFilter();
+        public static Filter Crypt { get; } = new CryptFilter();
         public static Filter DctDecode { get; } = new DctDecodeFilter();
         public static Filter FlateDecode { get; } = new FlateDecodeFilter();
         public static Filter LzwDecode { get; } = new LzwDecodeFilter();
@@ -26,6 +27,7 @@ namespace PdfToSvg.Filters
         {
             { Names.ASCII85Decode, Ascii85Decode },
             { Names.ASCIIHexDecode, AsciiHexDecode },
+            { Names.Crypt, Crypt },
             { Names.DCTDecode, DctDecode },
             { Names.FlateDecode, FlateDecode },
             { Names.LZWDecode, LzwDecode },

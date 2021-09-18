@@ -42,13 +42,21 @@ namespace PdfToSvg
         /// <param name="options">Additional configuration options for the conversion.</param>
         /// <param name="cancellationToken">Token for monitoring cancellation requests.</param>
         /// <returns>SVG fragment without XML declaration. The fragment can be saved to a file or included as inline SVG in HTML.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="options"/> is <c>null</c>.</exception>
+        /// <exception cref="PermissionException">
+        ///     Content extraction from this document is forbidden by the document author. 
+        ///     Not thrown if the document is opened with the owner password.
+        /// </exception>
+        /// <exception cref="PdfException">
+        ///     The conversion failed, possibly because of a malformed PDF.
+        /// </exception>
         /// <remarks>
-        /// Note that if you parse the returned SVG fragment as XML, you need to preserve space and not add indentation. Text content
-        /// will otherwise not render correctly.
+        ///     Note that if you parse the returned SVG fragment as XML, you need to preserve space and not add indentation. Text content
+        ///     will otherwise not render correctly.
         /// </remarks>
         public string ToSvgString(SvgConversionOptions? options = null, CancellationToken cancellationToken = default)
         {
+            AssertExtractPermission();
+
             return ToString(SvgRenderer.Convert(page, options, cancellationToken));
         }
 
@@ -59,6 +67,8 @@ namespace PdfToSvg
         /// <inheritdoc cref="ToSvgString(SvgConversionOptions, CancellationToken)"/>
         public async Task<string> ToSvgStringAsync(SvgConversionOptions? options = null, CancellationToken cancellationToken = default)
         {
+            AssertExtractPermission();
+
             var element = await SvgRenderer.ConvertAsync(page, options, cancellationToken).ConfigureAwait(false);
             return ToString(element);
         }
@@ -70,8 +80,22 @@ namespace PdfToSvg
         /// <param name="stream">Stream to write the SVG content to.</param>
         /// <param name="options">Additional configuration options for the conversion.</param>
         /// <param name="cancellationToken">Token for monitoring cancellation requests.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="stream"/> was <c>null</c>.
+        /// </exception>
+        /// <exception cref="PermissionException">
+        ///     Content extraction from this document is forbidden by the document author. 
+        ///     Not thrown if the document is opened with the owner password.
+        /// </exception>
+        /// <exception cref="PdfException">
+        ///     The conversion failed, possibly because of a malformed PDF.
+        /// </exception>
         public void SaveAsSvg(Stream stream, SvgConversionOptions? options = null, CancellationToken cancellationToken = default)
         {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+
+            AssertExtractPermission();
+
             var content = SvgRenderer.Convert(page, options, cancellationToken);
             var document = new XDocument(content);
 
@@ -85,8 +109,24 @@ namespace PdfToSvg
         /// <param name="path">Path to output SVG file. If the file already exists, it will be overwritten.</param>
         /// <param name="options">Additional configuration options for the conversion.</param>
         /// <param name="cancellationToken">Token for monitoring cancellation requests.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="path"/> was <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        ///     <paramref name="path"/> was an empty string.
+        /// </exception>
+        /// <exception cref="PermissionException">
+        ///     Content extraction from this document is forbidden by the document author. 
+        ///     Not thrown if the document is opened with the owner password.
+        /// </exception>
+        /// <exception cref="PdfException">
+        ///     The conversion failed, possibly because of a malformed PDF.
+        /// </exception>
         public void SaveAsSvg(string path, SvgConversionOptions? options = null, CancellationToken cancellationToken = default)
         {
+            if (path == null) throw new ArgumentNullException(nameof(path));
+            if (path.Length == 0) throw new ArgumentException("The path must not be empty.", nameof(path));
+
             using var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
             SaveAsSvg(stream, options, cancellationToken);
         }
@@ -95,11 +135,13 @@ namespace PdfToSvg
         /// <summary>
         /// Saves the page as an SVG file asynchronously.
         /// </summary>
-        /// <param name="stream">Stream to write the SVG content to.</param>
-        /// <param name="options">Additional configuration options for the conversion.</param>
-        /// <param name="cancellationToken">Token for monitoring cancellation requests.</param>
+        /// <inheritdoc cref="SaveAsSvg(Stream, SvgConversionOptions?, CancellationToken)"/>
         public async Task SaveAsSvgAsync(Stream stream, SvgConversionOptions? options = null, CancellationToken cancellationToken = default)
         {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+
+            AssertExtractPermission();
+
             var content = await SvgRenderer.ConvertAsync(page, options, cancellationToken).ConfigureAwait(false);
             var document = new XDocument(content);
 
@@ -117,15 +159,28 @@ namespace PdfToSvg
         /// <summary>
         /// Saves the page as an SVG file asynchronously.
         /// </summary>
-        /// <param name="path">Path to output SVG file. If the file already exists, it will be overwritten.</param>
-        /// <param name="options">Additional configuration options for the conversion.</param>
-        /// <param name="cancellationToken">Token for monitoring cancellation requests.</param>
+        /// <inheritdoc cref="SaveAsSvg(string, SvgConversionOptions?, CancellationToken)"/>
         public async Task SaveAsSvgAsync(string path, SvgConversionOptions? options = null, CancellationToken cancellationToken = default)
         {
+            if (path == null) throw new ArgumentNullException(nameof(path));
+            if (path.Length == 0) throw new ArgumentException("The path must not be empty.", nameof(path));
+
             using var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
             await SaveAsSvgAsync(stream, options, cancellationToken).ConfigureAwait(false);
         }
 #endif
+
+        private void AssertExtractPermission()
+        {
+            if (!owner.Permissions.HasOwnerPermission &&
+                !owner.Permissions.AllowExtractContent)
+            {
+                throw new PermissionException(
+                    "The document author does not allow content being extracted from this document. " +
+                    "If you are the owner of the document, you can specify the owner password in an " + nameof(OpenOptions) + " instance " +
+                    "passed to " + nameof(PdfDocument) + "." + nameof(PdfDocument.Open) + " to proceed with the export.");
+            }
+        }
 
         private static string ToString(XNode el)
         {

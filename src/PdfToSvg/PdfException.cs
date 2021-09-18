@@ -11,18 +11,16 @@ using System.Threading.Tasks;
 namespace PdfToSvg
 {
     /// <summary>
-    /// Represents errors that can occur while loading and converting a PDF file.
+    /// Represents errors that can occur while loading and converting a PDF file. This is the base class for all library specific
+    /// exceptions.
     /// </summary>
-    /// <remarks>
-    /// This is the base class for all PdfToSvg.NET specific exceptions.
-    /// </remarks>
-    public class PdfConversionException : Exception
+    public class PdfException : Exception
     {
         /// <summary>
-        /// Creates a new instance of a <see cref="PdfConversionException"/>.
+        /// Creates a new instance of a <see cref="PdfException"/>.
         /// </summary>
         /// <param name="message">Error message.</param>
-        public PdfConversionException(string message) : base(message)
+        public PdfException(string message) : base(message)
         {
         }
     }

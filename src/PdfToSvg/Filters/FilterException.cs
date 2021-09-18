@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace PdfToSvg.Filters
 {
     // TODO create throw helper
-    internal class FilterException : PdfConversionException
+    internal class FilterException : PdfException
     {
         public FilterException(string filter, byte unexpectedByte) :
             base(string.Format("Unexpected byte 0x{0:x2} in {1} stream.", unexpectedByte, filter))

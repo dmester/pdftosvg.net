@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Functions
 {
-    internal class PostScriptFunctionException : PdfConversionException
+    internal class PostScriptFunctionException : PdfException
     {
         public PostScriptFunctionException(string message) : base(message)
         {

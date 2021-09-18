@@ -12,6 +12,35 @@ namespace PdfToSvg.Common
 {
     internal static class ArrayUtils
     {
+        public static T[] Concat<T>(params T[]?[] arrays)
+        {
+            var totalLength = 0;
+
+            for (var i = 0; i < arrays.Length; i++)
+            {
+                var array = arrays[i];
+                if (array != null)
+                {
+                    totalLength += array.Length;
+                }
+            }
+
+            var result = new T[totalLength];
+            var cursor = 0;
+
+            for (var i = 0; i < arrays.Length; i++)
+            {
+                var array = arrays[i];
+                if (array != null)
+                {
+                    Array.Copy(array, 0, result, cursor, array.Length);
+                    cursor += array.Length;
+                }
+            }
+
+            return result;
+        }
+
 #if (NET40 || NET45)
         private class EmptyArrayHolder<T>
         {

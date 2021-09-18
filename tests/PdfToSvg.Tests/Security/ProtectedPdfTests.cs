@@ -52,7 +52,7 @@ namespace PdfToSvg.Tests.Security
             using (var doc = PdfDocument.Open(path, new OpenOptions { Password = password }))
             {
                 Assert.IsTrue(doc.Pages[0].ToSvgString().Contains("This is an encrypted PDF"), "Decrypted");
-                Assert.AreEqual("PdfToSvg.NET", doc.Author);
+                Assert.AreEqual("PdfToSvg.NET", doc.Info.Author);
             }
         }
 
@@ -79,7 +79,7 @@ namespace PdfToSvg.Tests.Security
             using (var doc = await PdfDocument.OpenAsync(path, new OpenOptions { Password = password }))
             {
                 Assert.IsTrue((await doc.Pages[0].ToSvgStringAsync()).Contains("This is an encrypted PDF"), "Decrypted");
-                Assert.AreEqual("PdfToSvg.NET", doc.Author);
+                Assert.AreEqual("PdfToSvg.NET", doc.Info.Author);
             }
         }
 

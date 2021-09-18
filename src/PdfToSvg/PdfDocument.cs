@@ -36,12 +36,12 @@ namespace PdfToSvg
     public sealed class PdfDocument : IDisposable
     {
         private readonly PdfDictionary root;
-        private readonly PdfDictionary info;
         private InputFile? file;
 
         internal PdfDocument(InputFile file, PdfDictionary? trailer, DocumentPermissions permissions, bool isEncrypted)
         {
-            this.info = trailer.GetDictionaryOrEmpty(Names.Info);
+            var info = trailer.GetDictionaryOrEmpty(Names.Info);
+
             this.root = trailer.GetDictionaryOrEmpty(Names.Root);
             this.file = file;
 
@@ -52,6 +52,7 @@ namespace PdfToSvg
 
             this.Permissions = permissions;
             this.IsEncrypted = isEncrypted;
+            this.Info = new DocumentInfo(info);
         }
 
         /// <summary>
@@ -162,44 +163,9 @@ namespace PdfToSvg
 #endif
 
         /// <summary>
-        /// Gets the title of the document.
+        /// Gets information about the document provided by the author.
         /// </summary>
-        public string? Title => info.GetValueOrDefault<PdfString?>(Names.Title)?.ToString();
-
-        /// <summary>
-        /// Gets the author of the document.
-        /// </summary>
-        public string? Author => info.GetValueOrDefault<PdfString?>(Names.Author)?.ToString();
-
-        /// <summary>
-        /// Gets the subject of the document.
-        /// </summary>
-        public string? Subject => info.GetValueOrDefault<PdfString?>(Names.Subject)?.ToString();
-
-        /// <summary>
-        /// Gets keywords specified for this document.
-        /// </summary>
-        public string? Keywords => info.GetValueOrDefault<PdfString?>(Names.Keywords)?.ToString();
-
-        /// <summary>
-        /// Gets the software used for creating the document.
-        /// </summary>
-        public string? Creator => info.GetValueOrDefault<PdfString?>(Names.Creator)?.ToString();
-
-        /// <summary>
-        /// Gets the software used for creating the PDF file.
-        /// </summary>
-        public string? Producer => info.GetValueOrDefault<PdfString?>(Names.Producer)?.ToString();
-
-        /// <summary>
-        /// Gets the date when the document was created.
-        /// </summary>
-        public DateTimeOffset? CreationDate => info.GetValueOrDefault<DateTimeOffset?>(Names.CreationDate);
-
-        /// <summary>
-        /// Gets the date when the document was modified.
-        /// </summary>
-        public DateTimeOffset? ModDate => info.GetValueOrDefault<DateTimeOffset?>(Names.ModDate);
+        public DocumentInfo Info { get; }
 
         /// <summary>
         /// Gets a collection of the pages in this PDF document.

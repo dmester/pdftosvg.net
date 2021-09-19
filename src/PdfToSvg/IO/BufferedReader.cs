@@ -146,7 +146,7 @@ namespace PdfToSvg.IO
             }
             else
             {
-                Seek(1, SeekOrigin.Current);
+                Seek(count, SeekOrigin.Current);
             }
         }
 

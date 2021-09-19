@@ -37,8 +37,6 @@ namespace PdfToSvg.Cli
             Console.WriteLine("Options:");
             Console.WriteLine("  <input>     Path to the input PDF file.");
             Console.WriteLine();
-            Console.WriteLine("  --password  Owner or user password for opening the document.");
-            Console.WriteLine();
             Console.WriteLine("  <output>    Path to the output SVG file(s). A page number will be appended to");
             Console.WriteLine("              the filename.");
             Console.WriteLine("              Default: Same as <input>, but with \".svg\" as extension.");
@@ -51,6 +49,9 @@ namespace PdfToSvg.Cli
             Console.WriteLine("                ..15    Converts page 1 to 15.");
             Console.WriteLine();
             Console.WriteLine("              Default: all pages");
+            Console.WriteLine();
+            Console.WriteLine("  --password  Owner or user password for opening the input file. By specifying");
+            Console.WriteLine("              the owner password, any access restrictions are bypassed.");
             Console.WriteLine();
             Console.WriteLine("Example:");
             Console.WriteLine("  pdftosvg.exe input.pdf output.svg 1..2,9");

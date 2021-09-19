@@ -8,7 +8,7 @@ There is a command line tool for PdfToSvg.NET that can be used for converting PD
 
 ## Usage
 ```
-pdftosvg.exe <input> [<output>] [<pages>]
+pdftosvg.exe <input> [--password <password>] [<output>] [<pages>]
 ```
 
 ## Options
@@ -34,6 +34,9 @@ Syntax:
 | `..15`   | Converts page 1 to 15.        |
 
 **Default:** all pages
+
+#### `--password <password>`
+Owner or user password for opening the input file. By specifying the owner password, any access restrictions are bypassed.
 
 ## Examples
 

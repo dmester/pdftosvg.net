@@ -18,6 +18,7 @@ namespace PdfToSvg.Security
         /// </summary>
         /// <param name="trailerDict">Trailer dictionary before object inlining.</param>
         /// <param name="encryptDict">Encryption dictionary.</param>
+        /// <param name="options">Options passed to <see cref="PdfDocument.Open(Stream, bool, OpenOptions?, System.Threading.CancellationToken)"/>.</param>
         public static SecurityHandler Create(PdfDictionary trailerDict, PdfDictionary encryptDict, OpenOptions options)
         {
             var securityHandler = encryptDict.GetValueOrDefault(Names.Filter, Names.Standard);

@@ -75,7 +75,8 @@ namespace PdfToSvg
         /// <returns><see cref="PdfDocument"/> for the specified stream.</returns>
         /// <exception cref="ArgumentException"><paramref name="stream"/> is not readable and/or seekable.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <c>null</c>.</exception>
-        /// <exception cref="EncryptedPdfException">The PDF file is encrypted. Encrypted PDFs are currently not supported.</exception>
+        /// <exception cref="InvalidCredentialException">The input PDF is encrypted, but an incorrect password was specified, or not specified at all.</exception>
+        /// <exception cref="PdfException">The input PDF could not be parsed.</exception>
         public static PdfDocument Open(Stream stream, bool leaveOpen = false, OpenOptions? options = null, CancellationToken cancellationToken = default)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
@@ -95,7 +96,8 @@ namespace PdfToSvg
         /// <exception cref="ArgumentException"><paramref name="path"/> is empty.</exception>
         /// <exception cref="IOException">An IO error occured while reading the file.</exception>
         /// <exception cref="FileNotFoundException">No file was found at <paramref name="path"/>.</exception>
-        /// <exception cref="EncryptedPdfException">The PDF file is encrypted. Encrypted PDFs are currently not supported.</exception>
+        /// <exception cref="InvalidCredentialException">The input PDF is encrypted, but an incorrect password was specified, or not specified at all.</exception>
+        /// <exception cref="PdfException">The input PDF could not be parsed.</exception>
         public static PdfDocument Open(string path, OpenOptions? options = null, CancellationToken cancellationToken = default)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));

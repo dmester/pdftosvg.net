@@ -144,6 +144,7 @@ namespace PdfToSvg.IO
         /// <summary>
         /// Writes all bytes from a specified buffer to the stream.
         /// </summary>
+        /// <param name="stream">Target stream.</param>
         /// <param name="buffer">Buffer whose content will be written to the stream.</param>
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public static void Write(this Stream stream, byte[] buffer)
@@ -155,7 +156,9 @@ namespace PdfToSvg.IO
         /// <summary>
         /// Asynchronously writes all bytes from a specified buffer to the stream.
         /// </summary>
+        /// <param name="stream">Target stream.</param>
         /// <param name="buffer">Buffer whose content will be written to the stream.</param>
+        /// <param name="cancellationToken">Token for monitoring cancellation requests.</param>
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public static Task WriteAsync(this Stream stream, byte[] buffer, CancellationToken cancellationToken = default)
         {

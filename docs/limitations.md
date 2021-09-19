@@ -32,10 +32,6 @@ Non-supported color spaces:
 * Pattern
 * ICCBased
 
-## Encrypted files
-
-It is possible to encrypt PDF files, with and without a password. PdfToSvg.NET does not support decrypting encrypted PDFs. If an encrypted PDF is encountered, an `EncryptedPdfException` is thrown.
-
 ## Other features
 
 The following features are not supported:

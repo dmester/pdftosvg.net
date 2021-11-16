@@ -40,7 +40,7 @@ namespace PdfToSvg.Encodings
 
                     if (item is PdfName glyphName)
                     {
-                        if (AdobeGlyphList.TryLookup(glyphName, out var ch))
+                        if (AdobeGlyphList.TryMap(glyphName, out var ch))
                         {
                             lookup[nextCharCode] = ch.ToString();
                         }

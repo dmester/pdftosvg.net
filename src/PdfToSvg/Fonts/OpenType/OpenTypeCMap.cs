@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Encodings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,22 +36,7 @@ namespace PdfToSvg.Fonts.OpenType
                 {
                     var unicode = range.StartUnicode + (glyphIndex - range.StartGlyphIndex);
 
-                    if (unicode < 0xFFFF)
-                    {
-                        return unchecked((char)unicode).ToString();
-                    }
-
-                    if (unicode < 0x10FFFF)
-                    {
-                        // Convert to UTF-16
-                        // https://en.wikipedia.org/wiki/UTF-16#U+0000_to_U+D7FF_and_U+E000_to_U+FFFF
-
-                        var u = unicode - 0x10000;
-                        var highSurrogate = unchecked((char)(0xD800 | (u >> 10)));
-                        var lowSurrogate = unchecked((char)(0xDC00 | (u & 0x3ff)));
-
-                        return new string(new[] { highSurrogate, lowSurrogate });
-                    }
+                    return Utf16Encoding.EncodeCodePoint(unicode);
                 }
             }
 

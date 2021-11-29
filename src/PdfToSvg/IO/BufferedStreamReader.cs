@@ -74,7 +74,7 @@ namespace PdfToSvg.IO
                     return length;
                 }
 
-                return stream.Length;
+                return stream.Length - offset;
             }
         }
 

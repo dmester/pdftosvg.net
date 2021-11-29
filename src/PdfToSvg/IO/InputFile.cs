@@ -16,6 +16,7 @@ namespace PdfToSvg.IO
     {
         private const int DefaultBufferSize = 4096;
         private const int OpenTimeout = 60000;
+
         private Stream? baseStream;
         private SemaphoreSlim? readSemaphore = new SemaphoreSlim(1, 1);
         private readonly bool leaveOpen;
@@ -30,6 +31,8 @@ namespace PdfToSvg.IO
         {
             this.baseStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync);
         }
+
+        public int StartOffset { get; set; }
 
 #if HAVE_ASYNC
         public Task<BufferedReader> CreateReaderAsync(CancellationToken cancellationToken)
@@ -46,7 +49,7 @@ namespace PdfToSvg.IO
 #if !NETFRAMEWORK
             if (baseStream is MemoryStream baseMemoryStream && baseMemoryStream.TryGetBuffer(out var buffer))
             {
-                return new BufferedMemoryReader(buffer.Array, buffer.Offset, buffer.Count);
+                return new BufferedMemoryReader(buffer.Array, buffer.Offset + StartOffset, buffer.Count - StartOffset);
             }
 #endif
 
@@ -60,7 +63,8 @@ namespace PdfToSvg.IO
 
             try
             {
-                reader = new BufferedStreamReader(baseStream, () => readSemaphore?.Release(), bufferSize);
+                baseStream.Position = StartOffset;
+                reader = new BufferedStreamReader(baseStream, StartOffset, -1, () => readSemaphore?.Release(), bufferSize);
                 succeeded = true;
             }
             finally
@@ -89,7 +93,7 @@ namespace PdfToSvg.IO
 #if !NETFRAMEWORK
             if (baseStream is MemoryStream baseMemoryStream && baseMemoryStream.TryGetBuffer(out var buffer))
             {
-                return new BufferedMemoryReader(buffer.Array, buffer.Offset, buffer.Count);
+                return new BufferedMemoryReader(buffer.Array, buffer.Offset + StartOffset, buffer.Count - StartOffset);
             }
 #endif
 
@@ -103,7 +107,8 @@ namespace PdfToSvg.IO
 
             try
             {
-                reader = new BufferedStreamReader(baseStream, () => readSemaphore?.Release(), bufferSize);
+                baseStream.Position = StartOffset;
+                reader = new BufferedStreamReader(baseStream, StartOffset, -1, () => readSemaphore?.Release(), bufferSize);
                 succeeded = true;
             }
             finally
@@ -132,7 +137,7 @@ namespace PdfToSvg.IO
 #if !NETFRAMEWORK
             if (baseStream is MemoryStream baseMemoryStream && baseMemoryStream.TryGetBuffer(out var buffer))
             {
-                return new BufferedMemoryReader(buffer.Array, buffer.Offset + (int)offset, (int)length);
+                return new BufferedMemoryReader(buffer.Array, buffer.Offset + StartOffset + (int)offset, (int)length);
             }
 #endif
 
@@ -146,8 +151,8 @@ namespace PdfToSvg.IO
 
             try
             {
-                baseStream.Position = offset;
-                reader = new BufferedStreamReader(baseStream, offset, length, () => readSemaphore?.Release(), bufferSize);
+                baseStream.Position = offset + StartOffset;
+                reader = new BufferedStreamReader(baseStream, StartOffset + offset, length, () => readSemaphore?.Release(), bufferSize);
                 succeeded = true;
             }
             finally
@@ -176,7 +181,7 @@ namespace PdfToSvg.IO
 #if !NETFRAMEWORK
             if (baseStream is MemoryStream baseMemoryStream && baseMemoryStream.TryGetBuffer(out var buffer))
             {
-                return new BufferedMemoryReader(buffer.Array, buffer.Offset + (int)offset, (int)length);
+                return new BufferedMemoryReader(buffer.Array, buffer.Offset + StartOffset + (int)offset, (int)length);
             }
 #endif
 
@@ -190,8 +195,8 @@ namespace PdfToSvg.IO
 
             try
             {
-                baseStream.Position = offset;
-                reader = new BufferedStreamReader(baseStream, offset, length, () => readSemaphore?.Release(), bufferSize);
+                baseStream.Position = offset + StartOffset;
+                reader = new BufferedStreamReader(baseStream, offset + StartOffset, length, () => readSemaphore?.Release(), bufferSize);
                 succeeded = true;
             }
             finally

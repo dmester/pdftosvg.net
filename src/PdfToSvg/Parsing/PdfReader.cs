@@ -34,10 +34,16 @@ namespace PdfToSvg.Parsing
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            // Find file header and make all offsets relative to it.
+            // This effectively throws away any garbage found before the header.
+            using (var headerReader = file.CreateReader(cancellationToken))
+            {
+                var headerParser = new DocumentParser(file, headerReader);
+                file.StartOffset = headerParser.ReadFileHeaderOffset();
+            }
+
             using var reader = file.CreateReader(cancellationToken);
             var parser = new DocumentParser(file, reader);
-
-            parser.ReadFileHeader();
 
             var startxref = parser.ReadStartXRef();
             var xrefTable = parser.ReadXRefTables(startxref, cancellationToken);
@@ -57,11 +63,16 @@ namespace PdfToSvg.Parsing
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            // Find file header and make all offsets relative to it.
+            // This effectively throws away any garbage found before the header.
+            using (var headerReader = file.CreateReader(cancellationToken))
+            {
+                var headerParser = new DocumentParser(file, headerReader);
+                file.StartOffset = await headerParser.ReadFileHeaderOffsetAsync().ConfigureAwait(false);
+            }
+
             using var reader = await file.CreateReaderAsync(cancellationToken).ConfigureAwait(false);
-
             var parser = new DocumentParser(file, reader);
-
-            await parser.ReadFileHeaderAsync().ConfigureAwait(false);
 
             var startxref = await parser.ReadStartXRefAsync().ConfigureAwait(false);
             var xrefTable = parser.ReadXRefTables(startxref, cancellationToken); // TODO make async

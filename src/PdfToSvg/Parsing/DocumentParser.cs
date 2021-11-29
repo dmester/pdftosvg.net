@@ -47,7 +47,7 @@ namespace PdfToSvg.Parsing
             this.file = file;
         }
 
-        private static void ReadFileHeader(byte[] buffer, int offset, int count)
+        private static int ReadFileHeaderOffset(byte[] buffer, int offset, int count)
         {
             var str = Encoding.ASCII.GetString(buffer, offset, count);
 
@@ -56,21 +56,23 @@ namespace PdfToSvg.Parsing
             {
                 throw ParserExceptions.HeaderNotFound();
             }
+
+            return version.Index;
         }
 
-        public void ReadFileHeader()
+        public int ReadFileHeaderOffset()
         {
             var buffer = new byte[1024];
             var readBytes = lexer.Stream.Read(buffer, 0, buffer.Length);
-            ReadFileHeader(buffer, 0, readBytes);
+            return ReadFileHeaderOffset(buffer, 0, readBytes);
         }
 
 #if HAVE_ASYNC
-        public async Task ReadFileHeaderAsync()
+        public async Task<int> ReadFileHeaderOffsetAsync()
         {
             var buffer = new byte[1024];
             var readBytes = await lexer.Stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
-            ReadFileHeader(buffer, 0, readBytes);
+            return ReadFileHeaderOffset(buffer, 0, readBytes);
         }
 #endif
 

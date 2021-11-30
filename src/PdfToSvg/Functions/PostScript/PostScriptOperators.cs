@@ -22,7 +22,6 @@ namespace PdfToSvg.Functions.PostScript
 
         static PostScriptOperators()
         {
-
             operators = typeof(PostScriptOperators)
                 .GetTypeInfo()
                 .GetMethods(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod)

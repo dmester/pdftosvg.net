@@ -3,9 +3,7 @@
 // Licensed under the MIT License.
 
 using NUnit.Framework;
-using PdfToSvg.DocumentModel;
-using PdfToSvg.Functions;
-using PdfToSvg.Functions.PostScript;
+using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,9 +11,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PdfToSvg.Tests.Functions
+namespace PdfToSvg.Tests.Common
 {
-    public class PostScriptStackTests
+    public class ListExtensionsTests
     {
         [TestCase("[1 2 3 4 5 6 7]", 5, 2, "[1 2 6 7 3 4 5]")]
         [TestCase("[1 2 3 4 5 6 7]", 5, -2, "[1 2 5 6 7 3 4]")]
@@ -25,23 +23,15 @@ namespace PdfToSvg.Tests.Functions
         [TestCase("[1 2 3 4 5 6 7]", 5, -5, "[1 2 3 4 5 6 7]")]
         public void Roll(string input, int windowSize, int shiftAmount, string expectedOutput)
         {
-            var parsedInput = input
+            var stack = input
                 .Trim('[', ']')
                 .Split(' ')
                 .Select(n => double.Parse(n, CultureInfo.InvariantCulture))
-                .ToArray();
+                .ToList();
 
-            var stack = new PostScriptStack();
-
-            foreach (var n in parsedInput)
-            {
-                stack.Push(n);
-            }
-
-            stack.Roll(windowSize, shiftAmount);
+            stack.RollEnd(windowSize, shiftAmount);
 
             var actualOutput = "[" + string.Join(" ", stack
-                .ToDoubleArray()
                 .Select(n => n.ToString("0", CultureInfo.InvariantCulture))
                 ) + "]";
 

@@ -8,11 +8,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-#if NET40
+
 namespace System.Reflection
 {
     internal static class TypeExtensions
     {
+#if NET40
         public static Type GetTypeInfo(this Type type)
         {
             return type;
@@ -22,6 +23,26 @@ namespace System.Reflection
         {
             return Delegate.CreateDelegate(delegateType, methodInfo);
         }
+
+        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
+        {
+            return Delegate.CreateDelegate(delegateType, target, methodInfo);
+        }
+
+        public static MethodInfo GetMethodInfo(this Delegate del)
+        {
+            return del.Method;
+        }
+#endif
+
+        public static TDelegate CreateDelegate<TDelegate>(this MethodInfo methodInfo)
+        {
+            return (TDelegate)(object)methodInfo.CreateDelegate(typeof(TDelegate));
+        }
+
+        public static TDelegate CreateDelegate<TDelegate>(this MethodInfo methodInfo, object target)
+        {
+            return (TDelegate)(object)methodInfo.CreateDelegate(typeof(TDelegate), target);
+        }
     }
 }
-#endif

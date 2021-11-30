@@ -47,21 +47,7 @@ namespace PdfToSvg.Functions.PostScript
                 throw new PostScriptStackUnderflowException();
             }
 
-            // Normalize shift amount to (1-n, 0]
-            shiftAmount = shiftAmount % windowSize;
-            if (shiftAmount > 0) shiftAmount -= windowSize;
-
-            if (shiftAmount != 0)
-            {
-                var startIndex = stack.Count - windowSize;
-
-                for (var i = 0; i > shiftAmount; i--)
-                {
-                    stack.Add(stack[startIndex - i]);
-                }
-
-                stack.RemoveRange(startIndex, -shiftAmount);
-            }
+            stack.RollEnd(windowSize, shiftAmount);
         }
 
         public void Exchange()

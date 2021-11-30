@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PdfToSvg.Fonts.OpenType
+namespace PdfToSvg.Fonts.OpenType.Enums
 {
-    internal enum OpenTypePlatformID
+    internal enum SfntVersion : uint
     {
-        Unicode = 0,
-        Macintosh = 1,
-        Windows = 3,
+        TrueType = 0x00010000u,
+        Cff = 0x4F54544Fu,
+        True = 0x74727565u,
+        Typ1 = 0x74797031u,
     }
 }

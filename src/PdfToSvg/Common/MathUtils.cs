@@ -103,5 +103,17 @@ namespace PdfToSvg.Common
 
             return result;
         }
+
+        public static int IntLog2(int value)
+        {
+            var result = 0;
+
+            while ((value >>= 1) != 0)
+            {
+                result++;
+            }
+
+            return result;
+        }
     }
 }

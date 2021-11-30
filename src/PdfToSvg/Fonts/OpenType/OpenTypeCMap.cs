@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.Encodings;
+using PdfToSvg.Fonts.OpenType.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PdfToSvg.Fonts.OpenType
+namespace PdfToSvg.Fonts.OpenType.Enums
 {
     internal enum OpenTypeNameID
     {

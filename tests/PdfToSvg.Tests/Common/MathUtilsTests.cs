@@ -38,5 +38,19 @@ namespace PdfToSvg.Tests.Common
 
             Assert.AreEqual(expectedResult, MathUtils.ModBE(binaryDividend, divisor));
         }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(15)]
+        [TestCase(16)]
+        [TestCase(17)]
+        [TestCase(1023)]
+        [TestCase(1024)]
+        [TestCase(1025)]
+        public void IntLog2(int value)
+        {
+            var expected = (int)Math.Floor(Math.Log(value) / Math.Log(2));
+            Assert.AreEqual(expected, MathUtils.IntLog2(value));
+        }
     }
 }

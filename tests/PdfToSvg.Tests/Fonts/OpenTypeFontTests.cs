@@ -41,10 +41,10 @@ namespace PdfToSvg.Tests.Fonts
             {
                 var font = OpenTypeFont.Parse(stream);
 
-                Assert.AreEqual("Untitled1", font.FontFamily);
-                Assert.AreEqual("Regular", font.FontSubfamily);
-                Assert.AreEqual("Untitled1", font.FullName);
-                Assert.AreEqual("Copyright (c) 2021, Daniel", font.Copyright);
+                Assert.AreEqual("Untitled1", font.Names.FontFamily);
+                Assert.AreEqual("Regular", font.Names.FontSubfamily);
+                Assert.AreEqual("Untitled1", font.Names.FullFontName);
+                Assert.AreEqual("Copyright (c) 2021, Daniel", font.Names.Copyright);
 
                 AssertCMap(font, @"
 Unicode 3
@@ -90,10 +90,10 @@ Windows 10
             {
                 var font = OpenTypeFont.Parse(stream);
 
-                Assert.AreEqual("Untitled1", font.FontFamily);
-                Assert.AreEqual("Regular", font.FontSubfamily);
-                Assert.AreEqual("Untitled1", font.FullName);
-                Assert.AreEqual("Copyright (c) 2021, Daniel", font.Copyright);
+                Assert.AreEqual("Untitled1", font.Names.FontFamily);
+                Assert.AreEqual("Regular", font.Names.FontSubfamily);
+                Assert.AreEqual("Untitled1", font.Names.FullFontName);
+                Assert.AreEqual("Copyright (c) 2021, Daniel", font.Names.Copyright);
 
                 AssertCMap(font, @"
 Macintosh 0

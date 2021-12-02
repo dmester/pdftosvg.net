@@ -10,20 +10,22 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PdfToSvg.Cli
 {
     internal static class Program
     {
+        private static string version = typeof(Program)
+            .Assembly
+            .GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), true)
+            .OfType<AssemblyInformationalVersionAttribute>()
+            .Select(attr => attr.InformationalVersion)
+            .FirstOrDefault();
+
         private static void WriteHelp()
         {
-            var assembly = typeof(Program).Assembly;
-            var version = assembly
-                .GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), true)
-                .OfType<AssemblyInformationalVersionAttribute>()
-                .Select(attr => attr.InformationalVersion)
-                .FirstOrDefault();
-
             Console.WriteLine("pdftosvg, version {0}", version);
             Console.WriteLine("  https://github.com/dmester/pdftosvg.net/");
             Console.WriteLine("  Copyright (c) Daniel Mester Pirttijärvi");
@@ -137,34 +139,76 @@ namespace PdfToSvg.Cli
                         pageNumbers = Enumerable.Range(1, doc.Pages.Count);
                     }
 
-                    foreach (var pageNumber in pageNumbers)
+                    var pageCount = pageNumbers.Count();
+                    var progressBar = new ProgressBar("Converting PDF...");
+
+                    Parallel.ForEach(pageNumbers, pageNumber =>
                     {
                         var page = doc.Pages[pageNumber - 1];
                         var pageOutputPath = Path.Combine(outputDir, outputFileName + "-" + pageNumber.ToString(CultureInfo.InvariantCulture) + ".svg");
+
                         page.SaveAsSvg(pageOutputPath);
-                        convertedPages++;
-                    }
+
+                        lock (progressBar)
+                        {
+                            convertedPages++;
+                            progressBar.ProgressPercent = 100 * convertedPages / pageCount;
+                        }
+                    });
                 }
             }
-            catch (PermissionException)
+            catch (Exception ex)
             {
-                Console.Error.WriteLine("ERROR The document author does not allow extraction of content from the");
-                Console.Error.WriteLine("  specified document. If you are the author, you can specify the owner password");
-                Console.Error.WriteLine("  using the --password command line option to proceed with the conversion.");
-                return 5;
-            }
-            catch (InvalidCredentialException)
-            {
-                if (string.IsNullOrEmpty(commandLine.Password))
+                if (ex is AggregateException aex)
                 {
-                    Console.Error.WriteLine("ERROR Input file is encrypted and requires a password to open. You can specify");
-                    Console.Error.WriteLine("  the password by using the --password command line option.");
+                    ex = aex.InnerException;
+                }
+
+                if (ex is InvalidCredentialException)
+                {
+                    ColoredConsole.WriteError("ERROR ", ConsoleColor.Red);
+
+                    if (string.IsNullOrEmpty(commandLine.Password))
+                    {
+                        Console.Error.WriteLine("Input file is encrypted and requires a password to open. You can specify");
+                        Console.Error.WriteLine("  the password by using the --password command line option.");
+                    }
+                    else
+                    {
+                        Console.Error.WriteLine("The specified password is not correct.");
+                    }
+
+                    return 4;
+                }
+                else if (ex is PermissionException)
+                {
+                    ColoredConsole.WriteError("ERROR ", ConsoleColor.Red);
+
+                    Console.Error.WriteLine("The document author does not allow extraction of content from the");
+                    Console.Error.WriteLine("  specified document. If you are the author, you can specify the owner password");
+                    Console.Error.WriteLine("  using the --password command line option to proceed with the conversion.");
+
+                    return 5;
                 }
                 else
                 {
-                    Console.Error.WriteLine("ERROR The specified password is not correct.");
+                    ColoredConsole.WriteError("ERROR ", ConsoleColor.Red);
+
+                    Console.Error.WriteLine("Something went terribly wrong. This is either because the PDF is malformed,");
+                    Console.Error.WriteLine("  or a bug in PdfToSvg.NET. If you think it is a bug, consider submitting a bug");
+                    Console.Error.WriteLine("  report. Please include the failing PDF file and the error information below.");
+                    Console.Error.WriteLine();
+                    Console.Error.WriteLine("ISSUE TRACKER");
+                    Console.Error.WriteLine("https://github.com/dmester/pdftosvg.net/issues");
+                    Console.Error.WriteLine();
+                    Console.Error.WriteLine("ERROR INFORMATION");
+                    Console.Error.WriteLine("Version: PdfToSvg.NET " + version);
+                    Console.Error.WriteLine("Operating system: " + Environment.OSVersion);
+                    Console.Error.WriteLine("Architecture: " + (Environment.Is64BitProcess ? "64" : "32") + " bit");
+                    Console.Error.WriteLine(ex.ToString());
+
+                    return 6;
                 }
-                return 4;
             }
 
             ColoredConsole.Write("OK ", ConsoleColor.Green);

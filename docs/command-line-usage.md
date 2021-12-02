@@ -4,7 +4,7 @@ There is a command line tool for PdfToSvg.NET that can be used for converting PD
 
 📥 [**Download latest Windows binaries**](https://github.com/dmester/pdftosvg.net/releases/latest/download/pdftosvg.exe)
 
-.NET Framework 4.0 is required to run the tool.
+.NET Framework 4.5 is required to run the tool.
 
 ## Usage
 ```

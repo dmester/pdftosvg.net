@@ -11,5 +11,12 @@
     <Compile Remove="..\PdfToSvg\bin\**\*.cs" Visible="false"/>
     <Compile Remove="..\PdfToSvg\obj\**\*.cs" Visible="false"/>
   </ItemGroup>
+    
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net45" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
 </Project>

@@ -8,7 +8,7 @@ There is a command line tool for PdfToSvg.NET that can be used for converting PD
 
 ## Usage
 ```
-pdftosvg.exe <input> [--password <password>] [<output>] [<pages>]
+pdftosvg.exe <input> [OPTIONS...] [<output>] [<pages>]
 ```
 
 ## Options
@@ -37,6 +37,9 @@ Syntax:
 
 #### `--password <password>`
 Owner or user password for opening the input file. By specifying the owner password, any access restrictions are bypassed.
+
+#### `--no-color`
+Disables colored text output in the console.
 
 ## Examples
 

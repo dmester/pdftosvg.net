@@ -32,6 +32,12 @@ namespace PdfToSvg.Cli
                     continue;
                 }
 
+                if (arg == "--no-color")
+                {
+                    NoColor = true;
+                    continue;
+                }
+
                 if (InputPath != null && PageRange.TryParse(arg, out var ranges))
                 {
                     PageRanges.AddRange(ranges);
@@ -55,6 +61,8 @@ namespace PdfToSvg.Cli
         }
 
         public bool ShowHelp { get; }
+
+        public bool NoColor { get; }
 
         public string? InputPath { get; }
 

@@ -32,7 +32,7 @@ namespace PdfToSvg.Cli
             Console.WriteLine("Converts an input PDF file to one or multiple SVG files.");
             Console.WriteLine();
             Console.WriteLine("Usage:");
-            Console.WriteLine("  pdftosvg.exe <input> [--password <password>] [<output>] [<pages>]");
+            Console.WriteLine("  pdftosvg.exe <input> [OPTIONS...] [<output>] [<pages>]");
             Console.WriteLine();
             Console.WriteLine("Options:");
             Console.WriteLine("  <input>     Path to the input PDF file.");
@@ -53,6 +53,8 @@ namespace PdfToSvg.Cli
             Console.WriteLine("  --password  Owner or user password for opening the input file. By specifying");
             Console.WriteLine("              the owner password, any access restrictions are bypassed.");
             Console.WriteLine();
+            Console.WriteLine("  --no-color  Disables colored text output in the console.");
+            Console.WriteLine();
             Console.WriteLine("Example:");
             Console.WriteLine("  pdftosvg.exe input.pdf output.svg 1..2,9");
         }
@@ -63,10 +65,17 @@ namespace PdfToSvg.Cli
             try
             {
                 commandLine = new CommandLine(args);
+
+                if (commandLine.NoColor)
+                {
+                    ColoredConsole.NoOutputColors = true;
+                    ColoredConsole.NoErrorColors = true;
+                }
             }
             catch (ArgumentException ex)
             {
-                Console.Error.WriteLine("ERROR " + ex.Message);
+                ColoredConsole.WriteError("ERROR ", ConsoleColor.Red);
+                Console.Error.WriteLine(ex.Message);
                 Console.Error.WriteLine("Run \"pdftosvg.exe --help\" to get help.");
                 return 2;
             }
@@ -80,7 +89,8 @@ namespace PdfToSvg.Cli
 
             if (!File.Exists(commandLine.InputPath))
             {
-                Console.Error.WriteLine("ERROR Input file not found.");
+                ColoredConsole.WriteError("ERROR ", ConsoleColor.Red);
+                Console.Error.WriteLine("Input file not found.");
                 return 3;
             }
 
@@ -157,7 +167,8 @@ namespace PdfToSvg.Cli
                 return 4;
             }
 
-            Console.WriteLine("OK Successfully converted {0} pages to SVG in {1:0.0}s.", convertedPages, start.Elapsed.TotalSeconds);
+            ColoredConsole.Write("OK ", ConsoleColor.Green);
+            Console.WriteLine("Successfully converted {0} pages to SVG in {1:0.0}s.", convertedPages, start.Elapsed.TotalSeconds);
             return 0;
         }
     }

@@ -13,6 +13,22 @@ namespace PdfToSvg.Tests
 {
     public class StandardFontResolverTests
     {
+        private class NamedFont : SourceFont
+        {
+            private readonly string name;
+
+            public NamedFont(string name)
+            {
+                this.name = name;
+            }
+
+            public override string Name => name;
+
+            public override byte[] ToOpenType() => throw new NotSupportedException();
+
+            public override byte[] ToWoff() => throw new NotSupportedException();
+        }
+
         // This list is compiled from some random real life pdfs.
         [TestCase("Arial", "Arial,sans-serif", FontWeight.Regular, FontStyle.Normal)]
         [TestCase("Arial,Bold", "Arial,sans-serif", FontWeight.Bold, FontStyle.Normal)]
@@ -109,7 +125,7 @@ namespace PdfToSvg.Tests
         [TestCase("YuGothic-Regular", "'Yu Gothic',sans-serif", FontWeight.Regular, FontStyle.Normal)]
         public void Resolve(string pdfFontName, string fontFamily, FontWeight fontWeight, FontStyle fontStyle)
         {
-            var font = (LocalFont)new StandardFontResolver().ResolveFont(pdfFontName, default);
+            var font = (LocalFont)new StandardFontResolver().ResolveFont(new NamedFont(pdfFontName), default);
             var actualFontWeight = font.FontWeight == FontWeight.Default ? FontWeight.Regular : font.FontWeight;
 
             Assert.AreEqual(fontFamily, font.FontFamily);

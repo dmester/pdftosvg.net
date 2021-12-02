@@ -17,7 +17,7 @@ namespace PdfToSvg.Encodings
     internal class CMap : ITextDecoder
     {
         // CMap specification
-        // https://www-cdf.fnal.gov/offline/PostScript/5014.CIDFont_Spec.pdf
+        // https://wwwimages2.adobe.com/content/dam/acom/en/devnet/font/pdfs/5014.CIDFont_Spec.pdf
         //
         // ToUnicode Mapping File Tutorial
         // https://web.archive.org/web/20210303045910/https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/5411.ToUnicode.pdf
@@ -140,6 +140,21 @@ namespace PdfToSvg.Encodings
             }
 
             return new CharacterCode();
+        }
+
+        public IDictionary<uint, string> ToLookup()
+        {
+            var result = new Dictionary<uint, string>();
+
+            for (var codeLength = 1; codeLength < mappingsByCodeLength.Length; codeLength++)
+            {
+                foreach (var mapping in mappingsByCodeLength[codeLength])
+                {
+                    result[mapping.Key] = mapping.Value;
+                }
+            }
+
+            return result;
         }
     }
 }

@@ -4,6 +4,7 @@
 
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Fonts.OpenType;
+using PdfToSvg.Fonts.OpenType.Enums;
 using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
@@ -20,10 +21,10 @@ namespace PdfToSvg.Encodings
     {
         private static readonly Dictionary<Tuple<OpenTypePlatformID, int>, int> cmapPriority = new()
         {
-            { Tuple.Create(OpenTypePlatformID.Unicode, 4), 1 },
-            { Tuple.Create(OpenTypePlatformID.Unicode, 3), 2 },
             { Tuple.Create(OpenTypePlatformID.Windows, 10), 3 },
+            { Tuple.Create(OpenTypePlatformID.Unicode, 4), 1 },
             { Tuple.Create(OpenTypePlatformID.Windows, 1), 4 },
+            { Tuple.Create(OpenTypePlatformID.Unicode, 3), 2 },
             { Tuple.Create(OpenTypePlatformID.Windows, 0), 5 },
         };
 

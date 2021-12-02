@@ -7,47 +7,62 @@ using PdfToSvg.DocumentModel;
 using PdfToSvg.Drawing;
 using PdfToSvg.Encodings;
 using PdfToSvg.Fonts;
+using PdfToSvg.Fonts.CompactFonts;
 using PdfToSvg.Fonts.OpenType;
+using PdfToSvg.Fonts.OpenType.Tables;
+using PdfToSvg.Fonts.Woff;
+using PdfToSvg.IO;
 using PdfToSvg.Parsing;
+using PdfToSvg.Threading;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Fonts
 {
-    // TODO Create document wide font cache
     [DebuggerDisplay("{Name,nq}")]
-    internal class InternalFont
+    internal class InternalFont : SourceFont
     {
-        public string? Name { get; }
+        private static readonly Font fallbackFont = new LocalFont("'Times New Roman',serif");
 
-        public Font SubstituteFont { get; }
+        private readonly string? name;
+        private readonly OpenTypeFont? trueTypeFont;
+        private readonly Exception? trueTypeFontException;
+
+        public override string? Name => name;
+
+        public Font SubstituteFont { get; private set; } = fallbackFont;
 
         public static InternalFont Fallback { get; } = new InternalFont(
             new PdfDictionary {
                 { Names.Subtype, Names.Type1 },
                 { Names.BaseFont, StandardFonts.TimesRoman },
             },
-            FontResolver.Default,
             CancellationToken.None);
 
         private readonly WidthMap widthMap;
         private readonly ITextDecoder[] textDecoders;
 
-        public InternalFont(PdfDictionary font, FontResolver fontResolver, CancellationToken cancellationToken)
+        private InternalFont(PdfDictionary font, CancellationToken cancellationToken)
         {
             if (font == null) throw new ArgumentNullException(nameof(font));
-            if (fontResolver == null) throw new ArgumentNullException(nameof(fontResolver));
+
+            CMap? unicodeCMap = null;
+
+            if (font.TryGetDictionary(Names.ToUnicode, out var toUnicode) && toUnicode.Stream != null)
+            {
+                unicodeCMap = CMapParser.Parse(toUnicode.Stream, cancellationToken);
+            }
 
             // Parse TTF
-            OpenTypeFont? trueTypeFont = null;
-
-            if (font.TryGetStream(Names.DescendantFonts / Indexes.First / Names.FontDescriptor / Names.FontFile2, out var fontFile2))
+            if (font.TryGetStream(Names.FontDescriptor / Names.FontFile2, out var fontFile2) ||
+                font.TryGetStream(Names.DescendantFonts / Indexes.First / Names.FontDescriptor / Names.FontFile2, out fontFile2))
             {
                 try
                 {
@@ -56,29 +71,38 @@ namespace PdfToSvg.Fonts
                 }
                 catch (Exception ex)
                 {
-                    Log.WriteLine("Failed to parse TrueType font. {0}", ex);
+                    trueTypeFontException = new FontException("Failed to parse TrueType font.", ex);
+                }
+            }
+
+            if (font.TryGetStream(Names.FontDescriptor / Names.FontFile3, out var fontFile3) ||
+                font.TryGetStream(Names.DescendantFonts / Indexes.First / Names.FontDescriptor / Names.FontFile3, out fontFile3))
+            {
+                try
+                {
+                    using var fontFileStream = fontFile3.OpenDecoded(cancellationToken);
+                    var fontFileData = fontFileStream.ToArray();
+                    var compactFontSet = CompactFontParser.Parse(fontFileData, unicodeCMap?.ToLookup());
+
+                    trueTypeFont = OpenTypeFont.FromCompactFont(compactFontSet.Fonts.First());
+                }
+                catch (Exception ex)
+                {
+                    trueTypeFontException = new FontException("Failed to parse CFF font.", ex);
                 }
             }
 
             // Name
             if (font.TryGetName(Names.BaseFont, out var name))
             {
-                Name = name.Value;
-
-                if ((string.IsNullOrEmpty(Name) || Name.StartsWith("CIDFont+")) && trueTypeFont != null)
+                if ((string.IsNullOrEmpty(name.Value) || name.Value.StartsWith("CIDFont+")) && trueTypeFont != null)
                 {
-                    Name = trueTypeFont.FontFamily + "-" + trueTypeFont.FontSubfamily;
+                    this.name = trueTypeFont.Names.FontFamily + "-" + trueTypeFont.Names.FontSubfamily;
                 }
-            }
-
-            // Substitute font
-            if (Name == null)
-            {
-                SubstituteFont = new LocalFont("Sans-Serif");
-            }
-            else
-            {
-                SubstituteFont = fontResolver.ResolveFont(Name, cancellationToken);
+                else
+                {
+                    this.name = name.Value;
+                }
             }
 
             // Create text decoders
@@ -87,9 +111,9 @@ namespace PdfToSvg.Fonts
             // using a fallback decoder.
             var textDecoders = new List<ITextDecoder>();
 
-            if (font.TryGetDictionary(Names.ToUnicode, out var toUnicode) && toUnicode.Stream != null)
+            if (unicodeCMap != null)
             {
-                textDecoders.Add(CMapParser.Parse(toUnicode.Stream, cancellationToken));
+                textDecoders.Add(unicodeCMap);
             }
 
             if (font.TryGetValue(Names.Encoding, out var encoding) && encoding != null)
@@ -123,6 +147,45 @@ namespace PdfToSvg.Fonts
 
             this.textDecoders = textDecoders.ToArray();
             this.widthMap = WidthMap.Parse(font);
+        }
+
+        public static InternalFont Create(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
+        {
+            var fontTask = CreateAsync(fontDict, fontResolver, cancellationToken);
+#if NET40
+            return fontTask.Result;
+#else
+            return fontTask.ConfigureAwait(false).GetAwaiter().GetResult();
+#endif
+        }
+
+        public static Task<InternalFont> CreateAsync(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
+        {
+            var internalFont = new InternalFont(fontDict, cancellationToken);
+
+            return fontResolver
+                .ResolveFontAsync(internalFont, cancellationToken)
+                .ContinueWith(t =>
+                {
+                    internalFont.SubstituteFont = t.Result;
+                    return internalFont;
+                }, TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously);
+        }
+
+        public override byte[] ToOpenType()
+        {
+            if (trueTypeFont == null)
+            {
+                throw trueTypeFontException ?? new NotSupportedException("This font cannot be converted to OpenType format.");
+            }
+
+            return trueTypeFont.ToByteArray();
+        }
+
+        public override byte[] ToWoff()
+        {
+            var binaryOtf = ToOpenType();
+            return WoffPacker.Pack(binaryOtf);
         }
 
         public string Decode(PdfString value, out double width)

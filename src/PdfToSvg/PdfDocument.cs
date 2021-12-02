@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Drawing;
 using PdfToSvg.IO;
 using PdfToSvg.Parsing;
 using System;
@@ -54,6 +55,8 @@ namespace PdfToSvg
             this.IsEncrypted = isEncrypted;
             this.Info = new DocumentInfo(info);
         }
+
+        internal DocumentCache Cache { get; } = new();
 
         /// <summary>
         /// Gets information about which operations that the document author has allowed for this document.

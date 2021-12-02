@@ -23,5 +23,14 @@ namespace PdfToSvg
         public PdfException(string message) : base(message)
         {
         }
+
+        /// <summary>
+        /// Creates a new instance of a <see cref="PdfException"/>.
+        /// </summary>
+        /// <param name="message">Error message.</param>
+        /// <param name="innerException">The cause for this exception.</param>
+        public PdfException(string message, Exception? innerException) : base(message, innerException)
+        {
+        }
     }
 }

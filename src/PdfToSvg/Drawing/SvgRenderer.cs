@@ -49,6 +49,7 @@ namespace PdfToSvg.Drawing
 
         private double currentPointX, currentPointY;
 
+        private DocumentCache documentCache;
         private ResourceCache resources;
 
         private XElement defs = new XElement(ns + "defs");
@@ -76,7 +77,7 @@ namespace PdfToSvg.Drawing
 
         private Dictionary<string, ClipPath> clipPaths = new Dictionary<string, ClipPath>();
 
-        private SvgRenderer(PdfDictionary pageDict, SvgConversionOptions? options, CancellationToken cancellationToken)
+        private SvgRenderer(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, CancellationToken cancellationToken)
         {
             if (options == null)
             {
@@ -85,6 +86,7 @@ namespace PdfToSvg.Drawing
 
             this.options = options;
             this.pageDict = pageDict;
+            this.documentCache = documentCache;
             this.cancellationToken = cancellationToken;
 
             textBuilder = new TextBuilder(
@@ -295,18 +297,18 @@ namespace PdfToSvg.Drawing
             }
         }
 
-        public static XElement Convert(PdfDictionary pageDict, SvgConversionOptions? options, CancellationToken cancellationToken)
+        public static XElement Convert(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, CancellationToken cancellationToken)
         {
-            var renderer = new SvgRenderer(pageDict, options, cancellationToken);
+            var renderer = new SvgRenderer(pageDict, options, documentCache, cancellationToken);
             var contentStream = ContentStream.Combine(pageDict, cancellationToken);
             renderer.Convert(contentStream);
             return renderer.svg;
         }
 
 #if HAVE_ASYNC
-        public static async Task<XElement> ConvertAsync(PdfDictionary pageDict, SvgConversionOptions? options, CancellationToken cancellationToken)
+        public static async Task<XElement> ConvertAsync(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, CancellationToken cancellationToken)
         {
-            var renderer = new SvgRenderer(pageDict, options, cancellationToken);
+            var renderer = new SvgRenderer(pageDict, options, documentCache, cancellationToken);
             var contentStream = await ContentStream.CombineAsync(pageDict, cancellationToken).ConfigureAwait(false);
             renderer.Convert(contentStream);
             return renderer.svg;
@@ -1294,7 +1296,7 @@ namespace PdfToSvg.Drawing
         [Operation("Tf")]
         private void Tf_Font(PdfName fontName, double fontSize)
         {
-            var newFont = resources.GetFont(fontName, options.FontResolver, cancellationToken) ?? InternalFont.Fallback;
+            var newFont = resources.GetFont(fontName, options.FontResolver, documentCache, cancellationToken) ?? InternalFont.Fallback;
             if (newFont == null)
             {
                 Log.WriteLine($"Could not find a font replacement for {fontName}.");
@@ -1312,7 +1314,7 @@ namespace PdfToSvg.Drawing
 
             if (args.Length > 0 && args[0] is PdfDictionary fontDict)
             {
-                font = new InternalFont(fontDict, options.FontResolver, cancellationToken);
+                font = InternalFont.Create(fontDict, options.FontResolver, cancellationToken);
             }
 
             if (args.Length > 1 && MathUtils.ToDouble(args[1], out var dblFontSize))
@@ -1524,6 +1526,7 @@ namespace PdfToSvg.Drawing
                     {
                         new { Format = "woff2", Url = webFont.Woff2Url },
                         new { Format = "woff", Url = webFont.WoffUrl },
+                        new { Format = "opentype", Url = webFont.OpenTypeUrl },
                         new { Format = "truetype", Url = webFont.TrueTypeUrl },
                     };
 

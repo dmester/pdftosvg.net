@@ -29,6 +29,9 @@ namespace PdfToSvg.Tests.Encodings
             cmap.AddBfRange(new PdfString(new byte[] { 6 }), new PdfString(new byte[] { 8 }), PdfString.FromUnicode("ghi"));
             cmap.AddBfRange(new PdfString(new byte[] { 9, 6 }), new PdfString(new byte[] { 9, 15 }), PdfString.FromUnicode("A"));
 
+            cmap.AddBfRange(new PdfString(new byte[] { 10 }), new PdfString(new byte[] { 12 }),
+                new[] { PdfString.FromUnicode("QQQ"), PdfString.FromUnicode("WWW"), PdfString.FromUnicode("EEE") });
+
             Assert.AreEqual("abc", cmap.GetCharacter(new PdfString(new byte[] { 4, 0, 0 }), 0).DestinationString);
             Assert.AreEqual("def", cmap.GetCharacter(new PdfString(new byte[] { 5, 0, 0 }), 0).DestinationString);
             Assert.AreEqual("94", cmap.GetCharacter(new PdfString(new byte[] { 9, 4, 0 }), 0).DestinationString);
@@ -39,10 +42,35 @@ namespace PdfToSvg.Tests.Encodings
             Assert.AreEqual("B", cmap.GetCharacter(new PdfString(new byte[] { 9, 7, 0 }), 0).DestinationString);
             Assert.AreEqual(null, cmap.GetCharacter(new PdfString(new byte[] { 0, 1, 2 }), 0).DestinationString);
             Assert.AreEqual("C", cmap.GetCharacter(new PdfString(new byte[] { 9, 8 }), 0).DestinationString);
+            Assert.AreEqual("QQQ", cmap.GetCharacter(new PdfString(new byte[] { 10 }), 0).DestinationString);
+            Assert.AreEqual("WWW", cmap.GetCharacter(new PdfString(new byte[] { 11 }), 0).DestinationString);
 
+            Assert.AreEqual(1, cmap.GetCharacter(new PdfString(new byte[] { 10, 12 }), 0).SourceLength);
             Assert.AreEqual(1, cmap.GetCharacter(new PdfString(new byte[] { 5, 9 }), 0).SourceLength);
             Assert.AreEqual(2, cmap.GetCharacter(new PdfString(new byte[] { 9, 8 }), 0).SourceLength);
             Assert.AreEqual(0, cmap.GetCharacter(new PdfString(new byte[] { 9, 16 }), 0).SourceLength);
+        }
+
+        [Test]
+        public void ToLookup()
+        {
+            var cmap = new CMap();
+
+            cmap.AddBfChar(new PdfString(new byte[] { 4 }), PdfString.FromUnicode("abc"));
+            cmap.AddBfChar(new PdfString(new byte[] { 5 }), PdfString.FromUnicode("def"));
+            cmap.AddBfChar(new PdfString(new byte[] { 2, 3 }), PdfString.FromUnicode("g"));
+            cmap.AddBfChar(new PdfString(new byte[] { 2, 3, 4 }), PdfString.FromUnicode("h"));
+
+            var lookup = cmap.ToLookup();
+            var expectedLookup = new Dictionary<uint, string>
+            {
+                { 4, "abc" },
+                { 5, "def" },
+                { (2 << 8) | 3, "g" },
+                { (2 << 16) | (3 << 8) | 4, "h" },
+            };
+
+            Assert.AreEqual(expectedLookup, lookup);
         }
     }
 }

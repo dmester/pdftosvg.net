@@ -166,15 +166,17 @@ namespace PdfToSvg.Tests
 
         private class TestFontResolver : FontResolver
         {
-            public override Font ResolveFont(string fontName, CancellationToken cancellationToken)
+            public override Font ResolveFont(SourceFont sourceFont, CancellationToken cancellationToken)
             {
+                var fontName = sourceFont.Name;
                 if (fontName == "Times-Bold")
                 {
                     return new WebFont(
                         fallbackFont: new LocalFont("'Times New Roman',sans-serif", FontWeight.Bold),
                         woffUrl: "http://pdftosvg.net/assets/sourcesanspro-bold-webfont.woff",
                         woff2Url: "http://pdftosvg.net/assets/sourcesanspro-bold-webfont.woff2",
-                        trueTypeUrl: "http://pdftosvg.net/assets/sourcesanspro-bold-webfont.ttf");
+                        trueTypeUrl: "http://pdftosvg.net/assets/sourcesanspro-bold-webfont.ttf",
+                        openTypeUrl: "http://pdftosvg.net/assets/sourcesanspro-bold-webfont.otf");
                 }
                 else
                 {
@@ -182,7 +184,8 @@ namespace PdfToSvg.Tests
                         fallbackFont: new LocalFont("'Times New Roman',sans-serif"),
                         woffUrl: "http://pdftosvg.net/assets/sourcesanspro-regular-webfont.woff",
                         woff2Url: "http://pdftosvg.net/assets/sourcesanspro-regular-webfont.woff2",
-                        trueTypeUrl: "http://pdftosvg.net/assets/sourcesanspro-regular-webfont.ttf");
+                        trueTypeUrl: "http://pdftosvg.net/assets/sourcesanspro-regular-webfont.ttf",
+                        openTypeUrl: "http://pdftosvg.net/assets/sourcesanspro-regular-webfont.otf");
                 }
             }
         }
@@ -228,6 +231,33 @@ namespace PdfToSvg.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        [TestCase("word-fonts.pdf")]
+        [TestCase("word-fonts-print.pdf")]
+        public void EmbedFontConversion(string fileName)
+        {
+            var expectedSvgPath = GetExpectedFilePath("embedded-" + fileName.Replace(".pdf", ".svg"));
+            var actualSvgPath = GetActualFilePath("sync", "embedded-" + fileName.Replace(".pdf", ".svg"));
+            var pdfPath = GetInputFilePath(fileName);
+
+            Directory.CreateDirectory(Path.GetDirectoryName(actualSvgPath));
+
+            string actual;
+            using (var doc = PdfDocument.Open(pdfPath))
+            {
+                actual = doc.Pages[0].ToSvgString(new SvgConversionOptions
+                {
+                    FontResolver = FontResolver.EmbedOpenType,
+                });
+            }
+
+            actual = RecompressPngs(actual);
+            File.WriteAllText(actualSvgPath, actual, Encoding.UTF8);
+
+            var expected = File.Exists(expectedSvgPath) ? RecompressPngs(File.ReadAllText(expectedSvgPath, Encoding.UTF8)) : null;
+
+            Assert.AreEqual(expected, actual);
+        }
+
         [TestCaseSource(nameof(TestCases))]
         public void ConvertSync(string fileName)
         {
@@ -241,7 +271,7 @@ namespace PdfToSvg.Tests
 
             using (var doc = PdfDocument.Open(pdfPath))
             {
-                actual = doc.Pages[0].ToSvgString();
+                actual = doc.Pages[0].ToSvgString(new SvgConversionOptions { FontResolver = FontResolver.LocalFonts });
             }
 
             actual = RecompressPngs(actual);
@@ -266,7 +296,7 @@ namespace PdfToSvg.Tests
 
             using (var doc = await PdfDocument.OpenAsync(pdfPath))
             {
-                actual = await doc.Pages[0].ToSvgStringAsync();
+                actual = await doc.Pages[0].ToSvgStringAsync(new SvgConversionOptions { FontResolver = FontResolver.LocalFonts });
             }
 
             actual = RecompressPngs(actual);

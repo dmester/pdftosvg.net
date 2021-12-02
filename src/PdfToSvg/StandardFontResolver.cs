@@ -15,7 +15,7 @@ namespace PdfToSvg
     /// <summary>
     /// A font resolver trying to match font names against commonly available fonts.
     /// </summary>
-    public class StandardFontResolver : FontResolver
+    internal class StandardFontResolver : FontResolver
     {
         // Information about abbreviated font styles and weights:
         // https://cdn2.hubspot.net/hubfs/1740477/Definitive-Guide-To-Font-Abbreviations.pdf
@@ -141,8 +141,14 @@ namespace PdfToSvg
         };
 
         /// <inheritdoc/>
-        public override Font ResolveFont(string fontName, CancellationToken cancellationToken)
+        public override Font ResolveFont(SourceFont sourceFont, CancellationToken cancellationToken)
         {
+            var fontName = sourceFont.Name;
+            if (fontName == null)
+            {
+                return new LocalFont("sans-serif");
+            }
+
             var fontFamily = Match(0, fontFamilies, fontName.Replace("-", "").Replace(" ", ""));
 
             var styleStartIndex = fontName.IndexOfAny(new[] { ',', '-' });

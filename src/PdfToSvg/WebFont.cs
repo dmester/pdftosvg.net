@@ -23,23 +23,25 @@ namespace PdfToSvg
         /// <param name="woffUrl">URL to a WOFF font file to be included as a @font-face.</param>
         /// <param name="woff2Url">URL to a WOFF2 font file to be included as a @font-face.</param>
         /// <param name="trueTypeUrl">URL to a TypeType font file to be included as a @font-face.</param>
+        /// <param name="openTypeUrl">URL to a OpenType font file to be included as a @font-face.</param>
         /// <remarks>
         /// Note that standalone SVGs must not have external resources. If you intend to create standalone SVG files,
         /// ensure the font URLs are data URIs.
         /// </remarks>
         public WebFont(LocalFont? fallbackFont = null,
-            string? woffUrl = null, string? woff2Url = null, string? trueTypeUrl = null)
+            string? woffUrl = null, string? woff2Url = null, string? trueTypeUrl = null, string? openTypeUrl = null)
         {
-            if (woffUrl == null && woff2Url == null && trueTypeUrl == null)
+            if (woffUrl == null && woff2Url == null && trueTypeUrl == null && openTypeUrl == null)
             {
                 throw new ArgumentException("At least one URL must be specified.");
             }
 
-            FontFamily = StableID.Generate("f", woffUrl, woff2Url, trueTypeUrl);
+            FontFamily = StableID.Generate("f", woffUrl, woff2Url, trueTypeUrl, openTypeUrl);
             FallbackFont = fallbackFont;
             WoffUrl = woffUrl;
             Woff2Url = woff2Url;
             TrueTypeUrl = trueTypeUrl;
+            OpenTypeUrl = openTypeUrl;
         }
 
         /// <summary>
@@ -68,6 +70,11 @@ namespace PdfToSvg
         public string? TrueTypeUrl { get; }
 
         /// <summary>
+        /// Gets an URL to an OpenType font file to be included as a @font-face.
+        /// </summary>
+        public string? OpenTypeUrl { get; }
+
+        /// <summary>
         /// Determines whether the specified font is equal to the current one.
         /// </summary>
         public override bool Equals(object obj)
@@ -78,6 +85,7 @@ namespace PdfToSvg
                 font.WoffUrl == WoffUrl &&
                 font.Woff2Url == Woff2Url &&
                 font.TrueTypeUrl == TrueTypeUrl &&
+                font.OpenTypeUrl == OpenTypeUrl &&
                 Equals(font.FallbackFont, FallbackFont);
         }
 

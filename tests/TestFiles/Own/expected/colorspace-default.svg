@@ -1,0 +1,13 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<style>
+.gt4EC2H text{white-space:pre;}
+.txs8vHo{font-family:'Times New Roman',serif;font-size:12px;}
+</style>
+<g class="gt4EC2H" stroke-miterlimit="10">
+<text x="60" y="61.92" class="txs8vHo">The boxes should be gray</text>
+<path d="M60 151.92h70v-70h-70z" fill="#b2b2b2" />
+<path d="M150 151.92h70v-70h-70z" fill="none" stroke="#b2b2b2" stroke-width="5" />
+<path d="M240 151.92h70v-70h-70z" fill="#b2b2b2" />
+<path d="M330 151.92h70v-70h-70z" fill="none" stroke="#b2b2b2" stroke-width="5" />
+</g>
+</svg>

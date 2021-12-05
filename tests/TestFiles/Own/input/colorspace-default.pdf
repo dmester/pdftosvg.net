@@ -1,0 +1,56 @@
+%PDF-1.7
+
+xref
+0 5
+0000000000 65535 f
+0000000167 00000 n
+0000000218 00000 n
+0000000282 00000 n
+0000000549 00000 n
+trailer
+<< /Root 1 0 R  /Size 5 >>
+     
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >> endobj
+
+3 0 obj 
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+   /Resources <<
+      /Font <<
+         /F1 << /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /WinAnsiEncoding >>
+      >> >>
+>>
+endobj
+
+4 0 obj << /Length 273 >>
+stream
+   BT
+      0 g
+      /F1 12 Tf
+      60 780 Td
+      (The boxes should be gray) '
+   ET
+   
+   5 w
+   
+   0.7 sc
+   0.7 SC
+   
+   60 690 70 70 re  f
+   150 690 70 70 re  s
+   
+   0.7 0 0 sc
+   0.7 0 0 SC
+   
+   240 690 70 70 re  f
+   330 690 70 70 re  s
+endstream
+endobj
+
+startxref
+10
+%%EOF

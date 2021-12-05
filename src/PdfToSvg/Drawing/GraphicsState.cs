@@ -23,8 +23,8 @@ namespace PdfToSvg.Drawing
         public int Intent;
         public ClipPath? ClipPath;
 
-        public ColorSpace FillColorSpace = new DeviceRgbColorSpace();
-        public ColorSpace StrokeColorSpace = new DeviceRgbColorSpace();
+        public ColorSpace FillColorSpace = new DeviceGrayColorSpace();
+        public ColorSpace StrokeColorSpace = new DeviceGrayColorSpace();
 
         public RgbColor FillColor = RgbColor.Black;
         public double FillAlpha = 1d;

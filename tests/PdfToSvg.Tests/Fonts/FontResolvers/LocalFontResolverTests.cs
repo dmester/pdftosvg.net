@@ -3,15 +3,15 @@
 // Licensed under the MIT License.
 
 using NUnit.Framework;
+using PdfToSvg.Fonts.FontResolvers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace PdfToSvg.Tests
+namespace PdfToSvg.Tests.Fonts.FontResolvers
 {
-    public class StandardFontResolverTests
+    public class LocalFontResolverTests
     {
         private class NamedFont : SourceFont
         {
@@ -125,7 +125,7 @@ namespace PdfToSvg.Tests
         [TestCase("YuGothic-Regular", "'Yu Gothic',sans-serif", FontWeight.Regular, FontStyle.Normal)]
         public void Resolve(string pdfFontName, string fontFamily, FontWeight fontWeight, FontStyle fontStyle)
         {
-            var font = (LocalFont)new StandardFontResolver().ResolveFont(new NamedFont(pdfFontName), default);
+            var font = (LocalFont)new LocalFontResolver().ResolveFont(new NamedFont(pdfFontName), default);
             var actualFontWeight = font.FontWeight == FontWeight.Default ? FontWeight.Regular : font.FontWeight;
 
             Assert.AreEqual(fontFamily, font.FontFamily);

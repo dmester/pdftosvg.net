@@ -6,16 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace PdfToSvg
+namespace PdfToSvg.Fonts.FontResolvers
 {
     /// <summary>
     /// A font resolver trying to match font names against commonly available fonts.
     /// </summary>
-    internal class StandardFontResolver : FontResolver
+    internal class LocalFontResolver : FontResolver
     {
         // Information about abbreviated font styles and weights:
         // https://cdn2.hubspot.net/hubfs/1740477/Definitive-Guide-To-Font-Abbreviations.pdf

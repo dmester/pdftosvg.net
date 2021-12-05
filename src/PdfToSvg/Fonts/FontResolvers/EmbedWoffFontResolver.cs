@@ -8,17 +8,17 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace PdfToSvg
+namespace PdfToSvg.Fonts.FontResolvers
 {
-    internal class EmbedOpenTypeFontResolver : FontResolver
+    internal class EmbedWoffFontResolver : FontResolver
     {
         public override Font ResolveFont(SourceFont sourceFont, CancellationToken cancellationToken)
         {
             try
             {
-                var otf = sourceFont.ToOpenType();
-                var otfDataUri = "data:font/otf;base64," + Convert.ToBase64String(otf);
-                return new WebFont(openTypeUrl: otfDataUri);
+                var woff = sourceFont.ToWoff();
+                var woffDataUri = "data:font/woff;base64," + Convert.ToBase64String(woff);
+                return new WebFont(woffUrl: woffDataUri);
             }
             catch
             {

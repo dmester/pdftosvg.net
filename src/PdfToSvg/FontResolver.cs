@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Fonts.FontResolvers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,9 @@ namespace PdfToSvg
     {
         /// <summary>
         /// Font resolver substituting fonts in the PDF with commonly available fonts. No fonts are embedded in the
-        /// resulting SVG.
+        /// resulting SVG. The resolved fonts need to be available on the viewing machine.
         /// </summary>
-        public static FontResolver LocalFonts { get; } = new StandardFontResolver();
+        public static FontResolver LocalFonts { get; } = new LocalFontResolver();
 
         /// <summary>
         /// Font resolver converting fonts in the PDF to WOFF format and embedding them in the output SVG.

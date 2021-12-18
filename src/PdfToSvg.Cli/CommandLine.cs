@@ -67,6 +67,12 @@ namespace PdfToSvg.Cli
                     continue;
                 }
 
+                if (key == "--non-interactive")
+                {
+                    NonInteractive = true;
+                    continue;
+                }
+
                 if ((key == "--pages" || key == "-p") && TryReadValue(out value))
                 {
                     if (!PageRange.TryParse(value, out var pageRanges))
@@ -99,6 +105,8 @@ namespace PdfToSvg.Cli
         public bool ShowHelp { get; }
 
         public bool NoColor { get; }
+
+        public bool NonInteractive { get; }
 
         public string? InputPath { get; }
 
@@ -138,6 +146,9 @@ namespace PdfToSvg.Cli
             Console.WriteLine("              the owner password, any access restrictions are bypassed.");
             Console.WriteLine();
             Console.WriteLine("  --no-color  Disables colored text output in the console.");
+            Console.WriteLine();
+            Console.WriteLine("  --non-interactive");
+            Console.WriteLine("              Disables any interactive prompts and progress reports.");
             Console.WriteLine();
             Console.WriteLine("Example:");
             Console.WriteLine("  pdftosvg.exe input.pdf output.svg --pages 1..2,9");

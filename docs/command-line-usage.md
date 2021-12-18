@@ -41,6 +41,9 @@ Owner or user password for opening the input file. By specifying the owner passw
 #### `--no-color`
 Disables colored text output in the console.
 
+#### `--non-interactive`
+Disables any interactive prompts and progress reports.
+
 ## Examples
 
 ```

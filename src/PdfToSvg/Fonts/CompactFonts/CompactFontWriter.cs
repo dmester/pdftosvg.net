@@ -2,6 +2,8 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,57 +12,10 @@ using System.Text;
 
 namespace PdfToSvg.Fonts.CompactFonts
 {
-    internal class CompactFontWriter
+    internal class CompactFontWriter : MemoryWriter
     {
-        private const int StartBufferSize = 1024;
-
-        private byte[] buffer;
-        private int cursor;
-        private int length;
-
-        public CompactFontWriter()
-        {
-            buffer = new byte[StartBufferSize];
-        }
-
-        public CompactFontWriter(int capacity)
-        {
-            buffer = new byte[capacity];
-        }
-
-        public int Position
-        {
-            get => cursor;
-            set
-            {
-                cursor = value;
-
-                if (value > length)
-                {
-                    Expand(value);
-                }
-
-                if (length < cursor)
-                {
-                    length = cursor;
-                }
-            }
-        }
-
-        public int Length => length;
-
-        public int Capacity => buffer.Length;
-
-        private void Expand(int minimumCapacity)
-        {
-            if (minimumCapacity > buffer.Length)
-            {
-                var newSize = Math.Max(buffer.Length * 2, minimumCapacity + StartBufferSize);
-                var newBuffer = new byte[newSize];
-                Buffer.BlockCopy(buffer, 0, newBuffer, 0, buffer.Length);
-                buffer = newBuffer;
-            }
-        }
+        public CompactFontWriter() { }
+        public CompactFontWriter(int capacity) : base(capacity) { }
 
         public void WriteHeader(CompactFontHeader header)
         {
@@ -104,10 +59,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
             WriteIndex(index);
 
-            if (cursor + index.Last() > buffer.Length)
-            {
-                Expand(cursor + index.Last());
-            }
+            EnsureCapacity(cursor + index.Last());
 
             for (var i = 0; i < indexData.Count; i++)
             {
@@ -168,10 +120,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         public void WriteOffset(int offSize, int offset)
         {
-            if (cursor + offSize > buffer.Length)
-            {
-                Expand(cursor + offSize);
-            }
+            EnsureCapacity(cursor + offSize);
 
             switch (offSize)
             {
@@ -222,10 +171,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         public void WriteCard8(int value)
         {
-            if (cursor + 1 > buffer.Length)
-            {
-                Expand(cursor + 1);
-            }
+            EnsureCapacity(cursor + 1);
 
             buffer[cursor++] = (byte)value;
 
@@ -237,10 +183,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         public void WriteCard16(int value)
         {
-            if (cursor + 2 > buffer.Length)
-            {
-                Expand(cursor + 2);
-            }
+            EnsureCapacity(cursor + 2);
 
             buffer[cursor++] = (byte)(value >> 8);
             buffer[cursor++] = (byte)value;
@@ -270,19 +213,13 @@ namespace PdfToSvg.Fonts.CompactFonts
         {
             if (value >= -107 && value <= 107)
             {
-                if (cursor + 1 > buffer.Length)
-                {
-                    Expand(cursor + 1);
-                }
+                EnsureCapacity(cursor + 1);
 
                 buffer[cursor++] = (byte)(value + 139);
             }
             else if (value >= 108 && value <= 1131)
             {
-                if (cursor + 2 > buffer.Length)
-                {
-                    Expand(cursor + 2);
-                }
+                EnsureCapacity(cursor + 2);
 
                 value -= 108;
 
@@ -293,10 +230,7 @@ namespace PdfToSvg.Fonts.CompactFonts
             }
             else if (value >= -1131 && value <= -108)
             {
-                if (cursor + 2 > buffer.Length)
-                {
-                    Expand(cursor + 2);
-                }
+                EnsureCapacity(cursor + 2);
 
                 value = -value - 108;
 
@@ -307,10 +241,7 @@ namespace PdfToSvg.Fonts.CompactFonts
             }
             else if (value >= -32768 && value <= 32767)
             {
-                if (cursor + 3 > buffer.Length)
-                {
-                    Expand(cursor + 3);
-                }
+                EnsureCapacity(cursor + 3);
 
                 buffer[cursor + 0] = 28;
                 buffer[cursor + 1] = (byte)(value >> 8);
@@ -320,10 +251,7 @@ namespace PdfToSvg.Fonts.CompactFonts
             }
             else
             {
-                if (cursor + 5 > buffer.Length)
-                {
-                    Expand(cursor + 5);
-                }
+                EnsureCapacity(cursor + 5);
 
                 buffer[cursor + 0] = 29;
                 buffer[cursor + 1] = (byte)(value >> 24);
@@ -342,10 +270,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         public void WriteBytes(ArraySegment<byte> data)
         {
-            if (cursor + data.Count > buffer.Length)
-            {
-                Expand(cursor + data.Count);
-            }
+            EnsureCapacity(cursor + data.Count);
 
             Buffer.BlockCopy(data.Array, data.Offset, buffer, cursor, data.Count);
 
@@ -361,10 +286,7 @@ namespace PdfToSvg.Fonts.CompactFonts
         {
             var str = value.ToString("G", CultureInfo.InvariantCulture);
 
-            if (cursor + str.Length / 2 + 2 > buffer.Length)
-            {
-                Expand(cursor + str.Length / 2 + 2);
-            }
+            EnsureCapacity(cursor + str.Length / 2 + 2);
 
             buffer[cursor++] = 30;
 
@@ -433,18 +355,6 @@ namespace PdfToSvg.Fonts.CompactFonts
             {
                 length = cursor;
             }
-        }
-
-        public byte[] ToArray()
-        {
-            var result = new byte[length];
-            Buffer.BlockCopy(buffer, 0, result, 0, length);
-            return result;
-        }
-
-        public ArraySegment<byte> GetBuffer()
-        {
-            return new ArraySegment<byte>(buffer, 0, length);
         }
     }
 }

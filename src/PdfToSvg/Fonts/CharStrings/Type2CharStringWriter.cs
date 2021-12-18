@@ -3,64 +3,17 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.Common;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PdfToSvg.Fonts.CharStrings
 {
-    internal class Type2CharStringWriter
+    internal class Type2CharStringWriter : MemoryWriter
     {
-        private const int StartBufferSize = 1024;
-
-        private byte[] buffer;
-        private int cursor;
-        private int length;
-
-        public Type2CharStringWriter()
-        {
-            buffer = new byte[StartBufferSize];
-        }
-
-        public Type2CharStringWriter(int capacity)
-        {
-            buffer = new byte[capacity];
-        }
-
-        // TODO refactor
-        public int Position
-        {
-            get => cursor;
-            set
-            {
-                cursor = value;
-
-                if (value > length)
-                {
-                    Expand(value);
-                }
-
-                if (length < cursor)
-                {
-                    length = cursor;
-                }
-            }
-        }
-
-        public int Length => length;
-
-        public int Capacity => buffer.Length;
-
-        private void Expand(int minimumCapacity)
-        {
-            if (minimumCapacity > buffer.Length)
-            {
-                var newSize = Math.Max(buffer.Length * 2, minimumCapacity + StartBufferSize);
-                var newBuffer = new byte[newSize];
-                Buffer.BlockCopy(buffer, 0, newBuffer, 0, buffer.Length);
-                buffer = newBuffer;
-            }
-        }
+        public Type2CharStringWriter() { }
+        public Type2CharStringWriter(int capacity) : base(capacity) { }
 
         public void WriteLexeme(CharStringLexeme lexeme)
         {
@@ -82,10 +35,7 @@ namespace PdfToSvg.Fonts.CharStrings
 
         public void WriteOperator(int operatorCode)
         {
-            if (cursor + 2 > buffer.Length)
-            {
-                Expand(cursor + 2);
-            }
+            EnsureCapacity(cursor + 2);
 
             if (operatorCode > 255)
             {
@@ -114,10 +64,7 @@ namespace PdfToSvg.Fonts.CharStrings
 
         public void WriteReal(double value)
         {
-            if (cursor + 5 > buffer.Length)
-            {
-                Expand(cursor + 5);
-            }
+            EnsureCapacity(cursor + 5);
 
             if (value >= -32768 && value <= 32767)
             {
@@ -144,10 +91,7 @@ namespace PdfToSvg.Fonts.CharStrings
 
         public void WriteInteger(int value)
         {
-            if (cursor + 3 > buffer.Length)
-            {
-                Expand(cursor + 3);
-            }
+            EnsureCapacity(cursor + 3);
 
             if (value >= -107 && value <= 107)
             {
@@ -192,10 +136,7 @@ namespace PdfToSvg.Fonts.CharStrings
 
         public void WriteMask(byte mask)
         {
-            if (cursor + 1 > buffer.Length)
-            {
-                Expand(cursor + 1);
-            }
+            EnsureCapacity(cursor + 1);
 
             buffer[cursor++] = mask;
 
@@ -203,11 +144,6 @@ namespace PdfToSvg.Fonts.CharStrings
             {
                 length = cursor;
             }
-        }
-
-        public ArraySegment<byte> GetBuffer()
-        {
-            return new ArraySegment<byte>(buffer, 0, length);
         }
     }
 }

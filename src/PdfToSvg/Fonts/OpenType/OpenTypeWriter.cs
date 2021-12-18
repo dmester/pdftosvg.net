@@ -2,6 +2,8 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,53 +59,12 @@ namespace PdfToSvg.Fonts.OpenType
         public void WriteUInt16(ushort value) => WriteInt16((short)value);
     }
 
-    internal class OpenTypeWriter
+    internal class OpenTypeWriter : MemoryWriter
     {
         private static readonly DateTime Epoch = new DateTime(1904, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private const int StartBufferSize = 1024;
 
-        private byte[] buffer;
-        private int cursor;
-        private int length;
-
-        public OpenTypeWriter() : this(StartBufferSize) { }
-
-        public OpenTypeWriter(int capacity)
-        {
-            this.buffer = new byte[capacity];
-        }
-
-        public int Position
-        {
-            get => cursor;
-            set
-            {
-                cursor = value;
-
-                if (value > length)
-                {
-                    Expand(value);
-                }
-
-                if (length < cursor)
-                {
-                    length = cursor;
-                }
-            }
-        }
-
-        public int Length => length;
-
-        private void Expand(int minimumCapacity)
-        {
-            if (minimumCapacity > buffer.Length)
-            {
-                var newSize = Math.Max(buffer.Length * 2, minimumCapacity + StartBufferSize);
-                var newBuffer = new byte[newSize];
-                Buffer.BlockCopy(buffer, 0, newBuffer, 0, buffer.Length);
-                buffer = newBuffer;
-            }
-        }
+        public OpenTypeWriter() { }
+        public OpenTypeWriter(int capacity) : base(capacity) { }
 
         public uint Checksum(int startIndex, int endIndex)
         {
@@ -132,10 +93,7 @@ namespace PdfToSvg.Fonts.OpenType
         {
             if (buffer == null) throw new ArgumentNullException(nameof(buffer));
 
-            if (cursor + count > buffer.Length)
-            {
-                Expand(cursor + count);
-            }
+            EnsureCapacity(cursor + count);
 
             if (value.Length >= count)
             {
@@ -164,10 +122,7 @@ namespace PdfToSvg.Fonts.OpenType
         {
             if (buffer == null) throw new ArgumentNullException(nameof(buffer));
 
-            if (cursor + value.Length > buffer.Length)
-            {
-                Expand(cursor + value.Length);
-            }
+            EnsureCapacity(cursor + value.Length);
 
             Buffer.BlockCopy(value, 0, buffer, cursor, value.Length);
 
@@ -209,10 +164,7 @@ namespace PdfToSvg.Fonts.OpenType
             if (offset < 0) throw new ArgumentOutOfRangeException(nameof(offset));
             if (count < 0 || offset + count > buffer.Length) throw new ArgumentOutOfRangeException(nameof(count));
 
-            if (cursor + count > this.buffer.Length)
-            {
-                Expand(cursor + count);
-            }
+            EnsureCapacity(cursor + count);
 
             Buffer.BlockCopy(buffer, offset, this.buffer, cursor, count);
 
@@ -250,10 +202,7 @@ namespace PdfToSvg.Fonts.OpenType
 
         public void WriteInt16(short value)
         {
-            if (cursor + 2 > buffer.Length)
-            {
-                Expand(cursor + 2);
-            }
+            EnsureCapacity(cursor + 2);
 
             buffer[cursor + 0] = (byte)(value >> 8);
             buffer[cursor + 1] = (byte)(value);
@@ -270,10 +219,7 @@ namespace PdfToSvg.Fonts.OpenType
 
         public void WriteUInt32(uint value)
         {
-            if (cursor + 4 > buffer.Length)
-            {
-                Expand(cursor + 4);
-            }
+            EnsureCapacity(cursor + 4);
 
             buffer[cursor + 0] = (byte)(value >> 24);
             buffer[cursor + 1] = (byte)(value >> 16);
@@ -297,10 +243,7 @@ namespace PdfToSvg.Fonts.OpenType
 
         public void WriteDateTime(DateTime dt)
         {
-            if (cursor + 8 > buffer.Length)
-            {
-                Expand(cursor + 8);
-            }
+            EnsureCapacity(cursor + 8);
 
             var seconds = (long)(dt.ToUniversalTime() - Epoch).TotalSeconds;
 
@@ -319,13 +262,6 @@ namespace PdfToSvg.Fonts.OpenType
             {
                 length = cursor;
             }
-        }
-
-        public byte[] ToArray()
-        {
-            var result = new byte[length];
-            Buffer.BlockCopy(buffer, 0, result, 0, length);
-            return result;
         }
     }
 }

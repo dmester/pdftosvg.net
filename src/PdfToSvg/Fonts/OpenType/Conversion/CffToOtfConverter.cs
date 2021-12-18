@@ -284,7 +284,7 @@ namespace PdfToSvg.Fonts.OpenType.Conversion
                 .Select(x => new LongHorMetricRecord
                 {
                     AdvanceWidth = (ushort)x.Width,
-                    LeftSideBearing = (short)(x.MinX - xMin),
+                    LeftSideBearing = 0,
                 })
                 .ToArray();
 

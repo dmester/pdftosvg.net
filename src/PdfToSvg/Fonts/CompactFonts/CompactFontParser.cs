@@ -364,7 +364,7 @@ namespace PdfToSvg.Fonts.CompactFonts
             font.Glyphs.Add(glyph);
         }
 
-        private CompactFontSet Read()
+        private CompactFontSet Read(int startFontIndex, int maxFontCount)
         {
             var header = reader.ReadHeader();
 
@@ -383,7 +383,7 @@ namespace PdfToSvg.Fonts.CompactFonts
             var names = reader.ReadStrings(nameIndex);
             fontSet.Strings = new CompactFontStringTable(reader.ReadStrings(stringIndex));
 
-            for (var i = 0; i + 1 < topDictIndex.Length; i++)
+            for (var i = startFontIndex; i < topDictIndex.Length - 1 && fontSet.Fonts.Count < maxFontCount; i++)
             {
                 var font = new CompactFont(fontSet);
                 ReadDict(font.TopDict, topDictIndex[i], topDictIndex[i + 1] - topDictIndex[i]);
@@ -405,9 +405,9 @@ namespace PdfToSvg.Fonts.CompactFonts
             return fontSet;
         }
 
-        public static CompactFontSet Parse(byte[] data, IDictionary<uint, string>? customCMap = null)
+        public static CompactFontSet Parse(byte[] data, IDictionary<uint, string>? customCMap = null, int startFontIndex = 0, int maxFontCount = int.MaxValue)
         {
-            return new CompactFontParser(data, customCMap).Read();
+            return new CompactFontParser(data, customCMap).Read(startFontIndex, maxFontCount);
         }
     }
 }

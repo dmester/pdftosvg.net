@@ -43,3 +43,8 @@ https://github.com/fonttools/fonttools
 Can be used to validate ttf, otf, woff, woff2. Browsers are using this software for verifying fonts.
 
 https://github.com/khaledhosny/ots
+
+### A bit of font generation
+A description of OpenType and CFF.
+
+https://pomax.github.io/CFF-glyphlet-fonts/

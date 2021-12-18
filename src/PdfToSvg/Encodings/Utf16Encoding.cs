@@ -26,6 +26,48 @@ namespace PdfToSvg.Encodings
             return default;
         }
 
+        public static string GetPrivateUseChar(int offset)
+        {
+            uint codePoint;
+
+            if (offset < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(offset));
+            }
+
+            // See:
+            // https://en.wikipedia.org/wiki/Private_Use_Areas#Assignment
+
+            if (offset < 6400)
+            {
+                codePoint = 0xE000u + (uint)offset;
+            }
+            else
+            {
+                offset -= 6400;
+
+                if (offset < 65534)
+                {
+                    codePoint = 0xF0000u + (uint)offset;
+                }
+                else
+                {
+                    offset -= 65534;
+
+                    if (offset < 65534)
+                    {
+                        codePoint = 0x100000u + (uint)offset;
+                    }
+                    else
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(offset));
+                    }
+                }
+            }
+
+            return EncodeCodePoint(codePoint)!;
+        }
+
         public static string? EncodeCodePoint(uint unicodeValue)
         {
             // See https://en.wikipedia.org/wiki/UTF-16#Examples

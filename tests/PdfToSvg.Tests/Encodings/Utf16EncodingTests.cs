@@ -24,5 +24,29 @@ namespace PdfToSvg.Tests.Encodings
             Assert.AreEqual(codePoint, Utf16Encoding.DecodeCodePoint("padding" + utf16 + "padding", 7, out var length));
             Assert.AreEqual(utf16.Length, length);
         }
+
+        // Private Use Area blocks:
+        // https://en.wikipedia.org/wiki/Private_Use_Areas#Assignment
+        //
+        // UTF-16 encoded here:
+        // https://unicode.scarfboy.com/
+        //
+        [TestCase(0, "\ue000")]
+        [TestCase(6399, "\uf8ff")]
+        [TestCase(6400, "\udb80\udc00")]
+        [TestCase(71933, "\udbbf\udffd")]
+        [TestCase(71934, "\udbc0\udc00")]
+        [TestCase(137467, "\udbff\udffd")]
+        public void GetPrivateUseChar(int offset, string expected)
+        {
+            Assert.AreEqual(expected, Utf16Encoding.GetPrivateUseChar(offset));
+        }
+
+        [TestCase(-1)]
+        [TestCase(137468)]
+        public void GetPrivateUseCharOutOfRange(int offset)
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => Utf16Encoding.GetPrivateUseChar(offset));
+        }
     }
 }

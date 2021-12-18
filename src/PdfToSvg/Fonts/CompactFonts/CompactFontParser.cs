@@ -81,8 +81,26 @@ namespace PdfToSvg.Fonts.CompactFonts
             }
         }
 
-        private void ReadCharset(IList<int> charset, int nGlyphs)
+        private void ReadCharset(int offsetOrId, IList<int> charset, int nGlyphs)
         {
+            var predefinedCharsets = CompactFontPredefinedCharsets.Charsets;
+
+            if (offsetOrId < 0)
+            {
+                offsetOrId = 0;
+            }
+
+            if (offsetOrId < predefinedCharsets.Length)
+            {
+                foreach (var sid in predefinedCharsets[offsetOrId].Take(nGlyphs))
+                {
+                    charset.Add(sid);
+                }
+                return;
+            }
+
+            reader.Position = offsetOrId;
+
             var format = reader.ReadCard8();
 
             // The .notdef char is not included in the charset
@@ -168,11 +186,7 @@ namespace PdfToSvg.Fonts.CompactFonts
             var nGlyphs = charStringsIndex.Length - 1;
 
             // Charset
-            if (font.TopDict.Charset > 0)
-            {
-                reader.Position = font.TopDict.Charset;
-                ReadCharset(font.CharSet, nGlyphs);
-            }
+            ReadCharset(font.TopDict.Charset, font.CharSet, nGlyphs);
 
             // FDSelect
             if (font.TopDict.FDSelect != null)

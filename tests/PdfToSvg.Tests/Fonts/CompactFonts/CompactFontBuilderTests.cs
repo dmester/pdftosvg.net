@@ -14,7 +14,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
 {
     internal class CompactFontBuilderTests
     {
-        private void CharSet(int format, int[] sids)
+        private CompactFontSet Charset(int[] sids)
         {
             var fontSet = new CompactFontSet();
             var font = new CompactFont(fontSet);
@@ -27,6 +27,13 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
 
             fontSet.Fonts.Add(font);
 
+            return fontSet;
+        }
+
+        private void CustomCharset(int format, int[] sids)
+        {
+            var fontSet = Charset(sids);
+
             var builtCff = CompactFontBuilder.Build(fontSet, inlineSubrs: false);
             var parsedCff = CompactFontParser.Parse(builtCff);
 
@@ -36,22 +43,51 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
             Assert.AreEqual(format, actualFormat);
         }
 
-        [Test]
-        public void CharSet_Format0()
+        private void PredefinedCharset(int charsetId, int[] sids)
         {
-            CharSet(0, new[] { 0, 43, 42, 36, 38, 51, 77, 59, 41, 99, 85 });
+            var fontSet = Charset(sids);
+
+            var builtCff = CompactFontBuilder.Build(fontSet, inlineSubrs: false);
+            var parsedCff = CompactFontParser.Parse(builtCff);
+
+            Assert.AreEqual(sids, parsedCff.Fonts[0].CharSet.ToArray());
+            Assert.AreEqual(charsetId, parsedCff.Fonts[0].TopDict.Charset);
         }
 
         [Test]
-        public void CharSet_Format1()
+        public void Charset_Format0()
         {
-            CharSet(1, new int[] { 0, 33, 34, 35, 36, 37, 38, 39, 51, 52, 53, 54, 55, 56 });
+            CustomCharset(0, new[] { 0, 43, 42, 36, 38, 51, 77, 59, 41, 99, 85 });
         }
 
         [Test]
-        public void CharSet_Format2()
+        public void Charset_Format1()
         {
-            CharSet(2, Enumerable.Range(0, 400).ToArray());
+            CustomCharset(1, new int[] { 0, 33, 34, 35, 36, 37, 38, 39, 51, 52, 53, 54, 55, 56 });
+        }
+
+        [Test]
+        public void Charset_Format2()
+        {
+            CustomCharset(2, Enumerable.Concat(new int[] { 0 }, Enumerable.Range(10, 400)).ToArray());
+        }
+
+        [Test]
+        public void Charset_ISOAdobe()
+        {
+            PredefinedCharset(0, Enumerable.Range(0, 200).ToArray());
+        }
+
+        [Test]
+        public void Charset_Expert()
+        {
+            PredefinedCharset(1, CompactFontPredefinedCharsets.Charsets[1]);
+        }
+
+        [Test]
+        public void Charset_ExpertSubset()
+        {
+            PredefinedCharset(2, CompactFontPredefinedCharsets.Charsets[2]);
         }
 
         private CharStringSubRoutine Subr(int moveX, int moveY)

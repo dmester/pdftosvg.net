@@ -63,15 +63,27 @@ namespace PdfToSvg.Fonts.CompactFonts
         [CompactFontDictOperator(14)]
         public int[] XUID { get; set; } = ArrayUtils.Empty<int>();
 
+        /// <summary>
+        /// This value is overwritten when the font is built.
+        /// </summary>
         [CompactFontDictOperator(15)]
         public int Charset { get; set; }
 
+        /// <summary>
+        /// This value is overwritten when the font is built.
+        /// </summary>
         [CompactFontDictOperator(16)]
         public int Encoding { get; set; }
 
+        /// <summary>
+        /// This value is overwritten when the font is built.
+        /// </summary>
         [CompactFontDictOperator(17)]
         public int CharStrings { get; set; }
 
+        /// <summary>
+        /// This value is overwritten when the font is built.
+        /// </summary>
         [CompactFontDictOperator(18)]
         public int[] Private { get; set; } = ArrayUtils.Empty<int>();
 
@@ -108,9 +120,15 @@ namespace PdfToSvg.Fonts.CompactFonts
         [CompactFontDictOperator(12, 35)]
         public double UIDBase { get; set; }
 
+        /// <summary>
+        /// This value is overwritten when the font is built.
+        /// </summary>
         [CompactFontDictOperator(12, 36)]
         public int? FDArray { get; set; }
 
+        /// <summary>
+        /// This value is overwritten when the font is built.
+        /// </summary>
         [CompactFontDictOperator(12, 37)]
         public int? FDSelect { get; set; }
 

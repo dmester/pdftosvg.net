@@ -63,26 +63,24 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         private void MaximizeTopDictOffsets()
         {
-            const int EstimatedMaxFontSize = 4 << 20; // 4 MB
-
             foreach (var font in fontSet.Fonts)
             {
                 if (font.TopDict.Charset != 0)
                 {
-                    font.TopDict.Charset = EstimatedMaxFontSize;
+                    font.TopDict.Charset = int.MaxValue;
                 }
 
                 if (font.TopDict.Encoding != 0)
                 {
-                    font.TopDict.Encoding = EstimatedMaxFontSize;
+                    font.TopDict.Encoding = int.MaxValue;
                 }
 
-                font.TopDict.CharStrings = EstimatedMaxFontSize;
+                font.TopDict.CharStrings = int.MaxValue;
 
-                font.TopDict.Private = new[] { EstimatedMaxFontSize, EstimatedMaxFontSize };
+                font.TopDict.Private = new[] { int.MaxValue, int.MaxValue };
 
-                font.TopDict.FDArray = font.FDArray.Count > 0 ? EstimatedMaxFontSize : (int?)null;
-                font.TopDict.FDSelect = font.FDSelect.Count > 0 ? EstimatedMaxFontSize : (int?)null;
+                font.TopDict.FDArray = font.IsCIDFont ? int.MaxValue : null;
+                font.TopDict.FDSelect = font.IsCIDFont ? int.MaxValue : null;
             }
         }
 
@@ -139,7 +137,44 @@ namespace PdfToSvg.Fonts.CompactFonts
             public int Left;
         }
 
-        private void WriteCharset(CompactFont font)
+        private bool WritePredefinedCharset(CompactFont font)
+        {
+            // CID fonts are not allowed to use predefined charsets according to spec chapter 18
+            if (font.IsCIDFont)
+            {
+                return false;
+            }
+
+            var predefinedCharsets = CompactFontPredefinedCharsets.Charsets;
+
+            for (var charsetId = 0; charsetId < predefinedCharsets.Length; charsetId++)
+            {
+                var predefinedCharset = predefinedCharsets[charsetId];
+                if (predefinedCharset.Length >= font.Glyphs.Count)
+                {
+                    var isMatch = true;
+
+                    for (var i = 0; i < font.Glyphs.Count; i++)
+                    {
+                        if (font.Glyphs[i].SID != predefinedCharset[i])
+                        {
+                            isMatch = false;
+                            break;
+                        }
+                    }
+
+                    if (isMatch)
+                    {
+                        font.TopDict.Charset = charsetId;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private void WriteCustomCharset(CompactFont font)
         {
             font.TopDict.Charset = writer.Position;
 
@@ -195,6 +230,14 @@ namespace PdfToSvg.Fonts.CompactFonts
             }
         }
 
+        private void WriteCharset(CompactFont font)
+        {
+            if (!WritePredefinedCharset(font))
+            {
+                WriteCustomCharset(font);
+            }
+        }
+
         private void WriteFont(CompactFont font)
         {
             font.TopDict.Charset = 0;
@@ -205,13 +248,9 @@ namespace PdfToSvg.Fonts.CompactFonts
 
             WriteCharset(font);
 
-            if (font.FDSelect.Count > 0)
+            if (font.IsCIDFont)
             {
                 WriteFDSelect(font);
-            }
-
-            if (font.FDArray.Count > 0)
-            {
                 WriteFDArray(font);
             }
 
@@ -371,13 +410,14 @@ namespace PdfToSvg.Fonts.CompactFonts
                 }
             }
 
-            writer.WriteCard8(3); // format
-            writer.WriteCard16(ranges.Count); // nRanges
+            const int Format = 3;
+            writer.WriteCard8(Format);
+            writer.WriteCard16(ranges.Count);
 
             foreach (var range in ranges)
             {
-                writer.WriteCard16(range.FirstGlyphIndex); // first
-                writer.WriteCard8(range.FDIndex); //fd
+                writer.WriteCard16(range.FirstGlyphIndex);
+                writer.WriteCard8(range.FDIndex);
             }
 
             var sentinel = (ranges.LastOrDefault()?.LastGlyphIndex ?? 0) + 1;

@@ -22,6 +22,8 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         public string Name { get; set; } = "Unknown font";
 
+        public bool IsCIDFont => TopDict.ROS.Length > 0;
+
         public List<int> FDSelect { get; } = new();
 
         public List<int> CharSet { get; } = new();

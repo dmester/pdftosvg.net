@@ -8,7 +8,7 @@ There is a command line tool for PdfToSvg.NET that can be used for converting PD
 
 ## Usage
 ```
-pdftosvg.exe <input> [OPTIONS...] [<output>] [<pages>]
+pdftosvg.exe [OPTIONS...] <input> [<output>]
 ```
 
 ## Options
@@ -21,7 +21,7 @@ Path to the output SVG file(s). A page number will be appended to the filename.
 
 **Default:** Same as `<input>`, but with `.svg` as extension.
 
-#### `<pages>`
+#### `--pages <pages>`
 Pages to convert.
 
 Syntax:
@@ -44,7 +44,7 @@ Disables colored text output in the console.
 ## Examples
 
 ```
-pdftosvg.exe input.pdf output.svg 1..2,9
+pdftosvg.exe input.pdf output.svg --pages 1..2,9
 ```
 
 Converts page 1, 2 and 9 from `input.pdf` to the output files:

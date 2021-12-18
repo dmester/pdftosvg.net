@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Fonts.CharStrings;
 using PdfToSvg.Fonts.CompactFonts;
 using PdfToSvg.Fonts.OpenType.Enums;
 using PdfToSvg.Fonts.OpenType.Tables;
@@ -33,13 +34,13 @@ namespace PdfToSvg.Fonts.OpenType.Conversion
 
             nonZeroWidthGlyphs = font
                 .Glyphs
-                .Where(x => x.MinX < x.MaxX)
+                .Where(x => x.CharString.MinX < x.CharString.MaxX)
                 .ToList();
 
             // Add an empty character if there are no non-zero width characters to simplify logics further down
             if (nonZeroWidthGlyphs.Count == 0)
             {
-                nonZeroWidthGlyphs.Add(new CompactFontGlyph("\ufffd", 0, 0, 0, 0, 0, 0));
+                nonZeroWidthGlyphs.Add(new CompactFontGlyph(CharString.Empty, "\ufffd", 0, 0, 0));
             }
 
             isItalic = font.TopDict.ItalicAngle != 0;
@@ -70,10 +71,10 @@ namespace PdfToSvg.Fonts.OpenType.Conversion
                 }
             }
 
-            xMin = (short)nonZeroWidthGlyphs.Min(x => x.MinX);
-            xMax = (short)Math.Ceiling(nonZeroWidthGlyphs.Max(x => x.MaxX));
-            yMin = (short)nonZeroWidthGlyphs.Min(x => x.MinY);
-            yMax = (short)Math.Ceiling(nonZeroWidthGlyphs.Max(x => x.MaxY));
+            xMin = (short)nonZeroWidthGlyphs.Min(x => x.CharString.MinX);
+            xMax = (short)Math.Ceiling(nonZeroWidthGlyphs.Max(x => x.CharString.MaxX));
+            yMin = (short)nonZeroWidthGlyphs.Min(x => x.CharString.MinY);
+            yMax = (short)Math.Ceiling(nonZeroWidthGlyphs.Max(x => x.CharString.MaxY));
         }
 
         private HeadTable CreateHead()
@@ -118,8 +119,8 @@ namespace PdfToSvg.Fonts.OpenType.Conversion
             hhea.LineGap = 0;
 
             hhea.AdvanceWidthMax = (ushort)Math.Ceiling(nonZeroWidthGlyphs.Max(x => x.Width));
-            hhea.MinLeftSideBearing = (short)nonZeroWidthGlyphs.Min(x => x.MinX);
-            hhea.MinRightSideBearing = (short)nonZeroWidthGlyphs.Min(x => x.Width - x.MaxX);
+            hhea.MinLeftSideBearing = (short)nonZeroWidthGlyphs.Min(x => x.CharString.MinX);
+            hhea.MinRightSideBearing = (short)nonZeroWidthGlyphs.Min(x => x.Width - x.CharString.MaxX);
             hhea.MaxXExtent = xMax;
 
             hhea.CaretSlopeRise = 1;
@@ -210,9 +211,9 @@ namespace PdfToSvg.Fonts.OpenType.Conversion
 
             os2.StrikeoutSize = (short)font.TopDict.UnderlineThichness;
 
-            if (x != null && x.MaxY >= 1)
+            if (x != null && x.CharString.MaxY >= 1)
             {
-                os2.StrikeoutPosition = ConversionUtils.ToFWord(500, (int)x.MaxY);
+                os2.StrikeoutPosition = ConversionUtils.ToFWord(500, (int)x.CharString.MaxY);
             }
             else
             {
@@ -258,8 +259,8 @@ namespace PdfToSvg.Fonts.OpenType.Conversion
             os2.CodePageRange1 = 0b1;
             os2.CodePageRange2 = 0;
 
-            os2.XHeight = (short)(x == null ? 0 : x.MaxY);
-            os2.CapHeight = (short)(H == null ? 0 : H.MaxY);
+            os2.XHeight = (short)(x == null ? 0 : x.CharString.MaxY);
+            os2.CapHeight = (short)(H == null ? 0 : H.CharString.MaxY);
 
             os2.DefaultChar = 0;
             os2.BreakChar = 32;
@@ -418,7 +419,7 @@ namespace PdfToSvg.Fonts.OpenType.Conversion
             return new RawTable
             {
                 Tag = "CFF ",
-                Content = font.Content,
+                Content = CompactFontBuilder.Build(font.FontSet, inlineSubrs: true),
             };
         }
 

@@ -46,23 +46,24 @@ namespace PdfToSvg.Fonts.CompactFonts
         private int[] ReadIndexData()
         {
             var count = ReadCard16();
-            var offSize = ReadOffSize();
-            var offset = new int[count + 1];
 
             // Empty index should be 2 byte
             if (count == 0)
             {
-                offset[0] = 1;
+                return new int[] { 1 };
             }
             else
             {
+                var offSize = ReadOffSize();
+                var offset = new int[count + 1];
+
                 for (var i = 0; i < offset.Length; i++)
                 {
                     offset[i] = ReadOffset(offSize);
                 }
-            }
 
-            return offset;
+                return offset;
+            }
         }
 
         public int[] ReadIndex()
@@ -158,7 +159,8 @@ namespace PdfToSvg.Fonts.CompactFonts
                     break;
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(offSize), "Invalid offSize. Only values in the range 1-4 are allowed.");
+                    throw new ArgumentOutOfRangeException(
+                        nameof(offSize), "Invalid offSize. Only values in the range 1-4 are allowed.");
             }
 
             cursor += offSize;
@@ -205,12 +207,11 @@ namespace PdfToSvg.Fonts.CompactFonts
                     operands.Clear();
                 }
 
-                else if (
-                    b0 >= 22 && b0 <= 27 ||
-                    b0 == 31 ||
-                    b0 == 255)
+                else if (b0 >= 32 && b0 <= 254 ||
+                    b0 == 28 ||
+                    b0 == 29)
                 {
-                    throw new CompactFontException("Unexpected byte in DICT.");
+                    operands.Add(ReadInteger());
                 }
 
                 else if (b0 == 30)
@@ -218,15 +219,9 @@ namespace PdfToSvg.Fonts.CompactFonts
                     operands.Add(ReadReal());
                 }
 
-                else if (b0 >= 32 && b0 <= 254 ||
-                    b0 == 28 ||
-                    b0 == 29)
-                {
-                    operands.Add(ReadInteger());
-                }
                 else
                 {
-                    throw new CompactFontException("Unexpected state in " + nameof(ReadDict) + ".");
+                    throw new CompactFontException("Unexpected byte in DICT.");
                 }
             }
 

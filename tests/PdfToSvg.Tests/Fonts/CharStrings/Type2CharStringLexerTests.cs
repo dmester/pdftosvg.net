@@ -29,7 +29,7 @@ namespace PdfToSvg.Tests.Fonts.CharStrings
                 .Select(x => byte.Parse(x, NumberStyles.HexNumber, CultureInfo.InvariantCulture))
                 .ToArray();
 
-            return new Type2CharStringLexer(parsed, 0, parsed.Length);
+            return new Type2CharStringLexer(new ArraySegment<byte>(parsed));
         }
 
         [TestCase("1C 80 00", -32768d)]
@@ -47,7 +47,7 @@ namespace PdfToSvg.Tests.Fonts.CharStrings
         public void ReadOperand(string data, double expectedValue)
         {
             var bytes = ParseSpec(data);
-            var lexer = new Type2CharStringLexer(bytes, 0, bytes.Length);
+            var lexer = new Type2CharStringLexer(new ArraySegment<byte>(bytes));
 
             var lexeme = lexer.Read();
 
@@ -69,12 +69,12 @@ namespace PdfToSvg.Tests.Fonts.CharStrings
         public void ReadOperator(string data, int expectedOperator)
         {
             var bytes = ParseSpec(data);
-            var lexer = new Type2CharStringLexer(bytes, 0, bytes.Length);
+            var lexer = new Type2CharStringLexer(new ArraySegment<byte>(bytes));
 
             var lexeme = lexer.Read();
 
             Assert.AreEqual(CharStringToken.Operator, lexeme.Token);
-            Assert.AreEqual(expectedOperator, (int)lexeme.Value);
+            Assert.AreEqual(expectedOperator, (int)lexeme.OpCode);
 
             Assert.AreEqual(bytes.Length, lexer.Position);
             Assert.AreEqual(CharStringToken.EndOfInput, lexer.Read().Token);

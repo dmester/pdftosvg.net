@@ -19,22 +19,27 @@ namespace PdfToSvg.Fonts.CharStrings
         /// <param name="data">Input data buffer.</param>
         /// <param name="startIndex">Inclusive start index.</param>
         /// <param name="endIndex">Exclusive end index.</param>
-        public Type2CharStringLexer(byte[] data, int startIndex, int endIndex)
+        public Type2CharStringLexer(ArraySegment<byte> data)
         {
-            this.data = data;
-            this.cursor = startIndex;
-            this.endIndex = endIndex;
+            this.data = data.Array;
+            this.cursor = data.Offset;
+            this.endIndex = data.Offset + data.Count;
         }
 
-        public static Type2CharStringLexer EmptyLexer { get; } = new Type2CharStringLexer(ArrayUtils.Empty<byte>(), 0, 0);
+        public static Type2CharStringLexer EmptyLexer { get; } = new Type2CharStringLexer(new ArraySegment<byte>(ArrayUtils.Empty<byte>(), 0, 0));
 
         public int Position => cursor;
 
         public bool EndOfInput => cursor >= endIndex;
 
-        public void SkipBytes(int bytes)
+        public byte ReadByte()
         {
-            cursor += bytes;
+            if (cursor < endIndex)
+            {
+                return data[cursor++];
+            }
+
+            return 0;
         }
 
         public CharStringLexeme Read()

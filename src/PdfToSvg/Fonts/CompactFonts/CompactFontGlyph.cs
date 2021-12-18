@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.Encodings;
+using PdfToSvg.Fonts.CharStrings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,27 +13,29 @@ namespace PdfToSvg.Fonts.CompactFonts
 {
     internal class CompactFontGlyph
     {
-        public CompactFontGlyph(string unicode, int glyphIndex, double width, double minX, double maxX, double minY, double maxY)
+        public CompactFontGlyph(CharString charString, string unicode, int glyphIndex, int sid, double width)
         {
             if (unicode.Length == 0)
             {
                 unicode = "\uFFFD";
             }
 
+            CharString = charString;
+
             Unicode = unicode;
             UnicodeCodePoint = Utf16Encoding.DecodeCodePoint(unicode, 0, out var length);
             IsSingleCodePoint = length == unicode.Length;
 
             GlyphIndex = glyphIndex;
+            SID = sid;
 
             Width = width;
-            MinX = minX;
-            MaxX = maxX;
-            MinY = minY;
-            MaxY = maxY;
         }
 
+        public CharString CharString { get; }
+
         public int GlyphIndex { get; }
+        public int SID { get; }
 
         public string Unicode { get; }
         public uint UnicodeCodePoint { get; }
@@ -40,11 +43,6 @@ namespace PdfToSvg.Fonts.CompactFonts
         public bool IsSingleCodePoint { get; }
 
         public double Width { get; }
-
-        public double MinX { get; }
-        public double MaxX { get; }
-        public double MinY { get; }
-        public double MaxY { get; }
 
         public override string ToString() => Unicode;
     }

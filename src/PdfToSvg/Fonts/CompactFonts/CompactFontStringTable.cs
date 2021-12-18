@@ -10,7 +10,7 @@ using System.Text;
 
 namespace PdfToSvg.Fonts.CompactFonts
 {
-    internal struct CompactFontStringTable
+    internal class CompactFontStringTable
     {
         // CFF spec Appendix A
         private static readonly string[] sid = new string[]
@@ -408,14 +408,19 @@ namespace PdfToSvg.Fonts.CompactFonts
             "Semibold",
         };
 
-        private string[] customStrings;
+        public CompactFontStringTable()
+        {
+            CustomStrings = ArrayUtils.Empty<string>();
+        }
 
         public CompactFontStringTable(string[] customStrings)
         {
-            this.customStrings = customStrings;
+            CustomStrings = customStrings;
         }
 
-        public static CompactFontStringTable Standard => new CompactFontStringTable();
+        public string[] CustomStrings { get; }
+
+        public static CompactFontStringTable Standard { get; } = new CompactFontStringTable();
 
         public string? Lookup(int index)
         {
@@ -426,18 +431,36 @@ namespace PdfToSvg.Fonts.CompactFonts
                     return sid[index];
                 }
 
-                if (customStrings != null)
-                {
-                    index -= sid.Length;
+                index -= sid.Length;
 
-                    if (index < customStrings.Length)
-                    {
-                        return customStrings[index];
-                    }
+                if (index < CustomStrings.Length)
+                {
+                    return CustomStrings[index];
                 }
             }
 
             return null;
+        }
+
+        public int Lookup(string str)
+        {
+            for (var i = 0; i < sid.Length; i++)
+            {
+                if (sid[i] == str)
+                {
+                    return i;
+                }
+            }
+
+            for (var i = 0; i < CustomStrings.Length; i++)
+            {
+                if (CustomStrings[i] == str)
+                {
+                    return i + sid.Length;
+                }
+            }
+
+            return -1;
         }
     }
 }

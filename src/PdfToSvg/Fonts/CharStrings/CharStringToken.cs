@@ -14,5 +14,6 @@ namespace PdfToSvg.Fonts.CharStrings
         EndOfInput = 0,
         Operator,
         Operand,
+        Mask,
     }
 }

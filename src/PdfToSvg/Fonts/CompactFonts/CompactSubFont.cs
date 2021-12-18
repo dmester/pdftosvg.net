@@ -10,12 +10,12 @@ using System.Text;
 
 namespace PdfToSvg.Fonts.CompactFonts
 {
-    internal class CompactFontSet
+    internal class CompactSubFont
     {
-        public IList<CompactFont> Fonts { get; } = new List<CompactFont>();
+        public CompactFontDict FontDict { get; } = new();
 
-        public CompactFontStringTable Strings { get; set; } = CompactFontStringTable.Standard;
+        public CompactFontPrivateDict PrivateDict { get; } = new();
 
-        public IList<CharStringSubRoutine> Subrs { get; } = new List<CharStringSubRoutine>();
+        public List<CharStringSubRoutine> Subrs { get; set; } = new();
     }
 }

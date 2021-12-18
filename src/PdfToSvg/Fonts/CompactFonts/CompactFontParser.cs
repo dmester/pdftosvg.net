@@ -18,12 +18,9 @@ namespace PdfToSvg.Fonts.CompactFonts
         private readonly byte[] data;
         private readonly IDictionary<uint, string>? customCMap;
 
-        private readonly List<CompactFont> fonts = new List<CompactFont>();
+        private readonly CompactFontSet fontSet = new CompactFontSet();
 
-        private CompactFontStringTable strings;
-        private int[] globalSubrIndex = ArrayUtils.Empty<int>();
-
-        private CompactFontParser(byte[] data, IDictionary<uint, string>? customCMap)
+        internal CompactFontParser(byte[] data, IDictionary<uint, string>? customCMap)
         {
             reader = new CompactFontReader(data);
             this.data = data;
@@ -35,7 +32,7 @@ namespace PdfToSvg.Fonts.CompactFonts
             reader.Position = position;
 
             var dictData = reader.ReadDict(length);
-            CompactFontDictSerializer.Deserialize(dict, dictData, strings);
+            CompactFontDictSerializer.Deserialize(dict, dictData, fontSet.Strings);
         }
 
         private void ReadFDSelect(IList<int> fdSelect, int nGlyphs)
@@ -88,6 +85,7 @@ namespace PdfToSvg.Fonts.CompactFonts
         {
             var format = reader.ReadCard8();
 
+            // The .notdef char is not included in the charset
             charset.Add(0);
 
             switch (format)
@@ -132,17 +130,19 @@ namespace PdfToSvg.Fonts.CompactFonts
             }
         }
 
+        private void ReadSubrs(IList<CharStringSubRoutine> target)
+        {
+            var subrIndex = reader.ReadIndex();
+
+            for (var i = 1; i < subrIndex.Length; i++)
+            {
+                var content = new ArraySegment<byte>(data, subrIndex[i - 1], subrIndex[i] - subrIndex[i - 1]);
+                target.Add(new CharStringSubRoutine(content));
+            }
+        }
+
         private void ReadFont(CompactFont font)
         {
-            var localSubrIndex = ArrayUtils.Empty<int>();
-
-            var charset = new List<int>();
-            var isCidFont = font.TopDict.FDArray != null;
-
-            var fdSelect = new List<int>();
-            var fdArray = new List<CompactFontDict>();
-            var fdArrayLocalSubrIndex = new List<int[]>();
-
             // Ensure supported char string type
             if (font.TopDict.CharstringType != 2)
             {
@@ -158,7 +158,7 @@ namespace PdfToSvg.Fonts.CompactFonts
                 if (font.PrivateDict.Subrs != null)
                 {
                     reader.Position = font.PrivateDict.Subrs.Value + privateDictStart;
-                    localSubrIndex = reader.ReadIndex();
+                    ReadSubrs(font.Subrs);
                 }
             }
 
@@ -171,80 +171,140 @@ namespace PdfToSvg.Fonts.CompactFonts
             if (font.TopDict.Charset > 0)
             {
                 reader.Position = font.TopDict.Charset;
-                ReadCharset(charset, nGlyphs);
+                ReadCharset(font.CharSet, nGlyphs);
             }
 
             // FDSelect
             if (font.TopDict.FDSelect != null)
             {
                 reader.Position = font.TopDict.FDSelect.Value;
-                ReadFDSelect(fdSelect, nGlyphs);
+                ReadFDSelect(font.FDSelect, nGlyphs);
             }
 
             // FDArray
             if (font.TopDict.FDArray != null)
             {
-                reader.Position = font.TopDict.FDArray.Value;
-
-                var fdArrayIndex = reader.ReadIndex();
-
-                for (var j = 0; j + 1 < fdArrayIndex.Length; j++)
-                {
-                    reader.Position = fdArrayIndex[j];
-                    var fdDictData = reader.ReadDict(fdArrayIndex[j + 1] - fdArrayIndex[j]);
-
-                    var fdDict = new CompactFontDict();
-                    CompactFontDictSerializer.Deserialize(fdDict, fdDictData, strings);
-
-                    var fdLocalSubrIndex = localSubrIndex;
-
-                    if (fdDict.Private.Length == 2)
-                    {
-                        var privateDictStart = fdDict.Private[1];
-                        var fdPrivateDict = new CompactFontPrivateDict();
-
-                        ReadDict(fdPrivateDict, privateDictStart, fdDict.Private[0]);
-
-                        if (fdPrivateDict.Subrs != null)
-                        {
-                            reader.Position = fdPrivateDict.Subrs.Value + privateDictStart;
-                            fdLocalSubrIndex = reader.ReadIndex();
-                        }
-                    }
-
-                    fdArray.Add(fdDict);
-                    fdArrayLocalSubrIndex.Add(fdLocalSubrIndex);
-                }
+                ReadFDArray(font);
             }
 
             // Glyphs
-            for (var glyphIndex = 0; glyphIndex < charset.Count; glyphIndex++)
+            for (var glyphIndex = 0; glyphIndex < font.CharSet.Count; glyphIndex++)
             {
-                var charLocalSubrIndex = localSubrIndex;
+                ReadGlyph(font, charStringsIndex, glyphIndex);
+            }
 
-                if (glyphIndex < fdSelect.Count)
+            ReplaceSeacChars(font);
+        }
+
+        private void ReadFDArray(CompactFont font)
+        {
+            if (font.TopDict.FDArray == null)
+            {
+                return;
+            }
+
+            reader.Position = font.TopDict.FDArray.Value;
+
+            var fdArrayIndex = reader.ReadIndex();
+
+            for (var j = 0; j + 1 < fdArrayIndex.Length; j++)
+            {
+                var fdFont = new CompactSubFont();
+                font.FDArray.Add(fdFont);
+
+                reader.Position = fdArrayIndex[j];
+                var fdDictData = reader.ReadDict(fdArrayIndex[j + 1] - fdArrayIndex[j]);
+                CompactFontDictSerializer.Deserialize(fdFont.FontDict, fdDictData, fontSet.Strings);
+
+                var subrsFound = false;
+
+                if (fdFont.FontDict.Private.Length == 2)
                 {
-                    var fdIndex = fdSelect[glyphIndex];
-                    if (fdIndex < fdArrayLocalSubrIndex.Count)
+                    var privateDictStart = fdFont.FontDict.Private[1];
+                    var fdPrivateDict = new CompactFontPrivateDict();
+
+                    ReadDict(fdPrivateDict, privateDictStart, fdFont.FontDict.Private[0]);
+
+                    if (fdPrivateDict.Subrs != null)
                     {
-                        charLocalSubrIndex = fdArrayLocalSubrIndex[fdIndex];
+                        reader.Position = fdPrivateDict.Subrs.Value + privateDictStart;
+                        ReadSubrs(fdFont.Subrs);
+                        subrsFound = true;
                     }
                 }
 
-                var startIndex = charStringsIndex[glyphIndex];
-                var endIndex = glyphIndex + 1 < charStringsIndex.Length ? charStringsIndex[glyphIndex + 1] : data.Length;
-                var cidOrSid = charset[glyphIndex];
-
-                var glyph = ReadGlyph(font, glyphIndex, startIndex, endIndex, charLocalSubrIndex, cidOrSid, isCidFont);
-                font.Glyphs.Add(glyph);
+                if (!subrsFound)
+                {
+                    fdFont.Subrs = font.Subrs;
+                }
             }
         }
 
-        private CompactFontGlyph ReadGlyph(CompactFont font, int glyphIndex, int startIndex, int endIndex, int[] charLocalSubrIndex, int cidOrSid, bool isCidFont)
+        private void ReplaceSeacChars(CompactFont font)
         {
+            for (var glyphIndex = 0; glyphIndex < font.Glyphs.Count; glyphIndex++)
+            {
+                var glyph = font.Glyphs[glyphIndex];
+                var seac = glyph.CharString.Seac;
+                if (seac != null)
+                {
+                    var content = glyph.CharString.Content;
+                    var contentInlinedSubrs = glyph.CharString.ContentInlinedSubrs;
+                    var standardEncoding = new StandardEncoding();
+
+                    var acharValue = standardEncoding.GetString(new byte[] { (byte)seac.Achar });
+                    var bcharValue = standardEncoding.GetString(new byte[] { (byte)seac.Bchar });
+
+                    var achar = font.Glyphs.FirstOrDefault(x => x.Unicode == acharValue);
+                    var bchar = font.Glyphs.FirstOrDefault(x => x.Unicode == bcharValue);
+
+                    var mergedCharString = SeacMerger.Merge(achar.CharString, bchar.CharString, seac.Adx, seac.Ady);
+
+                    content.Clear();
+                    contentInlinedSubrs.Clear();
+
+                    content.Add(CharStringLexeme.Operand(glyph.Width - font.PrivateDict.NominalWidthX));
+
+                    foreach (var lexeme in mergedCharString)
+                    {
+                        content.Add(lexeme);
+                        contentInlinedSubrs.Add(lexeme);
+                    }
+
+                    if (content.LastOrDefault().OpCode != CharStringOpCode.EndChar)
+                    {
+                        content.Add(CharStringLexeme.Operator(CharStringOpCode.EndChar));
+                    }
+
+                    if (contentInlinedSubrs.LastOrDefault().OpCode != CharStringOpCode.EndChar)
+                    {
+                        contentInlinedSubrs.Add(CharStringLexeme.Operator(CharStringOpCode.EndChar));
+                    }
+                }
+            }
+        }
+
+        private void ReadGlyph(CompactFont font, int[] charStringsIndex, int glyphIndex)
+        {
+            var isCidFont = font.TopDict.FDArray != null;
+            var charLocalSubrs = font.Subrs;
+
+            if (glyphIndex < font.FDSelect.Count)
+            {
+                var fdIndex = font.FDSelect[glyphIndex];
+                if (fdIndex < font.FDArray.Count)
+                {
+                    charLocalSubrs = font.FDArray[fdIndex].Subrs;
+                }
+            }
+
+            var startIndex = charStringsIndex[glyphIndex];
+            var endIndex = glyphIndex + 1 < charStringsIndex.Length ? charStringsIndex[glyphIndex + 1] : data.Length;
+            var cidOrSid = font.CharSet[glyphIndex];
+
             string unicode;
-            var charString = (CharString?)null;
-            double width, minX, maxX, minY, maxY;
+            CharString charString;
+            double width;
 
             if (isCidFont)
             {
@@ -256,7 +316,7 @@ namespace PdfToSvg.Fonts.CompactFonts
             }
             else
             {
-                var charName = strings.Lookup(cidOrSid);
+                var charName = fontSet.Strings.Lookup(cidOrSid);
 
                 AdobeGlyphList.TryMap(charName, out unicode!);
 
@@ -268,14 +328,16 @@ namespace PdfToSvg.Fonts.CompactFonts
 
             try
             {
-                charString = Type2CharStringParser.Parse(data, startIndex, endIndex, globalSubrIndex, charLocalSubrIndex);
+                var charStringData = new ArraySegment<byte>(data, startIndex, endIndex - startIndex);
+                charString = Type2CharStringParser.Parse(charStringData, font.FontSet.Subrs, charLocalSubrs);
             }
             catch (Exception ex)
             {
                 Log.WriteLine("Failed to parse char '" + unicode + "'. " + ex);
+                charString = CharString.Empty;
             }
 
-            if (charString == null || charString.Width == null)
+            if (charString.Width == null)
             {
                 width = font.PrivateDict.DefaultWidthX;
             }
@@ -284,24 +346,8 @@ namespace PdfToSvg.Fonts.CompactFonts
                 width = font.PrivateDict.NominalWidthX + charString.Width.Value;
             }
 
-            if (charString == null ||
-                charString.MinX >= charString.MaxX ||
-                charString.MinY >= charString.MaxY)
-            {
-                minX = 0;
-                maxX = 0;
-                minY = 0;
-                maxY = 0;
-            }
-            else
-            {
-                minX = charString.MinX;
-                maxX = charString.MaxX;
-                minY = charString.MinY;
-                maxY = charString.MaxY;
-            }
-
-            return new CompactFontGlyph(unicode, glyphIndex, width, minX, maxX, minY, maxY);
+            var glyph = new CompactFontGlyph(charString, unicode, glyphIndex, cidOrSid, width);
+            font.Glyphs.Add(glyph);
         }
 
         private CompactFontSet Read()
@@ -318,17 +364,15 @@ namespace PdfToSvg.Fonts.CompactFonts
             var nameIndex = reader.ReadIndex();
             var topDictIndex = reader.ReadIndex();
             var stringIndex = reader.ReadIndex();
-            globalSubrIndex = reader.ReadIndex();
+            ReadSubrs(fontSet.Subrs);
 
             var names = reader.ReadStrings(nameIndex);
-            strings = new CompactFontStringTable(reader.ReadStrings(stringIndex));
+            fontSet.Strings = new CompactFontStringTable(reader.ReadStrings(stringIndex));
 
             for (var i = 0; i + 1 < topDictIndex.Length; i++)
             {
-                var font = new CompactFont();
+                var font = new CompactFont(fontSet);
                 ReadDict(font.TopDict, topDictIndex[i], topDictIndex[i + 1] - topDictIndex[i]);
-
-                font.Content = data;
 
                 if (i < names.Length)
                 {
@@ -341,13 +385,13 @@ namespace PdfToSvg.Fonts.CompactFonts
 
                 ReadFont(font);
 
-                fonts.Add(font);
+                fontSet.Fonts.Add(font);
             }
 
-            return new CompactFontSet(fonts);
+            return fontSet;
         }
 
-        public static CompactFontSet Parse(byte[] data, IDictionary<uint, string>? customCMap)
+        public static CompactFontSet Parse(byte[] data, IDictionary<uint, string>? customCMap = null)
         {
             return new CompactFontParser(data, customCMap).Read();
         }

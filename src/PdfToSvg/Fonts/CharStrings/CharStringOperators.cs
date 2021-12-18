@@ -16,11 +16,10 @@ namespace PdfToSvg.Fonts.CharStrings
         [AttributeUsage(AttributeTargets.Method)]
         private class OperatorAttribute : Attribute
         {
-            public OperatorAttribute(CharStringOpCode code, bool clearStack = false, bool subrOperator = false)
+            public OperatorAttribute(CharStringOpCode code, bool clearStack = false)
             {
                 Code = code;
                 ClearStack = clearStack;
-                SubrOperator = subrOperator;
             }
 
             /// <summary>
@@ -33,12 +32,6 @@ namespace PdfToSvg.Fonts.CharStrings
             /// strings.
             /// </summary>
             public bool ClearStack { get; }
-
-            /// <summary>
-            /// Specifies whether this operator invokes or returning from a subroutine. Such operators don't affect
-            /// <see cref="Parser.LastOperator"/>.
-            /// </summary>
-            public bool SubrOperator { get; }
         }
 
         private static readonly Dictionary<CharStringOpCode, CharStringOperator> operators;
@@ -62,8 +55,7 @@ namespace PdfToSvg.Fonts.CharStrings
                     method => method.Operator.Code,
                     method => new CharStringOperator(
                         method.Method.CreateDelegate<Action<Parser>>(),
-                        method.Operator.ClearStack,
-                        method.Operator.SubrOperator));
+                        method.Operator.ClearStack));
         }
 
         public static bool TryGetOperator(CharStringOpCode code, out CharStringOperator result)
@@ -76,6 +68,8 @@ namespace PdfToSvg.Fonts.CharStrings
         [Operator(CharStringOpCode.RMoveTo, clearStack: true)]
         private static void RMoveTo(Parser parser)
         {
+            parser.AppendInlinedSubrs(CharStringOpCode.RMoveTo, last: 2);
+
             parser.Stack.Pop(out double dx1, out double dy1);
 
             parser.Path.RMoveTo(dx1, dy1);
@@ -84,6 +78,8 @@ namespace PdfToSvg.Fonts.CharStrings
         [Operator(CharStringOpCode.HMoveTo, clearStack: true)]
         private static void HMoveTo(Parser parser)
         {
+            parser.AppendInlinedSubrs(CharStringOpCode.HMoveTo, last: 1);
+
             parser.Stack.Pop(out double dx1);
 
             parser.Path.RMoveTo(dx1, 0);
@@ -92,6 +88,8 @@ namespace PdfToSvg.Fonts.CharStrings
         [Operator(CharStringOpCode.VMoveTo, clearStack: true)]
         private static void VMoveTo(Parser parser)
         {
+            parser.AppendInlinedSubrs(CharStringOpCode.VMoveTo, last: 1);
+
             parser.Stack.Pop(out double dy1);
 
             parser.Path.RMoveTo(0, dy1);
@@ -107,12 +105,17 @@ namespace PdfToSvg.Fonts.CharStrings
                 parser.Path.RLineTo(parser.Stack[i], parser.Stack[i + 1]);
             }
 
+            parser.AppendInlinedSubrs(CharStringOpCode.RLineTo, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
         private static void AlternatingLineTo(Parser parser, bool startHorizontally)
         {
             var horizontal = startHorizontally;
+
+            parser.AppendInlinedSubrs(
+                startHorizontally ? CharStringOpCode.HLineTo : CharStringOpCode.VLineTo,
+                from: 0);
 
             for (var i = 0; i < parser.Stack.Count; i++)
             {
@@ -160,6 +163,7 @@ namespace PdfToSvg.Fonts.CharStrings
                     );
             }
 
+            parser.AppendInlinedSubrs(CharStringOpCode.RRCurveTo, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -199,6 +203,7 @@ namespace PdfToSvg.Fonts.CharStrings
                     0);
             }
 
+            parser.AppendInlinedSubrs(CharStringOpCode.HHCurveTo, from: removeFrom);
             parser.Stack.RemoveFrom(removeFrom);
         }
 
@@ -219,6 +224,10 @@ namespace PdfToSvg.Fonts.CharStrings
                 endAt--;
                 endOrthogonal = false;
             }
+
+            parser.AppendInlinedSubrs(
+                startHorizontal ? CharStringOpCode.HVCurveTo : CharStringOpCode.VHCurveTo,
+                from: startAt);
 
             for (var i = startAt; i < endAt; i += 4)
             {
@@ -290,6 +299,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 parser.Stack[parser.Stack.Count - 1]
                 );
 
+            parser.AppendInlinedSubrs(CharStringOpCode.RCurveLine, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -318,6 +328,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 parser.Stack[parser.Stack.Count - 2],
                 parser.Stack[parser.Stack.Count - 1]);
 
+            parser.AppendInlinedSubrs(CharStringOpCode.RLineCurve, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -358,6 +369,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 dx1 = 0;
             }
 
+            parser.AppendInlinedSubrs(CharStringOpCode.VVCurveTo, from: removeFrom);
             parser.Stack.RemoveFrom(removeFrom);
         }
 
@@ -388,6 +400,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 parser.Stack[startAt + 11]
                 );
 
+            parser.AppendInlinedSubrs(CharStringOpCode.Flex, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -416,6 +429,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 parser.Stack[startAt + 6],
                 0);
 
+            parser.AppendInlinedSubrs(CharStringOpCode.HFlex, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -444,6 +458,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 parser.Stack[startAt + 8],
                 0);
 
+            parser.AppendInlinedSubrs(CharStringOpCode.HFlex1, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -487,6 +502,7 @@ namespace PdfToSvg.Fonts.CharStrings
             parser.Path.RRCurveTo(dx1, dy1, dx2, dy2, dx3, dy3);
             parser.Path.RRCurveTo(dx4, dy4, dx5, dy5, dx6, dy6);
 
+            parser.AppendInlinedSubrs(CharStringOpCode.Flex1, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -497,6 +513,22 @@ namespace PdfToSvg.Fonts.CharStrings
         [Operator(CharStringOpCode.EndChar, clearStack: true)]
         private static void EndChar(Parser parser)
         {
+            if (parser.Stack.Count >= 4)
+            {
+                parser.CharString.Seac = new CharStringSeacInfo(
+                    adx: parser.Stack[parser.Stack.Count - 4],
+                    ady: parser.Stack[parser.Stack.Count - 3],
+                    bchar: (int)parser.Stack[parser.Stack.Count - 2],
+                    achar: (int)parser.Stack[parser.Stack.Count - 1]);
+
+                parser.AppendInlinedSubrs(CharStringOpCode.EndChar, last: 4);
+                parser.Stack.RemoveFrom(parser.Stack.Count - 4);
+            }
+            else
+            {
+                parser.AppendInlinedSubrs(CharStringOpCode.EndChar);
+            }
+
             parser.EndChar();
         }
 
@@ -504,59 +536,89 @@ namespace PdfToSvg.Fonts.CharStrings
 
         #region Hint operators
 
-        private static void Hint(Parser parser)
+        private static void Hint(Parser parser, CharStringOpCode? opCode = null)
         {
             // All hints use an even number of arguments
             var startAt = parser.Stack.Count % 2;
 
-            parser.HintCount += parser.Stack.Count / 2;
+            parser.CharString.HintCount += parser.Stack.Count / 2;
+
+            for (var i = startAt; i < parser.Stack.Count; i++)
+            {
+                parser.CharString.ContentInlinedSubrs.Add(CharStringLexeme.Operand(parser.Stack[i]));
+            }
+
+            if (opCode.HasValue)
+            {
+                parser.CharString.ContentInlinedSubrs.Add(CharStringLexeme.Operator(opCode.Value));
+            }
 
             parser.Stack.RemoveFrom(startAt);
-
         }
 
         [Operator(CharStringOpCode.HStem, clearStack: true)]
         private static void HStem(Parser parser)
         {
-            Hint(parser);
+            Hint(parser, CharStringOpCode.HStem);
         }
 
         [Operator(CharStringOpCode.VStem, clearStack: true)]
         private static void VStem(Parser parser)
         {
-            Hint(parser);
+            Hint(parser, CharStringOpCode.VStem);
         }
 
         [Operator(CharStringOpCode.HStemHm, clearStack: true)]
         private static void HStemHm(Parser parser)
         {
-            Hint(parser);
+            Hint(parser, CharStringOpCode.HStemHm);
         }
 
         [Operator(CharStringOpCode.VStemHm, clearStack: true)]
         private static void VStemHm(Parser parser)
         {
-            Hint(parser);
+            Hint(parser, CharStringOpCode.VStemHm);
+        }
+
+        private static void Mask(Parser parser, CharStringOpCode opCode)
+        {
+            // vstem hint operator is optional if hstem and vstem direcly preceeds the hintmask operator.
+            var lastOperator = parser.CharString.ContentInlinedSubrs.LastOrDefault(x => x.Token == CharStringToken.Operator);
+
+            if (lastOperator.OpCode == CharStringOpCode.HStem ||
+                lastOperator.OpCode == CharStringOpCode.HStemHm)
+            {
+                Hint(parser);
+            }
+
+            parser.CharString.ContentInlinedSubrs.Add(CharStringLexeme.Operator(opCode));
+
+            // Mask
+            var maskBytes = MathUtils.BitsToBytes(parser.CharString.HintCount);
+
+            for (var i = 0; i < maskBytes; i++)
+            {
+                var lexeme = CharStringLexeme.Mask(parser.Lexer.ReadByte());
+
+                if (!parser.InSubRoutine)
+                {
+                    parser.CharString.Content.Add(lexeme);
+                }
+
+                parser.CharString.ContentInlinedSubrs.Add(lexeme);
+            }
         }
 
         [Operator(CharStringOpCode.HintMask, clearStack: true)]
         private static void HintMask(Parser parser)
         {
-            // vstem hint operator is optional if hstem and vstem direcly preceeds the hintmask operator.
-            if (parser.LastOperator == HStem ||
-                parser.LastOperator == HStemHm)
-            {
-                VStem(parser);
-            }
-
-            var maskBytes = MathUtils.BitsToBytes(parser.HintCount);
-            parser.Lexer.SkipBytes(maskBytes);
+            Mask(parser, CharStringOpCode.HintMask);
         }
 
         [Operator(CharStringOpCode.CntrMask, clearStack: true)]
         private static void CntrMask(Parser parser)
         {
-            HintMask(parser);
+            Mask(parser, CharStringOpCode.CntrMask);
         }
 
         #endregion

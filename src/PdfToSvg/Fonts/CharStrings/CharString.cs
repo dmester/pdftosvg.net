@@ -11,20 +11,41 @@ namespace PdfToSvg.Fonts.CharStrings
 {
     internal class CharString
     {
-        public CharString(double? width, double minx, double maxx, double miny, double maxy)
+        private readonly CharStringInfo info;
+
+        static CharString()
         {
-            Width = width;
-            MinX = minx;
-            MaxX = maxx;
-            MinY = miny;
-            MaxY = maxy;
+            var endchar = CharStringLexeme.Operator(14);
+
+            var info = new CharStringInfo();
+            info.Content.Add(endchar);
+            info.ContentInlinedSubrs.Add(endchar);
+
+            Empty = new CharString(info);
         }
 
-        public double? Width { get; }
+        public CharString(CharStringInfo info)
+        {
+            this.info = info;
+        }
 
-        public double MinX { get; }
-        public double MaxX { get; }
-        public double MinY { get; }
-        public double MaxY { get; }
+        public IList<CharStringLexeme> Content => info.Content;
+        public IList<CharStringLexeme> ContentInlinedSubrs => info.ContentInlinedSubrs;
+
+        public CharStringSeacInfo? Seac => info.Seac;
+
+        public double? Width => info.Width;
+
+        public double MinX => info.Path.MinX;
+        public double MaxX => info.Path.MaxX;
+        public double MinY => info.Path.MinY;
+        public double MaxY => info.Path.MaxY;
+
+        public double LastX => info.Path.LastX;
+        public double LastY => info.Path.LastY;
+
+        public double HintCount => info.HintCount;
+
+        public static CharString Empty { get; }
     }
 }

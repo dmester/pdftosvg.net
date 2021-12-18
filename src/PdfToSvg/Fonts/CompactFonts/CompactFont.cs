@@ -13,16 +13,29 @@ namespace PdfToSvg.Fonts.CompactFonts
 {
     internal class CompactFont
     {
-        public byte[] Content { get; set; } = ArrayUtils.Empty<byte>();
+        public CompactFont(CompactFontSet fontSet)
+        {
+            FontSet = fontSet;
+        }
+
+        public CompactFontSet FontSet { get; }
 
         public string Name { get; set; } = "Unknown font";
 
-        public CompactFontStringTable Strings { get; set; }
+        public List<int> FDSelect { get; } = new();
 
-        public IList<CompactFontGlyph> Glyphs { get; } = new List<CompactFontGlyph>();
+        public List<int> CharSet { get; } = new();
 
-        public CompactFontDict TopDict { get; } = new CompactFontDict();
+        public CompactFontStringTable Strings { get; set; } = CompactFontStringTable.Standard;
 
-        public CompactFontPrivateDict PrivateDict { get; } = new CompactFontPrivateDict();
+        public List<CompactFontGlyph> Glyphs { get; } = new();
+
+        public CompactFontDict TopDict { get; } = new();
+
+        public CompactFontPrivateDict PrivateDict { get; } = new();
+
+        public List<CharStringSubRoutine> Subrs { get; } = new();
+
+        public List<CompactSubFont> FDArray { get; } = new();
     }
 }

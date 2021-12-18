@@ -234,20 +234,20 @@ namespace PdfToSvg.Tests.Fonts.CharStrings.Parser
         private static CharString ParseCharString(params string[] data)
         {
             var main = ParseSpec(data[0]);
-            var globalSubrs = new List<byte[]>();
-            var localSubrs = new List<byte[]>();
+            var globalSubrsData = new List<byte[]>();
+            var localSubrsData = new List<byte[]>();
 
-            var subrs = localSubrs;
+            var subrs = localSubrsData;
 
             for (var i = 1; i < data.Length; i++)
             {
                 if (data[i] == "gsubr:")
                 {
-                    subrs = globalSubrs;
+                    subrs = globalSubrsData;
                 }
                 else if (data[i] == "subr:")
                 {
-                    subrs = localSubrs;
+                    subrs = localSubrsData;
                 }
                 else
                 {
@@ -255,29 +255,15 @@ namespace PdfToSvg.Tests.Fonts.CharStrings.Parser
                 }
             }
 
-            var bytes = new List<byte>();
-            var globalSubrsIndex = new List<int>();
-            var localSubrsIndex = new List<int>();
+            var globalSubrs = globalSubrsData
+                .Select(x => new CharStringSubRoutine(x))
+                .ToList();
 
-            bytes.AddRange(main);
+            var localSubrs = localSubrsData
+                .Select(x => new CharStringSubRoutine(x))
+                .ToList();
 
-            globalSubrsIndex.Add(bytes.Count);
-
-            foreach (var subr in globalSubrs)
-            {
-                bytes.AddRange(subr);
-                globalSubrsIndex.Add(bytes.Count);
-            }
-
-            localSubrsIndex.Add(bytes.Count);
-
-            foreach (var subr in localSubrs)
-            {
-                bytes.AddRange(subr);
-                localSubrsIndex.Add(bytes.Count);
-            }
-
-            return Type2CharStringParser.Parse(bytes.ToArray(), 0, main.Length, globalSubrsIndex.ToArray(), localSubrsIndex.ToArray());
+            return Type2CharStringParser.Parse(new ArraySegment<byte>(main), globalSubrs, localSubrs);
         }
 
         public static void Operators(double? width, double minx, double maxx, double miny, double maxy, params string[] data)

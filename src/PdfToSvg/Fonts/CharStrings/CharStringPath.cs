@@ -11,8 +11,10 @@ namespace PdfToSvg.Fonts.CharStrings
 {
     internal class CharStringPath
     {
-        private double x, y;
         private bool open;
+
+        public double LastX { get; private set; }
+        public double LastY { get; private set; }
 
         public double MinX { get; private set; } = double.MaxValue;
         public double MaxX { get; private set; } = double.MinValue;
@@ -31,8 +33,8 @@ namespace PdfToSvg.Fonts.CharStrings
 
         public void RMoveTo(double dx, double dy)
         {
-            x += dx;
-            y += dy;
+            LastX += dx;
+            LastY += dy;
 
             open = false;
         }
@@ -41,13 +43,13 @@ namespace PdfToSvg.Fonts.CharStrings
         {
             if (!open)
             {
-                UpdateBbox(x, y);
+                UpdateBbox(LastX, LastY);
             }
 
-            x += dx;
-            y += dy;
+            LastX += dx;
+            LastY += dy;
 
-            UpdateBbox(x, y);
+            UpdateBbox(LastX, LastY);
 
             open = true;
         }
@@ -56,11 +58,11 @@ namespace PdfToSvg.Fonts.CharStrings
         {
             if (!open)
             {
-                UpdateBbox(x, y);
+                UpdateBbox(LastX, LastY);
             }
 
-            var x1 = x + dxa;
-            var y1 = y + dya;
+            var x1 = LastX + dxa;
+            var y1 = LastY + dya;
 
             var x2 = x1 + dxb;
             var y2 = y1 + dyb;
@@ -73,8 +75,8 @@ namespace PdfToSvg.Fonts.CharStrings
             UpdateBbox(x2, y2);
             UpdateBbox(x3, y3);
 
-            x = x3;
-            y = y3;
+            LastX = x3;
+            LastY = y3;
 
             open = true;
         }

@@ -15,21 +15,20 @@ namespace PdfToSvg.Fonts.CharStrings
 
         private double[]? storage;
 
-        private readonly byte[] data;
-        private readonly int[] globalSubrOffsets, localSubrOffsets;
+        private readonly IList<CharStringSubRoutine> globalSubrs, localSubrs;
 
-        private Type2CharStringParser(byte[] data, int startIndex, int endIndex, int[] globalSubrOffsets, int[] localSubrOffsets)
+        private Type2CharStringParser(ArraySegment<byte> data, IList<CharStringSubRoutine> globalSubrs, IList<CharStringSubRoutine> localSubrs)
         {
-            Lexer = new Type2CharStringLexer(data, startIndex, endIndex);
-
-            this.data = data;
-            this.globalSubrOffsets = globalSubrOffsets;
-            this.localSubrOffsets = localSubrOffsets;
+            Lexer = new Type2CharStringLexer(data);
+            this.globalSubrs = globalSubrs;
+            this.localSubrs = localSubrs;
         }
+
+        public bool InSubRoutine => parkedLexers.Count > 0;
 
         public CharStringStack Stack { get; } = new CharStringStack();
 
-        public CharStringPath Path { get; } = new CharStringPath();
+        public CharStringPath Path => CharString.Path;
 
         public Type2CharStringLexer Lexer { get; private set; }
 
@@ -37,21 +36,11 @@ namespace PdfToSvg.Fonts.CharStrings
         // field indexes are zero or one based => allocate up to field 32.
         public double[] Storage => storage ??= new double[33];
 
-        /// <summary>
-        /// Glyph advance width.
-        /// </summary>
-        public double? Width { get; set; }
+        public CharStringInfo CharString { get; } = new CharStringInfo();
 
-        /// <summary>
-        /// The last executed operator, excluding operators managing subroutines.
-        /// </summary>
-        public CharStringOperator? LastOperator { get; private set; }
-
-        public int HintCount { get; set; }
-
-        public static CharString Parse(byte[] data, int startIndex, int endIndex, int[] globalSubrOffsets, int[] localSubrOffsets)
+        public static CharString Parse(ArraySegment<byte> data, IList<CharStringSubRoutine> globalSubrs, IList<CharStringSubRoutine> localSubrs)
         {
-            var parser = new Type2CharStringParser(data, startIndex, endIndex, globalSubrOffsets, localSubrOffsets);
+            var parser = new Type2CharStringParser(data, globalSubrs, localSubrs);
             return parser.ReadCharString();
         }
 
@@ -59,7 +48,7 @@ namespace PdfToSvg.Fonts.CharStrings
         {
             ExecCharString();
 
-            return new CharString(Width, Path.MinX, Path.MaxX, Path.MinY, Path.MaxY);
+            return new CharString(CharString);
         }
 
         private void ExecCharString()
@@ -70,12 +59,22 @@ namespace PdfToSvg.Fonts.CharStrings
             {
                 if (lexeme.Token == CharStringToken.Operand)
                 {
+                    if (!InSubRoutine)
+                    {
+                        CharString.Content.Add(lexeme);
+                    }
+
                     Stack.Push(lexeme.Value);
                 }
                 else if (lexeme.Token == CharStringToken.Operator)
                 {
                     if (CharStringOperators.TryGetOperator(lexeme.OpCode, out var op))
                     {
+                        if (!InSubRoutine)
+                        {
+                            CharString.Content.Add(lexeme);
+                        }
+
                         op.Invoke(this);
 
                         if (op.ClearStack)
@@ -83,9 +82,9 @@ namespace PdfToSvg.Fonts.CharStrings
                             var leftArguments = Stack.Count;
                             if (leftArguments > 0)
                             {
-                                if (Width == null)
+                                if (CharString.Width == null)
                                 {
-                                    Width = Stack[0];
+                                    CharString.Width = Stack[0];
                                     leftArguments--;
                                 }
 
@@ -97,11 +96,6 @@ namespace PdfToSvg.Fonts.CharStrings
                                 Stack.Clear();
                             }
                         }
-
-                        if (!op.SubrOperator)
-                        {
-                            LastOperator = op;
-                        }
                     }
                     else
                     {
@@ -111,6 +105,21 @@ namespace PdfToSvg.Fonts.CharStrings
 
                 lexeme = Lexer.Read();
             }
+        }
+
+        public void AppendInlinedSubrs(CharStringOpCode code, int? last = null, int? from = null)
+        {
+            var startAt =
+                last.HasValue ? Stack.Count - last.Value :
+                from.HasValue ? from.Value :
+                Stack.Count;
+
+            for (var i = startAt; i < Stack.Count; i++)
+            {
+                CharString.ContentInlinedSubrs.Add(CharStringLexeme.Operand(Stack[i]));
+            }
+
+            CharString.ContentInlinedSubrs.Add(CharStringLexeme.Operator(code));
         }
 
         public void Return()
@@ -126,21 +135,18 @@ namespace PdfToSvg.Fonts.CharStrings
 
         public void CallSubr(int number, bool global)
         {
-            var subrs = global ? globalSubrOffsets : localSubrOffsets;
+            var subrs = global ? globalSubrs : localSubrs;
 
             var bias =
-                subrs.Length < 1240 ? 107 :
-                subrs.Length < 33900 ? 1131 :
+                subrs.Count < 1240 ? 107 :
+                subrs.Count < 33900 ? 1131 :
                 32768;
 
             var subrIndex = number + bias;
-            if (subrIndex < 0 || subrIndex >= subrs.Length)
+            if (subrIndex < 0 || subrIndex >= subrs.Count)
             {
                 throw new CharStringException((global ? "Global" : "Local") + " subroutine with number " + number + " not found.");
             }
-
-            var dataStartIndex = subrs[subrIndex];
-            var dataEndIndex = subrIndex + 1 < subrs.Length ? subrs[subrIndex + 1] : data.Length;
 
             parkedLexers.Push(Lexer);
 
@@ -149,7 +155,8 @@ namespace PdfToSvg.Fonts.CharStrings
                 throw new CharStringException("Char string subroutine stack overflow.");
             }
 
-            Lexer = new Type2CharStringLexer(data, dataStartIndex, dataEndIndex);
+            Lexer = new Type2CharStringLexer(subrs[subrIndex].Content);
+            subrs[subrIndex].Used = true;
 
             ExecCharString();
 

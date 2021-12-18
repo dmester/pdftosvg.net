@@ -15,7 +15,7 @@ using System.Text;
 
 namespace PdfToSvg.Fonts.Woff
 {
-    internal static class WoffPacker
+    internal static class WoffBuilder
     {
         [DebuggerDisplay("{TableTag}")]
         internal class TableDirectoryEntry
@@ -36,7 +36,7 @@ namespace PdfToSvg.Fonts.Woff
             return (value + 3) & unchecked((int)0xFFFFFFFC);
         }
 
-        public static byte[] Pack(byte[] binaryOtf)
+        public static byte[] FromOpenType(byte[] binaryOtf)
         {
             var reader = new OpenTypeReader(binaryOtf, 0, binaryOtf.Length);
 

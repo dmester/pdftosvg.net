@@ -185,7 +185,7 @@ namespace PdfToSvg.Fonts
         public override byte[] ToWoff()
         {
             var binaryOtf = ToOpenType();
-            return WoffPacker.Pack(binaryOtf);
+            return WoffBuilder.FromOpenType(binaryOtf);
         }
 
         public string Decode(PdfString value, out double width)

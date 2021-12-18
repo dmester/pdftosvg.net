@@ -74,7 +74,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 }
                 else if (lexeme.Token == CharStringToken.Operator)
                 {
-                    if (CharStringOperators.TryGetOperator((int)lexeme.Value, out var op))
+                    if (CharStringOperators.TryGetOperator(lexeme.OpCode, out var op))
                     {
                         op.Invoke(this);
 
@@ -105,7 +105,7 @@ namespace PdfToSvg.Fonts.CharStrings
                     }
                     else
                     {
-                        throw new CharStringException("Unknown charstring operator: " + (int)lexeme.Value);
+                        throw new CharStringException("Unknown charstring operator: " + lexeme.OpCode);
                     }
                 }
 

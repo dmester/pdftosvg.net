@@ -271,7 +271,14 @@ namespace PdfToSvg.Tests
 
             using (var doc = PdfDocument.Open(pdfPath))
             {
-                actual = doc.Pages[0].ToSvgString(new SvgConversionOptions { FontResolver = FontResolver.LocalFonts });
+                // Embedded as OpenType instead of WOFF, since the generated WOFF data can differ due to the zlib
+                // version used for compression.
+                actual = doc.Pages[0].ToSvgString(new SvgConversionOptions
+                {
+                    FontResolver = fileName.StartsWith("fonts-")
+                        ? FontResolver.EmbedOpenType
+                        : FontResolver.LocalFonts
+                });
             }
 
             actual = RecompressPngs(actual);
@@ -296,7 +303,14 @@ namespace PdfToSvg.Tests
 
             using (var doc = await PdfDocument.OpenAsync(pdfPath))
             {
-                actual = await doc.Pages[0].ToSvgStringAsync(new SvgConversionOptions { FontResolver = FontResolver.LocalFonts });
+                // Embedded as OpenType instead of WOFF, since the generated WOFF data can differ due to the zlib
+                // version used for compression.
+                actual = await doc.Pages[0].ToSvgStringAsync(new SvgConversionOptions
+                {
+                    FontResolver = fileName.StartsWith("fonts-")
+                        ? FontResolver.EmbedOpenType
+                        : FontResolver.LocalFonts
+                });
             }
 
             actual = RecompressPngs(actual);

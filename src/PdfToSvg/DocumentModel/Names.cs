@@ -93,6 +93,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Type3 { get; } = new PdfName("Type3");
         public static PdfName MMType1 { get; } = new PdfName("MMType1");
         public static PdfName TrueType { get; } = new PdfName("TrueType");
+        public static PdfName OpenType { get; } = new PdfName("OpenType");
         public static PdfName BaseFont { get; } = new PdfName("BaseFont");
         public static PdfName ToUnicode { get; } = new PdfName("ToUnicode");
         public static PdfName DescendantFonts { get; } = new PdfName("DescendantFonts");

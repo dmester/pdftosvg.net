@@ -32,8 +32,8 @@ namespace PdfToSvg.Fonts
         private static readonly Font fallbackFont = new LocalFont("'Times New Roman',serif");
 
         private readonly string? name;
-        private readonly OpenTypeFont? trueTypeFont;
-        private readonly Exception? trueTypeFontException;
+        private readonly OpenTypeFont? openTypeFont;
+        private readonly Exception? openTypeFontException;
 
         public override string? Name => name;
 
@@ -60,47 +60,68 @@ namespace PdfToSvg.Fonts
                 unicodeCMap = CMapParser.Parse(toUnicode.Stream, cancellationToken);
             }
 
-            // Parse TTF
-            if (font.TryGetStream(Names.FontDescriptor / Names.FontFile2, out var fontFile2) ||
-                font.TryGetStream(Names.DescendantFonts / Indexes.First / Names.FontDescriptor / Names.FontFile2, out fontFile2))
+            // Read font
+            if (font.TryGetDictionary(Names.FontDescriptor, out var fontDescriptor) ||
+                font.TryGetDictionary(Names.DescendantFonts / Indexes.First / Names.FontDescriptor, out fontDescriptor))
             {
-                try
+                // FontFile2 (TrueType)
+                if (fontDescriptor.TryGetStream(Names.FontFile2, out var fontFile2))
                 {
-                    using var fontFileStream = fontFile2.OpenDecoded(cancellationToken);
-                    trueTypeFont = OpenTypeFont.Parse(fontFileStream);
+                    try
+                    {
+                        using var fontFileStream = fontFile2.OpenDecoded(cancellationToken);
+                        var fontFileData = fontFileStream.ToArray();
+                        openTypeFont = OpenTypeFont.Parse(fontFileData);
+                    }
+                    catch (Exception ex)
+                    {
+                        openTypeFontException = new FontException("Failed to parse TrueType font.", ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    trueTypeFontException = new FontException("Failed to parse TrueType font.", ex);
-                }
-            }
 
-            if (font.TryGetStream(Names.FontDescriptor / Names.FontFile3, out var fontFile3) ||
-                font.TryGetStream(Names.DescendantFonts / Indexes.First / Names.FontDescriptor / Names.FontFile3, out fontFile3))
-            {
-                try
+                // FontFile3 (CFF or OpenType)
+                if (fontDescriptor.TryGetDictionary(Names.FontFile3, out var fontFile3) && fontFile3.Stream != null)
                 {
-                    using var fontFileStream = fontFile3.OpenDecoded(cancellationToken);
-                    var fontFileData = fontFileStream.ToArray();
+                    if (fontFile3.GetNameOrNull(Names.Subtype) == Names.OpenType)
+                    {
+                        try
+                        {
+                            using var fontFileStream = fontFile3.Stream.OpenDecoded(cancellationToken);
+                            var fontFileData = fontFileStream.ToArray();
+                            openTypeFont = OpenTypeFont.Parse(fontFileData);
+                        }
+                        catch (Exception ex)
+                        {
+                            openTypeFontException = new FontException("Failed to parse TrueType font.", ex);
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            using var fontFileStream = fontFile3.Stream.OpenDecoded(cancellationToken);
+                            var fontFileData = fontFileStream.ToArray();
 
-                    var compactFontSet = CompactFontParser.Parse(fontFileData,
-                        customCMap: unicodeCMap?.ToLookup(),
-                        maxFontCount: 1);
+                            var compactFontSet = CompactFontParser.Parse(fontFileData,
+                                customCMap: unicodeCMap?.ToLookup(),
+                                maxFontCount: 1);
 
-                    trueTypeFont = OpenTypeFont.FromCompactFont(compactFontSet.Fonts.First());
-                }
-                catch (Exception ex)
-                {
-                    trueTypeFontException = new FontException("Failed to parse CFF font.", ex);
+                            openTypeFont = OpenTypeFont.FromCompactFont(compactFontSet.Fonts.First());
+                        }
+                        catch (Exception ex)
+                        {
+                            openTypeFontException = new FontException("Failed to parse CFF font.", ex);
+                        }
+                    }
                 }
             }
 
             // Name
             if (font.TryGetName(Names.BaseFont, out var name))
             {
-                if ((string.IsNullOrEmpty(name.Value) || name.Value.StartsWith("CIDFont+")) && trueTypeFont != null)
+                if ((string.IsNullOrEmpty(name.Value) || name.Value.StartsWith("CIDFont+")) && openTypeFont != null)
                 {
-                    this.name = trueTypeFont.Names.FontFamily + "-" + trueTypeFont.Names.FontSubfamily;
+                    this.name = openTypeFont.Names.FontFamily + "-" + openTypeFont.Names.FontSubfamily;
                 }
                 else
                 {
@@ -123,18 +144,18 @@ namespace PdfToSvg.Fonts
             {
                 // If ToUnicode is missing, we might be able to extract unicode mapping from a TrueType font.
                 // The same could probably be implemented for the other font types but we need to start somewhere.
-                if (trueTypeFont != null &&
+                if (openTypeFont != null &&
                     encoding is PdfName encodingName &&
                     (encodingName == Names.IdentityH || encodingName == Names.IdentityV))
                 {
                     if (font.TryGetStream(Names.DescendantFonts / Indexes.First / Names.CIDToGIDMap, out var cidToGidMapStream))
                     {
                         using var stream = cidToGidMapStream.OpenDecoded(cancellationToken);
-                        textDecoders.Add(TrueTypeEncoding.Create(trueTypeFont, stream) ?? (ITextDecoder)new Utf16Encoding());
+                        textDecoders.Add(TrueTypeEncoding.Create(openTypeFont, stream) ?? (ITextDecoder)new Utf16Encoding());
                     }
                     else
                     {
-                        textDecoders.Add(TrueTypeEncoding.Create(trueTypeFont, Stream.Null) ?? (ITextDecoder)new Utf16Encoding());
+                        textDecoders.Add(TrueTypeEncoding.Create(openTypeFont, Stream.Null) ?? (ITextDecoder)new Utf16Encoding());
                     }
                 }
                 else
@@ -177,16 +198,21 @@ namespace PdfToSvg.Fonts
 
         public override byte[] ToOpenType()
         {
-            if (trueTypeFont == null)
+            if (openTypeFont == null)
             {
-                throw trueTypeFontException ?? new NotSupportedException("This font cannot be converted to OpenType format.");
+                throw openTypeFontException ?? new NotSupportedException("This font cannot be converted to OpenType format.");
             }
 
-            return trueTypeFont.ToByteArray();
+            return openTypeFont.ToByteArray();
         }
 
         public override byte[] ToWoff()
         {
+            if (openTypeFont == null)
+            {
+                throw openTypeFontException ?? new NotSupportedException("This font cannot be converted to WOFF format.");
+            }
+
             var binaryOtf = ToOpenType();
             return WoffBuilder.FromOpenType(binaryOtf);
         }

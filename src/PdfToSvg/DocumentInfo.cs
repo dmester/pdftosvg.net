@@ -3,8 +3,11 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Fonts.OpenType;
+using PdfToSvg.Fonts.OpenType.Tables;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 

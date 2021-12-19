@@ -36,17 +36,15 @@ namespace PdfToSvg.Tests.Fonts
         public void ParseFont()
         {
             var path = Path.Combine(TestContext.CurrentContext.TestDirectory, "Fonts", "TestFiles", "non-symbol.ttf");
+            var content = File.ReadAllBytes(path);
+            var font = OpenTypeFont.Parse(content);
 
-            using (var stream = File.OpenRead(path))
-            {
-                var font = OpenTypeFont.Parse(stream);
+            Assert.AreEqual("Untitled1", font.Names.FontFamily);
+            Assert.AreEqual("Regular", font.Names.FontSubfamily);
+            Assert.AreEqual("Untitled1", font.Names.FullFontName);
+            Assert.AreEqual("Copyright (c) 2021, Daniel", font.Names.Copyright);
 
-                Assert.AreEqual("Untitled1", font.Names.FontFamily);
-                Assert.AreEqual("Regular", font.Names.FontSubfamily);
-                Assert.AreEqual("Untitled1", font.Names.FullFontName);
-                Assert.AreEqual("Copyright (c) 2021, Daniel", font.Names.Copyright);
-
-                AssertCMap(font, @"
+            AssertCMap(font, @"
 Unicode 3
 65-67 <=> 3
 90-90 <=> 6
@@ -78,24 +76,21 @@ Windows 10
 90-90 <=> 6
 1114058-1114058 <=> 7
 ");
-            }
         }
 
         [Test]
         public void ParseSymbolFont()
         {
             var path = Path.Combine(TestContext.CurrentContext.TestDirectory, "Fonts", "TestFiles", "symbol.ttf");
+            var content = File.ReadAllBytes(path);
+            var font = OpenTypeFont.Parse(content);
 
-            using (var stream = File.OpenRead(path))
-            {
-                var font = OpenTypeFont.Parse(stream);
+            Assert.AreEqual("Untitled1", font.Names.FontFamily);
+            Assert.AreEqual("Regular", font.Names.FontSubfamily);
+            Assert.AreEqual("Untitled1", font.Names.FullFontName);
+            Assert.AreEqual("Copyright (c) 2021, Daniel", font.Names.Copyright);
 
-                Assert.AreEqual("Untitled1", font.Names.FontFamily);
-                Assert.AreEqual("Regular", font.Names.FontSubfamily);
-                Assert.AreEqual("Untitled1", font.Names.FullFontName);
-                Assert.AreEqual("Copyright (c) 2021, Daniel", font.Names.Copyright);
-
-                AssertCMap(font, @"
+            AssertCMap(font, @"
 Macintosh 0
 0-0 <=> 1
 8-8 <=> 1
@@ -112,7 +107,6 @@ Windows 0
 61530-61530 <=> 6
 65535-65535 <=> 0
 ");
-            }
         }
     }
 }

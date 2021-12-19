@@ -59,9 +59,9 @@ namespace PdfToSvg.Fonts.OpenType
             }
         }
 
-        public static OpenTypeFont Parse(Stream stream)
+        public static OpenTypeFont Parse(byte[] data)
         {
-            var directory = TableDirectory.Read(stream.ToArray());
+            var directory = TableDirectory.Read(data);
 
             var font = new OpenTypeFont();
 

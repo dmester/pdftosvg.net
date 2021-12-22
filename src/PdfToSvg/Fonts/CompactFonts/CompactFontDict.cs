@@ -87,7 +87,7 @@ namespace PdfToSvg.Fonts.CompactFonts
         [CompactFontDictOperator(18)]
         public int[] Private { get; set; } = ArrayUtils.Empty<int>();
 
-        [CompactFontDictOperator(12, 20)]
+        [CompactFontDictOperator(12, 20, Order = -2)]
         public double SynthenticBase { get; set; }
 
         [CompactFontDictOperator(12, 21)]
@@ -102,7 +102,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         // CIDFont Operator Extensions
 
-        [CompactFontDictOperator(12, 30)]
+        [CompactFontDictOperator(12, 30, Order = -1)]
         public double[] ROS { get; set; } = ArrayUtils.Empty<double>();
 
         [CompactFontDictOperator(12, 31)]

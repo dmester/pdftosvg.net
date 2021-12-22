@@ -8,7 +8,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using DictData = System.Collections.Generic.Dictionary<int, double[]>;
+using InputDictData = System.Collections.Generic.Dictionary<int, double[]>;
+using OutputDictData = System.Collections.Generic.IList<System.Collections.Generic.KeyValuePair<int, double[]>>;
 
 namespace PdfToSvg.Fonts.CompactFonts
 {
@@ -45,9 +46,9 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         private static class Deserializer<TDict>
         {
-            private static Action<TDict, DictData, CompactFontStringTable>? deserializer;
+            private static Action<TDict, InputDictData, CompactFontStringTable>? deserializer;
 
-            public static void Deserialize(TDict target, DictData dictData, CompactFontStringTable strings)
+            public static void Deserialize(TDict target, InputDictData dictData, CompactFontStringTable strings)
             {
                 if (deserializer == null)
                 {
@@ -63,13 +64,13 @@ namespace PdfToSvg.Fonts.CompactFonts
                 deserializer(target, dictData, strings);
             }
 
-            private static Action<TDict, DictData, CompactFontStringTable> Compile()
+            private static Action<TDict, InputDictData, CompactFontStringTable> Compile()
             {
                 var targetParam = Expression.Parameter(typeof(TDict), "target");
-                var sourceParam = Expression.Parameter(typeof(DictData), "source");
+                var sourceParam = Expression.Parameter(typeof(InputDictData), "source");
                 var stringsParam = Expression.Parameter(typeof(CompactFontStringTable), "strings");
 
-                var tryGetValue = typeof(DictData).GetTypeInfo().GetMethod(nameof(DictData.TryGetValue));
+                var tryGetValue = typeof(InputDictData).GetTypeInfo().GetMethod(nameof(InputDictData.TryGetValue));
 
                 var sourceElementValue = Expression.Variable(typeof(double[]));
                 var body = new List<Expression>();
@@ -92,7 +93,7 @@ namespace PdfToSvg.Fonts.CompactFonts
                 }
 
                 var lambda = Expression
-                    .Lambda<Action<TDict, DictData, CompactFontStringTable>>(
+                    .Lambda<Action<TDict, InputDictData, CompactFontStringTable>>(
                         Expression.Block(new[] { sourceElementValue }, body),
                         targetParam, sourceParam, stringsParam);
 
@@ -215,9 +216,9 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         private static class Serializer<TDict>
         {
-            private static Action<DictData, TDict, TDict, CompactFontStringTable>? serializer;
+            private static Action<OutputDictData, TDict, TDict, CompactFontStringTable>? serializer;
 
-            public static void Serialize(DictData target, TDict dict, TDict defaultValues, CompactFontStringTable strings)
+            public static void Serialize(OutputDictData target, TDict dict, TDict defaultValues, CompactFontStringTable strings)
             {
                 if (serializer == null)
                 {
@@ -369,39 +370,48 @@ namespace PdfToSvg.Fonts.CompactFonts
                 }
             }
 
-            private static Action<DictData, TDict, TDict, CompactFontStringTable> Compile()
+            private static Action<OutputDictData, TDict, TDict, CompactFontStringTable> Compile()
             {
-                var targetParam = Expression.Parameter(typeof(DictData), "target");
+                var targetParam = Expression.Parameter(typeof(OutputDictData), "target");
                 var sourceParam = Expression.Parameter(typeof(TDict), "source");
                 var defaultParam = Expression.Parameter(typeof(TDict), "defaultValues");
                 var stringsParam = Expression.Parameter(typeof(CompactFontStringTable), "strings");
 
-                var addMethod = typeof(DictData).GetTypeInfo().GetMethod(nameof(DictData.Add), new[] { typeof(int), typeof(double[]) });
+                var addMethod = typeof(ICollection<KeyValuePair<int, double[]>>)
+                    .GetTypeInfo()
+                    .GetMethod(nameof(OutputDictData.Add), new[] { typeof(KeyValuePair<int, double[]>) });
+
+                var keyValuePairConstructor = typeof(KeyValuePair<int, double[]>)
+                    .GetTypeInfo()
+                    .GetConstructor(new[] { typeof(int), typeof(double[]) });
 
                 var sourceElementValue = Expression.Variable(typeof(double[]));
-                var body = new List<Expression>();
 
-                foreach (var property in typeof(TDict).GetTypeInfo().GetProperties())
-                {
-                    var attribute = (CompactFontDictOperatorAttribute?)property
-                        .GetCustomAttributes(typeof(CompactFontDictOperatorAttribute), false)
-                        .FirstOrDefault();
+                var body = typeof(TDict).GetTypeInfo()
+                    .GetProperties()
 
-                    if (attribute == null)
+                    .Select(p => new
                     {
-                        continue;
-                    }
+                        Property = p,
+                        Attribute = (CompactFontDictOperatorAttribute)p
+                            .GetCustomAttributes(typeof(CompactFontDictOperatorAttribute), false)
+                            .FirstOrDefault()
+                    })
+                    .Where(p => p.Attribute != null)
 
-                    body.Add(Expression.IfThen(
-                        ShouldSerialize(property, sourceParam, defaultParam, stringsParam),
+                    .OrderBy(p => p.Attribute.Order)
+                    .ThenBy(p => p.Attribute.Value)
+
+                    .Select(p => Expression.IfThen(
+                        ShouldSerialize(p.Property, sourceParam, defaultParam, stringsParam),
                         Expression.Call(targetParam, addMethod,
-                            Expression.Constant(attribute.Value),
-                            ConvertValue(Expression.Property(sourceParam, property), stringsParam))
+                            Expression.New(keyValuePairConstructor,
+                                Expression.Constant(p.Attribute.Value),
+                                ConvertValue(Expression.Property(sourceParam, p.Property), stringsParam)))
                         ));
-                }
 
                 var lambda = Expression
-                    .Lambda<Action<DictData, TDict, TDict, CompactFontStringTable>>(
+                    .Lambda<Action<OutputDictData, TDict, TDict, CompactFontStringTable>>(
                         Expression.Block(new[] { sourceElementValue }, body),
                         targetParam, sourceParam, defaultParam, stringsParam);
 
@@ -410,12 +420,12 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         }
 
-        public static void Deserialize<TDict>(TDict target, DictData dictData, CompactFontStringTable strings)
+        public static void Deserialize<TDict>(TDict target, InputDictData dictData, CompactFontStringTable strings)
         {
             Deserializer<TDict>.Deserialize(target, dictData, strings);
         }
 
-        public static void Serialize<TDict>(DictData target, TDict dict, TDict defaultValues, CompactFontStringTable strings)
+        public static void Serialize<TDict>(OutputDictData target, TDict dict, TDict defaultValues, CompactFontStringTable strings)
         {
             Serializer<TDict>.Serialize(target, dict, defaultValues, strings);
         }

@@ -23,5 +23,10 @@ namespace PdfToSvg.Fonts.CompactFonts
         }
 
         public int Value { get; }
+
+        /// <summary>
+        /// Specified on operators that must come in a specific order.
+        /// </summary>
+        public int Order { get; set; }
     }
 }

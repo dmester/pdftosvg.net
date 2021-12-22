@@ -90,7 +90,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
             foreach (var font in fontSet.Fonts)
             {
-                var dict = new Dictionary<int, double[]>();
+                var dict = new List<KeyValuePair<int, double[]>>();
                 CompactFontDictSerializer.Serialize(dict, font.TopDict, new CompactFontDict(), fontSet.Strings);
 
                 var dictWriter = new CompactFontWriter();
@@ -310,7 +310,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         private int EstimateDictSize<T>(T dict) where T : new()
         {
-            var dictData = new Dictionary<int, double[]>();
+            var dictData = new List<KeyValuePair<int, double[]>>();
             CompactFontDictSerializer.Serialize(dictData, dict, new T(), fontSet.Strings);
 
             var dictWriter = new CompactFontWriter();
@@ -320,7 +320,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         private void WriteDict<T>(CompactFontWriter dictWriter, T dict) where T : new()
         {
-            var dictData = new Dictionary<int, double[]>();
+            var dictData = new List<KeyValuePair<int, double[]>>();
             CompactFontDictSerializer.Serialize(dictData, dict, new T(), fontSet.Strings);
             dictWriter.WriteDict(dictData);
         }

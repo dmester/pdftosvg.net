@@ -13,7 +13,7 @@ namespace PdfToSvg.Fonts.CompactFonts
     internal class CompactFontPrivateDict
     {
         [CompactFontDictOperator(6)]
-        public double[] BlueValues { get; set; } = ArrayUtils.Empty<double>();  
+        public double[] BlueValues { get; set; } = ArrayUtils.Empty<double>();
 
         [CompactFontDictOperator(7)]
         public double[] OtherBlues { get; set; } = ArrayUtils.Empty<double>();

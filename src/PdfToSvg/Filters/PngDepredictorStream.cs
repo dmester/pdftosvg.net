@@ -100,14 +100,14 @@ namespace PdfToSvg.Filters
                 case PngFilter.Average:
                     for (var i = 1; i < 1 + sampleSizeBytes; i++)
                     {
-                        buffer[i] = unchecked((byte)(previousBuffer[i] + buffer[i]));
+                        buffer[i] = unchecked((byte)(previousBuffer[i] / 2 + buffer[i]));
                     }
 
                     for (var i = 1 + sampleSizeBytes; i < buffer.Length; i++)
                     {
                         buffer[i] = unchecked((byte)(
-                            previousBuffer[i] +
-                            (buffer[i - sampleSizeBytes] + buffer[i]) / 2
+                            buffer[i] +
+                            (buffer[i - sampleSizeBytes] + previousBuffer[i]) / 2
                             ));
                     }
 

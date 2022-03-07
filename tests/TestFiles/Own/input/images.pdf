@@ -1,18 +1,19 @@
 %PDF-1.7
 
 xref
-0 6
+0 7
 0000000000 65535 f
-0000000188 00000 n
-0000000239 00000 n
-0000000303 00000 n
-0000003011 00000 n
-0000003390 00000 n
+0000000208 00000 n
+0000000259 00000 n
+0000000323 00000 n
+0000003031 00000 n
+0000004094 00000 n
+0000004493 00000 n
 trailer
-<< /Root 1 0 R  /Size 6 >>
+<< /Root 1 0 R  /Size 7 >>
       
 1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
-2 0 obj << /Type /Pages  /Kids [ 4 0 R ]  /Count 1 >> endobj
+2 0 obj << /Type /Pages  /Kids [ 5 0 R ]  /Count 1 >> endobj
 
 3 0 obj 
 <<
@@ -77,7 +78,44 @@ stream
 endstream
 endobj
 
-4 0 obj 
+4 0 obj
+<<
+   /Type /XObject
+   /Subtype /Image
+   /Width 16
+   /Height 16
+   /BitsPerComponent 8
+   /Filter [/ASCIIHexDecode /FlateDecode]
+   /DecodeParms [
+      /Null
+      << /Predictor 10 /Columns 16 >>
+   ]
+   /ColorSpace [/Indexed
+      /DeviceRGB
+      25
+      <
+         ffffff ffedcf ffc768 ffaf28 ffa100 fffcf7 ffb73c 301e00
+         f79b00 ffc564 1c1100 402800 7f5000 9f6400 935c00 4c2f00
+         180f00 f39900 b77300 784b00 603c00 684100 a76900 ef9600
+         ffc460 fffaf3
+      >]
+   /Length 492
+>>
+stream
+   78 9c 55 4f cb 0e c2 30 0c 73 1e d3 d4 41 81 49
+   bd f0 ff 1f b7 0b 8f f1 38 20 c1 16 d2 96 69 c2
+   92 25 5b 4d ec 14 70 10 8b aa 30 15 0d 34 13 67
+   e5 98 e5 0d 46 43 8b 07 53 03 59 4c 81 cd a6 eb
+   7b 99 31 b0 3a da b6 52 95 49 72 b6 60 2a f4 a5
+   da 35 b9 ce f4 56 f9 8b 70 a8 95 91 aa 3f be 82
+   e0 49 dd 66 1b e3 6e 7f e8 55 03 91 5f 12 89 08
+   ce b3 27 b1 25 e0 71 bf 8d e3 f5 e2 3e 99 20 be
+   6c bd ab 7b 2a 86 a3 9d 7e 3e d1 50 05 85 fc fd
+   50 fa be bf 7a 24 d8>
+endstream
+endobj
+
+5 0 obj
 <<
    /Type /Page
    /Parent 2 0 R
@@ -90,41 +128,42 @@ endobj
       >>
       /XObject <<
          /Im1 3 0 R
+         /Im2 4 0 R
       >>
    >>
    /MediaBox [ 0 0 594.96 841.92 ]
-   /Contents [ 5 0 R ]
+   /Contents [ 6 0 R ]
 >>
 endobj
 
-5 0 obj << /Length 6336 >>
+6 0 obj << /Length 6508 >>
 stream
    /F1 25 Tf
    
    q
-      1 0 0 1 80 530 cm
+      1 0 0 1 80 580 cm
       BT
-         1 0 0 1 0 225 Tm
+         1 0 0 1 0 175 Tm
          (Image resource) Tj
       ET
       
-      200 0 0 200 0 0 cm
+      150 0 0 150 0 0 cm
       /Im1 Do
    Q
    
    q
-      200 0 0 200 300 530 cm
+      150 0 0 150 300 580 cm
       /Im1 Do
    Q
    
    q
-      1 0 0 1 80 230 cm
+      1 0 0 1 80 330 cm
       BT
-         1 0 0 1 0 225 Tm
+         1 0 0 1 0 175 Tm
          (Inline images) Tj
       ET
       
-      200 0 0 200 0 0 cm
+      150 0 0 150 0 0 cm
    
       BI
          /W 16
@@ -185,7 +224,7 @@ stream
    Q
    
    q
-      200 0 0 200 300 230 cm
+      150 0 0 150 300 330 cm
       
       BI
          /W 16
@@ -247,9 +286,21 @@ stream
    Q
    
    q
-      16 0 0 16 265 530 cm
+      16 0 0 16 265 580 cm
       /Im1 Do
    Q
+   
+   q
+      1 0 0 1 80 80 cm
+      BT
+         1 0 0 1 0 175 Tm
+         (With predictor) Tj
+      ET
+      
+      150 0 0 150 0 0 cm
+      /Im2 Do
+   Q
+   
 
 endstream
 endobj

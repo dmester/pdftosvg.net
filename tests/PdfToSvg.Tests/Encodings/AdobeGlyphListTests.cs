@@ -24,6 +24,17 @@ namespace PdfToSvg.Tests.Encodings
         [TestCase("uni20ac", null)]
         [TestCase("Lcommaaccent_uni20AC0308_u1040C.alternate", "\u013B\u20AC\u0308\uD801\uDC0C")]
 
+        // More tests
+        [TestCase("u000", null)]
+        [TestCase("u0000", "\u0000")]
+        [TestCase("uD7FF", "\uD7FF")]
+        [TestCase("uD800", null)]
+        [TestCase("uDFFF", null)]
+        [TestCase("uE000", "\uE000")]
+        [TestCase("u10FFFF", "\u10FFFF")]
+        [TestCase("u110000", null)]
+        [TestCase("u010FFFF", null)]
+
         // Symbols should only be mapped when Zapf Dingbats is used, but we will always map them,
         // since an invalid char will cause garbage output anyways.
         [TestCase("a10", "\u2721")]

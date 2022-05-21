@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
     <ReleaseDir>$(SolutionDir)releases/</ReleaseDir>
     <NuGetDownloadUrl>https://dist.nuget.org/win-x86-commandline/latest/nuget.exe</NuGetDownloadUrl>
+    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
   </PropertyGroup>
 
   <Target Name="CopyReleaseFiles" AfterTargets="Build" Condition=" $(Configuration) == 'Release' And $(PdfToSvgKeyFile) != '' ">

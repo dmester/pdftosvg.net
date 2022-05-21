@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using ZLibStream = PdfToSvg.IO.ZLibStream;
 
 namespace PdfToSvg.Tests
 {
@@ -30,7 +31,7 @@ namespace PdfToSvg.Tests
         private const string TargetFramework = "net45";
 #elif NETCOREAPP2_1
         private const string TargetFramework = "netstandard16";
-#elif NET5_0
+#elif NET5_0 || NET6_0
         private const string TargetFramework = "netstandard21";
 #endif
 

@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net40</TargetFrameworks>
+    <TargetFrameworks>net40;net5.0;net6.0</TargetFrameworks>
     <AssemblyName>pdftosvg</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\PdfToSvg\**\*.cs" Visible="false"/>
-    <Compile Remove="..\PdfToSvg\bin\**\*.cs" Visible="false"/>
-    <Compile Remove="..\PdfToSvg\obj\**\*.cs" Visible="false"/>
+    <Compile Include="..\PdfToSvg\**\*.cs" Visible="false" />
+    <Compile Remove="..\PdfToSvg\bin\**\*.cs" Visible="false" />
+    <Compile Remove="..\PdfToSvg\obj\**\*.cs" Visible="false" />
   </ItemGroup>
 
 </Project>

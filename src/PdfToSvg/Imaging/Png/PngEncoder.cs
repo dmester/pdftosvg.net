@@ -59,7 +59,7 @@ namespace PdfToSvg.Imaging.Png
         public Stream GetImageDataStream()
         {
             var chunk = new PngChunkStream(output, PngChunkIdentifier.ImageData);
-            var deflate = new ZLibStream(chunk, CompressionMode.Compress);
+            var deflate = new IO.ZLibStream(chunk, CompressionMode.Compress);
             return deflate;
         }
 

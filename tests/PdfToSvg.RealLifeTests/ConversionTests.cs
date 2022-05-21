@@ -25,8 +25,10 @@ namespace PdfToSvg.RealLifeTests
         private const string TargetFramework = "net45";
 #elif NETCOREAPP2_1
         private const string TargetFramework = "netstandard16";
-#elif NET5_0
+#elif NET5_0 ||  NET6_0
         private const string TargetFramework = "netstandard21";
+        
+        
 #endif
 
         private static readonly DateTime Started = DateTime.Now;

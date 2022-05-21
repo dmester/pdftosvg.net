@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Cli
@@ -41,6 +42,8 @@ namespace PdfToSvg.Cli
                 if (InputPath == null)
                 {
                     InputPath = arg;
+                    if (i + 1 >= args.Length)
+                        OutputPath = arg.Replace(".pdf", ".svg");
                     continue;
                 }
 

@@ -14,7 +14,7 @@ namespace PdfToSvg.Filters
     {
         public override Stream Decode(Stream stream, PdfDictionary? decodeParms)
         {
-            var deflateStream = new ZLibStream(stream, CompressionMode.Decompress);
+            var deflateStream = new IO.ZLibStream(stream, CompressionMode.Decompress);
             return PredictorStream.Create(deflateStream, decodeParms);
         }
     }

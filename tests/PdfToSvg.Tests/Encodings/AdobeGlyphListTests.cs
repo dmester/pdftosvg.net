@@ -31,7 +31,7 @@ namespace PdfToSvg.Tests.Encodings
         [TestCase("uD800", null)]
         [TestCase("uDFFF", null)]
         [TestCase("uE000", "\uE000")]
-        [TestCase("u10FFFF", "\u10FFFF")]
+        [TestCase("u10FFFF", "\uDBFF\uDFFF")]
         [TestCase("u110000", null)]
         [TestCase("u010FFFF", null)]
 

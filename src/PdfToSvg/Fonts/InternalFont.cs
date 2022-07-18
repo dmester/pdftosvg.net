@@ -9,6 +9,7 @@ using PdfToSvg.Encodings;
 using PdfToSvg.Fonts;
 using PdfToSvg.Fonts.CompactFonts;
 using PdfToSvg.Fonts.OpenType;
+using PdfToSvg.Fonts.OpenType.Enums;
 using PdfToSvg.Fonts.OpenType.Tables;
 using PdfToSvg.Fonts.Woff;
 using PdfToSvg.IO;
@@ -171,6 +172,120 @@ namespace PdfToSvg.Fonts
 
             this.textDecoders = textDecoders.ToArray();
             this.widthMap = WidthMap.Parse(font);
+
+            // Some PDFs contain fonts with incomplete, missing or invalid cmaps. Most browsers will refuse to load
+            // those fonts, so let's try to reconstruct the cmap out of the original cmap and the ToUnicode dictionary.
+            if (openTypeFont != null && unicodeCMap != null)
+            {
+                ReconstructOpenTypeCMap(openTypeFont, unicodeCMap);
+            }
+        }
+
+        private static IEnumerable<uint> Range(uint from, uint to)
+        {
+            if (from <= to)
+            {
+                for (; ; )
+                {
+                    yield return from;
+
+                    if (from < to)
+                    {
+                        from++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        private static void ReconstructOpenTypeCMap(OpenTypeFont openTypeFont, CMap unicodeCMap)
+        {
+            var maxpTable = openTypeFont.Tables.Get<MaxpTable>();
+            var cmapTable = openTypeFont.Tables.GetOrCreate<CMapTable>();
+            var nameTable = openTypeFont.Tables.GetOrCreate<NameTable>();
+
+            var numGlyphs = maxpTable?.NumGlyphs ?? ushort.MaxValue;
+
+            var toUnicodeLookup = unicodeCMap.ToLookup();
+
+            var charLookup = openTypeFont.CMaps
+                .SelectMany(cmap => cmap.Ranges)
+                .SelectMany(range => Range(range.StartGlyphIndex, range.EndGlyphIndex)
+                    .Select(glyphIndex =>
+                    {
+                        var cid = glyphIndex - range.StartGlyphIndex + range.StartUnicode;
+
+                        // PDF spec 1.7, section 9.6.6.4
+                        // Chars in symbol fonts are mapped by prepending F0 to the single byte codes.
+                        if (cid >= 0xf000 && cid <= 0xf0ff)
+                        {
+                            cid &= 0xff;
+                        }
+
+                        if (toUnicodeLookup.TryGetValue(cid, out var unicode))
+                        {
+                            var unicodeCodePoint = (uint)unicode[0];
+                            return new OpenTypeCMapRange(unicodeCodePoint, unicodeCodePoint, glyphIndex);
+                        }
+
+                        return new OpenTypeCMapRange(cid, cid, glyphIndex);
+                    }))
+                .WhereNotNull()
+                .ToLookup(range => range.StartUnicode);
+
+            var missingChars = toUnicodeLookup
+                .Where(pair => pair.Value.Length == 1)
+                .Select(pair =>
+                {
+                    if (pair.Value.Length == 1)
+                    {
+                        var unicodeCodePoint = (uint)pair.Value[0];
+
+                        if (!charLookup[unicodeCodePoint].Any())
+                        {
+                            // Char is missing in font CMap
+                            return new OpenTypeCMapRange(unicodeCodePoint, unicodeCodePoint, pair.Key);
+                        }
+                    }
+
+                    return null;
+                })
+                .WhereNotNull();
+
+            var allChars = charLookup
+                .Select(ch => ch.First())
+                .Concat(missingChars)
+                .Where(range => range.StartGlyphIndex < numGlyphs);
+
+            cmapTable.EncodingRecords = new[]
+            {
+                new CMapEncodingRecord
+                {
+                    PlatformID = OpenTypePlatformID.Windows,
+                    EncodingID = 1,
+                    Content = OpenTypeCMapEncoder.EncodeFormat4(allChars),
+                }
+            };
+
+            nameTable.Version = 0;
+            nameTable.NameRecords = openTypeFont
+                .Names
+                .Select(name => new NameRecord
+                {
+                    NameID = name.Key,
+                    PlatformID = OpenTypePlatformID.Windows,
+                    EncodingID = 1,
+                    LanguageID = 0x0409,
+                    Content = Encoding.BigEndianUnicode.GetBytes(name.Value),
+                })
+
+                // Order stipulated by spec
+                .OrderBy(x => x.NameID)
+
+                .ToArray();
         }
 
         public static InternalFont Create(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)

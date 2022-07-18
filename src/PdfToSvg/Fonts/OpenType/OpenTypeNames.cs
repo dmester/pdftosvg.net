@@ -5,13 +5,14 @@
 using PdfToSvg.Fonts.OpenType.Enums;
 using PdfToSvg.Fonts.OpenType.Tables;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace PdfToSvg.Fonts.OpenType
 {
-    internal class OpenTypeNames
+    internal class OpenTypeNames : IEnumerable<KeyValuePair<OpenTypeNameID, string>>
     {
         private readonly IEnumerable<IBaseTable> tables;
 
@@ -36,25 +37,43 @@ namespace PdfToSvg.Fonts.OpenType
         public string? License => GetName(OpenTypeNameID.License);
         public string? LicenseUrl => GetName(OpenTypeNameID.LicenseUrl);
 
-        private string? GetName(OpenTypeNameID id)
+        public IEnumerator<KeyValuePair<OpenTypeNameID, string>> GetEnumerator()
+        {
+            return Enumerate(rec => rec.Content.Length > 0).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        private IEnumerable<KeyValuePair<OpenTypeNameID, string>> Enumerate(Func<NameRecord, bool> predicate)
         {
             return tables
                 .OfType<NameTable>()
-                .Take(1)
-                .SelectMany(table => table.NameRecords)
+                .SelectMany(name => name.NameRecords)
+                .Where(predicate)
 
-                .Where(name => name.NameID == id)
+                .GroupBy(rec => rec.NameID)
+                .Select(group => group
 
-                // Prefer Windows and English
-                .OrderBy(name => name.PlatformID == OpenTypePlatformID.Windows ? 0 : 1)
-                .ThenBy(name => name.LanguageID == 1033 ? 0 : 1)
+                    // Prefer Windows and English
+                    .OrderBy(name => name.PlatformID == OpenTypePlatformID.Windows ? 0 : 1)
+                    .ThenBy(name => name.LanguageID == 1033 ? 0 : 1)
+                    .First())
 
-                .Select(name =>
+                .Select(rec =>
                 {
-                    var encoding = name.PlatformID == OpenTypePlatformID.Windows ? Encoding.BigEndianUnicode : Encoding.ASCII;
-                    return encoding.GetString(name.Content, 0, name.Content.Length);
-                })
+                    var isWindows = rec.PlatformID == OpenTypePlatformID.Windows;
+                    var encoding = isWindows ? Encoding.BigEndianUnicode : Encoding.ASCII;
 
+                    return new KeyValuePair<OpenTypeNameID, string>(
+                        rec.NameID,
+                        encoding.GetString(rec.Content));
+                });
+        }
+
+        private string? GetName(OpenTypeNameID id)
+        {
+            return Enumerate(name => name.NameID == id)
+                .Select(x => x.Value)
                 .FirstOrDefault();
         }
     }

@@ -12,15 +12,11 @@ using System.Threading.Tasks;
 namespace PdfToSvg.Fonts.OpenType.Tables
 {
     [DebuggerDisplay("maxp")]
-    internal class MaxpTableV05 : IBaseTable
+    internal class MaxpTableV05 : MaxpTable
     {
         private const uint Version = 0x00005000;
 
-        public string Tag => "maxp";
-
-        public ushort NumGlyphs;
-
-        void IBaseTable.Write(OpenTypeWriter writer)
+        protected override void Write(OpenTypeWriter writer)
         {
             writer.WriteUInt32(Version);
             writer.WriteUInt16(NumGlyphs);

@@ -78,5 +78,21 @@ namespace PdfToSvg.Common
                 }
             }
         }
+
+        /// <summary>
+        /// Selects only elements that are not null.
+        /// </summary>
+        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> source) where T : class
+        {
+            return source.Where(x => x != null)!;
+        }
+
+        /// <summary>
+        /// Selects only elements that are not null.
+        /// </summary>
+        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> source) where T : struct
+        {
+            return source.Where(x => x.HasValue).Select(x => x!.Value);
+        }
     }
 }

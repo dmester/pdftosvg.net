@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using System;
 using System.Collections.Generic;
@@ -13,14 +14,12 @@ namespace PdfToSvg.DocumentModel
     internal class PdfName : IEquatable<PdfName>
     {
         // Lower memory usage by interning common names
-#pragma warning disable 8602,8619
         private static Dictionary<string, PdfName> knownNames = typeof(Names)
             .GetTypeInfo()
             .GetProperties(BindingFlags.Public | BindingFlags.Static | BindingFlags.GetProperty)
             .Select(x => x.GetValue(null, null) as PdfName)
-            .Where(x => x != null)
+            .WhereNotNull()
             .ToDictionary(x => x.Value, x => x);
-#pragma warning restore 8602,8619
 
         public PdfName(string value)
         {

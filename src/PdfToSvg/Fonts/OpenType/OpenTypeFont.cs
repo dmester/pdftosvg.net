@@ -145,7 +145,42 @@ namespace PdfToSvg.Fonts.OpenType
                 }
                 else
                 {
-                    // TODO Skip for now, implement later if needed
+                    var startCode = cmap.StartCode[i];
+                    var endCode = cmap.EndCode[i];
+
+                    for (var code = startCode; ;)
+                    {
+                        // Specification:
+                        // https://docs.microsoft.com/en-us/typography/opentype/spec/cmap#format-4-segment-mapping-to-delta-values
+                        //
+                        // Pseudo code in spec:
+                        // glyphId = *(idRangeOffset[i]/2 + (c - startCode[i]) + &idRangeOffset[i])
+
+                        var glyphIdIndex = 
+                            cmap.IdRangeOffsets[i] / 2 - (cmap.IdRangeOffsets.Length - i)
+                            + (code - startCode);
+
+                        if (glyphIdIndex >= 0 && glyphIdIndex < cmap.GlyphIdArray.Length)
+                        {
+                            var glyphId = cmap.GlyphIdArray[glyphIdIndex];
+
+                            ranges.Add(new OpenTypeCMapRange(
+                                startUnicode: code,
+                                endUnicode: code,
+                                startGlyphIndex: (ushort)(glyphId + cmap.IdDelta[i]) // Modulo 65536
+                                ));
+                        }
+
+                        // Prevent infinity loop on overflow
+                        if (code < endCode)
+                        {
+                            code++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                 }
             }
 

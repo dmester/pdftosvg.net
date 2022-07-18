@@ -171,7 +171,7 @@ namespace PdfToSvg.Fonts.OpenType.Conversion
 
                 // Order stipulated by spec
                 .OrderBy(x => x.PlatformID)
-                .OrderBy(x => x.EncodingID)
+                .ThenBy(x => x.EncodingID)
                 .ThenBy(x => x.LanguageID)
                 .ThenBy(x => x.NameID)
 

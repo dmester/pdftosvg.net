@@ -62,7 +62,7 @@ Adobe Technical Note #5177 - The Type 2 Charstring Format
 
 https://adobe-type-tools.github.io/font-tech-notes/pdfs/5177.Type2.pdf
 
-### WOFF File Format 1.0
-W3C no longer publishes the WOFF 1.0 specification, but it is available in the Internet archive.
+### WOFF
+W3C WOFF File Format 1.0
 
-https://web.archive.org/web/20140209181149/https://www.w3.org/TR/WOFF/
+https://www.w3.org/TR/WOFF/

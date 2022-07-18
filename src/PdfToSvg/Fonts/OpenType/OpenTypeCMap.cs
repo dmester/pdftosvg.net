@@ -6,6 +6,7 @@ using PdfToSvg.Encodings;
 using PdfToSvg.Fonts.OpenType.Enums;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -13,30 +14,48 @@ namespace PdfToSvg.Fonts.OpenType
 {
     internal class OpenTypeCMap
     {
-        public OpenTypeCMap(OpenTypePlatformID platformID, int encodingID, IList<OpenTypeCMapRange> ranges)
+        private readonly List<OpenTypeCMapRange> rangesByGlyphIndex;
+        private ReadOnlyCollection<OpenTypeCMapRange>? readOnlyRanges;
+
+        public OpenTypeCMap(OpenTypePlatformID platformID, int encodingID, IEnumerable<OpenTypeCMapRange> ranges)
         {
+            rangesByGlyphIndex = ranges.ToList();
+            rangesByGlyphIndex.Sort((a, b) => Comparer<uint>.Default.Compare(a.StartGlyphIndex, b.StartGlyphIndex));
+
             PlatformID = platformID;
             EncodingID = encodingID;
-            Ranges = ranges;
         }
 
         public OpenTypePlatformID PlatformID { get; }
 
         public int EncodingID { get; }
 
-        public IList<OpenTypeCMapRange> Ranges { get; }
+        public ReadOnlyCollection<OpenTypeCMapRange> Ranges
+        {
+            get => readOnlyRanges ??= new ReadOnlyCollection<OpenTypeCMapRange>(rangesByGlyphIndex);
+        }
 
         public string? ToUnicode(uint glyphIndex)
         {
-            for (var i = 0; i < Ranges.Count; i++)
-            {
-                var range = Ranges[i];
+            var min = 0;
+            var max = rangesByGlyphIndex.Count - 1;
 
-                if (glyphIndex >= range.StartGlyphIndex &&
-                    glyphIndex <= range.EndGlyphIndex)
+            while (min <= max)
+            {
+                var mid = min + ((max - min) >> 1);
+                var range = rangesByGlyphIndex[mid];
+
+                if (glyphIndex < range.StartGlyphIndex)
+                {
+                    max = mid - 1;
+                }
+                else if (glyphIndex > range.EndGlyphIndex)
+                {
+                    min = mid + 1;
+                }
+                else
                 {
                     var unicode = range.StartUnicode + (glyphIndex - range.StartGlyphIndex);
-
                     return Utf16Encoding.EncodeCodePoint(unicode);
                 }
             }

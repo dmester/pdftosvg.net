@@ -23,7 +23,7 @@ namespace PdfToSvg.Tests.Fonts
                 formatted.AppendLine();
                 formatted.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0} {1}", cmap.PlatformID, cmap.EncodingID));
 
-                foreach (var range in cmap.Ranges)
+                foreach (var range in cmap.Ranges.OrderBy(x => x.StartUnicode))
                 {
                     formatted.AppendLine(range.ToString());
                 }

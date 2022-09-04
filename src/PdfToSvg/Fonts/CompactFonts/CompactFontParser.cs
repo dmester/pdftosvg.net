@@ -16,15 +16,13 @@ namespace PdfToSvg.Fonts.CompactFonts
     {
         private readonly CompactFontReader reader;
         private readonly byte[] data;
-        private readonly IDictionary<uint, string>? customCMap;
 
         private readonly CompactFontSet fontSet = new CompactFontSet();
 
-        internal CompactFontParser(byte[] data, IDictionary<uint, string>? customCMap)
+        internal CompactFontParser(byte[] data)
         {
             reader = new CompactFontReader(data);
             this.data = data;
-            this.customCMap = customCMap;
         }
 
         private void ReadDict<T>(T dict, int position, int length)
@@ -321,27 +319,18 @@ namespace PdfToSvg.Fonts.CompactFonts
             var endIndex = glyphIndex + 1 < charStringsIndex.Length ? charStringsIndex[glyphIndex + 1] : data.Length;
             var cidOrSid = font.CharSet[glyphIndex];
 
-            string unicode;
+            var unicode = "";
             CharString charString;
             double width;
+            string? charName = null;
 
-            if (isCidFont)
+            if (!isCidFont)
             {
-                if (customCMap == null ||
-                    customCMap.TryGetValue((uint)cidOrSid, out unicode) == false)
-                {
-                    unicode = Utf16Encoding.GetPrivateUseChar(cidOrSid);
-                }
-            }
-            else
-            {
-                var charName = fontSet.Strings.Lookup(cidOrSid);
+                charName = fontSet.Strings.Lookup(cidOrSid);
 
-                AdobeGlyphList.TryMap(charName, out unicode!);
-
-                if (unicode == null)
+                if (AdobeGlyphList.TryGetUnicode(charName, out var aglUnicode))
                 {
-                    unicode = "";
+                    unicode = aglUnicode;
                 }
             }
 
@@ -410,9 +399,9 @@ namespace PdfToSvg.Fonts.CompactFonts
             return fontSet;
         }
 
-        public static CompactFontSet Parse(byte[] data, IDictionary<uint, string>? customCMap = null, int startFontIndex = 0, int maxFontCount = int.MaxValue)
+        public static CompactFontSet Parse(byte[] data, int startFontIndex = 0, int maxFontCount = int.MaxValue)
         {
-            return new CompactFontParser(data, customCMap).Read(startFontIndex, maxFontCount);
+            return new CompactFontParser(data).Read(startFontIndex, maxFontCount);
         }
     }
 }

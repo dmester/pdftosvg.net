@@ -103,10 +103,7 @@ namespace PdfToSvg.Fonts
                             using var fontFileStream = fontFile3.Stream.OpenDecoded(cancellationToken);
                             var fontFileData = fontFileStream.ToArray();
 
-                            var compactFontSet = CompactFontParser.Parse(fontFileData,
-                                customCMap: unicodeCMap?.ToLookup(),
-                                maxFontCount: 1);
-
+                            var compactFontSet = CompactFontParser.Parse(fontFileData, maxFontCount: 1);
                             openTypeFont = OpenTypeFont.FromCompactFont(compactFontSet.Fonts.First());
                         }
                         catch (Exception ex)

@@ -12,14 +12,18 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Encodings
 {
-    internal class CustomEncoding : ITextDecoder
+    internal class CustomEncoding : SingleByteEncoding
     {
-        private readonly Dictionary<int, string> lookup = new Dictionary<int, string>();
-        private readonly ITextDecoder baseEncoding;
+        private CustomEncoding(string?[] toUnicode, string?[] toGlyphName) : base(toUnicode, toGlyphName)
+        {
+        }
 
-        private CustomEncoding(PdfDictionary encodingDict)
+        public static CustomEncoding Create(PdfDictionary encodingDict)
         {
             // PDF spec 1.7, Table 114, page 271
+
+            SingleByteEncoding? baseEncoding = null;
+
             if (encodingDict.TryGetName(Names.BaseEncoding, out var baseEncodingName))
             {
                 baseEncoding = EncodingFactory.Create(baseEncodingName);
@@ -28,6 +32,15 @@ namespace PdfToSvg.Encodings
             if (baseEncoding == null)
             {
                 baseEncoding = new StandardEncoding();
+            }
+
+            var toUnicode = new string?[256];
+            var toGlyphName = new string?[256];
+
+            for (var i = 0; i < toUnicode.Length; i++)
+            {
+                toUnicode[i] = baseEncoding.GetUnicode((byte)i);
+                toGlyphName[i] = baseEncoding.GetGlyphName((byte)i);
             }
 
             if (encodingDict.TryGetArray(Names.Differences, out var differences))
@@ -40,9 +53,15 @@ namespace PdfToSvg.Encodings
 
                     if (item is PdfName glyphName)
                     {
-                        if (AdobeGlyphList.TryMap(glyphName, out var ch))
+                        toGlyphName[nextCharCode] = glyphName.Value;
+
+                        if (AdobeGlyphList.TryGetUnicode(glyphName, out var unicode))
                         {
-                            lookup[nextCharCode] = ch.ToString();
+                            toUnicode[nextCharCode] = unicode;
+                        }
+                        else
+                        {
+                            toUnicode[nextCharCode] = "\uFFFD";
                         }
 
                         nextCharCode++;
@@ -53,21 +72,8 @@ namespace PdfToSvg.Encodings
                     }
                 }
             }
-        }
 
-        public static CustomEncoding Create(PdfDictionary encodingDict)
-        {
-            return new CustomEncoding(encodingDict);
-        }
-
-        public CharacterCode GetCharacter(PdfString value, int index)
-        {
-            if (lookup.TryGetValue(value[index], out var ch))
-            {
-                return new CharacterCode(value[index], 1, ch);
-            }
-
-            return baseEncoding.GetCharacter(value, index);
+            return new CustomEncoding(toUnicode, toGlyphName);
         }
     }
 }

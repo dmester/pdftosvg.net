@@ -4543,22 +4543,45 @@ namespace PdfToSvg.Encodings
             "zukatakana", "\u30BA"
             };
 
-        private static readonly Dictionary<string, string> lookup = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> unicodeToGlyphName = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> glyphNameToUnicode = new Dictionary<string, string>();
 
         static AdobeGlyphList()
         {
             for (var i = 0; i < glyphlist.Length; i += 2)
             {
-                lookup[glyphlist[i]] = glyphlist[i + 1];
+                glyphNameToUnicode[glyphlist[i]] = glyphlist[i + 1];
+                unicodeToGlyphName[glyphlist[i + 1]] = glyphlist[i];
             }
         }
 
-        public static bool TryMap(PdfName name, [NotNullWhen(true)] out string? result)
+        public static bool TryGetGlyphName(string unicode, [NotNullWhen(true)] out string? result)
         {
-            return TryMap(name.Value, out result);
+            if (unicode.Length > 0)
+            {
+                if (!unicodeToGlyphName.TryGetValue(unicode, out result))
+                {
+                    result = "uni";
+
+                    for (var i = 0; i < unicode.Length; i++)
+                    {
+                        result += ((int)unicode[i]).ToString("X4");
+                    }
+                }
+
+                return true;
+            }
+
+            result = null;
+            return false;
         }
 
-        public static bool TryMap(string? name, [NotNullWhen(true)] out string? result)
+        public static bool TryGetUnicode(PdfName name, [NotNullWhen(true)] out string? result)
+        {
+            return TryGetUnicode(name.Value, out result);
+        }
+
+        public static bool TryGetUnicode(string? name, [NotNullWhen(true)] out string? result)
         {
             // Parsing is described in the spec available here:
             // https://github.com/adobe-type-tools/agl-specification#2-the-mapping
@@ -4582,7 +4605,7 @@ namespace PdfToSvg.Encodings
                 var component = components[i];
                 if (component.Length > 0)
                 {
-                    if (lookup.TryGetValue(component, out var componentResult) ||
+                    if (glyphNameToUnicode.TryGetValue(component, out var componentResult) ||
                         TryParseUnicode(component, out componentResult))
                     {
                         result += componentResult;

@@ -13,7 +13,7 @@ namespace PdfToSvg.Encodings
 {
     internal static class EncodingFactory
     {
-        public static ITextDecoder Create(object definition)
+        public static SingleByteEncoding Create(object? definition)
         {
             if (definition is PdfName encodingName)
             {
@@ -30,11 +30,6 @@ namespace PdfToSvg.Encodings
                 if (encodingName == Names.MacRomanEncoding)
                 {
                     return new MacRomanEncoding();
-                }
-
-                if (encodingName == Names.IdentityH || encodingName == Names.IdentityV)
-                {
-                    return new Utf16Encoding();
                 }
             }
             else if (definition is PdfDictionary encodingDict)

@@ -42,7 +42,7 @@ namespace PdfToSvg.Tests.Encodings
 
         public void Map(string source, string expectedResult)
         {
-            Assert.AreEqual(expectedResult != null, AdobeGlyphList.TryMap(source, out var actualResult));
+            Assert.AreEqual(expectedResult != null, AdobeGlyphList.TryGetUnicode(source, out var actualResult));
             Assert.AreEqual(expectedResult, actualResult);
         }
     }

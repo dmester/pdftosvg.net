@@ -1296,11 +1296,11 @@ namespace PdfToSvg.Drawing
         [Operation("Tf")]
         private void Tf_Font(PdfName fontName, double fontSize)
         {
-            var newFont = resources.GetFont(fontName, options.FontResolver, documentCache, cancellationToken) ?? InternalFont.Fallback;
+            var newFont = resources.GetFont(fontName, options.FontResolver, documentCache, cancellationToken) ?? BaseFont.Fallback;
             if (newFont == null)
             {
                 Log.WriteLine($"Could not find a font replacement for {fontName}.");
-                newFont = InternalFont.Fallback;
+                newFont = BaseFont.Fallback;
             }
 
             SetFont(newFont, fontSize);
@@ -1314,7 +1314,7 @@ namespace PdfToSvg.Drawing
 
             if (args.Length > 0 && args[0] is PdfDictionary fontDict)
             {
-                font = InternalFont.Create(fontDict, options.FontResolver, cancellationToken);
+                font = BaseFont.Create(fontDict, options.FontResolver, cancellationToken);
             }
 
             if (args.Length > 1 && MathUtils.ToDouble(args[1], out var dblFontSize))
@@ -1325,7 +1325,7 @@ namespace PdfToSvg.Drawing
             SetFont(font, fontSize);
         }
 
-        private void SetFont(InternalFont newFont, double fontSize)
+        private void SetFont(BaseFont newFont, double fontSize)
         {
             var outputStyleChanged =
                 graphicsState.FontSize != fontSize ||

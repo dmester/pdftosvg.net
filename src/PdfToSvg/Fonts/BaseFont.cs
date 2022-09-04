@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 namespace PdfToSvg.Fonts
 {
     [DebuggerDisplay("{Name,nq}")]
-    internal class InternalFont : SourceFont
+    internal class BaseFont : SourceFont
     {
         private static readonly Font fallbackFont = new LocalFont("'Times New Roman',serif");
 
@@ -40,7 +40,7 @@ namespace PdfToSvg.Fonts
 
         public Font SubstituteFont { get; private set; } = fallbackFont;
 
-        public static InternalFont Fallback { get; } = new InternalFont(
+        public static BaseFont Fallback { get; } = new BaseFont(
             new PdfDictionary {
                 { Names.Subtype, Names.Type1 },
                 { Names.BaseFont, StandardFonts.TimesRoman },
@@ -50,7 +50,7 @@ namespace PdfToSvg.Fonts
         private readonly WidthMap widthMap;
         private readonly ITextDecoder[] textDecoders;
 
-        private InternalFont(PdfDictionary font, CancellationToken cancellationToken)
+        private BaseFont(PdfDictionary font, CancellationToken cancellationToken)
         {
             if (font == null) throw new ArgumentNullException(nameof(font));
 
@@ -285,7 +285,7 @@ namespace PdfToSvg.Fonts
                 .ToArray();
         }
 
-        public static InternalFont Create(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
+        public static BaseFont Create(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
         {
             var fontTask = CreateAsync(fontDict, fontResolver, cancellationToken);
 #if NET40
@@ -295,16 +295,16 @@ namespace PdfToSvg.Fonts
 #endif
         }
 
-        public static Task<InternalFont> CreateAsync(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
+        public static Task<BaseFont> CreateAsync(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
         {
-            var internalFont = new InternalFont(fontDict, cancellationToken);
+            var BaseFont = new BaseFont(fontDict, cancellationToken);
 
             return fontResolver
-                .ResolveFontAsync(internalFont, cancellationToken)
+                .ResolveFontAsync(BaseFont, cancellationToken)
                 .ContinueWith(t =>
                 {
-                    internalFont.SubstituteFont = t.Result;
-                    return internalFont;
+                    BaseFont.SubstituteFont = t.Result;
+                    return BaseFont;
                 }, TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously);
         }
 

@@ -18,6 +18,6 @@ namespace PdfToSvg
         /// <summary>
         /// Contains cached fonts per <see cref="FontResolver"/>. The key of the inner dictionary is a font dictionary.
         /// </summary>
-        public ConditionalWeakTable<FontResolver, Dictionary<PdfDictionary, SharedFactory<InternalFont>>> Fonts { get; } = new();
+        public ConditionalWeakTable<FontResolver, Dictionary<PdfDictionary, SharedFactory<BaseFont>>> Fonts { get; } = new();
     }
 }

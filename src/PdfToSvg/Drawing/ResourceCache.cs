@@ -17,8 +17,8 @@ namespace PdfToSvg.Drawing
 {
     internal class ResourceCache
     {
-        private readonly Dictionary<PdfName, InternalFont?> fonts = new Dictionary<PdfName, InternalFont?>();
-        private readonly Dictionary<PdfName, ColorSpace> colorSpaces = new Dictionary<PdfName, ColorSpace>();
+        private readonly Dictionary<PdfName, BaseFont?> fonts = new();
+        private readonly Dictionary<PdfName, ColorSpace> colorSpaces = new();
 
         public ResourceCache(PdfDictionary resourcesDict)
         {
@@ -27,26 +27,26 @@ namespace PdfToSvg.Drawing
 
         public PdfDictionary Dictionary { get; }
 
-        public InternalFont? GetFont(PdfName fontName, FontResolver fontResolver, DocumentCache documentCache, CancellationToken cancellationToken)
+        public BaseFont? GetFont(PdfName fontName, FontResolver fontResolver, DocumentCache documentCache, CancellationToken cancellationToken)
         {
             if (!fonts.TryGetValue(fontName, out var font))
             {
                 if (Dictionary.TryGetDictionary(Names.Font / fontName, out var fontDict))
                 {
-                    SharedFactory<InternalFont> factory;
+                    SharedFactory<BaseFont> factory;
 
                     lock (documentCache.Fonts)
                     {
                         if (!documentCache.Fonts.TryGetValue(fontResolver, out var factories))
                         {
-                            factories = new Dictionary<PdfDictionary, SharedFactory<InternalFont>>();
+                            factories = new Dictionary<PdfDictionary, SharedFactory<BaseFont>>();
                             documentCache.Fonts.Add(fontResolver, factories);
                         }
 
                         if (!factories.TryGetValue(fontDict, out factory))
                         {
                             factory = SharedFactory.Create(factoryCancellationToken =>
-                                InternalFont.CreateAsync(fontDict, fontResolver, factoryCancellationToken));
+                                BaseFont.CreateAsync(fontDict, fontResolver, factoryCancellationToken));
                             factories[fontDict] = factory;
                         }
                     }

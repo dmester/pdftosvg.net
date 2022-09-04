@@ -44,7 +44,7 @@ namespace PdfToSvg.Drawing
         public Matrix TextMatrix = Matrix.Identity;
         public Matrix LineMatrix = Matrix.Identity;
         public double TextLeading;
-        public InternalFont Font = InternalFont.Fallback;
+        public BaseFont Font = BaseFont.Fallback;
         public double FontSize;
         public double TextCharSpacingPx;
         public double TextWordSpacingPx;

@@ -22,7 +22,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
             for (var gid = 0; gid < sids.Length; gid++)
             {
                 var sid = sids[gid];
-                font.Glyphs.Add(new CompactFontGlyph(CharString.Empty, "x", gid, sid, 0));
+                font.Glyphs.Add(new CompactFontGlyph(CharString.Empty, "x", gid, sid, null, 0));
             }
 
             fontSet.Fonts.Add(font);
@@ -122,7 +122,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
             charStringInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.CallSubr));
             charStringInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.EndChar));
 
-            font.Glyphs.Add(new CompactFontGlyph(new CharString(charStringInfo), "x", 0, 0, 0));
+            font.Glyphs.Add(new CompactFontGlyph(new CharString(charStringInfo), "x", 0, 0, null, 0));
 
             fontSet.Fonts.Add(font);
 
@@ -203,9 +203,9 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
             charStringInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.CallSubr));
             charStringInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.EndChar));
 
-            font.Glyphs.Add(new CompactFontGlyph(new CharString(charStringInfo), "x", 0, 0, 0));
-            font.Glyphs.Add(new CompactFontGlyph(new CharString(charStringInfo), "x", 1, 1, 0));
-            font.Glyphs.Add(new CompactFontGlyph(new CharString(charStringInfo), "x", 2, 2, 0));
+            font.Glyphs.Add(new CompactFontGlyph(new CharString(charStringInfo), "x", 0, 0, null, 0));
+            font.Glyphs.Add(new CompactFontGlyph(new CharString(charStringInfo), "x", 1, 1, null, 0));
+            font.Glyphs.Add(new CompactFontGlyph(new CharString(charStringInfo), "x", 2, 2, null, 0));
 
             font.FDArray.Add(subFont0);
             font.FDArray.Add(subFont1);

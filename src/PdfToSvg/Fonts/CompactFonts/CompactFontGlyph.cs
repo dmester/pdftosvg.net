@@ -13,7 +13,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 {
     internal class CompactFontGlyph
     {
-        public CompactFontGlyph(CharString charString, string unicode, int glyphIndex, int sid, double width)
+        public CompactFontGlyph(CharString charString, string unicode, int glyphIndex, int sid, string? charName, double width)
         {
             if (unicode.Length == 0)
             {
@@ -21,6 +21,7 @@ namespace PdfToSvg.Fonts.CompactFonts
             }
 
             CharString = charString;
+            CharName = charName;
 
             Unicode = unicode;
             UnicodeCodePoint = Utf16Encoding.DecodeCodePoint(unicode, 0, out var length);
@@ -36,6 +37,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         public int GlyphIndex { get; }
         public int SID { get; }
+        public string? CharName { get; }
 
         public string Unicode { get; }
         public uint UnicodeCodePoint { get; }

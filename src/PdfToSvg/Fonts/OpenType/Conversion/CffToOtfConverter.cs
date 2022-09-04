@@ -40,7 +40,7 @@ namespace PdfToSvg.Fonts.OpenType.Conversion
             // Add an empty character if there are no non-zero width characters to simplify logics further down
             if (nonZeroWidthGlyphs.Count == 0)
             {
-                nonZeroWidthGlyphs.Add(new CompactFontGlyph(CharString.Empty, "\ufffd", 0, 0, 0));
+                nonZeroWidthGlyphs.Add(new CompactFontGlyph(CharString.Empty, "\ufffd", 0, 0, null, 0));
             }
 
             isItalic = font.TopDict.ItalicAngle != 0;

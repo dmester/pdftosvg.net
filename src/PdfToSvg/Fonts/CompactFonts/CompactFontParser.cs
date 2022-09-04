@@ -360,7 +360,7 @@ namespace PdfToSvg.Fonts.CompactFonts
                 width = font.PrivateDict.NominalWidthX + charString.Width.Value;
             }
 
-            var glyph = new CompactFontGlyph(charString, unicode, glyphIndex, cidOrSid, width);
+            var glyph = new CompactFontGlyph(charString, unicode, glyphIndex, cidOrSid, charName, width);
             font.Glyphs.Add(glyph);
         }
 

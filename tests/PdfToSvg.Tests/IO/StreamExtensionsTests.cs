@@ -16,6 +16,40 @@ namespace PdfToSvg.Tests.IO
     public class StreamExtensionsTests
     {
         [Test]
+        public void ReadCompactUInt32()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            for (var i = 0u; i < 300u; i++)
+            {
+                writer.WriteCompactUInt32(i);
+            }
+
+            for (var i = 16120u; i < 16200u; i++)
+            {
+                writer.WriteCompactUInt32(i);
+            }
+
+            writer.WriteCompactUInt32(uint.MaxValue);
+
+            stream.Position = 0;
+            var reader = new BinaryReader(stream);
+
+            for (var i = 0u; i < 300u; i++)
+            {
+                Assert.AreEqual(i, reader.ReadCompactUInt32());
+            }
+
+            for (var i = 16120u; i < 16200u; i++)
+            {
+                Assert.AreEqual(i, reader.ReadCompactUInt32());
+            }
+
+            Assert.AreEqual(uint.MaxValue, reader.ReadCompactUInt32());
+        }
+
+        [Test]
         public void ReadAll()
         {
             var stream = new ByteByByteMemoryStream(1, 2, 3, 4, 5, 6, 7, 8, 9);

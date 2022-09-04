@@ -442,7 +442,7 @@ namespace PdfToSvg.Parsing
 
         public Lexeme Read() => forwardLexemeBuffer.Read();
 
-        public void Read(Token expectedToken)
+        public Lexeme Read(Token expectedToken)
         {
             var lexeme = Read();
 
@@ -450,6 +450,23 @@ namespace PdfToSvg.Parsing
             {
                 throw new ParserException($"Expected {expectedToken} but found {lexeme.Token}.", lexeme.Position);
             }
+
+            return lexeme;
+        }
+
+        public bool TryRead(Token expectedToken) => TryRead(expectedToken, out _);
+
+        public bool TryRead(Token expectedToken, out Lexeme lexeme)
+        {
+            lexeme = Peek();
+
+            if (lexeme.Token == expectedToken)
+            {
+                Read();
+                return true;
+            }
+
+            return false;
         }
 
         private Lexeme ReadLexeme()

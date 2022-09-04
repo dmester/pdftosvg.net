@@ -86,6 +86,8 @@ namespace PdfToSvg.DocumentModel
         public static PdfName BaseEncoding { get; } = new PdfName("BaseEncoding");
         public static PdfName Differences { get; } = new PdfName("Differences");
 
+        public static PdfName CMapName { get; } = new PdfName("CMapName");
+
         public static PdfName Type0 { get; } = new PdfName("Type0");
         public static PdfName CIDFontType0 { get; } = new PdfName("CIDFontType0");
         public static PdfName CIDFontType2 { get; } = new PdfName("CIDFontType2");

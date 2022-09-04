@@ -18,6 +18,38 @@ namespace PdfToSvg.IO
         // Same as in .NET
         private const int DefaultCopyToBuffer = 81920;
 
+        public static uint ReadCompactUInt32(this BinaryReader reader)
+        {
+            // Basically the same as Read7BitEncodedInt, but available for all .NET versions
+
+            var result = 0u;
+            var shift = 0;
+            byte b;
+
+            do
+            {
+                b = reader.ReadByte();
+                result |= ((uint)b & 0x7f) << shift;
+                shift += 7;
+            }
+            while ((b & 0x80) != 0);
+
+            return result;
+        }
+
+        public static void WriteCompactUInt32(this BinaryWriter writer, uint value)
+        {
+            // Basically the same as Write7BitEncodedInt, but available for all .NET versions
+
+            while (value > 0x7f)
+            {
+                writer.Write((byte)(value | 0x80));
+                value >>= 7;
+            }
+
+            writer.Write((byte)value);
+        }
+
         public static void CopyTo(this Stream stream, Stream destination, CancellationToken cancellationToken)
         {
             var buffer = new byte[DefaultCopyToBuffer];

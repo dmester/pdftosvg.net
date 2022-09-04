@@ -40,11 +40,16 @@ namespace PdfToSvg.Parsing
         EndBfChar,
         BeginBfRange,
         EndBfRange,
+        BeginCidChar,
+        EndCidChar,
+        BeginCidRange,
+        EndCidRange,
         BeginNotDefChar,
         EndNotDefChar,
         BeginNotDefRange,
         EndNotDefRange,
         BeginBlock,
         EndBlock,
+        UseCMap,
     }
 }

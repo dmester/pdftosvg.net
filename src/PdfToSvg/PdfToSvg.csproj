@@ -34,6 +34,10 @@ There are PDF features not yet implemented by this library. Before using it, ple
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="CMaps\PredefinedCMaps.bin" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\..\docs\images\logo.png" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 

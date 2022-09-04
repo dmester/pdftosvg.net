@@ -209,7 +209,7 @@ namespace PdfToSvg.Fonts.OpenType.Conversion
             os2.SuperscriptXOffset = 0;
             os2.SuperscriptYOffset = ConversionUtils.ToFWord(350, unitsPerEm);
 
-            os2.StrikeoutSize = (short)font.TopDict.UnderlineThichness;
+            os2.StrikeoutSize = (short)font.TopDict.UnderlineThickness;
 
             if (x != null && x.CharString.MaxY >= 1)
             {

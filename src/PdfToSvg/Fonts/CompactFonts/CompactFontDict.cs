@@ -40,7 +40,7 @@ namespace PdfToSvg.Fonts.CompactFonts
         public double UnderlinePosition { get; set; }
 
         [CompactFontDictOperator(12, 4)]
-        public double UnderlineThichness { get; set; }
+        public double UnderlineThickness { get; set; }
 
         [CompactFontDictOperator(12, 5)]
         public int PaintType { get; set; }

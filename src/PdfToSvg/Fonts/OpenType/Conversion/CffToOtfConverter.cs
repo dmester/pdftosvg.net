@@ -422,12 +422,11 @@ namespace PdfToSvg.Fonts.OpenType.Conversion
             return table;
         }
 
-        private RawTable CreateCff()
+        private CffTable CreateCff()
         {
-            return new RawTable
+            return new CffTable
             {
-                Tag = "CFF ",
-                Content = CompactFontBuilder.Build(font.FontSet, inlineSubrs: true),
+                Content = font.FontSet,
             };
         }
 

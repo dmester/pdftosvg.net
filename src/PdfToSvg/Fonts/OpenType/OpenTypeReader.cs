@@ -80,6 +80,15 @@ namespace PdfToSvg.Fonts.OpenType
             return result;
         }
 
+        public byte ReadUInt8()
+        {
+            if (cursor + 1 > endIndex) throw new EndOfStreamException();
+            cursor++;
+            return buffer[cursor - 1];
+        }
+
+        public sbyte ReadInt8() => (sbyte)ReadUInt8();
+
         public short ReadInt16()
         {
             if (cursor + 2 > endIndex) throw new EndOfStreamException();

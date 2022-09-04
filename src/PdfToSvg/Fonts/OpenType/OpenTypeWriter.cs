@@ -200,6 +200,18 @@ namespace PdfToSvg.Fonts.OpenType
             WriteAscii(value);
         }
 
+        public void WriteUInt8(byte value)
+        {
+            EnsureCapacity(cursor + 1);
+
+            buffer[cursor++] = value;
+
+            if (cursor > length)
+            {
+                length = cursor;
+            }
+        }
+
         public void WriteInt16(short value)
         {
             EnsureCapacity(cursor + 2);

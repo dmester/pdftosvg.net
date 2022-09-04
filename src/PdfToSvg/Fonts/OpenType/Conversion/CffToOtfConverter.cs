@@ -405,13 +405,21 @@ namespace PdfToSvg.Fonts.OpenType.Conversion
             };
         }
 
-        private PostTableV3 CreatePost()
+        private PostTable CreatePost()
         {
-            return new PostTableV3
+            var table = new PostTableV3();
+
+            if (!font.IsCIDFont)
             {
-                UnderlinePosition = (short)font.TopDict.UnderlinePosition,
-                UnderlineThickness = (short)font.TopDict.UnderlineThichness,
-            };
+                table.GlyphNames = font.Glyphs
+                    .Select(glyph => glyph.CharName ?? ".notdef")
+                    .ToArray();
+            }
+
+            table.UnderlinePosition = (short)font.TopDict.UnderlinePosition;
+            table.UnderlineThickness = (short)font.TopDict.UnderlineThickness;
+
+            return table;
         }
 
         private RawTable CreateCff()

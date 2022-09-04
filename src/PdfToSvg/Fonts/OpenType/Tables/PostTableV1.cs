@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 namespace PdfToSvg.Fonts.OpenType.Tables
 {
     [DebuggerDisplay("post")]
-    internal class PostTableV3 : PostTable
+    internal class PostTableV1 : PostTable
     {
-        private const uint Version = 0x00030000;
+        private const uint Version = 0x00010000;
 
         protected override void Write(OpenTypeWriter writer)
         {
@@ -31,8 +31,11 @@ namespace PdfToSvg.Fonts.OpenType.Tables
                 return null;
             }
 
-            var table = new PostTableV3();
+            var table = new PostTableV1();
+
             table.ReadHeader(reader);
+            table.GlyphNames = (string[])MacintoshNames.Clone();
+
             return table;
         }
     }

@@ -35,6 +35,26 @@ namespace PdfToSvg.Fonts.OpenType
             get => readOnlyRanges ??= new ReadOnlyCollection<OpenTypeCMapRange>(rangesByGlyphIndex);
         }
 
+        public IEnumerable<OpenTypeCMapChar> Chars
+        {
+            get
+            {
+                foreach (var range in rangesByGlyphIndex)
+                {
+                    for (var glyphIndex = range.StartGlyphIndex; ; glyphIndex++)
+                    {
+                        yield return new OpenTypeCMapChar(
+                            range.StartUnicode + (glyphIndex - range.StartGlyphIndex), glyphIndex);
+
+                        if (glyphIndex == range.EndGlyphIndex)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         public string? ToUnicode(uint glyphIndex)
         {
             var min = 0;

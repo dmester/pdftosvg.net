@@ -272,6 +272,11 @@ namespace PdfToSvg.Fonts.CompactFonts
                     var achar = font.Glyphs.FirstOrDefault(x => x.Unicode == acharValue);
                     var bchar = font.Glyphs.FirstOrDefault(x => x.Unicode == bcharValue);
 
+                    if (achar == null || bchar == null)
+                    {
+                        continue;
+                    }
+
                     var mergedCharString = SeacMerger.Merge(achar.CharString, bchar.CharString, seac.Adx, seac.Ady);
 
                     content.Clear();

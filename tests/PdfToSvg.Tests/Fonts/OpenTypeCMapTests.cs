@@ -14,6 +14,13 @@ namespace PdfToSvg.Tests.Fonts
 {
     public class OpenTypeCMapTests
     {
+        private readonly OpenTypeCMap cmap = new OpenTypeCMap(0, 0, new[]
+        {
+            new OpenTypeCMapRange(0x0000, 0x00ff, 0x100),
+            new OpenTypeCMapRange(0x10435, 0x1043a, 1),
+            new OpenTypeCMapRange(0x24B62, 0x24B62, 10),
+        });
+
         [Test]
         public void OptimizedRanges()
         {
@@ -60,20 +67,23 @@ namespace PdfToSvg.Tests.Fonts
                 JsonConvert.SerializeObject(actualGroups));
         }
 
-        [Test]
-        public void ToUnicode()
+        private static object[][] charMappings = new[]
         {
-            var ranges = new[]
-            {
-                new OpenTypeCMapRange(0x0000, 0x00ff, 0x100),
-                new OpenTypeCMapRange(0x10435, 0x1043a, 1),
-                new OpenTypeCMapRange(0x24B62, 0x24B62, 10),
-            };
-            var cmap = new OpenTypeCMap(0, 0, ranges);
+            new object[]{ "$", 0x124u },
+            new object[]{ "\uD801\uDC37", 3u },
+            new object[]{ "\uD852\uDF62", 10u },
+        };
 
-            Assert.AreEqual("$", cmap.ToUnicode(0x124));
-            Assert.AreEqual("\uD801\uDC37", cmap.ToUnicode(3));
-            Assert.AreEqual("\uD852\uDF62", cmap.ToUnicode(10));
+        [TestCaseSource(nameof(charMappings))]
+        public void ToUnicode(string unicode, uint glyphIndex)
+        {
+            Assert.AreEqual(unicode, cmap.ToUnicode(glyphIndex));
+        }
+
+        [TestCaseSource(nameof(charMappings))]
+        public void ToGlyphIndex(string unicode, uint glyphIndex)
+        {
+            Assert.AreEqual(glyphIndex, cmap.ToGlyphIndex(unicode));
         }
     }
 }

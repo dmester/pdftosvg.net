@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.Encodings;
 using PdfToSvg.Fonts.OpenType.Enums;
 using System;
@@ -9,25 +10,43 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace PdfToSvg.Fonts.OpenType
 {
     internal class OpenTypeCMap
     {
-        private readonly List<OpenTypeCMapRange> rangesByGlyphIndex;
         private readonly List<OpenTypeCMapRange> rangesByUnicode;
         private ReadOnlyCollection<OpenTypeCMapRange>? readOnlyRanges;
+        private readonly Lazy<uint[]> unicodeLookup;
 
         public OpenTypeCMap(OpenTypePlatformID platformID, int encodingID, IEnumerable<OpenTypeCMapRange> ranges)
         {
-            rangesByGlyphIndex = ranges.ToList();
-            rangesByGlyphIndex.Sort((a, b) => Comparer<uint>.Default.Compare(a.StartGlyphIndex, b.StartGlyphIndex));
-
-            rangesByUnicode = rangesByGlyphIndex.ToList();
-            rangesByUnicode.Sort((a, b) => Comparer<uint>.Default.Compare(a.StartUnicode, b.StartUnicode));
+            rangesByUnicode = ranges.ToList();
+            rangesByUnicode.Sort(x => x.StartUnicode, x => x.StartGlyphIndex);
 
             PlatformID = platformID;
             EncodingID = encodingID;
+
+            unicodeLookup = new(() =>
+            {
+                if (rangesByUnicode.Count > 0)
+                {
+                    var maxGlyphIndex = rangesByUnicode.Max(x => x.EndGlyphIndex);
+                    var unicode = new uint[maxGlyphIndex + 1];
+
+                    foreach (var ch in Chars)
+                    {
+                        unicode[ch.GlyphIndex] = ch.Unicode;
+                    }
+
+                    return unicode;
+                }
+                else
+                {
+                    return new uint[0];
+                }
+            }, LazyThreadSafetyMode.PublicationOnly);
         }
 
         public OpenTypePlatformID PlatformID { get; }
@@ -36,14 +55,14 @@ namespace PdfToSvg.Fonts.OpenType
 
         public ReadOnlyCollection<OpenTypeCMapRange> Ranges
         {
-            get => readOnlyRanges ??= new ReadOnlyCollection<OpenTypeCMapRange>(rangesByGlyphIndex);
+            get => readOnlyRanges ??= new ReadOnlyCollection<OpenTypeCMapRange>(rangesByUnicode);
         }
 
         public IEnumerable<OpenTypeCMapChar> Chars
         {
             get
             {
-                foreach (var range in rangesByGlyphIndex)
+                foreach (var range in rangesByUnicode)
                 {
                     for (var glyphIndex = range.StartGlyphIndex; ; glyphIndex++)
                     {
@@ -104,27 +123,10 @@ namespace PdfToSvg.Fonts.OpenType
 
         public string? ToUnicode(uint glyphIndex)
         {
-            var min = 0;
-            var max = rangesByGlyphIndex.Count - 1;
-
-            while (min <= max)
+            var lookup = unicodeLookup.Value;
+            if (glyphIndex < lookup.Length)
             {
-                var mid = min + ((max - min) >> 1);
-                var range = rangesByGlyphIndex[mid];
-
-                if (glyphIndex < range.StartGlyphIndex)
-                {
-                    max = mid - 1;
-                }
-                else if (glyphIndex > range.EndGlyphIndex)
-                {
-                    min = mid + 1;
-                }
-                else
-                {
-                    var unicode = range.StartUnicode + (glyphIndex - range.StartGlyphIndex);
-                    return Utf16Encoding.EncodeCodePoint(unicode);
-                }
+                return Utf16Encoding.EncodeCodePoint(lookup[glyphIndex]);
             }
 
             return null;

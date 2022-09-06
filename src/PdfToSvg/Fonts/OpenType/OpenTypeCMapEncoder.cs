@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.Fonts.OpenType.Tables;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,8 @@ namespace PdfToSvg.Fonts.OpenType
         internal static List<List<OpenTypeCMapRange>> GroupRanges(IEnumerable<OpenTypeCMapRange> inputRanges)
         {
             var ranges = inputRanges.ToList();
-            ranges.Sort((a, b) => Comparer<uint>.Default.Compare(a.StartUnicode, b.StartUnicode));
+
+            ranges.Sort(x => x.StartUnicode, x => x.StartGlyphIndex);
 
             CombineGlyphRanges(ranges);
             return GroupUnicodeRanges(ranges);

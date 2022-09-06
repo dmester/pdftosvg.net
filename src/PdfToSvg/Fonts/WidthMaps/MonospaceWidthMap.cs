@@ -24,8 +24,18 @@ namespace PdfToSvg.Fonts.WidthMaps
 
         public override double GetWidth(CharInfo ch)
         {
-            // TODO utf16
-            return ch.Unicode.Length * charWidth;
+            var utf16 = ch.Unicode;
+            var charCount = 0;
+
+            for (var i = 0; i < utf16.Length; i++)
+            {
+                if (i == 0 || !char.IsSurrogatePair(utf16[i - 1], utf16[i]))
+                {
+                    charCount++;
+                }
+            }
+
+            return charCount * charWidth;
         }
     }
 }

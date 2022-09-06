@@ -23,5 +23,15 @@ namespace System.Collections.Generic
                 return true;
             }
         }
+
+        public static TValue? GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key)
+        {
+            return dic.TryGetValue(key, out var value) ? value : default;
+        }
+
+        public static TValue GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue defaultValue)
+        {
+            return dic.TryGetValue(key, out var value) ? value : defaultValue;
+        }
     }
 }

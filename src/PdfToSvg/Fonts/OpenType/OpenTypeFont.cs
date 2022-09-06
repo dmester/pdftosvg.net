@@ -38,6 +38,8 @@ namespace PdfToSvg.Fonts.OpenType
 
         public ICollection<IBaseTable> Tables => tables;
 
+        public int NumGlyphs => tables.Get<MaxpTable>()?.NumGlyphs ?? 0;
+
         public OpenTypeNames Names { get; }
 
         public IList<OpenTypeCMap> CMaps

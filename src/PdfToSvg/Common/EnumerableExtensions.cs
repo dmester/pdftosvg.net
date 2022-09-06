@@ -79,6 +79,25 @@ namespace PdfToSvg.Common
             }
         }
 
+        public static IEnumerable<T> DistinctBy<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector)
+        {
+            return DistinctBy(source, selector, EqualityComparer<TKey>.Default);
+        }
+
+        public static IEnumerable<T> DistinctBy<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector, IEqualityComparer<TKey> comparer)
+        {
+            var keys = new HashSet<TKey>(comparer);
+
+            foreach (var item in source)
+            {
+                var key = selector(item);
+                if (keys.Add(key))
+                {
+                    yield return item;
+                }
+            }
+        }
+
         /// <summary>
         /// Selects only elements that are not null.
         /// </summary>

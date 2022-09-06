@@ -1,0 +1,118 @@
+%PDF-1.7
+
+xref
+0 7
+0000000000 65535 f
+0000000207 00000 n
+0000000258 00000 n
+0000000322 00000 n
+0000000466 00000 n
+0000001735 00000 n
+0000002204 00000 n
+trailer
+<< /Root 1 0 R  /Size 7 >>
+     
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 4 0 R ]  /Count 1 >> endobj
+
+3 0 obj << /Length 87 >>
+stream
+   0 0 0 rg
+
+   BT
+      200 600 Td
+      /F1 200 Tf
+      <000300040002> '
+   ET
+endstream
+endobj
+
+4 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /F1 <<
+            /Type /Font
+            /Subtype /Type0
+            /BaseFont /PdfToSvgTestFont
+            /Encoding /Identity-H
+            /ToUnicode 5 0 R
+            /DescendantFonts [
+               <<
+                  /BaseFont /PdfToSvgTestFont
+                  /CIDSystemInfo <<
+                     /Ordering (Identity)
+                     /Registry (Adobe)
+                     /Supplement 0
+                  >>
+                  /Type /Font
+                  /Subtype /CIDFontType0
+                  /W [ 2 [ 209 445 227 ] ]
+                  /FontDescriptor <<
+                     /Type /FontDescriptor
+                     /FontName /PdfToSvgTestFont
+                     /Flags 32
+                     /FontBBox [33 0 427 666]
+                     /ItalicAngle 0
+                     /Ascent 666
+                     /Descent 0
+                     /CapHeight 666
+                     /StemV 0
+                     /FontFile3 6 0 R
+                     /MissingWidth 400
+                  >>
+               >>
+            ]
+         >>
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 3 0 R ]
+>>
+endobj
+
+5 0 obj
+<< 
+   /Type /CMap
+   /Length 387
+>> 
+stream
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+/CIDSystemInfo
+<< /Registry (Adobe)
+/Ordering (UCS) /Supplement 0 >> def
+/CMapName /Adobe-Identity-UCS def
+/CMapType 2 def
+1 begincodespacerange
+<0000> <FFFF>
+endcodespacerange
+3 beginbfchar
+<0002> <0021>
+<0003> <0048>
+<0004> <0049>
+endbfchar 
+endcmap 
+CMapName currentdict /CMap defineresource pop 
+end
+end
+endstream
+endobj
+
+6 0 obj
+<<
+   /Length1 348
+   /Length 697
+   /Filter /ASCIIHexDecode
+   /Subtype /CIDFontType0C
+>>
+stream
+010004040001010111506466546f53766754657374466f6e740001020001002af80f00f81c01f81d02f81e03f81804bc8bf856f922051c009b0f1c0000101c00a4111c001d1c013f1200040200010008002400340044756e6930303030436f707972696768742028632920323032312c20506466546f537667506466546f53766754657374466f6e74506466546f53766754657374466f6e74000000018700020029002a0005010122365a7e938bbdf845bd01bdbdf7c0bd03bd16f824f8a9fc2406bdfc7715f845f7c0fc45070ef803bcf7e815f75afbbef748f7befb48f7bc050ee48be301c7df03c7e3158d6788578c8b08df068b8be48a8a378c8b1fc804dff87937060ef7d9a076f7beeb01bfe6f727e303bf16e6f7bef727fbbee3f92233fb98fb27f79830060ef6a076f9147701d5d303d5f91415fd14d3f914070ef88814f70c15779ff91499068b0c0aeb0ae3930c0cd30bd3978f8e0c0d>
+endstream
+endobj
+
+startxref
+8
+%%EOF

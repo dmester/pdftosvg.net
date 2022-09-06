@@ -108,7 +108,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Widths { get; } = new PdfName("Widths");
         public static PdfName FirstChar { get; } = new PdfName("FirstChar");
         public static PdfName LastChar { get; } = new PdfName("LastChar");
-
+        public static PdfName Flags { get; } = new PdfName("Flags");
 
         public static PdfName XObject { get; } = new PdfName("XObject");
         public static PdfName Form { get; } = new PdfName("Form");

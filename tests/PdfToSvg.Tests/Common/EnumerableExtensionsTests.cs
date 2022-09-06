@@ -76,5 +76,23 @@ namespace PdfToSvg.Tests.Common
 
             Assert.AreEqual(new IGrouping<int, string>[0], actual);
         }
+
+        [Test]
+        public void DistinctBy()
+        {
+            var items = new[]
+            {
+                new { Id = 1, Key = 1 },
+                new { Id = 2, Key = 1 },
+                new { Id = 3, Key = 1 },
+                new { Id = 4, Key = 2 },
+                new { Id = 5, Key = 2 },
+                new { Id = 6, Key = 1 },
+                new { Id = 7, Key = 3 },
+            }.DistinctBy(x => x.Key);
+
+            Assert.AreEqual(new[] { 1, 4, 7 }, items.Select(x => x.Id));
+            Assert.AreEqual(new[] { 1, 4, 7 }, items.Select(x => x.Id));
+        }
     }
 }

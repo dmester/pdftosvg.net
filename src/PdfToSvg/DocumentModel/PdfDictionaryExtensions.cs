@@ -84,6 +84,16 @@ namespace PdfToSvg.DocumentModel
             return defaultValue;
         }
 
+        public static object? GetValueOrDefault(this PdfDictionary? dict, PdfNamePath path, object? defaultValue = default)
+        {
+            if (TryGetValue(dict, path, out var value))
+            {
+                return value;
+            }
+
+            return defaultValue;
+        }
+
         public static bool TryGetValue<T>(this PdfDictionary? dict, PdfNamePath path, out T value)
         {
             if (TryGetValue(dict, path, out object? objValue) &&

@@ -97,12 +97,12 @@ begincmap
 /CMapName /Adobe-Identity-UCS def
 /CMapType 2 def
 1 begincodespacerange
-<00> <FF>
+<0000> <FFFF>
 endcodespacerange
 3 beginbfchar
-<01> <0048>
-<02> <0021>
-<03> <0049>
+<0001> <0048>
+<0002> <0021>
+<0003> <0049>
 endbfchar 
 endcmap 
 CMapName currentdict /CMap defineresource pop 

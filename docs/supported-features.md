@@ -1,6 +1,6 @@
 # Supported features
 
-This document summaries implemented features in PdfToSvg.NET.
+This document summarizes implemented features in PdfToSvg.NET.
 
 ✅ = Implemented  ❌ = Not implemented
 

@@ -42,6 +42,11 @@ namespace PdfToSvg.Fonts.OpenType.Tables
                     }
 
                     var table = method.GetCustomAttributes(typeof(OpenTypeTableReaderAttribute), false).Cast<OpenTypeTableReaderAttribute>().FirstOrDefault();
+                    if (table == null)
+                    {
+                        continue;
+                    }
+
                     var parameters = method.GetParameters();
 
                     if (parameters.Length == 1)

@@ -54,6 +54,7 @@ namespace PdfToSvg.Fonts
                     .Select(charCode => new CharInfo
                     {
                         CharCode = charCode,
+                        Cid = ch.Cid,
                         GlyphIndex = ch.GlyphIndex,
                         Unicode = ch.Unicode ?? CharInfo.NotDef,
                     }));

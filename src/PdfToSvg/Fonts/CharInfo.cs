@@ -15,6 +15,8 @@ namespace PdfToSvg.Fonts
 
         public uint CharCode;
 
+        public uint? Cid;
+
         public string? GlyphName;
 
         public uint? GlyphIndex;
@@ -23,7 +25,14 @@ namespace PdfToSvg.Fonts
 
         public override string ToString()
         {
-            return $"{CharCode:x4} => {Unicode}";
+            var result = CharCode.ToString("x4") + " => ";
+
+            if (Cid.HasValue)
+            {
+                result += Cid.Value.ToString("x4") + " => ";
+            }
+
+            return result + "'" + Unicode + "'";
         }
     }
 }

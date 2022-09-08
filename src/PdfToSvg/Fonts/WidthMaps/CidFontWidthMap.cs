@@ -102,7 +102,7 @@ namespace PdfToSvg.Fonts.WidthMaps
 
         public override double GetWidth(CharInfo ch)
         {
-            if (widthMap.TryGetValue(ch.CharCode, out var width))
+            if (ch.Cid.HasValue && widthMap.TryGetValue(ch.Cid.Value, out var width))
             {
                 return width;
             }

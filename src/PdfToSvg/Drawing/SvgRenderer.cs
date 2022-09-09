@@ -1552,6 +1552,13 @@ namespace PdfToSvg.Drawing
 
             cssClass["font-size"] = SvgConversion.FormatCoordinate(style.FontSize) + "px";
 
+            if (style.Font.HasGlyphSubstitutions)
+            {
+                // If the font contains glyph substitutions, e.g. ligatures, let's turn substitutions off in CSS, since
+                // we will provide the correct Unicode char in the output SVG.
+                cssClass["font-variant"] = "none";
+            }
+
             if (style.TextCharSpacingPx != 0)
             {
                 cssClass["letter-spacing"] = SvgConversion.FormatCoordinate(style.TextCharSpacingPx) + "px";

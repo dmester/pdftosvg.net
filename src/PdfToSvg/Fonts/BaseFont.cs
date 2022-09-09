@@ -47,6 +47,8 @@ namespace PdfToSvg.Fonts
 
         public override string? Name => name;
 
+        public bool HasGlyphSubstitutions { get; }
+
         public Font SubstituteFont { get; private set; } = fallbackFont;
 
         public BaseFont(PdfDictionary fontDict, CancellationToken cancellationToken)
@@ -62,6 +64,11 @@ namespace PdfToSvg.Fonts
             catch (Exception ex)
             {
                 openTypeFontException = ex;
+            }
+
+            if (openTypeFont != null)
+            {
+                HasGlyphSubstitutions = openTypeFont.Tables.Any(t => t.Tag == "GSUB");
             }
 
             // ToUnicode

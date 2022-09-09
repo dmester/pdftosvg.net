@@ -1500,24 +1500,29 @@ namespace PdfToSvg.Drawing
             var className = default(string);
             var cssClass = new CssPropertyCollection();
 
+            string? fontFamily = null;
+            string? fontWeight = null;
+            string? fontStyle = null;
+            string? fontSize = SvgConversion.FormatCoordinate(style.FontSize) + "px";
+
             // Font
             if (style.Font.SubstituteFont is LocalFont localFont)
             {
-                cssClass["font-family"] = localFont.FontFamily;
-                cssClass["font-weight"] = SvgConversion.FormatFontWeight(localFont.FontWeight);
-                cssClass["font-style"] = SvgConversion.FormatFontStyle(localFont.FontStyle);
+                fontFamily = localFont.FontFamily;
+                fontWeight = SvgConversion.FormatFontWeight(localFont.FontWeight);
+                fontStyle = SvgConversion.FormatFontStyle(localFont.FontStyle);
             }
             else if (style.Font.SubstituteFont is WebFont webFont)
             {
                 if (webFont.FallbackFont == null)
                 {
-                    cssClass["font-family"] = webFont.FontFamily;
+                    fontFamily = webFont.FontFamily;
                 }
                 else
                 {
-                    cssClass["font-family"] = webFont.FontFamily + "," + webFont.FallbackFont.FontFamily;
-                    cssClass["font-weight"] = SvgConversion.FormatFontWeight(webFont.FallbackFont.FontWeight);
-                    cssClass["font-style"] = SvgConversion.FormatFontStyle(webFont.FallbackFont.FontStyle);
+                    fontFamily = webFont.FontFamily + "," + webFont.FallbackFont.FontFamily;
+                    fontWeight = SvgConversion.FormatFontWeight(webFont.FallbackFont.FontWeight);
+                    fontStyle = SvgConversion.FormatFontStyle(webFont.FallbackFont.FontStyle);
                 }
 
                 if (fontFaceNames.Add(webFont.FontFamily))
@@ -1550,7 +1555,19 @@ namespace PdfToSvg.Drawing
                 throw new Exception("Unexpected font type.");
             }
 
-            cssClass["font-size"] = SvgConversion.FormatCoordinate(style.FontSize) + "px";
+            // Use shorthand font property if possible
+            if (fontSize != null && fontFamily != null)
+            {
+                var values = new[] { fontStyle, fontWeight, fontSize, fontFamily };
+                cssClass["font"] = string.Join(" ", values.Where(v => v != null));
+            }
+            else
+            {
+                cssClass["font-family"] = fontFamily;
+                cssClass["font-weight"] = fontWeight;
+                cssClass["font-style"] = fontStyle;
+                cssClass["font-size"] = fontSize;
+            }
 
             if (style.Font.HasGlyphSubstitutions)
             {

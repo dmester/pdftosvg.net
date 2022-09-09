@@ -1,37 +1,37 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <style>
 .gt4EC2H text{white-space:pre;}
-.txs8vHo{font-family:'Times New Roman',serif;font-size:12px;}
-.txUCUEa{font-family:'Times New Roman',serif;font-size:60px;stroke:#f00;stroke-width:4;}
-.txrCLt0{font-family:'Times New Roman',serif;font-size:60px;fill-opacity:0.7;stroke:#f00;stroke-opacity:0.2;stroke-width:4;}
+.txgy4Tu{font:12px 'Times New Roman',serif;}
+.txHo6hz{font:60px 'Times New Roman',serif;stroke:#f00;stroke-width:4;}
+.txfx1WK{font:60px 'Times New Roman',serif;fill-opacity:0.7;stroke:#f00;stroke-opacity:0.2;stroke-width:4;}
 </style>
 <defs>
 <image id="imBiGZo" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANJJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT3PgGa8gRwIYbLhljAgwoQYDes1iHYMDJGhAdVJmOj7bDQnHU2B82UEGRw0GOoDGOangNDkGAYffQYJfobPM2EajqagBCtQYnsxQ4U3Q4INCGU4MizPZHg/DS1YgeBIAlEeACqDxvSvz0QlDaAyROIDcvDYA5QCq0bSAE/ewDBATt5ALmryBgA34dLM/tOwHgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
 </defs>
 <g class="gt4EC2H" stroke-miterlimit="10">
-<text x="80" y="81.92" class="txs8vHo">No alpha</text>
-<text x="87" y="131.92" class="txUCUEa">••••</text>
+<text x="80" y="81.92" class="txgy4Tu">No alpha</text>
+<text x="87" y="131.92" class="txHo6hz">••••</text>
 <path d="M95 341.92h70v-70h-70z" fill="#000" stroke="#f00" stroke-width="10" />
 <g transform="matrix(100 0 0 100 80 141.92)">
 <use href="#imBiGZo" />
 </g>
-<text x="240" y="81.92" class="txs8vHo">Shape alpha</text>
-<text x="247" y="131.92" class="txrCLt0">••••</text>
+<text x="240" y="81.92" class="txgy4Tu">Shape alpha</text>
+<text x="247" y="131.92" class="txfx1WK">••••</text>
 <path d="M255 341.92h70v-70h-70z" fill="#000" fill-opacity="0.7" stroke="#f00" stroke-width="10" stroke-opacity="0.2" />
 <g transform="matrix(100 0 0 100 240 141.92)" opacity="0.7">
 <use href="#imBiGZo" />
 </g>
-<text x="400" y="81.92" class="txs8vHo">Opacity alpha</text>
-<text x="407" y="131.92" class="txrCLt0">••••</text>
+<text x="400" y="81.92" class="txgy4Tu">Opacity alpha</text>
+<text x="407" y="131.92" class="txfx1WK">••••</text>
 <path d="M415 341.92h70v-70h-70z" fill="#000" fill-opacity="0.7" stroke="#f00" stroke-width="10" stroke-opacity="0.2" />
 <g transform="matrix(100 0 0 100 400 141.92)" opacity="0.7">
 <use href="#imBiGZo" />
 </g>
-<g class="txs8vHo">
+<g class="txgy4Tu">
 <text x="80" y="431.92">Alpha &lt; 0</text>
 <text x="240" y="431.92">Alpha &gt; 1</text>
 </g>
-<text x="247" y="481.92" class="txUCUEa">••••</text>
+<text x="247" y="481.92" class="txHo6hz">••••</text>
 <path d="M255 691.92h70v-70h-70z" fill="#000" stroke="#f00" stroke-width="10" />
 <g transform="matrix(100 0 0 100 240 491.92)">
 <use href="#imBiGZo" />

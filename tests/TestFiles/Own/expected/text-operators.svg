@@ -1,77 +1,77 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <style>
 .gt4EC2H text{white-space:pre;}
-.tx96X5e{font-family:'Times New Roman',serif;font-size:20.4px;}
-.txIs9CX{font-family:'Times New Roman',serif;font-size:40.8px;}
-.txhuuNB{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:10px;}
-.txs8vHo{font-family:'Times New Roman',serif;font-size:12px;}
-.txDzGGM{font-family:'Courier New',Courier,monospace;font-weight:bold;font-size:15px;}
-.txR0aSQ{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:5px;}
-.txGjN5v{font-family:'Times New Roman',serif;font-size:30px;fill:none;stroke:#f00;}
-.txdQJ4x{font-family:'Times New Roman',serif;font-size:30px;stroke:#f00;}
-.txcw26F{font-family:'Times New Roman',serif;font-size:30px;}
-.tx82Lag{font-family:'Times New Roman',serif;font-size:15px;}
-.txcBATn{font-family:'Times New Roman',serif;font-size:80px;}
-.txSAIl8{font-family:'Times New Roman',serif;font-size:80px;fill:none;stroke:#f00;stroke-width:2;stroke-dasharray:5 3;stroke-dashoffset:6;}
-.tx3WbNR{font-family:'Times New Roman',serif;font-size:80px;stroke:#f00;stroke-width:2;stroke-dasharray:5 3;stroke-dashoffset:6;}
-.tx6zuDE{font-family:'Times New Roman',serif;font-size:20.0024px;}
+.txZeFqt{font:20.4px 'Times New Roman',serif;}
+.tx8mt1c{font:40.8px 'Times New Roman',serif;}
+.txhxQ5m{font:12px 'Times New Roman',serif;letter-spacing:10px;}
+.txgy4Tu{font:12px 'Times New Roman',serif;}
+.txGDWvV{font:bold 15px 'Courier New',Courier,monospace;}
+.txTj1UP{font:12px 'Times New Roman',serif;letter-spacing:5px;}
+.txexPDp{font:30px 'Times New Roman',serif;fill:none;stroke:#f00;}
+.txIM2CE{font:30px 'Times New Roman',serif;stroke:#f00;}
+.txfRVmD{font:30px 'Times New Roman',serif;}
+.txkbs3T{font:15px 'Times New Roman',serif;}
+.tx2rBzY{font:80px 'Times New Roman',serif;}
+.tx16d2M{font:80px 'Times New Roman',serif;fill:none;stroke:#f00;stroke-width:2;stroke-dasharray:5 3;stroke-dashoffset:6;}
+.txMO0W1{font:80px 'Times New Roman',serif;stroke:#f00;stroke-width:2;stroke-dasharray:5 3;stroke-dashoffset:6;}
+.tx7rg1s{font:20.0024px 'Times New Roman',serif;}
 </style>
 <defs>
-<clipPath id="cl0jiCQ">
-<text x="70" y="561.92" class="txcBATn" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<clipPath id="cllw80s">
+<text x="70" y="561.92" class="tx2rBzY" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
 </clipPath>
-<clipPath id="clH4Xbe">
-<text x="70" y="631.92" class="txSAIl8" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<clipPath id="cljQfPl">
+<text x="70" y="631.92" class="tx16d2M" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
 </clipPath>
-<clipPath id="clP2ZC2">
-<text x="70" y="701.92" class="tx3WbNR" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<clipPath id="clb0Vgt">
+<text x="70" y="701.92" class="txMO0W1" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
 </clipPath>
-<clipPath id="clizfMn">
-<text x="70" y="771.92" class="txcBATn" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<clipPath id="cl0wylh">
+<text x="70" y="771.92" class="tx2rBzY" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
 </clipPath>
 </defs>
 <g class="gt4EC2H" stroke-miterlimit="10">
-<g class="tx96X5e">
+<g class="txZeFqt">
 <text x="30" y="91.92"><tspan>Multiple spans, same line:</tspan><tspan dx="10.2">Abc</tspan><tspan dx="20.4">def</tspan><tspan dx="-10.2">ghi jkl</tspan></text>
 <text x="407.9508" y="91.92" textLength="54.4068px" lengthAdjust="spacingAndGlyphs">mno</text>
 </g>
-<text x="462.3576" y="91.92"><tspan class="tx96X5e">x</tspan><tspan class="txIs9CX">larger</tspan></text>
-<text transform="matrix(-1 0 0 -1 565 101.92)" class="tx96X5e"><tspan>Multiple spans, same line:</tspan><tspan dx="10.2">Abc</tspan><tspan dx="20.4">def</tspan><tspan dx="-10.2">ghi jkl</tspan></text>
-<text transform="matrix(-1 0 0 -1 187.0492 101.92)" class="tx96X5e" textLength="54.4068px" lengthAdjust="spacingAndGlyphs">mno</text>
-<text transform="matrix(-1 0 0 -1 132.6424 101.92)"><tspan class="tx96X5e">x</tspan><tspan class="txIs9CX">larger</tspan></text>
-<text x="70" y="151.92" class="txhuuNB">  with  extra char space</text>
-<g class="txs8vHo">
+<text x="462.3576" y="91.92"><tspan class="txZeFqt">x</tspan><tspan class="tx8mt1c">larger</tspan></text>
+<text transform="matrix(-1 0 0 -1 565 101.92)" class="txZeFqt"><tspan>Multiple spans, same line:</tspan><tspan dx="10.2">Abc</tspan><tspan dx="20.4">def</tspan><tspan dx="-10.2">ghi jkl</tspan></text>
+<text transform="matrix(-1 0 0 -1 187.0492 101.92)" class="txZeFqt" textLength="54.4068px" lengthAdjust="spacingAndGlyphs">mno</text>
+<text transform="matrix(-1 0 0 -1 132.6424 101.92)"><tspan class="txZeFqt">x</tspan><tspan class="tx8mt1c">larger</tspan></text>
+<text x="70" y="151.92" class="txhxQ5m">  with  extra char space</text>
+<g class="txgy4Tu">
 <text x="70" y="177.92"><tspan dx="10"> </tspan><tspan dx="10"> with</tspan><tspan dx="10"> </tspan><tspan dx="10"> extra</tspan><tspan dx="10"> word</tspan><tspan dx="10"> space</tspan></text>
 <text x="70" y="203.92"><tspan>This</tspan><tspan dx="10"> is</tspan><tspan dx="10"> </tspan><tspan dy="-5">superscripted</tspan><tspan dx="10" dy="5"> and</tspan><tspan dx="10"> </tspan><tspan dy="5">subscripted</tspan></text>
 </g>
-<text x="70" y="229.92" class="txDzGGM">' operator with Courier specified in ExtGState</text>
-<text x="70" y="255.92" class="txR0aSQ"><tspan>"</tspan><tspan dx="5"> operator</tspan><tspan dx="5"> with</tspan><tspan dx="5"> extra</tspan><tspan dx="5"> space</tspan></text>
-<text x="70" y="295.92" class="txGjN5v">Outlined text</text>
-<text x="70" y="330.92" class="txdQJ4x">Outlined and filled text</text>
-<text x="70" y="400.92" class="txcw26F">filled again</text>
-<text x="211" y="401.92" class="tx82Lag">smaller</text>
-<g class="txcw26F">
+<text x="70" y="229.92" class="txGDWvV">' operator with Courier specified in ExtGState</text>
+<text x="70" y="255.92" class="txTj1UP"><tspan>"</tspan><tspan dx="5"> operator</tspan><tspan dx="5"> with</tspan><tspan dx="5"> extra</tspan><tspan dx="5"> space</tspan></text>
+<text x="70" y="295.92" class="txexPDp">Outlined text</text>
+<text x="70" y="330.92" class="txIM2CE">Outlined and filled text</text>
+<text x="70" y="400.92" class="txfRVmD">filled again</text>
+<text x="211" y="401.92" class="txkbs3T">smaller</text>
+<g class="txfRVmD">
 <text x="70" y="436.92" textLength="131.64px" lengthAdjust="spacingAndGlyphs">wide </text>
 <text x="70" y="471.92" textLength="67.89px" lengthAdjust="spacingAndGlyphs">and narrow</text>
 </g>
 <path d="M70 91.92h330" fill="none" stroke="#f00" stroke-width="1" />
-<text x="70" y="561.92" class="txcBATn" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
-<g clip-path="url(#cl0jiCQ)">
+<text x="70" y="561.92" class="tx2rBzY" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<g clip-path="url(#cllw80s)">
 <path d="M100 556.92h400v-43h-400z" fill="#0f0" />
 </g>
-<text x="70" y="631.92" class="txSAIl8" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
-<g clip-path="url(#clH4Xbe)">
+<text x="70" y="631.92" class="tx16d2M" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<g clip-path="url(#cljQfPl)">
 <path d="M100 626.92h400v-43h-400z" fill="#0f0" />
 </g>
-<text x="70" y="701.92" class="tx3WbNR" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
-<g clip-path="url(#clP2ZC2)">
+<text x="70" y="701.92" class="txMO0W1" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<g clip-path="url(#clb0Vgt)">
 <path d="M100 696.92h400v-43h-400z" fill="#0f0" />
 </g>
-<g clip-path="url(#clizfMn)">
+<g clip-path="url(#cl0wylh)">
 <path d="M100 766.92h400v-43h-400z" fill="#0f0" />
 </g>
-<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 420 461.92)" class="tx6zuDE" textLength="74.6728px" lengthAdjust="spacingAndGlyphs">Rotated</text>
-<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 477.4 380.02)" class="tx6zuDE" textLength="24.0028px" lengthAdjust="spacingAndGlyphs">60</text>
-<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 502.1968 344.6392)" class="tx6zuDE" textLength="73.3047px" lengthAdjust="spacingAndGlyphs">degrees</text>
+<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 420 461.92)" class="tx7rg1s" textLength="74.6728px" lengthAdjust="spacingAndGlyphs">Rotated</text>
+<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 477.4 380.02)" class="tx7rg1s" textLength="24.0028px" lengthAdjust="spacingAndGlyphs">60</text>
+<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 502.1968 344.6392)" class="tx7rg1s" textLength="73.3047px" lengthAdjust="spacingAndGlyphs">degrees</text>
 </g>
 </svg>

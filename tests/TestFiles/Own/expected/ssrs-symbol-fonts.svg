@@ -1,10 +1,10 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 595.276 841.89" xmlns="http://www.w3.org/2000/svg">
 <style>
 .gt4EC2H text{white-space:pre;}
-.txkP73H{font-family:'Microsoft Sans Serif',sans-serif;font-size:17.999px;font-variant:none;}
-.txI7XiP{font-family:Symbol;font-size:27.998px;}
-.txER4pk{font-family:Webdings;font-size:27.998px;}
-.tx6o4yB{font-family:Wingdings;font-size:27.998px;}
+.txbx6M6{font:17.999px 'Microsoft Sans Serif',sans-serif;font-variant:none;}
+.txNvaZo{font:27.998px Symbol;}
+.txiCaK3{font:27.998px Webdings;}
+.txWQfWL{font:27.998px Wingdings;}
 </style>
 <defs>
 <clipPath id="clAoRnW">
@@ -13,12 +13,12 @@
 </defs>
 <g class="gt4EC2H">
 <g clip-path="url(#clAoRnW)">
-<text x="82.469" y="110.981" class="txkP73H">Symbol</text>
+<text x="82.469" y="110.981" class="txbx6M6">Symbol</text>
 </g>
-<text x="82.469" y="142.877" class="txI7XiP"></text>
-<text x="82.469" y="185.861" class="txkP73H">Webdings</text>
-<text x="82.469" y="211.997" class="txER4pk"></text>
-<text x="82.469" y="265.277" class="txkP73H">Wingdings</text>
-<text x="82.469" y="294.221" class="tx6o4yB"></text>
+<text x="82.469" y="142.877" class="txNvaZo"></text>
+<text x="82.469" y="185.861" class="txbx6M6">Webdings</text>
+<text x="82.469" y="211.997" class="txiCaK3"></text>
+<text x="82.469" y="265.277" class="txbx6M6">Wingdings</text>
+<text x="82.469" y="294.221" class="txWQfWL"></text>
 </g>
 </svg>

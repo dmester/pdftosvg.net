@@ -1,10 +1,10 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 595 842" xmlns="http://www.w3.org/2000/svg">
 <style>
 .gt4EC2H text{white-space:pre;}
-.txnInFK{font-family:Arial,sans-serif;font-size:20px;}
+.txKbla9{font:20px Arial,sans-serif;}
 </style>
 <g class="gt4EC2H">
-<g class="txnInFK">
+<g class="txKbla9">
 <text x="70" y="80">Older PdfSharp versions use negative font size and </text>
 <text x="70" y="120">scaling to flip the text right.</text>
 </g>

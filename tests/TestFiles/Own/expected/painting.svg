@@ -1,67 +1,67 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <style>
 .gt4EC2H text{white-space:pre;}
-.txs8vHo{font-family:'Times New Roman',serif;font-size:12px;}
+.txgy4Tu{font:12px 'Times New Roman',serif;}
 </style>
 <g class="gt4EC2H" stroke-miterlimit="10">
-<text x="70" y="91.92" class="txs8vHo">S stroke</text>
+<text x="70" y="91.92" class="txgy4Tu">S stroke</text>
 <path d="M105 111.92v35h-35v-25h20v10h-10v-20" fill="none" stroke="#f00" stroke-width="1" />
-<text x="170" y="91.92" class="txs8vHo">s close, stroke</text>
+<text x="170" y="91.92" class="txgy4Tu">s close, stroke</text>
 <path d="M205 111.92v35h-35v-25h20v10h-10v-20z" fill="none" stroke="#f00" stroke-width="1" />
-<text x="270" y="91.92" class="txs8vHo">f fill</text>
+<text x="270" y="91.92" class="txgy4Tu">f fill</text>
 <path d="M305 111.92v35h-35v-25h20v10h-10v-20" fill="#000" />
-<text x="370" y="91.92" class="txs8vHo">F fill</text>
+<text x="370" y="91.92" class="txgy4Tu">F fill</text>
 <path d="M405 111.92v35h-35v-25h20v10h-10v-20" fill="#000" />
-<g class="txs8vHo">
+<g class="txgy4Tu">
 <text x="470" y="91.92">f* fill</text>
 <text x="470" y="106.92">even-odd</text>
 </g>
 <path d="M505 111.92v35h-35v-25h20v10h-10v-20" fill-rule="evenodd" fill="#000" />
-<text x="70" y="191.92" class="txs8vHo">B fill, stroke</text>
+<text x="70" y="191.92" class="txgy4Tu">B fill, stroke</text>
 <path d="M105 211.92v35h-35v-25h20v10h-10v-20" fill="#000" stroke="#f00" stroke-width="1" />
-<g class="txs8vHo">
+<g class="txgy4Tu">
 <text x="170" y="191.92">B* fill, stroke</text>
 <text x="170" y="206.92">even-odd</text>
 </g>
 <path d="M205 211.92v35h-35v-25h20v10h-10v-20" fill-rule="evenodd" fill="#000" stroke="#f00" stroke-width="1" />
-<text x="270" y="191.92" class="txs8vHo">b close, fill, stroke</text>
+<text x="270" y="191.92" class="txgy4Tu">b close, fill, stroke</text>
 <path d="M305 211.92v35h-35v-25h20v10h-10v-20z" fill="#000" stroke="#f00" stroke-width="1" />
-<g class="txs8vHo">
+<g class="txgy4Tu">
 <text x="370" y="191.92">b* close, fill, stroke</text>
 <text x="370" y="206.92">even-odd</text>
 </g>
 <path d="M405 211.92v35h-35v-25h20v10h-10v-20z" fill-rule="evenodd" fill="#000" stroke="#f00" stroke-width="1" />
-<text x="70" y="311.92" class="txs8vHo">Curve</text>
+<text x="70" y="311.92" class="txgy4Tu">Curve</text>
 <path d="M70 361.92v-25C90 311.92,110 361.92,130 336.92C130 336.92,100 361.92,130 386.92C100 361.92,70 386.92,70 386.92" fill="none" stroke="#000" stroke-width="1" />
-<text x="240" y="311.92" class="txs8vHo">Closed curve</text>
+<text x="240" y="311.92" class="txgy4Tu">Closed curve</text>
 <path d="M240 361.92v-25C260 311.92,280 361.92,300 336.92C300 336.92,270 361.92,300 386.92C270 361.92,240 386.92,240 386.92z" fill="none" stroke="#000" stroke-width="1" />
-<text x="420" y="311.92" class="txs8vHo">Rectangle</text>
+<text x="420" y="311.92" class="txgy4Tu">Rectangle</text>
 <path d="M420 381.92h50v-50h-50z" fill="none" stroke="#000" stroke-width="1" />
-<text x="70" y="441.92" class="txs8vHo">w Line width</text>
+<text x="70" y="441.92" class="txgy4Tu">w Line width</text>
 <path d="M70 451.92h100" fill="none" stroke="#000" stroke-width="5" />
 <path d="M70 461.92h100" fill="none" stroke="#000" stroke-width="3" />
 <path d="M70 471.92h100" fill="none" stroke="#000" stroke-width="1" />
-<text x="70" y="521.92" class="txs8vHo">J Line cap</text>
+<text x="70" y="521.92" class="txgy4Tu">J Line cap</text>
 <path d="M70 531.92h100" fill="none" stroke="#000" stroke-width="12" />
 <path d="M70 546.92h100" fill="none" stroke="#000" stroke-width="12" stroke-linecap="round" />
 <path d="M70 561.92h100" fill="none" stroke="#000" stroke-width="12" stroke-linecap="square" />
-<text x="70" y="621.92" class="txs8vHo">d Dash array</text>
+<text x="70" y="621.92" class="txgy4Tu">d Dash array</text>
 <path d="M70 631.92h100" fill="none" stroke="#000" stroke-width="6" stroke-dasharray="" />
 <path d="M70 641.92h100" fill="none" stroke="#000" stroke-width="6" stroke-dasharray="3" />
 <path d="M70 651.92h100" fill="none" stroke="#000" stroke-width="6" stroke-dasharray="2" stroke-dashoffset="1" />
 <path d="M70 661.92h100" fill="none" stroke="#000" stroke-width="6" stroke-dasharray="2 1" />
 <path d="M70 671.92h100" fill="none" stroke="#000" stroke-width="6" stroke-dasharray="3 5" stroke-dashoffset="6" />
 <path d="M70 681.92h100" fill="none" stroke="#000" stroke-width="6" stroke-dasharray="2 3" stroke-dashoffset="11" />
-<text x="300" y="441.92" class="txs8vHo">j Line join</text>
+<text x="300" y="441.92" class="txgy4Tu">j Line join</text>
 <path d="M300 481.92l20 -20l20 20" fill="none" stroke="#000" stroke-width="16" />
 <path d="M365 481.92l20 -20l20 20" fill="none" stroke="#000" stroke-width="16" stroke-linejoin="round" />
 <path d="M430 481.92l20 -20l20 20" fill="none" stroke="#000" stroke-width="16" stroke-linejoin="bevel" />
-<text x="300" y="521.92" class="txs8vHo">M Miter limit</text>
+<text x="300" y="521.92" class="txgy4Tu">M Miter limit</text>
 <path d="M300 561.92l10 -20l10 20" fill="none" stroke="#000" stroke-width="8" stroke-miterlimit="2.4" />
 <path d="M345 561.92l10 -20l10 20" fill="none" stroke="#000" stroke-width="8" stroke-miterlimit="2.3" />
 <path d="M390 561.92l10 -20l10 20" fill="none" stroke="#000" stroke-width="8" stroke-miterlimit="2.2" />
 <path d="M435 561.92l10 -20l10 20" fill="none" stroke="#000" stroke-width="8" stroke-miterlimit="2.1" />
-<text x="300" y="621.92" class="txs8vHo">Scaled stroke</text>
+<text x="300" y="621.92" class="txgy4Tu">Scaled stroke</text>
 <path d="M0.5 -6.6h3v4h-3z" transform="matrix(15 0 0 -5 300 621.92)" fill="none" stroke="#000" stroke-width="1" />
 <path d="M370 654.92h20v-20h-20z" fill="none" stroke="#000" stroke-width="5" />
 <path d="M7 -6.6h3v4h-3z" transform="matrix(15 0 0 -5 300 621.92)" fill="none" stroke="#000" stroke-width="0.1" />

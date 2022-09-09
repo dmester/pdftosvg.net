@@ -1,9 +1,9 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <style>
 .gt4EC2H text{white-space:pre;}
-.txhF7pb{font-family:Arial,sans-serif;font-size:9.6045px;}
-.txn3gX7{font-family:Arial,sans-serif;font-weight:bold;font-size:9.6045px;}
-.tx5sc4J{font-family:Arial,sans-serif;font-style:italic;font-size:9.6045px;}
+.tx2pbQP{font:9.6045px Arial,sans-serif;}
+.txIwA03{font:bold 9.6045px Arial,sans-serif;}
+.txLrmjS{font:italic 9.6045px Arial,sans-serif;}
 </style>
 <defs>
 <clipPath id="clfN3eA">
@@ -14,15 +14,15 @@
 <g clip-path="url(#clfN3eA)">
 <path d="M29 29h538v784.8647h-538z" fill="#fff" />
 </g>
-<g class="txhF7pb">
+<g class="tx2pbQP">
 <text x="35.0028" y="45.5077">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</text>
 <text x="35.0028" y="59.7643">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute</text>
 <text x="35.0028" y="74.0209">irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat</text>
 <text x="35.0028" y="88.2775">non proident, </text>
 </g>
-<text x="93.7293" y="88.2775" class="txn3gX7">sunt in culpa</text>
-<text x="152.9482" y="88.2775" class="txhF7pb"> qui officia deserunt </text>
-<text x="238.7224" y="88.2775" class="tx5sc4J">mollit anim id est</text>
-<text x="310.24" y="88.2775" class="txhF7pb"> laborum.</text>
+<text x="93.7293" y="88.2775" class="txIwA03">sunt in culpa</text>
+<text x="152.9482" y="88.2775" class="tx2pbQP"> qui officia deserunt </text>
+<text x="238.7224" y="88.2775" class="txLrmjS">mollit anim id est</text>
+<text x="310.24" y="88.2775" class="tx2pbQP"> laborum.</text>
 </g>
 </svg>

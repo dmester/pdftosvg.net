@@ -5,7 +5,6 @@
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Encodings;
 using PdfToSvg.Fonts.OpenType;
-using PdfToSvg.Fonts.OpenType.Tables;
 using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;

@@ -2,9 +2,11 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,9 +18,9 @@ namespace PdfToSvg.Threading
     /// </summary>
     internal static class SharedFactory
     {
-        public static SharedFactory<T> Create<T>(Func<CancellationToken, Task<T>> factory)
+        public static SharedFactory<T> Create<T>(Func<CancellationToken, T> factory, Func<CancellationToken, Task<T>> factoryAsync)
         {
-            return new SharedFactory<T>(factory);
+            return new SharedFactory<T>(factory, factoryAsync);
         }
     }
 
@@ -39,13 +41,13 @@ namespace PdfToSvg.Threading
     ///         factory invokation to complete.
     ///     </item>
     ///     <item>
-    ///         The factory is cancelled when all callers to <see cref="GetResult(CancellationToken)"/> have been
+    ///         Async factories are cancelled when all callers to <see cref="GetResult(CancellationToken)"/> have been
     ///         cancelled.
     ///     </item>
     /// </list>
     /// 
     /// <para>
-    ///     This class is thread safe.
+    ///     This class is thread-safe.
     /// </para>
     /// </remarks>
     internal class SharedFactory<T>
@@ -54,132 +56,190 @@ namespace PdfToSvg.Threading
 
         private CancellationTokenSource? cts;
         private int awaiters;
+        private Task<T>? task;
 
-        private bool completed;
-        private Exception? error;
-        private T? result;
+        private Func<CancellationToken, Task<T>> factoryAsync;
+        private Func<CancellationToken, T> factory;
 
-        private ManualResetEventSlim? completedEvent;
-        private Func<CancellationToken, Task<T>> factory;
-
-        public SharedFactory(Func<CancellationToken, Task<T>> factory)
+        public SharedFactory(Func<CancellationToken, T> factory)
         {
             this.factory = factory;
+            this.factoryAsync = cancellationToken => Task.Factory.StartNew(() => factory(cancellationToken));
+        }
+
+        public SharedFactory(Func<CancellationToken, T> factory, Func<CancellationToken, Task<T>> factoryAsync)
+        {
+            this.factory = factory;
+            this.factoryAsync = factoryAsync;
+        }
+
+        private class SyncFactoryCanceledException : OperationCanceledException { }
+
+        private class FactoryContext : IDisposable
+        {
+            private readonly SharedFactory<T> owner;
+
+            public FactoryContext(SharedFactory<T> owner)
+            {
+                this.owner = owner;
+
+                lock (owner.stateLock)
+                {
+                    if (owner.awaiters++ == 0)
+                    {
+                        owner.cts = new CancellationTokenSource();
+                    }
+                }
+            }
+
+            public bool RequestWasCancelled { get; set; }
+
+            public void Dispose()
+            {
+                lock (owner.stateLock)
+                {
+                    if (--owner.awaiters == 0)
+                    {
+                        if (owner.cts != null)
+                        {
+                            owner.cts.Cancel();
+                            owner.cts.Dispose();
+                            owner.cts = null;
+                        }
+
+                        if (RequestWasCancelled)
+                        {
+                            // Cancelled requests are allowed to be run again
+                            owner.task = null;
+                        }
+                    }
+                }
+            }
         }
 
         public T GetResult(CancellationToken cancellationToken)
         {
-            if (completed)
-            {
-                return GetResultNow();
-            }
+            // The synchronous implementation will invoke the factory on the first thread calling GetResult. Other
+            // threads requesting the result, both synchronous and asynchronous ones, will wait for the synchronous
+            // factory to finish. Running the factory on a thread pool thread is not a good option since it increases
+            // the risk of thread starvation.
+            //
+            // If the first synchronous caller cancels its request, one of the other callers will rerun the factory.
+            // This is a small performance hit, but we can assume the factories will almost never be cancelled.
+
+            using var context = new FactoryContext(this);
+
+        Retry:
+            Task<T> localTask;
+            TaskCompletionSource<T>? tcs = null;
 
             lock (stateLock)
             {
-                if (completed)
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (task == null)
                 {
-                    return GetResultNow();
+                    tcs = new TaskCompletionSource<T>();
+                    task = tcs.Task;
                 }
 
-                if (awaiters++ == 0)
-                {
-                    cts = new CancellationTokenSource();
-                    completedEvent = new ManualResetEventSlim();
-
-                    Run(cts);
-                }
+                localTask = task;
             }
 
             try
             {
-                completedEvent!.Wait(cancellationToken);
-            }
-            finally
-            {
-                lock (stateLock)
-                {
-                    if (--awaiters == 0)
-                    {
-                        cts?.Cancel();
+                T result;
 
-                        completedEvent!.Dispose();
-                        completedEvent = null;
+                if (tcs == null)
+                {
+                    result = localTask.GetResult(cancellationToken);
+                }
+                else
+                {
+                    result = factory(cancellationToken);
+                    tcs.TrySetResult(result);
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex is AggregateException aex)
+                {
+                    ex = aex.InnerException;
+                }
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    // If we are owning the task, then reset it
+                    if (tcs != null)
+                    {
+                        lock (stateLock)
+                        {
+                            task = null;
+                        }
+                    }
+
+                    context.RequestWasCancelled = true;
+                    tcs?.TrySetException(new SyncFactoryCanceledException());
+                }
+                else
+                {
+                    tcs?.TrySetException(ex);
+
+                    if (ex is SyncFactoryCanceledException)
+                    {
+                        goto Retry;
                     }
                 }
-            }
 
-            return GetResultNow();
+#if !NET40
+                ExceptionDispatchInfo.Capture(ex).Throw();
+#endif
+                throw ex;
+            }
         }
 
-        private T GetResultNow()
+#if HAVE_ASYNC
+        public async Task<T> GetResultAsync(CancellationToken cancellationToken)
         {
-            if (error != null)
+            // The asynchronous implementation will invoke the factory on a thread pool thread upon the first request to
+            // GetResultAsync. Other threads requesting the result, both synchronous and asynchronous ones, will wait
+            // for the asynchronous factory to finish.
+            //
+            // The factory is cancelled when all callers to GetResult and GetResultAsync has been cancelled.
+
+            using var context = new FactoryContext(this);
+
+        Retry:
+            Task<T> localTask;
+
+            lock (stateLock)
             {
-                throw error;
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (task == null)
+                {
+                    task = Task.Run(() => factoryAsync(cts!.Token));
+                }
+
+                localTask = task;
             }
 
-            return result!;
+            try
+            {
+                return await localTask.OrCanceled(cancellationToken).ConfigureAwait(false);
+            }
+            catch (SyncFactoryCanceledException)
+            {
+                goto Retry;
+            }
+            catch when (cancellationToken.IsCancellationRequested)
+            {
+                context.RequestWasCancelled = true;
+                throw;
+            }
         }
-
-        private void Run(CancellationTokenSource runCts)
-        {
-            // Use the .NET 4.0 version of TPL instead of async-await to avoid writing two separate implementations for
-            // .NET 4.0 and .NET 4.5+.
-
-            Task.Factory
-                .StartNew(() => factory(runCts.Token))
-                .Unwrap()
-                .ContinueWith(t =>
-                {
-                    lock (stateLock)
-                    {
-                        if (this.cts == runCts)
-                        {
-                            this.cts = null;
-
-                            // Neither the result nor any exception can be trusted if the operation was cancelled
-                            if (!runCts.IsCancellationRequested)
-                            {
-                                switch (t.Status)
-                                {
-                                    case TaskStatus.Canceled:
-                                        // The task was not cancelled by SharedFactory => publish the exception
-                                        this.error = new OperationCanceledException();
-                                        break;
-
-                                    case TaskStatus.Faulted:
-                                        var aggregateException = t.Exception;
-
-                                        // Unpack AggregateException
-                                        if (aggregateException == null)
-                                        {
-                                            this.error = new Exception(nameof(SharedFactory) + " failed.");
-                                        }
-                                        else if (aggregateException.InnerExceptions.Count == 1)
-                                        {
-                                            this.error = aggregateException.InnerException;
-                                        }
-                                        else
-                                        {
-                                            this.error = aggregateException;
-                                        }
-
-                                        break;
-
-                                    case TaskStatus.RanToCompletion:
-                                        this.result = t.Result;
-                                        break;
-                                }
-
-                                this.completed = true;
-                                this.completedEvent?.Set();
-                            }
-                        }
-
-                        runCts.Dispose();
-                    }
-
-                }, TaskContinuationOptions.ExecuteSynchronously);
-        }
+#endif
     }
 }

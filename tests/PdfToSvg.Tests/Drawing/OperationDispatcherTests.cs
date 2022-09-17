@@ -16,11 +16,13 @@ namespace PdfToSvg.Tests.Drawing
 {
     public class OperationDispatcherTests
     {
-        class Target
+        private class Target
         {
             public int AllTypesCalls;
             public int Overloaded1Calls;
             public int Overloaded2Calls;
+            public int ThreadingSyncCalls;
+            public int ThreadingAsyncCalls;
             public int OptionalCalls;
             public int ParamsCalls;
             public int EmptyParamsCalls;
@@ -93,6 +95,22 @@ namespace PdfToSvg.Tests.Drawing
                 Assert.AreEqual("abc2", name);
             }
 
+            [Operation("Threading")]
+            private void ThreadingSync()
+            {
+                ThreadingSyncCalls++;
+            }
+
+            [Operation("Threading")]
+            private Task ThreadingAsync()
+            {
+                ThreadingAsyncCalls++;
+
+                var tsc = new TaskCompletionSource<bool>();
+                tsc.SetResult(true);
+                return tsc.Task;
+            }
+
             [Operation("Optional")]
             private void Optional(
                 string name = "abc",
@@ -102,6 +120,22 @@ namespace PdfToSvg.Tests.Drawing
                 Assert.AreEqual("def", name);
                 Assert.AreEqual(42, number);
             }
+        }
+
+        private class Target_IncorrectReturnType
+        {
+            [Operation("Op")]
+            private string ShouldThrow()
+            {
+                return "";
+            }
+        }
+
+        [Test]
+        public void IncorrectReturnType()
+        {
+            var ex = Assert.Throws<ArgumentException>(() => new OperationDispatcher(typeof(Target_IncorrectReturnType)));
+            Assert.AreEqual("Method ShouldThrow cannot return a System.String.", ex.Message);
         }
 
         [Test]
@@ -164,5 +198,29 @@ namespace PdfToSvg.Tests.Drawing
             Assert.IsTrue(dispatcher.Dispatch(target, "EmptyParams", new object[0]));
             Assert.AreEqual(1, target.EmptyParamsCalls, nameof(target.EmptyParamsCalls));
         }
+
+        [Test]
+        public void Threading_Sync()
+        {
+            var target = new Target();
+            var dispatcher = new OperationDispatcher(typeof(Target));
+
+            Assert.IsTrue(dispatcher.Dispatch(target, "Threading", new object[0]));
+            Assert.AreEqual(1, target.ThreadingSyncCalls, nameof(target.ThreadingSyncCalls));
+            Assert.AreEqual(0, target.ThreadingAsyncCalls, nameof(target.ThreadingAsyncCalls));
+        }
+
+#if !NET40
+        [Test]
+        public async Task Threading_Async()
+        {
+            var target = new Target();
+            var dispatcher = new OperationDispatcher(typeof(Target));
+
+            Assert.IsTrue(await dispatcher.DispatchAsync(target, "Threading", new object[0]));
+            Assert.AreEqual(0, target.ThreadingSyncCalls, nameof(target.ThreadingSyncCalls));
+            Assert.AreEqual(1, target.ThreadingAsyncCalls, nameof(target.ThreadingAsyncCalls));
+        }
+#endif
     }
 }

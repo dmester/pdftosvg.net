@@ -15,18 +15,31 @@ namespace PdfToSvg.Drawing
 {
     internal class OperationDispatcher
     {
+        private static readonly Task completedTask;
         private readonly ILookup<string, Handler> handlers;
+
+        static OperationDispatcher()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            tcs.SetResult(true);
+            completedTask = tcs.Task;
+        }
 
         private class Handler
         {
             public readonly string Operator;
-            public readonly Action<object, object?[]> Invoke;
+            public readonly Action<object, object?[]>? Invoke;
+            public readonly Func<object, object?[], Task>? InvokeAsync;
             public readonly ParameterInfo[] Parameters;
 
-            public Handler(string op, Action<object, object?[]> invoke, ParameterInfo[] parameters)
+            public Handler(string op,
+                Action<object, object?[]>? invoke,
+                Func<object, object?[], Task>? invokeAsync,
+                ParameterInfo[] parameters)
             {
                 Operator = op;
                 Invoke = invoke;
+                InvokeAsync = invokeAsync;
                 Parameters = parameters;
             }
         }
@@ -36,17 +49,20 @@ namespace PdfToSvg.Drawing
             handlers = instanceType
                 .GetTypeInfo()
                 .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .SelectMany(method => GetHandler(method))
+                .SelectMany(method => GetHandlers(method))
 
                 // Prefer matching methods with the longest parameter list.
                 // This is not as advanced as the C# compilator, but a more advanced algorithm is also not needed here.
                 // ToLookup preserves order within each group according to the docs.
                 .OrderByDescending(handler => handler.Operator.Length)
 
+                // Prefer the async version, if there is a sync and an async method.
+                .ThenBy(handler => handler.Invoke == null ? 1 : 2)
+
                 .ToLookup(x => x.Operator);
         }
 
-        private static IEnumerable<Handler> GetHandler(MethodInfo method)
+        private static IEnumerable<Handler> GetHandlers(MethodInfo method)
         {
             using var operations = method
                 .GetCustomAttributes(typeof(OperationAttribute), false)
@@ -70,11 +86,37 @@ namespace PdfToSvg.Drawing
                 }
 
                 var body = Expression.Call(Expression.Convert(instance, method.DeclaringType), method, callArguments);
-                var invoke = Expression.Lambda<Action<object, object?[]>>(body, instance, argumentArray).Compile();
+
+                Action<object, object?[]>? invoke;
+                Func<object, object?[], Task>? invokeAsync;
+
+                if (method.ReturnType == typeof(void))
+                {
+                    invoke = Expression
+                        .Lambda<Action<object, object?[]>>(body, instance, argumentArray)
+                        .Compile();
+
+                    var bodyWithReturn = Expression.Block(body, Expression.Constant(completedTask));
+                    invokeAsync = Expression
+                        .Lambda<Func<object, object?[], Task>>(bodyWithReturn, instance, argumentArray)
+                        .Compile();
+                }
+                else if (method.ReturnType == typeof(Task))
+                {
+                    invoke = null;
+
+                    invokeAsync = Expression
+                        .Lambda<Func<object, object?[], Task>>(body, instance, argumentArray)
+                        .Compile();
+                }
+                else
+                {
+                    throw new ArgumentException("Method " + method.Name + " cannot return a " + method.ReturnType + ".");
+                }
 
                 do
                 {
-                    yield return new Handler(operations.Current.Name, invoke, parameters);
+                    yield return new Handler(operations.Current.Name, invoke, invokeAsync, parameters);
                 }
                 while (operations.MoveNext());
             }
@@ -177,63 +219,72 @@ namespace PdfToSvg.Drawing
             return false;
         }
 
+        private static object?[]? CastArguments(Handler handler, object?[] operands)
+        {
+            var castedArguments = new object?[handler.Parameters.Length];
+
+            for (var i = 0; i < handler.Parameters.Length; i++)
+            {
+                var parameter = handler.Parameters[i];
+
+                // Value supplied?
+                if (i < operands.Length)
+                {
+                    var operand = operands[i];
+
+                    if (Cast(ref operand, parameter.ParameterType))
+                    {
+                        castedArguments[i] = operand;
+                        continue;
+                    }
+                }
+
+                // Is params ...[] parameter?
+                var paramArrayAttributes = parameter.GetCustomAttributes(typeof(ParamArrayAttribute), true);
+                if (paramArrayAttributes.Any())
+                {
+                    object rest = operands;
+
+                    if (CastArray(ref rest, i, parameter.ParameterType))
+                    {
+                        castedArguments[i] = rest;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+
+                    break;
+                }
+
+                // Has default value?
+#if NET40
+                if (!(parameter.DefaultValue is DBNull))
+#else
+                if (parameter.HasDefaultValue)
+#endif
+                {
+                    castedArguments[i] = parameter.DefaultValue;
+                    continue;
+                }
+
+                return null;
+            }
+
+            return castedArguments;
+        }
+
         public bool Dispatch(object instance, string opName, object?[] operands)
         {
             foreach (var handler in handlers[opName])
             {
-                var castedArguments = new object?[handler.Parameters.Length];
-                var success = true;
-
-                for (var i = 0; i < handler.Parameters.Length; i++)
+                if (handler.Invoke == null)
                 {
-                    var parameter = handler.Parameters[i];
-
-                    // Value supplied?
-                    if (i < operands.Length)
-                    {
-                        var operand = operands[i];
-
-                        if (Cast(ref operand, parameter.ParameterType))
-                        {
-                            castedArguments[i] = operand;
-                            continue;
-                        }
-                    }
-
-                    // Is params ...[] parameter?
-                    var paramArrayAttributes = parameter.GetCustomAttributes(typeof(ParamArrayAttribute), true);
-                    if (paramArrayAttributes.Any())
-                    {
-                        object rest = operands;
-
-                        if (CastArray(ref rest, i, parameter.ParameterType))
-                        {
-                            castedArguments[i] = rest;
-                        }
-                        else
-                        {
-                            success = false;
-                        }
-
-                        break;
-                    }
-
-                    // Has default value?
-#if NET40
-                    if (!(parameter.DefaultValue is DBNull))
-#else
-                    if (parameter.HasDefaultValue)
-#endif
-                    {
-                        castedArguments[i] = parameter.DefaultValue;
-                        continue;
-                    }
-
-                    success = false;
-                    break;
+                    continue;
                 }
 
-                if (success)
+                var castedArguments = CastArguments(handler, operands);
+                if (castedArguments != null)
                 {
                     handler.Invoke(instance, castedArguments);
                     return true;
@@ -242,5 +293,27 @@ namespace PdfToSvg.Drawing
 
             return false;
         }
+
+#if HAVE_ASYNC
+        public async Task<bool> DispatchAsync(object instance, string opName, object?[] operands)
+        {
+            foreach (var handler in handlers[opName])
+            {
+                if (handler.InvokeAsync == null)
+                {
+                    continue;
+                }
+
+                var castedArguments = CastArguments(handler, operands);
+                if (castedArguments != null)
+                {
+                    await handler.InvokeAsync(instance, castedArguments).ConfigureAwait(false);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+#endif
     }
 }

@@ -155,18 +155,8 @@ namespace PdfToSvg.Drawing
             originalTransform = graphicsState.Transform;
         }
 
-        private void Convert(Stream contentStream)
+        private void AfterDispatch()
         {
-            // TODO For debugging, remove once no longer needed
-            // var reader = new StreamReader(contentStream);
-            // var content = reader.ReadToEnd();
-
-            foreach (var op in ContentParser.Parse(contentStream))
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                dispatcher.Dispatch(this, op.Operator, op.Operands);
-            }
-
             SvgAttributeOptimizer.Optimize(rootGraphics);
 
             AddClipPaths(clipPaths.Values);
@@ -300,8 +290,17 @@ namespace PdfToSvg.Drawing
         public static XElement Convert(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, CancellationToken cancellationToken)
         {
             var renderer = new SvgRenderer(pageDict, options, documentCache, cancellationToken);
-            var contentStream = ContentStream.Combine(pageDict, cancellationToken);
-            renderer.Convert(contentStream);
+
+            using (var contentStream = ContentStream.Combine(pageDict, cancellationToken))
+            {
+                foreach (var op in ContentParser.Parse(contentStream))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    dispatcher.Dispatch(renderer, op.Operator, op.Operands);
+                }
+            }
+
+            renderer.AfterDispatch();
             return renderer.svg;
         }
 
@@ -309,8 +308,17 @@ namespace PdfToSvg.Drawing
         public static async Task<XElement> ConvertAsync(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, CancellationToken cancellationToken)
         {
             var renderer = new SvgRenderer(pageDict, options, documentCache, cancellationToken);
-            var contentStream = await ContentStream.CombineAsync(pageDict, cancellationToken).ConfigureAwait(false);
-            renderer.Convert(contentStream);
+
+            using (var contentStream = await ContentStream.CombineAsync(pageDict, cancellationToken).ConfigureAwait(false))
+            {
+                foreach (var op in ContentParser.Parse(contentStream))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await dispatcher.DispatchAsync(renderer, op.Operator, op.Operands).ConfigureAwait(false);
+                }
+            }
+
+            renderer.AfterDispatch();
             return renderer.svg;
         }
 #endif
@@ -1296,7 +1304,7 @@ namespace PdfToSvg.Drawing
         [Operation("Tf")]
         private void Tf_Font(PdfName fontName, double fontSize)
         {
-            var newFont = resources.GetFont(fontName, options.FontResolver, documentCache, cancellationToken) ?? BaseFont.Fallback;
+            var newFont = resources.GetFont(fontName, options.FontResolver, documentCache, cancellationToken);
             if (newFont == null)
             {
                 Log.WriteLine($"Could not find a font replacement for {fontName}.");
@@ -1305,6 +1313,24 @@ namespace PdfToSvg.Drawing
 
             SetFont(newFont, fontSize);
         }
+
+#if HAVE_ASYNC
+        [Operation("Tf")]
+        private async Task Tf_FontAsync(PdfName fontName, double fontSize)
+        {
+            var newFont = await resources
+                .GetFontAsync(fontName, options.FontResolver, documentCache, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (newFont == null)
+            {
+                Log.WriteLine($"Could not find a font replacement for {fontName}.");
+                newFont = BaseFont.Fallback;
+            }
+
+            SetFont(newFont, fontSize);
+        }
+#endif
 
         [Operation("gs/Font")]
         private void gs_Font(object[] args)

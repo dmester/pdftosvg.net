@@ -15,14 +15,6 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
 {
     public class CompactFontWriterTests
     {
-        private static byte[] ParseSpec(string spec)
-        {
-            return spec
-                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => byte.Parse(x, NumberStyles.HexNumber, CultureInfo.InvariantCulture))
-                .ToArray();
-        }
-
         [Test]
         public void WriteDict()
         {
@@ -248,7 +240,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
         [TestCase(1.40541E-300, "1e 1a 40 54 1c 30 0f")]
         public void WriteNumber(double value, string bytes)
         {
-            var expected = ParseSpec(bytes);
+            var expected = Hex.Decode(bytes);
 
             for (var capacity = expected.Length - 1; capacity < expected.Length + 1; capacity++)
             {

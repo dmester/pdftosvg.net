@@ -50,12 +50,7 @@ namespace PdfToSvg.Tests.Security
         {
             var binaryKey = Encoding.ASCII.GetBytes(key);
             var binaryPlaintext = Encoding.ASCII.GetBytes(plaintext);
-            var binaryCiphertext = new byte[ciphertext.Length / 2];
-
-            for (var i = 0; i < ciphertext.Length; i += 2)
-            {
-                binaryCiphertext[i / 2] = byte.Parse(ciphertext.Substring(i, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-            }
+            var binaryCiphertext = Hex.Decode(ciphertext);
 
             var encrypted = Transform(binaryKey, binaryPlaintext);
             var decrypted = Transform(binaryKey, binaryCiphertext);

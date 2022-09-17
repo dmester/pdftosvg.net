@@ -210,12 +210,7 @@ endcidrange
         [TestCase("<CC990000>", null)]
         public void GetCharCode(string hexString, uint? expectedCharCode)
         {
-            var binary = new byte[hexString.Length / 2 + 2];
-
-            for (var i = 1; i + 1 < hexString.Length; i += 2)
-            {
-                binary[i / 2] = byte.Parse(hexString.Substring(i, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-            }
+            var binary = Hex.Decode(hexString);
 
             var code = cmap.GetCharCode(new PdfString(binary), 0);
             Assert.AreEqual(expectedCharCode ?? 0, code.CharCode);
@@ -243,12 +238,7 @@ endcidrange
         [TestCase("HKscs-B5-V", "1a", 1, 1)]
         public void PredefinedCMap(string cmapName, string hexString, int expectedLength, int expectedCid)
         {
-            var binary = new byte[hexString.Length / 2];
-
-            for (var i = 0; i + 1 < hexString.Length; i += 2)
-            {
-                binary[i / 2] = byte.Parse(hexString.Substring(i, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-            }
+            var binary = Hex.Decode(hexString);
 
             var cmap = CMap.Create(cmapName, default);
             var code = cmap.GetCharCode(new PdfString(binary), 0);

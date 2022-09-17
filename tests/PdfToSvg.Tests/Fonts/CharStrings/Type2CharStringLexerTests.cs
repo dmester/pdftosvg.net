@@ -14,24 +14,6 @@ namespace PdfToSvg.Tests.Fonts.CharStrings
 {
     internal class Type2CharStringLexerTests
     {
-        private static byte[] ParseSpec(string spec)
-        {
-            return spec
-                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => byte.Parse(x, NumberStyles.HexNumber, CultureInfo.InvariantCulture))
-                .ToArray();
-        }
-
-        private static Type2CharStringLexer CreateLexer(string spec)
-        {
-            var parsed = spec
-                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => byte.Parse(x, NumberStyles.HexNumber, CultureInfo.InvariantCulture))
-                .ToArray();
-
-            return new Type2CharStringLexer(new ArraySegment<byte>(parsed));
-        }
-
         [TestCase("1C 80 00", -32768d)]
         [TestCase("1C 7F FF", 32767d)]
         [TestCase("20", -107d)]
@@ -46,7 +28,7 @@ namespace PdfToSvg.Tests.Fonts.CharStrings
         [TestCase("FF 00 00 80 00", 0.5d)]
         public void ReadOperand(string data, double expectedValue)
         {
-            var bytes = ParseSpec(data);
+            var bytes = Hex.Decode(data);
             var lexer = new Type2CharStringLexer(new ArraySegment<byte>(bytes));
 
             var lexeme = lexer.Read();
@@ -68,7 +50,7 @@ namespace PdfToSvg.Tests.Fonts.CharStrings
         [TestCase("1F", 31)]
         public void ReadOperator(string data, int expectedOperator)
         {
-            var bytes = ParseSpec(data);
+            var bytes = Hex.Decode(data);
             var lexer = new Type2CharStringLexer(new ArraySegment<byte>(bytes));
 
             var lexeme = lexer.Read();

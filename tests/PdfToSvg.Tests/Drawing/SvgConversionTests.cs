@@ -50,20 +50,15 @@ namespace PdfToSvg.Tests.Drawing
             Assert.AreEqual(expectedResult, actualResult);
         }
 
-        [TestCase("0001020304050607", "########")]
-        [TestCase("08090A0B0C0D0E0F", "#\t\n##\r##")]
-        [TestCase("1011121314151617", "########")]
-        [TestCase("18191A1B1C1D1E1F", "########")]
+        [TestCase("00 01 02 03 04 05 06 07", "########")]
+        [TestCase("08 09 0A 0B 0C 0D 0E 0F", "#\t\n##\r##")]
+        [TestCase("10 11 12 13 14 15 16 17", "########")]
+        [TestCase("18 19 1A 1B 1C 1D 1E 1F", "########")]
         [TestCase("20", " ")]
         public void ReplaceInvalidChars_InvalidHexChars(string input, string expectedResult)
         {
-            var decodedInput = new char[input.Length / 2];
-            for (var i = 0; i < input.Length; i += 2)
-            {
-                decodedInput[i / 2] = (char)int.Parse(input.Substring(i, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-            }
-
-            var actualResult = SvgConversion.ReplaceInvalidChars(new string(decodedInput), '#');
+            var decodedInput = Encoding.ASCII.GetString(Hex.Decode(input));
+            var actualResult = SvgConversion.ReplaceInvalidChars(decodedInput, '#');
             Assert.AreEqual(expectedResult, actualResult);
         }
     }

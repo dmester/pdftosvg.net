@@ -17,11 +17,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
     {
         private static CompactFontReader CreateReader(string spec)
         {
-            var parsed = spec
-                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => byte.Parse(x, NumberStyles.HexNumber, CultureInfo.InvariantCulture))
-                .ToArray();
-
+            var parsed = Hex.Decode(spec);
             return new CompactFontReader(parsed);
         }
 

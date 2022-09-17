@@ -169,7 +169,7 @@ namespace PdfToSvg.Fonts
                 return ch.Unicode;
             }
 
-            // Prio 3: Unmicode from glyph name
+            // Prio 3: Unicode from glyph name
             if (AdobeGlyphList.TryGetUnicode(ch.GlyphName, out var aglUnicode))
             {
                 return aglUnicode;

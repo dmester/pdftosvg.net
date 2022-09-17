@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.Common;
+using PdfToSvg.Threading;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -72,7 +73,7 @@ namespace PdfToSvg.Cli
             }
         }
 
-        private static int Main(string[] args)
+        private static async Task<int> Main(string[] args)
         {
             CommandLine commandLine;
             try
@@ -196,12 +197,12 @@ namespace PdfToSvg.Cli
                         Console.WriteLine();
                     }
 
-                    Parallel.ForEach(pageNumbers, pageNumber =>
+                    await ParallelUtils.ForEachAsync(pageNumbers, async (pageNumber, _) =>
                     {
                         var page = doc.Pages[pageNumber - 1];
                         var pageOutputPath = Path.Combine(outputDir, outputFileName + "-" + pageNumber.ToString(CultureInfo.InvariantCulture) + ".svg");
 
-                        page.SaveAsSvg(pageOutputPath);
+                        await page.SaveAsSvgAsync(pageOutputPath);
 
                         lock (progress)
                         {

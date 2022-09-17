@@ -47,9 +47,9 @@ namespace PdfToSvg.Fonts
             public string? Unicode;
         }
 
-        protected void PopulateChars(IEnumerable<CidChar> chars)
+        protected override IEnumerable<CharInfo> GetChars()
         {
-            var charInfos = chars
+            return GetCidChars()
                 .DistinctBy(ch => ch.Cid)
                 .SelectMany(ch => cmap
                     .GetCharCodes(ch.Cid)
@@ -60,8 +60,8 @@ namespace PdfToSvg.Fonts
                         GlyphIndex = ch.GlyphIndex,
                         Unicode = ch.Unicode ?? CharInfo.NotDef,
                     }));
-
-            PopulateChars(charInfos);
         }
+
+        protected abstract IEnumerable<CidChar> GetCidChars();
     }
 }

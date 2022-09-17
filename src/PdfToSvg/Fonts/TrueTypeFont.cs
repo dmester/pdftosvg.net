@@ -24,7 +24,6 @@ namespace PdfToSvg.Fonts
             base.OnInit(cancellationToken);
 
             widthMap = Type1WidthMap.Parse(fontDict);
-            PopulateChars(GetChars());
         }
 
         private string[] GetGlyphNameLookup()
@@ -43,7 +42,7 @@ namespace PdfToSvg.Fonts
             return lookup;
         }
 
-        private IEnumerable<CharInfo> GetChars()
+        protected override IEnumerable<CharInfo> GetChars()
         {
             // ISO 32000-2 section 9.6.5.4
             var descriptor = fontDict.GetDictionaryOrEmpty(Names.FontDescriptor);

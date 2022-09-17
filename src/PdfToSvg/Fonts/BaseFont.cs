@@ -28,6 +28,8 @@ namespace PdfToSvg.Fonts
         private static readonly PdfDictionary emptyDict = new PdfDictionary();
 
         private readonly Dictionary<uint, CharInfo> chars = new();
+        private bool charsPopulated;
+
         private string? name;
 
         protected OpenTypeFont? openTypeFont;
@@ -57,6 +59,8 @@ namespace PdfToSvg.Fonts
 
         protected virtual void OnInit(CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             // Read font
             try
             {
@@ -93,6 +97,16 @@ namespace PdfToSvg.Fonts
                 {
                     this.name = name.Value;
                 }
+            }
+        }
+
+        protected virtual void OnPostInit(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            lock (chars)
+            {
+                PopulateCharsForTextExtract();
             }
         }
 
@@ -153,6 +167,11 @@ namespace PdfToSvg.Fonts
             return null;
         }
 
+        protected virtual IEnumerable<CharInfo> GetChars()
+        {
+            yield break;
+        }
+
         private string ResolveUnicode(CharInfo ch)
         {
             var pdfUnicode = toUnicode.GetUnicode(ch.CharCode);
@@ -178,8 +197,12 @@ namespace PdfToSvg.Fonts
             return CharInfo.NotDef;
         }
 
-        protected void PopulateChars(IEnumerable<CharInfo> chars)
+        private void PopulateCharsForEmbeddedFont()
         {
+            if (charsPopulated) return;
+
+            var chars = GetChars();
+
             const char StartPrivateUseArea = '\uE000';
             const char EndPrivateUseArea = '\uF8FF';
 
@@ -242,25 +265,49 @@ namespace PdfToSvg.Fonts
                     }
                 }
             }
+
+            charsPopulated = true;
         }
 
-        private void ReconstructOpenTypeCMap()
+        protected void PopulateCharsForTextExtract()
         {
-            if (openTypeFont == null)
+            if (charsPopulated) return;
+
+            var chars = GetChars();
+
+            foreach (var ch in chars)
             {
-                return;
+                ch.Unicode = ResolveUnicode(ch);
+                this.chars.TryAdd(ch.CharCode, ch);
             }
 
-            var maxpTable = openTypeFont.Tables.Get<MaxpTable>();
-            var cmapTable = openTypeFont.Tables.GetOrCreate<CMapTable>();
-            var nameTable = openTypeFont.Tables.GetOrCreate<NameTable>();
+            charsPopulated = true;
+        }
 
+        private OpenTypeFont SanitizeOpenTypeFont(OpenTypeFont inputFont)
+        {
+            var font = new OpenTypeFont();
+
+            var maxpTable = inputFont.Tables.Get<MaxpTable>();
             var numGlyphs = maxpTable?.NumGlyphs ?? ushort.MaxValue;
+            var cmapTable = new CMapTable();
+            var nameTable = new NameTable();
 
-            if (!openTypeFont.Tables.OfType<PostTable>().Any())
+            foreach (var table in inputFont.Tables)
+            {
+                if (table is not CMapTable && table is not NameTable)
+                {
+                    font.Tables.Add(table);
+                }
+            }
+
+            font.Tables.Add(cmapTable);
+            font.Tables.Add(nameTable);
+
+            if (!font.Tables.OfType<PostTable>().Any())
             {
                 // Required by OTS sanitizer
-                openTypeFont.Tables.Add(new PostTableV3());
+                font.Tables.Add(new PostTableV3());
             }
 
             var allChars = chars
@@ -283,7 +330,7 @@ namespace PdfToSvg.Fonts
             };
 
             nameTable.Version = 0;
-            nameTable.NameRecords = openTypeFont
+            nameTable.NameRecords = inputFont
                 .Names
                 .Select(name => new NameRecord
                 {
@@ -298,6 +345,8 @@ namespace PdfToSvg.Fonts
                 .OrderBy(x => x.NameID)
 
                 .ToArray();
+
+            return font;
         }
 
         private static BaseFont Create(PdfDictionary fontDict, CancellationToken cancellationToken)
@@ -337,7 +386,6 @@ namespace PdfToSvg.Fonts
             }
 
             font.fontDict = fontDict;
-            font.OnInit(cancellationToken);
 
             return font;
         }
@@ -345,19 +393,23 @@ namespace PdfToSvg.Fonts
         public static BaseFont Create(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
         {
             var font = Create(fontDict, cancellationToken);
+            font.OnInit(cancellationToken);
             font.SubstituteFont = fontResolver.ResolveFont(font, cancellationToken);
+            font.OnPostInit(cancellationToken);
             return font;
         }
 
         public static Task<BaseFont> CreateAsync(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
         {
             var font = Create(fontDict, cancellationToken);
+            font.OnInit(cancellationToken);
 
             return fontResolver
                 .ResolveFontAsync(font, cancellationToken)
                 .ContinueWith(t =>
                 {
                     font.SubstituteFont = t.Result;
+                    font.OnPostInit(cancellationToken);
                     return font;
                 }, TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously);
         }
@@ -369,11 +421,15 @@ namespace PdfToSvg.Fonts
                 throw openTypeFontException ?? new NotSupportedException("This font cannot be converted to OpenType format.");
             }
 
-            lock (openTypeFont)
+            lock (chars)
             {
-                ReconstructOpenTypeCMap();
-                return openTypeFont.ToByteArray();
+                PopulateCharsForEmbeddedFont();
             }
+
+            var sanitizedOtf = SanitizeOpenTypeFont(openTypeFont);
+            var binaryOtf = sanitizedOtf.ToByteArray();
+            charsPopulated = true;
+            return binaryOtf;
         }
 
         public override byte[] ToWoff()

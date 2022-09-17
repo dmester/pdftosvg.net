@@ -16,17 +16,19 @@ namespace PdfToSvg.Fonts
 {
     internal sealed class CidType2Font : Type0Font
     {
-        protected override void OnInit(CancellationToken cancellationToken)
-        {
-            base.OnInit(cancellationToken);
-
-            PopulateChars(GetChars(cancellationToken));
-        }
-
         private struct CidMapping
         {
             public uint Cid;
             public uint Gid;
+        }
+
+        private ILookup<uint, uint>? gidToCidMap;
+
+        protected override void OnInit(CancellationToken cancellationToken)
+        {
+            base.OnInit(cancellationToken);
+
+            gidToCidMap = ReadCidToGidMap(cancellationToken).ToLookup(x => x.Gid, x => x.Cid);
         }
 
         private IEnumerable<CidMapping> ReadCidToGidMap(CancellationToken cancellationToken)
@@ -57,15 +59,14 @@ namespace PdfToSvg.Fonts
             }
         }
 
-        private IEnumerable<CidChar> GetChars(CancellationToken cancellationToken)
+        protected override IEnumerable<CidChar> GetCidChars()
         {
-            if (openTypeFont == null)
+            if (openTypeFont == null || gidToCidMap == null)
             {
                 yield break;
             }
 
             // ISO 32000-2 section 9.7.4.2
-            var gidToCidMap = ReadCidToGidMap(cancellationToken).ToLookup(x => x.Gid, x => x.Cid);
             var numGlyphs = openTypeFont.NumGlyphs;
             var cmap = openTypeFont.CMaps.OrderByPriority().FirstOrDefault();
 

@@ -17,14 +17,7 @@ namespace PdfToSvg.Fonts
 {
     internal sealed class CidType0Font : Type0Font
     {
-        protected override void OnInit(CancellationToken cancellationToken)
-        {
-            base.OnInit(cancellationToken);
-
-            PopulateChars(GetChars());
-        }
-
-        private IEnumerable<CidChar> GetChars()
+        protected override IEnumerable<CidChar> GetCidChars()
         {
             // ISO 32000-2 section 9.7.4.2
             if (openTypeFont != null)

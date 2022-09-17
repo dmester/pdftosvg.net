@@ -20,7 +20,6 @@ namespace PdfToSvg.Tests.Threading
         private class Worker
         {
             public ManualResetEventSlim DoComplete = new();
-            public ManualResetEventSlim Return = new();
             public Exception Throw;
         }
 
@@ -152,59 +151,45 @@ namespace PdfToSvg.Tests.Threading
         }
 
         // Commands
-        // Get-<id>     - Calls GetResult.
-        // Cancel-<id>  - Cancels a GetResult request, but does not immediately stops the worker thread.
-        // Throw-<id>   - Makes a worker throw an unhandled exception.
-        // Return-<id>  - Stops the worker thread.
+        // Get-<id>      - Calls GetResult.
+        // Cancel-<id>   - Cancels a GetResult request, but does not immediately stops the worker thread.
+        // Throw-<id>    - Makes a worker throw an unhandled exception.
+        // Continue-<id> - Finishes the simulated factory work delay
 
         // Events within brackets may come in any order
 
         [TestCase(
-            "Get-1a, Return-1",
+            "Get-1a, Continue-1",
             "Get-1a Start, Worker-1 Start, Worker-1 Success, Get-1a Success")]
         [TestCase(
             "Get-1a, Throw-1",
             "Get-1a Start, Worker-1 Start, Worker-1 Failed, Get-1a Failed")]
-#if !NET40
         [TestCase(
-            "GetAsync-1a, Get-1b, Return-1, Get-2a",
-            "GetAsync-1a Start, Worker-1 Start, Get-1b Start, Worker-1 Success, [GetAsync-1a Success, Get-1b Success], Get-2a Start, Get-2a Success")]
-
-        [TestCase(
-            "GetAsync-1a, GetAsync-1b, Return-1, GetAsync-2a",
-            "GetAsync-1a Start, Worker-1 Start, GetAsync-1b Start, Worker-1 Success, [GetAsync-1a Success, GetAsync-1b Success], GetAsync-2a Start, GetAsync-2a Success")]
-
-        [TestCase(
-            "Get-1a, GetAsync-1b, Return-1, GetAsync-2a",
-            "Get-1a Start, Worker-1 Start, GetAsync-1b Start, Worker-1 Success, [Get-1a Success, GetAsync-1b Success], GetAsync-2a Start, GetAsync-2a Success")]
-
-        [TestCase(
-            "GetAsync-1a, Cancel-1a, GetAsync-2a, Return-2",
-            "GetAsync-1a Start, Worker-1 Start, [Worker-1 Cancelled, GetAsync-1a Cancelled], GetAsync-2a Start, Worker-2 Start, Worker-2 Success, GetAsync-2a Success")]
-
-        [TestCase(
-            "GetAsync-1a, Throw-1, Return-1, GetAsync-1b",
-            "GetAsync-1a Start, Worker-1 Start, Worker-1 Failed, GetAsync-1a Failed, GetAsync-1b Start, GetAsync-1b Failed")]
-
-        [TestCase(
-            "GetAsync-1a, Throw-1, GetAsync-1b, Return-1",
-            "GetAsync-1a Start, Worker-1 Start, Worker-1 Failed, GetAsync-1a Failed, GetAsync-1b Start, GetAsync-1b Failed")]
-#endif
-        [TestCase(
-            "Get-1a, Cancel-1a, Throw-1, Get-2a, Return-2",
+            "Get-1a, Cancel-1a, Get-2a, Continue-2",
             "Get-1a Start, Worker-1 Start, [Worker-1 Cancelled, Get-1a Cancelled], Get-2a Start, Worker-2 Start, Worker-2 Success, Get-2a Success")]
         [TestCase(
-            "Get-1a, Get-1b, Cancel-1a, Return-1",
+            "Get-1a, Get-1b, Cancel-1a, Continue-2",
             "Get-1a Start, Worker-1 Start, Get-1b Start, [Worker-1 Cancelled, Get-1a Cancelled], Worker-2 Start, Worker-2 Success, Get-1b Success")]
         [TestCase(
-            "Get-1a, Get-1b, Cancel-1b, Return-1",
+            "Get-1a, Get-1b, Cancel-1b, Continue-1",
             "Get-1a Start, Worker-1 Start, Get-1b Start, Get-1b Cancelled, Worker-1 Success, Get-1a Success")]
+#if !NET40
         [TestCase(
-            "Get-1a, Cancel-1a, Get-2a, Return-2",
-            "Get-1a Start, Worker-1 Start, Worker-1 Cancelled, Get-1a Cancelled, Get-2a Start, Worker-2 Start, Worker-2 Success, Get-2a Success")]
+            "GetAsync-1a, Get-1b, Continue-1, Get-2a",
+            "GetAsync-1a Start, Worker-1 Start, Get-1b Start, Worker-1 Success, [GetAsync-1a Success, Get-1b Success], Get-2a Start, Get-2a Success")]
         [TestCase(
-            "Get-1a, Cancel-1a, Return-1, Get-2a, Return-2",
-            "Get-1a Start, Worker-1 Start, Worker-1 Cancelled, Get-1a Cancelled, Get-2a Start, Worker-2 Start, Worker-2 Success, Get-2a Success")]
+            "GetAsync-1a, GetAsync-1b, Continue-1, GetAsync-2a",
+            "GetAsync-1a Start, Worker-1 Start, GetAsync-1b Start, Worker-1 Success, [GetAsync-1a Success, GetAsync-1b Success], GetAsync-2a Start, GetAsync-2a Success")]
+        [TestCase(
+            "Get-1a, GetAsync-1b, Continue-1, GetAsync-2a",
+            "Get-1a Start, Worker-1 Start, GetAsync-1b Start, Worker-1 Success, [Get-1a Success, GetAsync-1b Success], GetAsync-2a Start, GetAsync-2a Success")]
+        [TestCase(
+            "GetAsync-1a, Cancel-1a, GetAsync-2a, Continue-2",
+            "GetAsync-1a Start, Worker-1 Start, [Worker-1 Cancelled, GetAsync-1a Cancelled], GetAsync-2a Start, Worker-2 Start, Worker-2 Success, GetAsync-2a Success")]
+        [TestCase(
+            "GetAsync-1a, Throw-1, GetAsync-1b",
+            "GetAsync-1a Start, Worker-1 Start, Worker-1 Failed, GetAsync-1a Failed, GetAsync-1b Start, GetAsync-1b Failed")]
+#endif
         public void VerifyEventSequence(string commands, string expectedEvents)
         {
             var requests = new ConcurrentDictionary<string, Request>();
@@ -212,7 +197,8 @@ namespace PdfToSvg.Tests.Threading
 
             var events = new ConcurrentQueue<string>();
 
-            var responded = new ManualResetEventSlim();
+            var workerResponded = new ManualResetEventSlim();
+            var callerResponded = new ManualResetEventSlim();
 
             try
             {
@@ -223,7 +209,7 @@ namespace PdfToSvg.Tests.Threading
 
                     workers[workerId] = worker;
 
-                    responded.Set();
+                    workerResponded.Set();
                     events.Enqueue("Worker-" + workerId + " Start");
 
                     try
@@ -240,16 +226,12 @@ namespace PdfToSvg.Tests.Threading
                         " Failed"
                         ));
 
-                    responded.Set();
+                    workerResponded.Set();
 
                     if (cancelled)
                     {
                         throw new OperationCanceledException();
                     }
-
-                    worker.Return.Wait(5000, default);
-
-                    responded.Set();
 
                     if (worker.Throw != null)
                     {
@@ -266,7 +248,8 @@ namespace PdfToSvg.Tests.Threading
                     var commandName = commandParts[0];
                     var id = commandParts[1];
 
-                    responded.Reset();
+                    workerResponded.Reset();
+                    callerResponded.Reset();
 
                     switch (commandName)
                     {
@@ -281,7 +264,10 @@ namespace PdfToSvg.Tests.Threading
                                     try
                                     {
                                         events.Enqueue("Get-" + id + " Start");
+                                        callerResponded.Set();
+
                                         sharedFactory.GetResult(request.Cts.Token);
+
                                         events.Enqueue("Get-" + id + " Success");
                                     }
                                     catch (OperationCanceledException)
@@ -292,8 +278,13 @@ namespace PdfToSvg.Tests.Threading
                                     {
                                         events.Enqueue("Get-" + id + " Failed");
                                     }
+
+                                    callerResponded.Set();
                                 });
                                 request.Thread.Start();
+
+                                callerResponded.Wait(5000);
+                                workerResponded.Wait(100);
                             }
                             break;
 
@@ -309,10 +300,13 @@ namespace PdfToSvg.Tests.Threading
                                     try
                                     {
                                         events.Enqueue("GetAsync-" + id + " Start");
+                                        callerResponded.Set();
+
                                         if (!sharedFactory.GetResultAsync(request.Cts.Token).Wait(5000))
                                         {
                                             Assert.Fail("GetResultAsync never returned");
                                         }
+
                                         events.Enqueue("GetAsync-" + id + " Success");
                                     }
                                     catch (AggregateException aex) when (aex.InnerException is OperationCanceledException)
@@ -323,36 +317,33 @@ namespace PdfToSvg.Tests.Threading
                                     {
                                         events.Enqueue("GetAsync-" + id + " Failed");
                                     }
+
+                                    callerResponded.Set();
                                 });
                                 request.Thread.Start();
+
+                                callerResponded.Wait(5000);
+                                workerResponded.Wait(100);
                             }
                             break;
 #endif
 
                         case "Cancel":
                             requests[id].Cts.Cancel();
+
+                            callerResponded.Wait(5000);
                             break;
 
                         case "Continue":
                             if (workers.TryGetValue(id, out var continueWorker))
                             {
                                 continueWorker.DoComplete.Set();
+
+                                workerResponded.Wait(5000);
                             }
                             else
                             {
                                 throw new Exception("Worker " + id + " to continue not found");
-                            }
-                            break;
-
-                        case "Return":
-                            if (workers.TryGetValue(id, out var returnWorker))
-                            {
-                                returnWorker.DoComplete.Set();
-                                returnWorker.Return.Set();
-                            }
-                            else
-                            {
-                                throw new Exception("Worker " + id + " to return not found");
                             }
                             break;
 
@@ -361,7 +352,8 @@ namespace PdfToSvg.Tests.Threading
                             {
                                 throwWorker.Throw = new Exception("Oops");
                                 throwWorker.DoComplete.Set();
-                                throwWorker.Return.Set();
+
+                                callerResponded.Wait(5000);
                             }
                             else
                             {
@@ -373,12 +365,7 @@ namespace PdfToSvg.Tests.Threading
                             throw new Exception("Unknown command " + commandName);
                     }
 
-                    // Wait for any operations on the worker threads to complete before continuing
-                    responded.Wait(100);
-
-                    // There could be a few operations that should be completed after the responded event is set but before the thread has
-                    // actually processed the command.
-                    Thread.Sleep(50);
+                    Thread.Sleep(100);
                 }
             }
             catch (Exception ex)
@@ -389,7 +376,6 @@ namespace PdfToSvg.Tests.Threading
             {
                 foreach (var worker in workers.Values)
                 {
-                    worker.Return.Set();
                     worker.DoComplete.Set();
                 }
 
@@ -403,11 +389,10 @@ namespace PdfToSvg.Tests.Threading
 
                 foreach (var worker in workers.Values)
                 {
-                    worker.Return.Dispose();
                     worker.DoComplete.Dispose();
                 }
 
-                responded.Dispose();
+                workerResponded.Dispose();
             }
 
             var actualEventsString = SortUnorderedEvents(expectedEvents, events);

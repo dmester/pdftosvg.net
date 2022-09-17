@@ -410,25 +410,7 @@ namespace PdfToSvg.Fonts
 
                     if (charInfo.Unicode != null)
                     {
-                        for (var outIndex = 0; outIndex < charInfo.Unicode.Length; outIndex++)
-                        {
-                            var ch = charInfo.Unicode[outIndex];
-                            if (ch > '\ufffe' ||
-                                ch < '\u0020' &&
-                                ch != '\u0009' &&
-                                ch != '\u000A' &&
-                                ch != '\u000D')
-                            {
-                                // Invalid XML char according to 
-                                // https://www.w3.org/TR/REC-xml/#charsets
-                                sb.Append('\ufffd');
-                            }
-                            else
-                            {
-                                sb.Append(ch);
-                            }
-                        }
-
+                        sb.Append(charInfo.Unicode);
                         i += character.CharCodeLength;
                         width += widthMap.GetWidth(charInfo);
                         handled = true;

@@ -120,6 +120,8 @@ namespace PdfToSvg.Drawing
 
             var decodedText = graphicsState.Font.Decode(text, out var width);
 
+            decodedText = SvgConversion.ReplaceInvalidChars(decodedText);
+
             width *= normalizedFontSize;
 
             var style = GetTextStyle(graphicsState);

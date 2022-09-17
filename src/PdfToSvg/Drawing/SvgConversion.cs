@@ -46,6 +46,45 @@ namespace PdfToSvg.Drawing
             return "#" + r + g + b;
         }
 
+        private static bool IsInvalidChar(char ch)
+        {
+            // Invalid XML char according to 
+            // https://www.w3.org/TR/REC-xml/#charsets
+            return
+                ch > '\ufffe' ||
+                ch < '\u0020' &&
+                ch != '\u0009' &&
+                ch != '\u000A' &&
+                ch != '\u000D';
+        }
+
+        public static string ReplaceInvalidChars(string s, char replacementChar = '\ufffd')
+        {
+            var i = 0;
+
+            while (i < s.Length && !IsInvalidChar(s[i]))
+            {
+                i++;
+            }
+
+            if (i < s.Length)
+            {
+                var result = s.ToCharArray();
+
+                for (; i < result.Length; i++)
+                {
+                    if (IsInvalidChar(result[i]))
+                    {
+                        result[i] = replacementChar;
+                    }
+                }
+
+                return new string(result);
+            }
+
+            return s;
+        }
+
         public static string? FormatFontStyle(FontStyle? fontStyle)
         {
             return fontStyle switch

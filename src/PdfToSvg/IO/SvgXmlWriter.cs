@@ -87,6 +87,17 @@ namespace PdfToSvg.IO
             writer.WriteStartElement(prefix, localName, ns);
         }
 
+        public override void WriteComment(string text)
+        {
+            var currentlyPreservingSpace = preserveSpaceState.Peek();
+            if (!currentlyPreservingSpace)
+            {
+                WriteRaw("\n");
+            }
+
+            writer.WriteComment(text);
+        }
+
         public override void Flush() => writer.Flush();
 
         public override string LookupPrefix(string ns) => writer.LookupPrefix(ns);
@@ -98,8 +109,6 @@ namespace PdfToSvg.IO
         public override void WriteCharEntity(char ch) => writer.WriteCharEntity(ch);
 
         public override void WriteChars(char[] buffer, int index, int count) => writer.WriteChars(buffer, index, count);
-
-        public override void WriteComment(string text) => writer.WriteComment(text);
 
         public override void WriteDocType(string name, string pubid, string sysid, string subset) => writer.WriteDocType(name, pubid, sysid, subset);
 

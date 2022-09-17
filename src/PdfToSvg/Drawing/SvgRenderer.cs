@@ -141,6 +141,7 @@ namespace PdfToSvg.Drawing
                     string.Format(CultureInfo.InvariantCulture, "0 0 {0:0.####} {1:0.####}",
                     pageWidth, pageHeight
                 )),
+                new XComment(" Generator: PdfToSvg.NET "),
                 style,
                 defs,
                 rootGraphics);

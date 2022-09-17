@@ -14,8 +14,10 @@ namespace PdfToSvg.Fonts
 {
     internal sealed class Type3Font : BaseFont
     {
-        public Type3Font(PdfDictionary fontDict, CancellationToken cancellationToken) : base(fontDict, cancellationToken)
+        protected override void OnInit(CancellationToken cancellationToken)
         {
+            base.OnInit(cancellationToken);
+
             widthMap = new Type3WidthMap(fontDict);
         }
     }

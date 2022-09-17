@@ -19,8 +19,10 @@ namespace PdfToSvg.Fonts
 {
     internal sealed class TrueTypeFont : BaseFont
     {
-        public TrueTypeFont(PdfDictionary fontDict, CancellationToken cancellationToken) : base(fontDict, cancellationToken)
+        protected override void OnInit(CancellationToken cancellationToken)
         {
+            base.OnInit(cancellationToken);
+
             widthMap = Type1WidthMap.Parse(fontDict);
             PopulateChars(GetChars());
         }

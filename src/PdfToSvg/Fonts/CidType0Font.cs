@@ -17,8 +17,10 @@ namespace PdfToSvg.Fonts
 {
     internal sealed class CidType0Font : Type0Font
     {
-        public CidType0Font(PdfDictionary fontDict, CancellationToken cancellationToken) : base(fontDict, cancellationToken)
+        protected override void OnInit(CancellationToken cancellationToken)
         {
+            base.OnInit(cancellationToken);
+
             PopulateChars(GetChars());
         }
 

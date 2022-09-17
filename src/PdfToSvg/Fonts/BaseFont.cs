@@ -24,38 +24,39 @@ namespace PdfToSvg.Fonts
 {
     internal abstract class BaseFont : SourceFont
     {
-        private static readonly Font fallbackFont = new LocalFont("'Times New Roman',serif");
+        private static readonly Font fallbackSubstituteFont = new LocalFont("'Times New Roman',serif");
+        private static readonly PdfDictionary emptyDict = new PdfDictionary();
 
         private readonly Dictionary<uint, CharInfo> chars = new();
-        private readonly string? name;
+        private string? name;
 
-        protected readonly OpenTypeFont? openTypeFont;
-        protected readonly Exception? openTypeFontException;
+        protected OpenTypeFont? openTypeFont;
+        protected Exception? openTypeFontException;
 
-        protected readonly PdfDictionary fontDict;
+        protected PdfDictionary fontDict = emptyDict;
 
-        protected UnicodeMap toUnicode;
+        protected UnicodeMap toUnicode = UnicodeMap.Empty;
         protected CMap cmap = CMap.OneByteIdentity;
         protected WidthMap widthMap = WidthMap.Empty;
 
-        public static BaseFont Fallback { get; } = new Type1Font(
+        public static BaseFont Fallback { get; } = Create(
             new PdfDictionary {
                 { Names.Subtype, Names.Type1 },
                 { Names.BaseFont, StandardFonts.TimesRoman },
             },
+            FontResolver.LocalFonts,
             CancellationToken.None);
 
         public override string? Name => name;
 
-        public bool HasGlyphSubstitutions { get; }
+        public bool HasGlyphSubstitutions { get; private set; }
 
-        public Font SubstituteFont { get; private set; } = fallbackFont;
+        public Font SubstituteFont { get; private set; } = fallbackSubstituteFont;
 
-        public BaseFont(PdfDictionary fontDict, CancellationToken cancellationToken)
+        protected BaseFont() { }
+
+        protected virtual void OnInit(CancellationToken cancellationToken)
         {
-            if (fontDict == null) throw new ArgumentNullException(nameof(fontDict));
-            this.fontDict = fontDict;
-
             // Read font
             try
             {
@@ -299,18 +300,11 @@ namespace PdfToSvg.Fonts
                 .ToArray();
         }
 
-        public static BaseFont Create(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
+        private static BaseFont Create(PdfDictionary fontDict, CancellationToken cancellationToken)
         {
-            var fontTask = CreateAsync(fontDict, fontResolver, cancellationToken);
-#if NET40
-            return fontTask.Result;
-#else
-            return fontTask.ConfigureAwait(false).GetAwaiter().GetResult();
-#endif
-        }
+            if (fontDict == null) throw new ArgumentNullException(nameof(fontDict));
+            cancellationToken.ThrowIfCancellationRequested();
 
-        public static Task<BaseFont> CreateAsync(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
-        {
             BaseFont? font = null;
 
             var type = fontDict.GetNameOrNull(Names.Subtype);
@@ -321,26 +315,43 @@ namespace PdfToSvg.Fonts
 
                 if (cidFontType == Names.CIDFontType0)
                 {
-                    font = new CidType0Font(fontDict, cancellationToken);
+                    font = new CidType0Font();
                 }
                 else if (cidFontType == Names.CIDFontType2)
                 {
-                    font = new CidType2Font(fontDict, cancellationToken);
+                    font = new CidType2Font();
                 }
             }
             else if (type == Names.Type1 || type == Names.MMType1)
             {
-                font = new Type1Font(fontDict, cancellationToken);
+                font = new Type1Font();
             }
             else if (type == Names.Type3)
             {
-                font = new Type3Font(fontDict, cancellationToken);
+                font = new Type3Font();
             }
 
             if (font == null)
             {
-                font = new TrueTypeFont(fontDict, cancellationToken);
+                font = new TrueTypeFont();
             }
+
+            font.fontDict = fontDict;
+            font.OnInit(cancellationToken);
+
+            return font;
+        }
+
+        public static BaseFont Create(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
+        {
+            var font = Create(fontDict, cancellationToken);
+            font.SubstituteFont = fontResolver.ResolveFont(font, cancellationToken);
+            return font;
+        }
+
+        public static Task<BaseFont> CreateAsync(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
+        {
+            var font = Create(fontDict, cancellationToken);
 
             return fontResolver
                 .ResolveFontAsync(font, cancellationToken)

@@ -205,80 +205,18 @@ namespace PdfToSvg.Tests
             return Path.Combine(TestFiles.TestFilesPath, OwnTestFilesDir, "actual-" + TargetFramework + "-" + category, Path.ChangeExtension(fileName, ".svg"));
         }
 
-        [Test]
-        public void WebFontConversion()
+        private void ConvertSync(string pdfName, string expectedSvgName, SvgConversionOptions conversionOptions)
         {
-            var expectedSvgPath = GetExpectedFilePath("encoding-webfont.svg");
-            var actualSvgPath = GetActualFilePath("sync", "encoding-webfont.svg");
-            var pdfPath = GetInputFilePath("encoding.pdf");
+            var expectedSvgPath = GetExpectedFilePath(expectedSvgName);
+            var actualSvgPath = GetActualFilePath("sync", expectedSvgName);
+            var pdfPath = GetInputFilePath(pdfName);
 
             Directory.CreateDirectory(Path.GetDirectoryName(actualSvgPath));
 
             string actual;
             using (var doc = PdfDocument.Open(pdfPath))
             {
-                actual = doc.Pages[0].ToSvgString(new SvgConversionOptions
-                {
-                    FontResolver = new TestFontResolver(),
-                });
-            }
-
-            actual = RecompressPngs(actual);
-            File.WriteAllText(actualSvgPath, actual, Encoding.UTF8);
-
-            var expected = File.Exists(expectedSvgPath) ? RecompressPngs(File.ReadAllText(expectedSvgPath, Encoding.UTF8)) : null;
-
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestCase("word-fonts.pdf")]
-        [TestCase("word-fonts-print.pdf")]
-        public void EmbedFontConversion(string fileName)
-        {
-            var expectedSvgPath = GetExpectedFilePath("embedded-" + fileName.Replace(".pdf", ".svg"));
-            var actualSvgPath = GetActualFilePath("sync", "embedded-" + fileName.Replace(".pdf", ".svg"));
-            var pdfPath = GetInputFilePath(fileName);
-
-            Directory.CreateDirectory(Path.GetDirectoryName(actualSvgPath));
-
-            string actual;
-            using (var doc = PdfDocument.Open(pdfPath))
-            {
-                actual = doc.Pages[0].ToSvgString(new SvgConversionOptions
-                {
-                    FontResolver = FontResolver.EmbedOpenType,
-                });
-            }
-
-            actual = RecompressPngs(actual);
-            File.WriteAllText(actualSvgPath, actual, Encoding.UTF8);
-
-            var expected = File.Exists(expectedSvgPath) ? RecompressPngs(File.ReadAllText(expectedSvgPath, Encoding.UTF8)) : null;
-
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestCaseSource(nameof(TestCases))]
-        public void ConvertSync(string fileName)
-        {
-            var expectedSvgPath = GetExpectedFilePath(fileName);
-            var actualSvgPath = GetActualFilePath("sync", fileName);
-            var pdfPath = GetInputFilePath(fileName);
-
-            Directory.CreateDirectory(Path.GetDirectoryName(actualSvgPath));
-
-            string actual;
-
-            using (var doc = PdfDocument.Open(pdfPath))
-            {
-                // Embedded as OpenType instead of WOFF, since the generated WOFF data can differ due to the zlib
-                // version used for compression.
-                actual = doc.Pages[0].ToSvgString(new SvgConversionOptions
-                {
-                    FontResolver = fileName.StartsWith("fonts-")
-                        ? FontResolver.EmbedOpenType
-                        : FontResolver.LocalFonts
-                });
+                actual = doc.Pages[0].ToSvgString(conversionOptions);
             }
 
             actual = RecompressPngs(actual);
@@ -290,27 +228,18 @@ namespace PdfToSvg.Tests
         }
 
 #if !NET40
-        [TestCaseSource(nameof(TestCases))]
-        public async Task ConvertAsync(string fileName)
+        private async Task ConvertAsync(string pdfName, string expectedSvgName, SvgConversionOptions conversionOptions)
         {
-            var expectedSvgPath = GetExpectedFilePath(fileName);
-            var actualSvgPath = GetActualFilePath("async", fileName);
-            var pdfPath = GetInputFilePath(fileName);
+            var expectedSvgPath = GetExpectedFilePath(expectedSvgName);
+            var actualSvgPath = GetActualFilePath("async", expectedSvgName);
+            var pdfPath = GetInputFilePath(pdfName);
 
             Directory.CreateDirectory(Path.GetDirectoryName(actualSvgPath));
 
             string actual;
-
             using (var doc = await PdfDocument.OpenAsync(pdfPath))
             {
-                // Embedded as OpenType instead of WOFF, since the generated WOFF data can differ due to the zlib
-                // version used for compression.
-                actual = await doc.Pages[0].ToSvgStringAsync(new SvgConversionOptions
-                {
-                    FontResolver = fileName.StartsWith("fonts-")
-                        ? FontResolver.EmbedOpenType
-                        : FontResolver.LocalFonts
-                });
+                actual = await doc.Pages[0].ToSvgStringAsync(conversionOptions);
             }
 
             actual = RecompressPngs(actual);
@@ -320,7 +249,52 @@ namespace PdfToSvg.Tests
 
             Assert.AreEqual(expected, actual);
         }
+
+        [TestCaseSource(nameof(TestCases))]
+        public async Task ConvertAsync(string fileName)
+        {
+            await ConvertAsync(fileName, fileName, new SvgConversionOptions
+            {
+                FontResolver = FontResolver.LocalFonts,
+            });
+        }
+
+        [TestCaseSource(nameof(FontTestCases))]
+        public async Task ConvertEmbeddedAsync(string fileName)
+        {
+            await ConvertAsync(fileName, "embedded-" + fileName, new SvgConversionOptions
+            {
+                FontResolver = FontResolver.EmbedOpenType,
+            });
+        }
 #endif
+
+        [TestCaseSource(nameof(TestCases))]
+        public void ConvertSync(string fileName)
+        {
+            ConvertSync(fileName, fileName, new SvgConversionOptions
+            {
+                FontResolver = FontResolver.LocalFonts,
+            });
+        }
+
+        [TestCaseSource(nameof(FontTestCases))]
+        public void ConvertEmbeddedSync(string fileName)
+        {
+            ConvertSync(fileName, "embedded-" + fileName, new SvgConversionOptions
+            {
+                FontResolver = FontResolver.EmbedOpenType,
+            });
+        }
+
+        [Test]
+        public void WebFontConversion()
+        {
+            ConvertSync("encoding.pdf", "encoding-webfont.svg", new SvgConversionOptions
+            {
+                FontResolver = new TestFontResolver(),
+            });
+        }
 
         public static List<TestCaseData> TestCases
         {
@@ -328,6 +302,17 @@ namespace PdfToSvg.Tests
             {
                 return Directory
                     .EnumerateFiles(Path.Combine(TestFiles.TestFilesPath, OwnTestFilesDir, InputDir), "*.pdf")
+                    .Select(path => new TestCaseData(Path.GetFileName(path)))
+                    .ToList();
+            }
+        }
+
+        public static List<TestCaseData> FontTestCases
+        {
+            get
+            {
+                return Directory
+                    .EnumerateFiles(Path.Combine(TestFiles.TestFilesPath, OwnTestFilesDir, InputDir), "fonts-*.pdf")
                     .Select(path => new TestCaseData(Path.GetFileName(path)))
                     .ToList();
             }

@@ -23,6 +23,8 @@ namespace PdfToSvg.Fonts
 
         public string Unicode = NotDef;
 
+        public CharInfo Clone() => (CharInfo)MemberwiseClone();
+
         public override string ToString()
         {
             var result = CharCode.ToString("x4") + " => ";

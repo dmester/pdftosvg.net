@@ -19,29 +19,57 @@ namespace PdfToSvg.Fonts
 
         public bool TryGetChar(uint charCode, out CharInfo foundChar) => chars.TryGetValue(charCode, out foundChar);
 
-        private string ResolveUnicode(CharInfo ch, UnicodeMap toUnicode)
+        private string ResolveUnicode(CharInfo ch, UnicodeMap toUnicode, bool preferSingleChar)
         {
             var pdfUnicode = toUnicode.GetUnicode(ch.CharCode);
 
-            // Prio 1: ToUnicode
-            if (pdfUnicode != null)
+            // Prio 1: Single char ToUnicode
+            if (pdfUnicode != null && (!preferSingleChar || IsSingleChar(pdfUnicode)))
             {
                 return pdfUnicode;
             }
 
             // Prio 2: Unicode from font CMap
-            if (ch.Unicode != null)
+            if (ch.Unicode.Length != 0 && ch.Unicode != CharInfo.NotDef)
             {
                 return ch.Unicode;
             }
 
-            // Prio 3: Unicode from glyph name
+            // Prio 3: Multi char ToUnicode
+            if (pdfUnicode != null)
+            {
+                return pdfUnicode;
+            }
+
+            // Prio 4: Unicode from glyph name
             if (AdobeGlyphList.TryGetUnicode(ch.GlyphName, out var aglUnicode))
             {
                 return aglUnicode;
             }
 
             return CharInfo.NotDef;
+        }
+
+        private static bool IsSingleChar(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                return false;
+            }
+
+            if (s.Length == 1)
+            {
+                return true;
+            }
+
+            Utf16Encoding.DecodeCodePoint(s, 0, out var codePointLength);
+
+            if (codePointLength == s.Length)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private void PopulateForEmbeddedFont(IEnumerable<CharInfo> chars, UnicodeMap toUnicode)
@@ -60,9 +88,8 @@ namespace PdfToSvg.Fonts
                     continue;
                 }
 
-                ch.Unicode = ResolveUnicode(ch, toUnicode);
-
-                Utf16Encoding.DecodeCodePoint(ch.Unicode, 0, out var codePointLength);
+                ch.Unicode = ResolveUnicode(ch, toUnicode, preferSingleChar: true);
+                ch.Unicode = Ligatures.Lookup(ch.Unicode);
 
                 if (ch.GlyphIndex == null)
                 {
@@ -70,7 +97,7 @@ namespace PdfToSvg.Fonts
                 }
                 else if (
                     ch.Unicode != CharInfo.NotDef &&
-                    ch.Unicode.Length == codePointLength &&
+                    IsSingleChar(ch.Unicode) &&
                     (
                         !usedUnicodeToGidMappings.TryGetValue(ch.Unicode, out var mappedGid) ||
                         mappedGid == ch.GlyphIndex.Value
@@ -114,7 +141,7 @@ namespace PdfToSvg.Fonts
         {
             foreach (var ch in chars)
             {
-                ch.Unicode = ResolveUnicode(ch, toUnicode);
+                ch.Unicode = ResolveUnicode(ch, toUnicode, preferSingleChar: false);
                 this.chars.TryAdd(ch.CharCode, ch);
             }
         }

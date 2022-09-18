@@ -25,10 +25,7 @@ namespace PdfToSvg.Fonts
     internal abstract class BaseFont : SourceFont
     {
         private static readonly Font fallbackSubstituteFont = new LocalFont("'Times New Roman',serif");
-        private static readonly PdfDictionary emptyDict = new PdfDictionary();
-
-        private readonly Dictionary<uint, CharInfo> chars = new();
-        private bool charsPopulated;
+        private static readonly PdfDictionary emptyDict = new();
 
         private string? name;
 
@@ -37,6 +34,7 @@ namespace PdfToSvg.Fonts
 
         protected PdfDictionary fontDict = emptyDict;
 
+        private readonly CharMap chars = new();
         protected UnicodeMap toUnicode = UnicodeMap.Empty;
         protected CMap cmap = CMap.OneByteIdentity;
         protected WidthMap widthMap = WidthMap.Empty;
@@ -104,10 +102,7 @@ namespace PdfToSvg.Fonts
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            lock (chars)
-            {
-                PopulateCharsForTextExtract();
-            }
+            chars.TryPopulate(GetChars, toUnicode, optimizeForEmbeddedFont: false);
         }
 
         private OpenTypeFont? GetOpenTypeFont(CancellationToken cancellationToken)
@@ -172,118 +167,6 @@ namespace PdfToSvg.Fonts
             yield break;
         }
 
-        private string ResolveUnicode(CharInfo ch)
-        {
-            var pdfUnicode = toUnicode.GetUnicode(ch.CharCode);
-
-            // Prio 1: ToUnicode
-            if (pdfUnicode != null)
-            {
-                return pdfUnicode;
-            }
-
-            // Prio 2: Unicode from font CMap
-            if (ch.Unicode != null)
-            {
-                return ch.Unicode;
-            }
-
-            // Prio 3: Unicode from glyph name
-            if (AdobeGlyphList.TryGetUnicode(ch.GlyphName, out var aglUnicode))
-            {
-                return aglUnicode;
-            }
-
-            return CharInfo.NotDef;
-        }
-
-        private void PopulateCharsForEmbeddedFont()
-        {
-            if (charsPopulated) return;
-
-            var chars = GetChars();
-
-            const char StartPrivateUseArea = '\uE000';
-            const char EndPrivateUseArea = '\uF8FF';
-
-            var usedUnicodeToGidMappings = new Dictionary<string, uint>();
-            var usedUnicode = new HashSet<string>();
-            var nextReplacementChar = StartPrivateUseArea;
-
-            foreach (var ch in chars)
-            {
-                if (this.chars.ContainsKey(ch.CharCode))
-                {
-                    continue;
-                }
-
-                ch.Unicode = ResolveUnicode(ch);
-
-                Utf16Encoding.DecodeCodePoint(ch.Unicode, 0, out var codePointLength);
-
-                if (ch.GlyphIndex == null)
-                {
-                    this.chars[ch.CharCode] = ch;
-                }
-                else if (
-                    ch.Unicode != CharInfo.NotDef &&
-                    ch.Unicode.Length == codePointLength &&
-                    (
-                        !usedUnicodeToGidMappings.TryGetValue(ch.Unicode, out var mappedGid) ||
-                        mappedGid == ch.GlyphIndex.Value
-                    ))
-                {
-                    this.chars[ch.CharCode] = ch;
-                    usedUnicodeToGidMappings[ch.Unicode] = ch.GlyphIndex.Value;
-                }
-                else
-                {
-                    // Remap
-                    var replacement = new string(nextReplacementChar, 1);
-
-                    while (!usedUnicode.Add(replacement))
-                    {
-                        if (nextReplacementChar < EndPrivateUseArea)
-                        {
-                            nextReplacementChar++;
-                            replacement = new string(nextReplacementChar, 1);
-                        }
-                        else
-                        {
-                            replacement = null;
-                            break;
-                        }
-                    }
-
-                    if (replacement != null)
-                    {
-                        ch.Unicode = replacement;
-                        nextReplacementChar++;
-
-                        this.chars[ch.CharCode] = ch;
-                        usedUnicodeToGidMappings[ch.Unicode] = ch.GlyphIndex.Value;
-                    }
-                }
-            }
-
-            charsPopulated = true;
-        }
-
-        protected void PopulateCharsForTextExtract()
-        {
-            if (charsPopulated) return;
-
-            var chars = GetChars();
-
-            foreach (var ch in chars)
-            {
-                ch.Unicode = ResolveUnicode(ch);
-                this.chars.TryAdd(ch.CharCode, ch);
-            }
-
-            charsPopulated = true;
-        }
-
         private OpenTypeFont SanitizeOpenTypeFont(OpenTypeFont inputFont)
         {
             var font = new OpenTypeFont();
@@ -311,11 +194,11 @@ namespace PdfToSvg.Fonts
             }
 
             var allChars = chars
-                .Where(ch => ch.Value.GlyphIndex != null)
+                .Where(ch => ch.GlyphIndex != null)
                 .Select(ch =>
                 {
-                    var unicode = Utf16Encoding.DecodeCodePoint(ch.Value.Unicode, 0, out var _);
-                    return new OpenTypeCMapRange(unicode, unicode, ch.Value.GlyphIndex!.Value);
+                    var unicode = Utf16Encoding.DecodeCodePoint(ch.Unicode, 0, out var _);
+                    return new OpenTypeCMapRange(unicode, unicode, ch.GlyphIndex!.Value);
                 })
                 .DistinctBy(ch => ch.StartUnicode);
 
@@ -421,14 +304,10 @@ namespace PdfToSvg.Fonts
                 throw openTypeFontException ?? new NotSupportedException("This font cannot be converted to OpenType format.");
             }
 
-            lock (chars)
-            {
-                PopulateCharsForEmbeddedFont();
-            }
+            chars.TryPopulate(GetChars, toUnicode, optimizeForEmbeddedFont: true);
 
             var sanitizedOtf = SanitizeOpenTypeFont(openTypeFont);
             var binaryOtf = sanitizedOtf.ToByteArray();
-            charsPopulated = true;
             return binaryOtf;
         }
 
@@ -455,7 +334,7 @@ namespace PdfToSvg.Fonts
 
                 if (!character.IsEmpty)
                 {
-                    if (!chars.TryGetValue(character.CharCode, out var charInfo))
+                    if (!chars.TryGetChar(character.CharCode, out var charInfo))
                     {
                         charInfo = new CharInfo
                         {

@@ -1,6 +1,6 @@
 # Limitations
 
-PDF is a very feature rich file format, and PdfToSvg.NET does not support all of them. If a PDF is using an unsupported feature, the output might not look idential to what you see in other PDF readers.
+PDF is a very feature rich file format, and PdfToSvg.NET does not support all of them. If a PDF is using an unsupported feature, the output might not look identical to what you see in other PDF readers.
 
 This is a incomplete summary of non-supported features.
 

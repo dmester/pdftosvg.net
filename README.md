@@ -13,7 +13,7 @@ Fully managed library for converting PDF files to SVG. Potential usage is seamle
 
 ## Features
 
-* Extracts text and images from PDF files into SVG
+* Extracts text, fonts and images from PDF files into SVG
 * Supports .NET 5, .NET Core 1.0, .NET Standard 1.6, .NET Framework 4.0 and later
 * Focus on producing compact SVG markup ready for the web
 * Dependency free

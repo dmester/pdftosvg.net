@@ -4,14 +4,6 @@ PDF is a very feature rich file format, and PdfToSvg.NET does not support all of
 
 This is a incomplete summary of non-supported features.
 
-## Embedded fonts
-
-Fonts embedded in a PDF file are not extracted by PdfToSvg.NET. Currently this is not a high priority feature to implement, since the main usage is to produce compact SVG markup to be inlined on websites without having to serve the complete PDF files.
-
-Usually subsetted fonts are embedded into PDF files. Embedded fonts might consequently differ from file to file, even for the same original font, depending on the characters used in the file.
-
-To leverage better client side caching of font resources, it is because of this better to use fonts located outside the SVG. By default PdfToSvg.NET will try to detect commonly used fonts and replace them with an appropriate substitute font, but you can also specify a [custom font resolver](font-resolver.md) to specify which font to be used as substitute for the embedded fonts.
-
 ## Image formats
 
 The by far most commonly used image formats in PDFs are images encoded with DCTDecode (JPEG) and FlateDecode (PNG alike). Those are supported, with the exception that DCTDecode is only supported for RGB images.

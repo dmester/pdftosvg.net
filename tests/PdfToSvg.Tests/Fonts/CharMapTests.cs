@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace PdfToSvg.Tests.Fonts
 {
@@ -136,6 +137,45 @@ namespace PdfToSvg.Tests.Fonts
             Assert.IsTrue(optimizedForTextExtract.TryGetChar((uint)charCode, out var ch), nameof(CharMap.TryGetChar));
             Assert.AreEqual(expectedUnicode, ch.Unicode, nameof(ch.Unicode));
             Assert.AreEqual(expectedGlyph, ch.GlyphIndex, nameof(ch.GlyphIndex));
+        }
+
+        [Test]
+        public void PopulateOnlyOnce()
+        {
+            var map = new CharMap();
+            map.TryPopulate(() => new[] { new CharInfo { CharCode = 1, Unicode = "a" } }, UnicodeMap.Empty, false);
+            map.TryPopulate(() => new[] { new CharInfo { CharCode = 2, Unicode = "b" } }, UnicodeMap.Empty, false);
+
+            Assert.IsTrue(map.TryGetChar(1, out _));
+            Assert.IsFalse(map.TryGetChar(2, out _));
+        }
+
+        [Test]
+        public void DisallowConcurrentPopulationToPreventDeadlocks()
+        {
+            using var startEvent = new ManualResetEventSlim();
+            using var stopEvent = new ManualResetEventSlim();
+
+            var map = new CharMap();
+
+            var thread = new Thread(_ =>
+            {
+                map.TryPopulate(() =>
+                {
+                    startEvent.Set();
+                    stopEvent.Wait(5000);
+                    return Enumerable.Empty<CharInfo>();
+                }, UnicodeMap.Empty, false);
+            });
+
+            thread.IsBackground = true;
+            thread.Start();
+
+            Assert.IsTrue(startEvent.Wait(5000), "Thread did not start");
+            Assert.IsFalse(map.TryPopulate(() => new[] { new CharInfo { CharCode = 2, Unicode = "b" } }, UnicodeMap.Empty, false));
+
+            stopEvent.Set();
+            thread.Join();
         }
     }
 }

@@ -155,7 +155,7 @@ namespace PdfToSvg.Fonts
 
             if (!Monitor.TryEnter(chars))
             {
-                throw new InvalidOperationException($"The {nameof(CharMap)} is already populating.");
+                return false;
             }
 
             try

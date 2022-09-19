@@ -117,7 +117,9 @@ namespace PdfToSvg.Fonts
                     {
                         using var fontFileStream = fontFile2.OpenDecoded(cancellationToken);
                         var fontFileData = fontFileStream.ToArray();
-                        return OpenTypeFont.Parse(fontFileData);
+                        var openTypeFont = OpenTypeFont.Parse(fontFileData);
+                        OpenTypeSanitizer.Sanitize(openTypeFont);
+                        return openTypeFont;
                     }
                     catch (Exception ex)
                     {
@@ -134,7 +136,9 @@ namespace PdfToSvg.Fonts
                         {
                             using var fontFileStream = fontFile3.Stream.OpenDecoded(cancellationToken);
                             var fontFileData = fontFileStream.ToArray();
-                            return OpenTypeFont.Parse(fontFileData);
+                            var openTypeFont = OpenTypeFont.Parse(fontFileData);
+                            OpenTypeSanitizer.Sanitize(openTypeFont);
+                            return openTypeFont;
                         }
                         catch (Exception ex)
                         {
@@ -149,7 +153,13 @@ namespace PdfToSvg.Fonts
                             var fontFileData = fontFileStream.ToArray();
 
                             var compactFontSet = CompactFontParser.Parse(fontFileData, maxFontCount: 1);
-                            return OpenTypeFont.FromCompactFont(compactFontSet.Fonts.First());
+
+                            var openTypeFont = new OpenTypeFont();
+                            var cffTable = new CffTable { Content = compactFontSet };
+                            openTypeFont.Tables.Add(cffTable);
+
+                            OpenTypeSanitizer.Sanitize(openTypeFont);
+                            return openTypeFont;
                         }
                         catch (Exception ex)
                         {
@@ -167,7 +177,7 @@ namespace PdfToSvg.Fonts
             yield break;
         }
 
-        private OpenTypeFont SanitizeOpenTypeFont(OpenTypeFont inputFont)
+        private OpenTypeFont RecreateOpenTypeCMap(OpenTypeFont inputFont)
         {
             var font = new OpenTypeFont();
 
@@ -186,12 +196,6 @@ namespace PdfToSvg.Fonts
 
             font.Tables.Add(cmapTable);
             font.Tables.Add(nameTable);
-
-            if (!font.Tables.OfType<PostTable>().Any())
-            {
-                // Required by OTS sanitizer
-                font.Tables.Add(new PostTableV3());
-            }
 
             var allChars = chars
                 .Where(ch => ch.GlyphIndex != null)
@@ -228,6 +232,9 @@ namespace PdfToSvg.Fonts
                 .OrderBy(x => x.NameID)
 
                 .ToArray();
+
+            // This is mainly here to update some cmap dependent OS/2 fields
+            OpenTypeSanitizer.Sanitize(font);
 
             return font;
         }
@@ -306,8 +313,8 @@ namespace PdfToSvg.Fonts
 
             chars.TryPopulate(GetChars, toUnicode, optimizeForEmbeddedFont: true);
 
-            var sanitizedOtf = SanitizeOpenTypeFont(openTypeFont);
-            var binaryOtf = sanitizedOtf.ToByteArray();
+            var preparedOtf = RecreateOpenTypeCMap(openTypeFont);
+            var binaryOtf = preparedOtf.ToByteArray();
             return binaryOtf;
         }
 

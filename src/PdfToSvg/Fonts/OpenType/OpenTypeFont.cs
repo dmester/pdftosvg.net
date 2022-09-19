@@ -78,11 +78,6 @@ namespace PdfToSvg.Fonts.OpenType
             return font;
         }
 
-        public static OpenTypeFont FromCompactFont(CompactFont font)
-        {
-            return CffToOtfConverter.Convert(font);
-        }
-
         public byte[] ToByteArray()
         {
             var writer = new OpenTypeWriter();

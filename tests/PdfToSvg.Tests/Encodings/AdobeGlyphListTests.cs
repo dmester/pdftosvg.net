@@ -40,9 +40,18 @@ namespace PdfToSvg.Tests.Encodings
         [TestCase("a10", "\u2721")]
         [TestCase("a169", "\u279E")]
 
-        public void Map(string source, string expectedResult)
+        public void MapToUnicode(string source, string expectedResult)
         {
             Assert.AreEqual(expectedResult != null, AdobeGlyphList.TryGetUnicode(source, out var actualResult));
+            Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [TestCase("\u013B", "Lcedilla")]
+        [TestCase("\u20AC\u0308", "uni20AC0308")]
+        [TestCase(" ", "space")]
+        public void MapToGlyphName(string source, string expectedResult)
+        {
+            Assert.AreEqual(expectedResult != null, AdobeGlyphList.TryGetGlyphName(source, out var actualResult));
             Assert.AreEqual(expectedResult, actualResult);
         }
     }

@@ -4548,7 +4548,8 @@ namespace PdfToSvg.Encodings
 
         static AdobeGlyphList()
         {
-            for (var i = 0; i < glyphlist.Length; i += 2)
+            // Populate backwards to keep the first name in Unicode to glyph name lookup
+            for (var i = glyphlist.Length - 2; i >= 0; i -= 2)
             {
                 glyphNameToUnicode[glyphlist[i]] = glyphlist[i + 1];
                 unicodeToGlyphName[glyphlist[i + 1]] = glyphlist[i];

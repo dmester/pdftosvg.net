@@ -39,6 +39,11 @@ TTX can be used to dump the font to XML format for inspection. Very good help du
 
 https://github.com/fonttools/fonttools
 
+### OTMaster Light
+Show tables of OpenType fonts in a GUI.
+
+https://www.fontmaster.nl/test-demo.html
+
 ### OTS
 Can be used to validate ttf, otf, woff, woff2. Browsers are using this software for verifying fonts.
 

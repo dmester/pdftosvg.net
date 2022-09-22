@@ -37,6 +37,7 @@ namespace PdfToSvg
 
         /// <summary>
         /// Gets the default font resolver used when no resolver is explicitly specified.
+        /// Currently <see cref="EmbedWoff"/> is the default font resolver, but this can change in the future.
         /// </summary>
         public static FontResolver Default { get; } = EmbedWoff;
 

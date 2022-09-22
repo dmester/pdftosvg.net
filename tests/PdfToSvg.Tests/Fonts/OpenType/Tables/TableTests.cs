@@ -275,12 +275,38 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
                         Language = 123,
                         StartCode = new ushort[] { 1, 2, 3, 4 },
                         EndCode = new ushort[] { 5, 6, 7, 8 },
-                        IdDelta= new short[] { 9, -10, 11, -12 },
+                        IdDelta = new short[] { 9, -10, 11, -12 },
                         IdRangeOffsets = new ushort[] { 13, 14, 15, 16 },
                         GlyphIdArray = new ushort[] { 123, 124, 125, 126, 127, 128, 129, 130, 131 },
                     },
                 },
-
+                
+                // Format 6
+                new CMapEncodingRecord
+                {
+                    EncodingID = 10,
+                    PlatformID = OpenTypePlatformID.Macintosh,
+                    Content = new CMapFormat6
+                    {
+                        Language = 124,
+                        FirstCode = 333,
+                        GlyphIdArray = new ushort[] { 124, 125, 126, 127, 128, 129, 130, 131, 132 },
+                    },
+                },
+                
+                // Format 10
+                new CMapEncodingRecord
+                {
+                    EncodingID = 10,
+                    PlatformID = OpenTypePlatformID.Macintosh,
+                    Content = new CMapFormat10
+                    {
+                        Language = 1240000,
+                        StartCharCode = 3330000,
+                        GlyphIdArray = new ushort[] { 124, 125, 126, 127, 128, 129, 130, 131, 132 },
+                    },
+                },
+                
                 // Format 12
                 new CMapEncodingRecord
                 {

@@ -46,23 +46,21 @@ namespace PdfToSvg.Fonts.OpenType.Tables
                 var localReader = reader.Slice(record.Offset, reader.Length - record.Offset);
                 var format = localReader.ReadUInt16();
 
-                switch (format)
+                var content = format switch
                 {
-                    case 0:
-                        record.Record.Content = ReadFormat0(localReader);
-                        break;
-                    case 4:
-                        record.Record.Content = ReadFormat4(localReader);
-                        break;
-                    case 12:
-                        record.Record.Content = ReadFormat12(localReader);
-                        break;
+                    0 => ReadFormat0(localReader),
+                    4 => ReadFormat4(localReader),
+                    6 => ReadFormat6(localReader),
+                    10 => ReadFormat10(localReader),
+                    12 => ReadFormat12(localReader),
+                    _ => (ICMapFormat?)null,
+                };
 
-                    default:
-                        continue;
+                if (content != null)
+                {
+                    record.Record.Content = content;
+                    readRecords.Add(record.Record);
                 }
-
-                readRecords.Add(record.Record);
             }
 
             table.EncodingRecords = readRecords.ToArray();
@@ -125,6 +123,50 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             }
 
             format.GlyphIdArray = new ushort[(reader.Length - reader.Position) / 2];
+
+            for (var i = 0; i < format.GlyphIdArray.Length; i++)
+            {
+                format.GlyphIdArray[i] = reader.ReadUInt16();
+            }
+
+            return format;
+        }
+
+        private static CMapFormat6 ReadFormat6(OpenTypeReader reader)
+        {
+            var format = new CMapFormat6();
+
+            var length = reader.ReadUInt16();
+            reader = reader.Slice(4, length - 4);
+
+            format.Language = reader.ReadUInt16();
+            format.FirstCode = reader.ReadUInt16();
+            var entryCount = reader.ReadUInt16();
+
+            format.GlyphIdArray = new ushort[entryCount];
+
+            for (var i = 0; i < format.GlyphIdArray.Length; i++)
+            {
+                format.GlyphIdArray[i] = reader.ReadUInt16();
+            }
+
+            return format;
+        }
+
+        private static CMapFormat10 ReadFormat10(OpenTypeReader reader)
+        {
+            var format = new CMapFormat10();
+
+            reader.ReadUInt16(); // Reserved
+
+            var length = reader.ReadUInt32();
+            reader = reader.Slice(8, (int)length - 8);
+
+            format.Language = reader.ReadUInt32();
+            format.StartCharCode = reader.ReadUInt32();
+            var entryCount = reader.ReadUInt32();
+
+            format.GlyphIdArray = new ushort[entryCount];
 
             for (var i = 0; i < format.GlyphIdArray.Length; i++)
             {
@@ -221,6 +263,47 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             lengthField.WriteUInt16((ushort)(writer.Position - startPos));
         }
 
+        private static void WriteFormat6(OpenTypeWriter writer, OpenTypePlatformID platform, CMapFormat6 format6)
+        {
+            var startPos = writer.Position;
+
+            var entryCount = (ushort)format6.GlyphIdArray.Length;
+
+            writer.WriteUInt16(6);
+            writer.WriteField16(out var lengthField);
+            writer.WriteUInt16(platform == OpenTypePlatformID.Macintosh ? format6.Language : (ushort)0);
+            writer.WriteUInt16(format6.FirstCode);
+            writer.WriteUInt16(entryCount);
+
+            foreach (var glyphId in format6.GlyphIdArray)
+            {
+                writer.WriteUInt16(glyphId);
+            }
+
+            lengthField.WriteUInt16((ushort)(writer.Position - startPos));
+        }
+
+        private static void WriteFormat10(OpenTypeWriter writer, OpenTypePlatformID platform, CMapFormat10 format10)
+        {
+            var startPos = writer.Position;
+
+            var entryCount = (ushort)format10.GlyphIdArray.Length;
+
+            writer.WriteUInt16(10);
+            writer.WriteUInt16(0); // Reserved
+            writer.WriteField32(out var lengthField);
+            writer.WriteUInt32(platform == OpenTypePlatformID.Macintosh ? format10.Language : 0);
+            writer.WriteUInt32(format10.StartCharCode);
+            writer.WriteUInt32(entryCount);
+
+            foreach (var glyphId in format10.GlyphIdArray)
+            {
+                writer.WriteUInt16(glyphId);
+            }
+
+            lengthField.WriteInt32(writer.Position - startPos);
+        }
+
         private static void WriteFormat12(OpenTypeWriter writer, OpenTypePlatformID platform, CMapFormat12 format12)
         {
             var startPos = writer.Position;
@@ -269,17 +352,34 @@ namespace PdfToSvg.Fonts.OpenType.Tables
 
                 encodingOffsetFields[i].WriteInt32(writer.Position - tableStartPos);
 
-                if (encoding.Content is CMapFormat0 format0)
+                switch (encoding.Content)
                 {
-                    WriteFormat0(writer, encoding.PlatformID, format0);
-                }
-                else if (encoding.Content is CMapFormat4 format4)
-                {
-                    WriteFormat4(writer, encoding.PlatformID, format4);
-                }
-                else if (encoding.Content is CMapFormat12 format12)
-                {
-                    WriteFormat12(writer, encoding.PlatformID, format12);
+                    case CMapFormat0 format0:
+                        WriteFormat0(writer, encoding.PlatformID, format0);
+                        break;
+
+                    case CMapFormat4 format4:
+                        WriteFormat4(writer, encoding.PlatformID, format4);
+                        break;
+
+                    case CMapFormat6 format6:
+                        WriteFormat6(writer, encoding.PlatformID, format6);
+                        break;
+
+                    case CMapFormat10 format10:
+                        WriteFormat10(writer, encoding.PlatformID, format10);
+                        break;
+
+                    case CMapFormat12 format12:
+                        WriteFormat12(writer, encoding.PlatformID, format12);
+                        break;
+
+                    case null:
+                        throw new ArgumentException("CMap encoding lacked content");
+
+                    default:
+                        throw new NotSupportedException(
+                            "Unsupported OpenType CMap table format type " + encoding.Content?.GetType().FullName);
                 }
             }
         }
@@ -289,7 +389,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     {
         public OpenTypePlatformID PlatformID;
         public ushort EncodingID;
-        public ICMapFormat? Content;
+        public ICMapFormat Content = new CMapFormat12();
     }
 
     internal interface ICMapFormat { }
@@ -308,6 +408,20 @@ namespace PdfToSvg.Fonts.OpenType.Tables
         public short[] IdDelta = ArrayUtils.Empty<short>(); // Len = segCount
         public ushort[] IdRangeOffsets = ArrayUtils.Empty<ushort>(); // Len = segCount
         public ushort[] GlyphIdArray = ArrayUtils.Empty<ushort>(); // Len = arbitrary
+    }
+
+    internal class CMapFormat6 : ICMapFormat
+    {
+        public ushort Language;
+        public ushort FirstCode;
+        public ushort[] GlyphIdArray = ArrayUtils.Empty<ushort>(); // Len = entryCount
+    }
+
+    internal class CMapFormat10 : ICMapFormat
+    {
+        public uint Language;
+        public uint StartCharCode;
+        public ushort[] GlyphIdArray = ArrayUtils.Empty<ushort>(); // Len = entryCount
     }
 
     internal class CMapFormat12 : ICMapFormat

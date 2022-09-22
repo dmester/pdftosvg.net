@@ -24,13 +24,15 @@ namespace PdfToSvg.Fonts.OpenType
 
         public static List<OpenTypeCMapRange>? GetRanges(ICMapFormat? cmap)
         {
-            switch (cmap)
+            return cmap switch
             {
-                case CMapFormat0 f0: return GetRanges(f0);
-                case CMapFormat4 f4: return GetRanges(f4);
-                case CMapFormat12 f12: return GetRanges(f12);
-                default: return null;
-            }
+                CMapFormat0 format0 => GetRanges(format0),
+                CMapFormat4 format4 => GetRanges(format4),
+                CMapFormat6 format6 => GetRanges(format6),
+                CMapFormat10 format10 => GetRanges(format10),
+                CMapFormat12 format12 => GetRanges(format12),
+                _ => null,
+            };
         }
 
         public static List<OpenTypeCMapRange> GetRanges(CMapFormat0 cmap)
@@ -105,6 +107,46 @@ namespace PdfToSvg.Fonts.OpenType
                             break;
                         }
                     }
+                }
+            }
+
+            return ranges;
+        }
+
+        public static List<OpenTypeCMapRange> GetRanges(CMapFormat6 cmap)
+        {
+            var ranges = new List<OpenTypeCMapRange>();
+
+            for (var i = 0u; i < cmap.GlyphIdArray.Length; i++)
+            {
+                var glyphId = cmap.GlyphIdArray[i];
+                if (glyphId != 0)
+                {
+                    ranges.Add(new OpenTypeCMapRange(
+                        startUnicode: cmap.FirstCode + i,
+                        endUnicode: cmap.FirstCode + i,
+                        startGlyphIndex: glyphId
+                        ));
+                }
+            }
+
+            return ranges;
+        }
+
+        public static List<OpenTypeCMapRange> GetRanges(CMapFormat10 cmap)
+        {
+            var ranges = new List<OpenTypeCMapRange>();
+
+            for (var i = 0u; i < cmap.GlyphIdArray.Length; i++)
+            {
+                var glyphId = cmap.GlyphIdArray[i];
+                if (glyphId != 0)
+                {
+                    ranges.Add(new OpenTypeCMapRange(
+                        startUnicode: cmap.StartCharCode + i,
+                        endUnicode: cmap.StartCharCode + i,
+                        startGlyphIndex: glyphId
+                        ));
                 }
             }
 

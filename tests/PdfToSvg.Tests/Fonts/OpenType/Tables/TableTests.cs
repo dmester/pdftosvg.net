@@ -228,7 +228,56 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
         }
 
         [Test]
-        public void TestPostTable()
+        public void TestPostTableV1()
+        {
+            var sourceTable = new PostTableV1();
+
+            FillData(sourceTable);
+
+            var resultTable = RoundTrip(sourceTable, PostTableV1.Read);
+
+            Assert.AreEqual(
+                JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
+                JsonConvert.SerializeObject(resultTable, Formatting.Indented));
+        }
+
+        [Test]
+        public void TestPostTableV2()
+        {
+            var sourceTable = new PostTableV2();
+
+            FillData(sourceTable);
+
+            var resultTable = RoundTrip(sourceTable, PostTableV2.Read);
+
+            Assert.AreEqual(
+                JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
+                JsonConvert.SerializeObject(resultTable, Formatting.Indented));
+        }
+
+        [Test]
+        public void TestPostTableV25()
+        {
+            var sourceTable = new PostTableV25();
+
+            FillData(sourceTable);
+
+            var writer = new OpenTypeWriter();
+            ((IBaseTable)sourceTable).Write(writer);
+
+            var buffer = writer.ToArray();
+            var reader = new OpenTypeReader(buffer, 0, buffer.Length);
+
+            // Converted OTF to v2
+            var resultTable = (PostTableV2)PostTableV2.Read(reader);
+
+            Assert.AreEqual(
+                JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
+                JsonConvert.SerializeObject(resultTable, Formatting.Indented));
+        }
+
+        [Test]
+        public void TestPostTableV3()
         {
             var sourceTable = new PostTableV3();
 

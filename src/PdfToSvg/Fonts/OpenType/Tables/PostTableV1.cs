@@ -16,6 +16,11 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     {
         private const uint Version = 0x00010000;
 
+        public PostTableV1()
+        {
+            GlyphNames = (string[])MacintoshNames.Clone();
+        }
+
         protected override void Write(OpenTypeWriter writer)
         {
             writer.WriteUInt32(Version);
@@ -32,10 +37,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             }
 
             var table = new PostTableV1();
-
             table.ReadHeader(reader);
-            table.GlyphNames = (string[])MacintoshNames.Clone();
-
             return table;
         }
     }

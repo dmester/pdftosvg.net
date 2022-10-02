@@ -45,13 +45,20 @@ namespace PdfToSvg.Parsing
             using var reader = file.CreateReader(cancellationToken);
             var parser = new DocumentParser(file, reader);
 
+            var objects = new Dictionary<PdfObjectId, object?>();
             var startxref = parser.ReadStartXRef();
             var xrefTable = parser.ReadXRefTables(startxref, cancellationToken);
-            var objects = parser.ReadAllObjects(xrefTable, cancellationToken);
+
+            parser.ReadUncompressedObjects(objects, xrefTable, cancellationToken);
 
             InlineReferences(objects, xrefTable.Trailer, recurse: false);
 
             var decrypted = Decrypt(xrefTable.Trailer, objects, options, out var permissions);
+
+            parser.ReadCompressedObjects(objects, xrefTable, cancellationToken);
+
+            // Inline the trailer again, since it might refer to compressed objects
+            InlineReferences(objects, xrefTable.Trailer, recurse: false);
 
             InlineReferences(objects);
 
@@ -74,13 +81,20 @@ namespace PdfToSvg.Parsing
             using var reader = await file.CreateReaderAsync(cancellationToken).ConfigureAwait(false);
             var parser = new DocumentParser(file, reader);
 
+            var objects = new Dictionary<PdfObjectId, object?>();
             var startxref = await parser.ReadStartXRefAsync().ConfigureAwait(false);
             var xrefTable = parser.ReadXRefTables(startxref, cancellationToken); // TODO make async
-            var objects = parser.ReadAllObjects(xrefTable, cancellationToken); // TODO make async
+
+            parser.ReadUncompressedObjects(objects, xrefTable, cancellationToken); // TODO make async
 
             InlineReferences(objects, xrefTable.Trailer, recurse: false);
 
             var decrypted = Decrypt(xrefTable.Trailer, objects, options, out var permissions);
+
+            parser.ReadCompressedObjects(objects, xrefTable, cancellationToken); // TODO make async
+
+            // Inline the trailer again, since it might refer to compressed objects
+            InlineReferences(objects, xrefTable.Trailer, recurse: false);
 
             InlineReferences(objects);
 

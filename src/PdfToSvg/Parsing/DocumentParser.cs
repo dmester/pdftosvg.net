@@ -341,31 +341,12 @@ namespace PdfToSvg.Parsing
             return stream.Filters.Decode(encodedStream);
         }
 
-        public Dictionary<PdfObjectId, object?> ReadAllObjects(XRefTable xrefTable, CancellationToken cancellationToken)
+        public void ReadCompressedObjects(Dictionary<PdfObjectId, object?> objects, XRefTable xrefTable, CancellationToken cancellationToken)
         {
-            var objects = new Dictionary<PdfObjectId, object?>();
-
-            var uncompressedObjectRefs = xrefTable
-                .Where(xref => xref.Type == XRefEntryType.NotFree)
-                .OrderBy(xref => xref.ByteOffset);
-
             var compressedObjects = xrefTable
                 .Where(xref => xref.Type == XRefEntryType.Compressed)
                 .GroupBy(xref => new PdfObjectId(xref.CompressedObjectNumber, 0))
                 .OrderBy(group => xrefTable.TryGetValue(group.Key, out var container) ? container.ByteOffset : 0);
-
-            foreach (var uncompressedObjectRef in uncompressedObjectRefs)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                lexer.Seek(uncompressedObjectRef.ByteOffset, SeekOrigin.Begin);
-
-                var obj = ReadIndirectObject(objects);
-                if (obj != null)
-                {
-                    objects[obj.ID] = obj.Value;
-                }
-            }
 
             foreach (var compressedObject in compressedObjects)
             {
@@ -399,7 +380,27 @@ namespace PdfToSvg.Parsing
                 }
             }
 
-            return objects;
+        }
+
+        public void ReadUncompressedObjects(Dictionary<PdfObjectId, object?> objects, XRefTable xrefTable, CancellationToken cancellationToken)
+        {
+            var uncompressedObjectRefs = xrefTable
+                .Where(xref => xref.Type == XRefEntryType.NotFree)
+                .OrderBy(xref => xref.ByteOffset);
+
+
+            foreach (var uncompressedObjectRef in uncompressedObjectRefs)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                lexer.Seek(uncompressedObjectRef.ByteOffset, SeekOrigin.Begin);
+
+                var obj = ReadIndirectObject(objects);
+                if (obj != null)
+                {
+                    objects[obj.ID] = obj.Value;
+                }
+            }
         }
 
         private XRefTable RebuildXRefTable(CancellationToken cancellationToken)

@@ -23,6 +23,7 @@ namespace PdfToSvg.Tests.Security
             new TestCaseData(null, "protected-aes128.pdf"),
             new TestCaseData(UserPassword, "protected-aes256-rev5.pdf"),
             new TestCaseData(null, "protected-aes256-rev6.pdf"),
+            new TestCaseData(null, "protected-aes256-rev6-objstm.pdf"),
             new TestCaseData(null, "protected-aes256-rev6-identity.pdf"),
             new TestCaseData(OwnerPassword, "protected-40-userpw.pdf"),
             new TestCaseData(OwnerPassword, "protected-128-allowextract.pdf"),

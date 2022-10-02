@@ -16,9 +16,6 @@ namespace PdfToSvg.Fonts.CharStrings
         private int cursor = 0;
         private int endIndex;
 
-        /// <param name="data">Input data buffer.</param>
-        /// <param name="startIndex">Inclusive start index.</param>
-        /// <param name="endIndex">Exclusive end index.</param>
         public Type2CharStringLexer(ArraySegment<byte> data)
         {
             this.data = data.Array;

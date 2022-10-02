@@ -33,11 +33,14 @@ namespace PdfToSvg
         }
 
         /// <summary>
-        /// Gets or sets an implementation that will be used for deciding what font to be used for text included in the SVG.
+        /// Gets or sets an implementation that will be used for deciding what font to be used for text included in the
+        /// SVG.
         /// </summary>
         /// <remarks>
-        /// The default implementation <see cref="StandardFontResolver"/> will try to detect standard fonts and assume that the
-        /// client have those installed. You can implement a custom font resolver for e.g. embedding fonts as WOFF or WOFF2 files.
+        /// The default implementation will in first hand try to embed fonts as WOFF files, and if not possible,
+        /// fallback to detecting standard fonts and assuming the client has those installed. You can implement a custom
+        /// font resolver for e.g. using custom WOFF or WOFF2 files, or saving the embedded fonts as separate font
+        /// files.
         /// </remarks>
         public FontResolver FontResolver
         {

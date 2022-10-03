@@ -24,6 +24,7 @@ namespace PdfToSvg
         /// </summary>
         /// <returns>Binary content of the OpenType font.</returns>
         /// <exception cref="NotSupportedException">This font cannot be converted to an OpenType font.</exception>
+        /// <exception cref="PdfException">The conversion failed.</exception>
         public abstract byte[] ToOpenType();
 
         /// <summary>
@@ -31,6 +32,7 @@ namespace PdfToSvg
         /// </summary>
         /// <returns>Binary content of the WOFF font.</returns>
         /// <exception cref="NotSupportedException">This font cannot be converted to a WOFF font.</exception>
+        /// <exception cref="PdfException">The conversion failed.</exception>
         public abstract byte[] ToWoff();
     }
 }

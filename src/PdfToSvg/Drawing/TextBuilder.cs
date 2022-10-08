@@ -90,7 +90,12 @@ namespace PdfToSvg.Drawing
 
             transform.DecomposeTranslate(out translateX, out translateY, out remainingTransform);
 
-            if (scale == previousScale &&
+            if (currentParagraph != null &&
+
+                // SVG does not support negative dx placing the cursor before the <text> x position
+                translateX >= currentParagraph.X &&
+
+                scale == previousScale &&
                 translateY == previousTranslateY &&
                 remainingTransform == previousTransform &&
 

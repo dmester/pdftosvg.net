@@ -240,6 +240,7 @@ namespace PdfToSvg.Drawing
                 textStyle = graphicsState.Clone();
                 textStyle.FontSize = normalizedFontSize;
                 textStyle.TextScaling = Math.Abs(graphicsState.TextScaling);
+                textStyle.TextCharSpacingPx *= Math.Abs(scale);
             }
 
             return textStyle;

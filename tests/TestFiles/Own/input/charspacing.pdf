@@ -1,0 +1,57 @@
+%PDF-1.7
+xref
+0 5
+0000000000 65535 f
+0000000160 00000 n
+0000000211 00000 n
+0000000275 00000 n
+0000000545 00000 n
+trailer
+<< /Root 1 0 R  /Size 5 >>
+
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >> endobj
+
+3 0 obj 
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj << /Length 556 >>
+stream
+   0 0 0 rg
+   BT
+      /F1 1 Tf
+      1.8038 Tc 0 Tw 12 0 0 12 70.86 653.72028 Tm
+      [(1S)1806(c)1805(o)1805(p)1800(e)]TJ
+      
+      12 0 0 12 156.8 653.72028 Tm
+      [1806(s)] TJ
+      
+      /F1 1 Tf
+      -0.0002 Tc 0 Tw 12 0 0 12 70.86 635.22028 Tm
+      [(2)-1804(C)2(onformance)]TJ
+      
+      0 Tc 12 0 0 12 70.86 560.72028 Tm
+      (Note:) Tj
+      0 Tc 12 0 0 12 70.86 543.72028 Tm
+      (Verify that the first line consists of a single <text> element) Tj
+      
+   ET
+   
+   67 670 m 67 628 l s
+   96 670 m 96 628 l s
+endstream
+endobj
+
+startxref
+10
+%%EOF

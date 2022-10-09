@@ -30,7 +30,7 @@ namespace PdfToSvg
     /// </code>
     /// <para>
     ///     By default, PdfToSvg.NET will try to extract fonts embedded in the PDF and embed them in the output SVG as
-    ///     data URIs. This behavior can be changed by specifying another
+    ///     data URLs. This behavior can be changed by specifying another
     ///     <see cref="SvgConversionOptions.FontResolver"/>.
     /// </para>
     /// </summary>

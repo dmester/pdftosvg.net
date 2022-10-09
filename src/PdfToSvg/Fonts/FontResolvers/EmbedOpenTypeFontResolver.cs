@@ -17,8 +17,8 @@ namespace PdfToSvg.Fonts.FontResolvers
             try
             {
                 var otf = sourceFont.ToOpenType();
-                var otfDataUri = "data:font/otf;base64," + Convert.ToBase64String(otf);
-                return new WebFont(openTypeUrl: otfDataUri);
+                var otfDataUrl = "data:font/otf;base64," + Convert.ToBase64String(otf);
+                return new WebFont(openTypeUrl: otfDataUrl);
             }
             catch
             {

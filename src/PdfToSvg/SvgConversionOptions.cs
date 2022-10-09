@@ -51,14 +51,14 @@ namespace PdfToSvg
         ///     <item>
         ///         <term><see cref="FontResolver.EmbedOpenType"/></term>
         ///         <description>
-        ///             Extracts fonts from the PDF, converts them to OpenType format, and then embed them as data URIs
+        ///             Extracts fonts from the PDF, converts them to OpenType format, and then embed them as data URLs
         ///             in the SVG.
         ///         </description>
         ///     </item>
         ///     <item>
         ///         <term><see cref="FontResolver.EmbedWoff"/></term>
         ///         <description>
-        ///             Extracts fonts from the PDF, converts them to WOFF format, and then embed them as data URIs in
+        ///             Extracts fonts from the PDF, converts them to WOFF format, and then embed them as data URLs in
         ///             the SVG.
         ///         </description>
         ///     </item>

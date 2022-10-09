@@ -26,7 +26,7 @@ namespace PdfToSvg
         /// <param name="openTypeUrl">URL to a OpenType font file to be included as a @font-face.</param>
         /// <remarks>
         /// Note that standalone SVGs must not have external resources. If you intend to create standalone SVG files,
-        /// ensure the font URLs are data URIs.
+        /// ensure the font URLs are data URLs.
         /// </remarks>
         public WebFont(LocalFont? fallbackFont = null,
             string? woffUrl = null, string? woff2Url = null, string? trueTypeUrl = null, string? openTypeUrl = null)

@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 namespace PdfToSvg
 {
     /// <summary>
-    /// Creates data URIs for images.
+    /// Creates data URLs for images.
     /// </summary>
-    internal class DataUriImageResolver : ImageResolver
+    internal class DataUrlImageResolver : ImageResolver
     {
         /// <inheritdoc/>
         public override string ResolveImageUrl(Image image, CancellationToken cancellationToken)

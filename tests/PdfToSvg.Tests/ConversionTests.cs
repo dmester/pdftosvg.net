@@ -112,7 +112,7 @@ namespace PdfToSvg.Tests
 
         private static string RecompressPngs(string svgMarkup)
         {
-            const string DataUriPrefix = "data:image/png;base64,";
+            const string DataUrlPrefix = "data:image/png;base64,";
             XNamespace ns = "http://www.w3.org/2000/svg";
             var svg = XElement.Parse(svgMarkup, LoadOptions.PreserveWhitespace);
 
@@ -130,11 +130,11 @@ namespace PdfToSvg.Tests
                 var imageRenderingAttribute = image.Attribute("image-rendering");
                 var interpolated = imageRenderingAttribute?.Value != "pixelated";
 
-                if (hrefAttribute != null && hrefAttribute.Value.StartsWith(DataUriPrefix))
+                if (hrefAttribute != null && hrefAttribute.Value.StartsWith(DataUrlPrefix))
                 {
-                    var base64Png = hrefAttribute.Value.Substring(DataUriPrefix.Length);
+                    var base64Png = hrefAttribute.Value.Substring(DataUrlPrefix.Length);
                     base64Png = Convert.ToBase64String(RecompressPng(Convert.FromBase64String(base64Png)));
-                    hrefAttribute.Value = DataUriPrefix + base64Png;
+                    hrefAttribute.Value = DataUrlPrefix + base64Png;
 
                     var oldId = image.Attribute("id").Value;
                     var newId = StableID.Generate("im", hrefAttribute.Value, interpolated);

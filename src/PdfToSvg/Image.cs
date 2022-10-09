@@ -50,22 +50,22 @@ namespace PdfToSvg
 #endif
 
         /// <summary>
-        /// Generates a data URI for this image.
+        /// Generates a data URL for this image.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token that can be used to cancel the operation.</param>
-        /// <returns>Data URI for this image.</returns>
-        public string ToDataUri(CancellationToken cancellationToken)
+        /// <returns>Data URL for this image.</returns>
+        public string ToDataUrl(CancellationToken cancellationToken)
         {
             return "data:" + ContentType + ";base64," + Convert.ToBase64String(GetContent(cancellationToken));
         }
 
 #if HAVE_ASYNC
         /// <summary>
-        /// Generates a data URI for this image asynchronously.
+        /// Generates a data URL for this image asynchronously.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token that can be used to cancel the operation.</param>
-        /// <returns>Data URI for this image.</returns>
-        public async Task<string> ToDataUriAsync(CancellationToken cancellationToken)
+        /// <returns>Data URL for this image.</returns>
+        public async Task<string> ToDataUrlAsync(CancellationToken cancellationToken)
         {
             return "data:" + ContentType + ";base64," + Convert.ToBase64String(await GetContentAsync(cancellationToken).ConfigureAwait(false));
         }

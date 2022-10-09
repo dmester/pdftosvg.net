@@ -19,7 +19,7 @@ namespace PdfToSvg
         /// <inheritdoc/>
         public override string ResolveImageUrl(Image image, CancellationToken cancellationToken)
         {
-            return image.ToDataUri(cancellationToken);
+            return image.ToDataUrl(cancellationToken);
         }
     }
 }

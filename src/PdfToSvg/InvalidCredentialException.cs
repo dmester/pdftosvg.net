@@ -19,6 +19,7 @@ namespace PdfToSvg
         /// <summary>
         /// Creates a new instance of <see cref="InvalidCredentialException"/>.
         /// </summary>
+        /// <param name="message">Message to include in the exception.</param>
         public InvalidCredentialException(string message) : base(message)
         {
         }

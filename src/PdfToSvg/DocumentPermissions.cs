@@ -12,6 +12,33 @@ namespace PdfToSvg
     /// <summary>
     /// Provides information about which operations to a <see cref="PdfDocument"/> that are allowed by the document author.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    ///     For encrypted PDF documents, there are two passwords, a user password and an owner password. The user
+    ///     password is needed to open the document, while the owner password can be used to get full access to the
+    ///     document.
+    /// </para>
+    /// <para>
+    ///     If <see cref="AllowExtractContent"/> is <c>false</c>, the document can only be converted by specifying the
+    ///     owner password in <see cref="OpenOptions"/> when the document is opened.
+    /// </para>
+    /// <code lang="cs" title="Converting a protected document">
+    /// var openOptions = new OpenOptions
+    /// {
+    ///     Password = "my owner password"
+    /// };
+    /// 
+    /// using (var doc = PdfDocument.Open("input.pdf", openOptions))
+    /// {
+    ///     var pageIndex = 0;
+    ///
+    ///     foreach (var page in doc.Pages)
+    ///     {
+    ///         page.SaveAsSvg($"output-{pageIndex++}.svg");
+    ///     }
+    /// }
+    /// </code>
+    /// </remarks>
     public class DocumentPermissions
     {
         private readonly int permissions;

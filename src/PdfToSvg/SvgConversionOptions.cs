@@ -37,11 +37,61 @@ namespace PdfToSvg
         /// SVG.
         /// </summary>
         /// <remarks>
-        /// The default implementation will in first hand try to embed fonts as WOFF files, and if not possible,
-        /// fallback to detecting standard fonts and assuming the client has those installed. You can implement a custom
-        /// font resolver for e.g. using custom WOFF or WOFF2 files, or saving the embedded fonts as separate font
+        /// <para>
+        ///     The default implementation will in first hand try to embed fonts as WOFF files, and if not possible,
+        ///     fallback to detecting standard fonts and assuming the client has those installed. You can implement a
+        ///     custom font resolver for e.g. using custom WOFF or WOFF2 files, or saving the embedded fonts as separate
+        ///     font files.
         /// files.
+        /// </para>
+        /// <para>
+        ///     Built-in font resolvers:
+        /// </para>
+        /// <list type="bullet">
+        ///     <item>
+        ///         <term><see cref="FontResolver.EmbedOpenType"/></term>
+        ///         <description>
+        ///             Extracts fonts from the PDF, converts them to OpenType format, and then embed them as data URIs
+        ///             in the SVG.
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="FontResolver.EmbedWoff"/></term>
+        ///         <description>
+        ///             Extracts fonts from the PDF, converts them to WOFF format, and then embed them as data URIs in
+        ///             the SVG.
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="FontResolver.LocalFonts"/></term>
+        ///         <description>
+        ///             Tries to match the PDF fonts with commonly available fonts, and references them by name.
+        ///         </description>
+        ///     </item>
+        /// </list>
         /// </remarks>
+        /// <example>
+        /// <para>
+        ///     The following example will convert a PDF to SVG without embedding fonts into the extracted SVG. Instead
+        ///     local fonts assumed to be installed on the client machine are used.
+        /// </para>
+        /// <code lang="cs" title="Using local fonts instead of embedding fonts">
+        /// var conversionOptions = new SvgConversionOptions
+        /// {
+        ///     FontResolver = FontResolver.LocalFonts,
+        /// };
+        /// 
+        /// using (var doc = PdfDocument.Open("input.pdf"))
+        /// {
+        ///     var pageIndex = 0;
+        ///
+        ///     foreach (var page in doc.Pages)
+        ///     {
+        ///         page.SaveAsSvg($"output-{pageIndex++}.svg", conversionOptions);
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
         public FontResolver FontResolver
         {
             get => fontResolver;

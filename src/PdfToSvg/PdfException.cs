@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace PdfToSvg
 {
     /// <summary>
-    /// Represents errors that can occur while loading and converting a PDF file. This is the base class for all library specific
-    /// exceptions.
+    /// Represents errors that can occur while loading and converting a PDF file. This is the base class for all library
+    /// specific exceptions.
     /// </summary>
     public class PdfException : Exception
     {

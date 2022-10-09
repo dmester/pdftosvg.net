@@ -36,6 +36,7 @@ namespace PdfToSvg
         /// <summary>
         /// Gets the binary content of the image.
         /// </summary>
+        /// <param name="cancellationToken">Cancellation token that can be used to cancel the operation.</param>
         /// <returns>Binary content of the image.</returns>
         public abstract byte[] GetContent(CancellationToken cancellationToken);
 
@@ -43,6 +44,7 @@ namespace PdfToSvg
         /// <summary>
         /// Gets the binary content of the image asynchronously.
         /// </summary>
+        /// <param name="cancellationToken">Cancellation token that can be used to cancel the operation.</param>
         /// <returns>Binary content of the image.</returns>
         public abstract Task<byte[]> GetContentAsync(CancellationToken cancellationToken);
 #endif
@@ -50,6 +52,7 @@ namespace PdfToSvg
         /// <summary>
         /// Generates a data URI for this image.
         /// </summary>
+        /// <param name="cancellationToken">Cancellation token that can be used to cancel the operation.</param>
         /// <returns>Data URI for this image.</returns>
         public string ToDataUri(CancellationToken cancellationToken)
         {
@@ -60,6 +63,7 @@ namespace PdfToSvg
         /// <summary>
         /// Generates a data URI for this image asynchronously.
         /// </summary>
+        /// <param name="cancellationToken">Cancellation token that can be used to cancel the operation.</param>
         /// <returns>Data URI for this image.</returns>
         public async Task<string> ToDataUriAsync(CancellationToken cancellationToken)
         {

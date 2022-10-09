@@ -33,6 +33,26 @@ namespace PdfToSvg
     ///     }
     /// }
     /// </code>
+    /// <para>
+    ///     If the document is password protected, the password must be specified in <see cref="OpenOptions"/> when the
+    ///     document is opened to allow conversion.
+    /// </para>
+    /// <code lang="cs" title="Converting a password protected document">
+    /// var openOptions = new OpenOptions
+    /// {
+    ///     Password = "document password"
+    /// };
+    /// 
+    /// using (var doc = PdfDocument.Open("input.pdf", openOptions))
+    /// {
+    ///     var pageIndex = 0;
+    ///
+    ///     foreach (var page in doc.Pages)
+    ///     {
+    ///         page.SaveAsSvg($"output-{pageIndex++}.svg");
+    ///     }
+    /// }
+    /// </code>
     /// </example>
     public sealed class PdfDocument : IDisposable
     {

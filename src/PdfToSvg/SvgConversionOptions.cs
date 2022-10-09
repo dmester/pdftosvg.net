@@ -22,7 +22,7 @@ namespace PdfToSvg
         /// Gets or sets a class that is used to resolve URLs for images.
         /// </summary>
         /// <remarks>
-        /// The default implementation <see cref="DataUriImageResolver"/> embeds all images as data URIs.
+        /// The default implementation <see cref="ImageResolver.DataUrl"/> embeds all images as data URLs.
         /// You can implement a resolver yourself to e.g. save the images to files and instead include URLs to
         /// the separate image files in the SVG markup.
         /// </remarks>

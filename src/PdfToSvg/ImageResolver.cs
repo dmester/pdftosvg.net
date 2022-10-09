@@ -17,9 +17,15 @@ namespace PdfToSvg
     public abstract class ImageResolver
     {
         /// <summary>
-        /// Gets the default image resolver used when no resolver is explicitly specified.
+        /// Gets an image resolver that will embed images as data URLs in the resulting SVG.
         /// </summary>
-        public static ImageResolver Default { get; } = new DataUriImageResolver();
+        public static ImageResolver DataUrl { get; } = new DataUrlImageResolver();
+
+        /// <summary>
+        /// Gets the default image resolver used when no resolver is explicitly specified.
+        /// Currently <see cref="DataUrl"/> is the default font resolver, but this can change in the future.
+        /// </summary>
+        public static ImageResolver Default { get; } = DataUrl;
 
         /// <summary>
         /// Creates an URL for the specified image.

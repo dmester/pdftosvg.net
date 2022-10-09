@@ -169,7 +169,7 @@ namespace PdfToSvg.Tests.Threading
             "Get-1a Start, Worker-1 Start, [Worker-1 Cancelled, Get-1a Cancelled], Get-2a Start, Worker-2 Start, Worker-2 Success, Get-2a Success")]
         [TestCase(
             "Get-1a, Get-1b, Cancel-1a, Continue-2",
-            "Get-1a Start, Worker-1 Start, Get-1b Start, [Worker-1 Cancelled, Get-1a Cancelled], Worker-2 Start, Worker-2 Success, Get-1b Success")]
+            "Get-1a Start, Worker-1 Start, Get-1b Start, [Worker-1 Cancelled, Get-1a Cancelled, Worker-2 Start], Worker-2 Success, Get-1b Success")]
         [TestCase(
             "Get-1a, Get-1b, Cancel-1b, Continue-1",
             "Get-1a Start, Worker-1 Start, Get-1b Start, Get-1b Cancelled, Worker-1 Success, Get-1a Success")]

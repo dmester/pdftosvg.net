@@ -15,6 +15,74 @@ namespace PdfToSvg
     /// <summary>
     /// Resolves which font to be used for text in the SVG, for a given PDF font name.
     /// </summary>
+    /// <example>
+    /// <para>
+    ///     The following example will use <see cref="FontResolver.LocalFonts"/> to convert a PDF to SVG without
+    ///     embedding fonts into the extracted SVG. Instead local fonts assumed to be installed on the client machine
+    ///     are used.
+    /// </para>
+    /// <code lang="cs" title="Using local fonts instead of embedding fonts">
+    /// var conversionOptions = new SvgConversionOptions
+    /// {
+    ///     FontResolver = FontResolver.LocalFonts,
+    /// };
+    /// 
+    /// using (var doc = PdfDocument.Open("input.pdf"))
+    /// {
+    ///     var pageIndex = 0;
+    ///
+    ///     foreach (var page in doc.Pages)
+    ///     {
+    ///         page.SaveAsSvg($"output-{pageIndex++}.svg", conversionOptions);
+    ///     }
+    /// }
+    /// </code>
+    /// <para>
+    ///     Custom behavior can be achieved by subclassing <see cref="FontResolver"/> and implementing the
+    ///     <see cref="ResolveFont(SourceFont, CancellationToken)"/> method. Here is a custom implementation using a
+    ///     locally installed Open Sans font.
+    /// </para>
+    /// <code lang="cs" title="Custom font resolver">
+    /// class OpenSansFontResolver : FontResolver
+    /// {
+    ///     public override Font ResolveFont(SourceFont sourceFont, CancellationToken cancellationToken)
+    ///     {
+    ///         var font = FontResolver.LocalFonts.ResolveFont(sourceFont, cancellationToken);
+    /// 
+    ///         if (sourceFont.Name != null &amp;&amp;
+    ///             sourceFont.Name.Contains("OpenSans", StringComparison.InvariantCultureIgnoreCase) &amp;&amp;
+    ///             font is LocalFont localFont)
+    ///         {
+    ///             font = new LocalFont("'Open Sans',sans-serif", localFont.FontWeight, localFont.FontStyle);
+    ///         }
+    ///
+    ///         return font;
+    ///     }
+    /// }
+    /// </code>
+    /// <para>
+    ///     Types of substitute fonts that can be returned:
+    /// </para>
+    /// <list type="table">
+    ///     <listheader>
+    ///         <term>Font type</term>
+    ///         <description>Description</description>
+    ///     </listheader>
+    ///     <item>
+    ///         <term><see cref="LocalFont"/></term>
+    ///         <description>A font that is assumed to be installed on the machine viewing the SVG.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="WebFont"/></term>
+    ///         <description>
+    ///             Use a provided TrueType, OpenType, WOFF or WOFF2 font. Note that external resources are not allowed
+    ///             in standalone SVG files when displayed in browsers, so if you intend to use external SVG files, you
+    ///             need to return a <see cref="WebFont"/> instance using
+    ///             <see href="https://en.wikipedia.org/wiki/Data_URI_scheme">data URLs</see> only.
+    ///         </description>
+    ///     </item>
+    /// </list>
+    /// </example>
     public abstract class FontResolver
     {
         /// <summary>

@@ -47,7 +47,11 @@ namespace PdfToSvg
         /// <para>
         ///     Built-in font resolvers:
         /// </para>
-        /// <list type="bullet">
+        /// <list type="table">
+        ///     <listheader>
+        ///         <term>Resolver</term>
+        ///         <description>Description</description>
+        ///     </listheader>
         ///     <item>
         ///         <term><see cref="FontResolver.EmbedOpenType"/></term>
         ///         <description>
@@ -70,28 +74,7 @@ namespace PdfToSvg
         ///     </item>
         /// </list>
         /// </remarks>
-        /// <example>
-        /// <para>
-        ///     The following example will convert a PDF to SVG without embedding fonts into the extracted SVG. Instead
-        ///     local fonts assumed to be installed on the client machine are used.
-        /// </para>
-        /// <code lang="cs" title="Using local fonts instead of embedding fonts">
-        /// var conversionOptions = new SvgConversionOptions
-        /// {
-        ///     FontResolver = FontResolver.LocalFonts,
-        /// };
-        /// 
-        /// using (var doc = PdfDocument.Open("input.pdf"))
-        /// {
-        ///     var pageIndex = 0;
-        ///
-        ///     foreach (var page in doc.Pages)
-        ///     {
-        ///         page.SaveAsSvg($"output-{pageIndex++}.svg", conversionOptions);
-        ///     }
-        /// }
-        /// </code>
-        /// </example>
+        /// <inheritdoc cref="PdfToSvg.FontResolver" path="example"/>
         public FontResolver FontResolver
         {
             get => fontResolver;

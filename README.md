@@ -8,7 +8,7 @@ Fully managed library for converting PDF files to SVG. Potential usage is seamle
 
 🚀 [**Test it online**](https://pdftosvg.net/) &nbsp;&nbsp;
 🏠 [**Homepage**](https://pdftosvg.net/) &nbsp;&nbsp;
-📦 [**NuGet package**](https://www.nuget.org/packages/PdfToSvg.NET/) &nbsp;&nbsp;
+📖 [**API documentation**](https://pdftosvg.net/api/) &nbsp;&nbsp;
 📜 [**Release notes**](https://github.com/dmester/pdftosvg.net/releases)
 
 ## Features
@@ -19,7 +19,7 @@ Fully managed library for converting PDF files to SVG. Potential usage is seamle
 * Dependency free
 
 ## State
-There are PDF features not yet implemented by this library. Before using it, please do rigorous testing of PDFs from the PDF producer you intend to convert, to ensure it does not use any features not supported by PdfToSvg.NET.
+Some PDF features are not yet implemented by this library.
 
 📖 [Read more about limitations](https://github.com/dmester/pdftosvg.net/blob/master/docs/limitations.md)
 
@@ -32,7 +32,7 @@ Install the [PdfToSvg.NET NuGet package](https://www.nuget.org/packages/PdfToSvg
 PM> Install-Package PdfToSvg.NET
 ```
 
-Open a PDF document by calling `PdfDocument.Open`. Call `SaveAsSvg()` on each page to convert it to an SVG file.
+Open a PDF document by calling [`PdfDocument.Open`](https://pdftosvg.net/api/M_PdfToSvg_PdfDocument_Open_1). Call [`SaveAsSvg()`](https://pdftosvg.net/api/M_PdfToSvg_PdfPage_SaveAsSvg_1) on each page to convert it to an SVG file.
 
 ```csharp
 using (var doc = PdfDocument.Open("input.pdf"))

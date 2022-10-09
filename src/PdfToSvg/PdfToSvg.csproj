@@ -19,7 +19,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PackageProjectUrl>https://pdftosvg.net/</PackageProjectUrl>
-    <PackageIcon>logo.png</PackageIcon>
+    <PackageIcon>PdfToSvg.logo.png</PackageIcon>
     <PackageIconUrl />
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\docs\images\logo.png" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="..\PdfToSvg.logo.png" Pack="true" PackagePath="\" Visible="false" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <None Include="..\..\LICENSE" Pack="true" PackagePath="\" />
   </ItemGroup>

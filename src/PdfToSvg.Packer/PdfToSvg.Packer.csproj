@@ -12,7 +12,7 @@
       <_ReleaseDir>$(ReleaseDir)$(VersionPrefix)/</_ReleaseDir>
       <_NuGetExePath>$(IntermediateOutputPath)nuget.exe</_NuGetExePath>
       <_LibOutDir>$(SolutionDir)src/PdfToSvg/bin/$(Configuration)/</_LibOutDir>
-      <_CliOutDir>$(SolutionDir)src/PdfToSvg.Cli/bin/$(Configuration)/net40/</_CliOutDir>
+      <_CliOutDir>$(SolutionDir)src/PdfToSvg.Cli/bin/$(Configuration)/net45/</_CliOutDir>
       <_PublishScript>
         <![CDATA[
 @echo off

@@ -60,9 +60,11 @@ namespace PdfToSvg.Drawing
 
         public static string ReplaceInvalidChars(string s, char replacementChar = '\ufffd')
         {
+            const char SoftHyphen = '\u00ad';
+
             var i = 0;
 
-            while (i < s.Length && !IsInvalidChar(s[i]))
+            while (i < s.Length && !IsInvalidChar(s[i]) && s[i] != SoftHyphen)
             {
                 i++;
             }
@@ -73,7 +75,11 @@ namespace PdfToSvg.Drawing
 
                 for (; i < result.Length; i++)
                 {
-                    if (IsInvalidChar(result[i]))
+                    if (result[i] == SoftHyphen)
+                    {
+                        result[i] = '-';
+                    }
+                    else if (IsInvalidChar(result[i]))
                     {
                         result[i] = replacementChar;
                     }

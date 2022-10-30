@@ -64,6 +64,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
         }
     }
 
+    [DebuggerDisplay("LSB {LeftSideBearing}, AW {AdvanceWidth}")]
     internal class LongHorMetricRecord
     {
         public ushort AdvanceWidth;

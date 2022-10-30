@@ -47,6 +47,7 @@ namespace PdfToSvg.Fonts.OpenType
                 // TrueType
                 head = GetOrThrow<HeadTable>();
                 hmtx = GetOrThrow<HmtxTable>();
+                maxp = GetOrThrow<MaxpTable>();
                 cmap = GetOrCreate(() => CreateEmptyCMap());
                 name = GetOrCreate(() => CreateName(head, cmap, cff));
                 post = GetOrCreate(() => CreatePost(head, cff));
@@ -67,6 +68,7 @@ namespace PdfToSvg.Fonts.OpenType
             }
 
             UpdateOS2(os2, head, cmap, cff);
+            UpdateHmtx(hmtx, maxp);
         }
 
         private List<CompactFontGlyph> GetGlyphs(CompactFont cff)
@@ -366,6 +368,26 @@ namespace PdfToSvg.Fonts.OpenType
             }
 
             return null;
+        }
+
+        private void UpdateHmtx(HmtxTable hmtxTable, MaxpTable maxpTable)
+        {
+            if (hmtxTable.HorMetrics.Length > maxpTable.NumGlyphs)
+            {
+                hmtxTable.HorMetrics = hmtxTable.HorMetrics
+                    .Take(maxpTable.NumGlyphs)
+                    .ToArray();
+            }
+
+            var expectedLeftSideBearings = maxpTable.NumGlyphs - hmtxTable.HorMetrics.Length;
+
+            if (expectedLeftSideBearings != hmtxTable.LeftSideBearings.Length)
+            {
+                hmtxTable.LeftSideBearings = hmtxTable.LeftSideBearings
+                    .Concat(Enumerable.Repeat((short)0, maxpTable.NumGlyphs))
+                    .Take(expectedLeftSideBearings)
+                    .ToArray();
+            }
         }
 
         private void UpdateOS2(OS2Table os2, HeadTable head, CMapTable cmapTable, CompactFont? cff)

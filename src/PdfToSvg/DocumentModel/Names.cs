@@ -104,6 +104,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName FontFile2 { get; } = new PdfName("FontFile2");
         public static PdfName FontFile3 { get; } = new PdfName("FontFile3");
         public static PdfName W { get; } = new PdfName("W");
+        public static PdfName DW { get; } = new PdfName("DW");
         public static PdfName MissingWidth { get; } = new PdfName("MissingWidth");
         public static PdfName Widths { get; } = new PdfName("Widths");
         public static PdfName FirstChar { get; } = new PdfName("FirstChar");

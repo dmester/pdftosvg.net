@@ -15,17 +15,25 @@ namespace PdfToSvg.Fonts.WidthMaps
 {
     internal class CidFontWidthMap : WidthMap
     {
+        private readonly double defaultWidth;
         private readonly Dictionary<uint, double> widthMap;
         private const double WidthMultiplier = 0.001;
 
-        private CidFontWidthMap(Dictionary<uint, double> widthMap)
+        private CidFontWidthMap(Dictionary<uint, double> widthMap, double defaultWidth)
         {
             this.widthMap = widthMap;
+            this.defaultWidth = defaultWidth;
         }
 
         public static CidFontWidthMap Parse(PdfDictionary font)
         {
             var widthMap = new Dictionary<uint, double>();
+            var defaultWidth = 1.0; // Default value for default width is 1000
+
+            if (font.TryGetNumber(Names.DescendantFonts / Indexes.First / Names.DW, out var dw))
+            {
+                defaultWidth = dw * WidthMultiplier;
+            }
 
             if (font.TryGetArray(Names.DescendantFonts / Indexes.First / Names.W, out var w))
             {
@@ -97,7 +105,7 @@ namespace PdfToSvg.Fonts.WidthMaps
                 }
             }
 
-            return new CidFontWidthMap(widthMap);
+            return new CidFontWidthMap(widthMap, defaultWidth);
         }
 
         public override double GetWidth(CharInfo ch)
@@ -107,7 +115,7 @@ namespace PdfToSvg.Fonts.WidthMaps
                 return width;
             }
 
-            return 0;
+            return defaultWidth;
         }
     }
 }

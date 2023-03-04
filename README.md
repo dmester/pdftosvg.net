@@ -1,6 +1,6 @@
 # PdfToSvg.NET
 
-[![Tests](https://img.shields.io/github/workflow/status/dmester/pdftosvg.net/Build%20and%20test/master?style=flat-square)](https://github.com/dmester/pdftosvg.net/actions)
+[![Tests](https://img.shields.io/github/actions/workflow/status/dmester/pdftosvg.net/build.yml?branch=master&style=flat-square)](https://github.com/dmester/pdftosvg.net/actions)
 [![NuGet](https://img.shields.io/nuget/vpre/PdfToSvg.NET?style=flat-square)](https://www.nuget.org/packages/PdfToSvg.NET/)
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/dmester/pdftosvg.net/blob/master/LICENSE)
 

@@ -31,7 +31,7 @@ namespace PdfToSvg.Imaging
 
         public static bool IsSupported(ColorSpace colorSpace)
         {
-            return colorSpace is DeviceRgbColorSpace;
+            return colorSpace is DeviceRgbColorSpace || colorSpace is DeviceGrayColorSpace;
         }
 
         private Stream GetStream(CancellationToken cancellationToken)

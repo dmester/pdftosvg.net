@@ -99,6 +99,10 @@ namespace PdfToSvg.Fonts
                     ch.Unicode != CharInfo.NotDef &&
                     IsSingleChar(ch.Unicode) &&
                     (
+                        ch.Unicode.Length > 1 ||       // Surrogate pair cannot be a control character
+                        !char.IsControl(ch.Unicode[0]) // Don't allow mapping to control characters
+                    ) &&
+                    (
                         !usedUnicodeToGidMappings.TryGetValue(ch.Unicode, out var mappedGid) ||
                         mappedGid == ch.GlyphIndex.Value
                     ))

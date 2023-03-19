@@ -30,6 +30,18 @@ namespace PdfToSvg.Fonts.OpenType
             return tables.OfType<T>().FirstOrDefault();
         }
 
+        public static bool Remove<T>(this ICollection<IBaseTable> tables) where T : IBaseTable
+        {
+            var table = tables.Get<T>();
+            if (table != null)
+            {
+                tables.Remove(table);
+                return true;
+            }
+
+            return false;
+        }
+
         public static IEnumerable<OpenTypeCMap> OrderByPriority(this IEnumerable<OpenTypeCMap> source)
         {
             return source

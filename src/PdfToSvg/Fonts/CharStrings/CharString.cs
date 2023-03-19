@@ -27,6 +27,7 @@ namespace PdfToSvg.Fonts.CharStrings
         public CharString(CharStringInfo info)
         {
             this.info = info;
+            this.Width = info.Width;
         }
 
         public IList<CharStringLexeme> Content => info.Content;
@@ -34,7 +35,7 @@ namespace PdfToSvg.Fonts.CharStrings
 
         public CharStringSeacInfo? Seac => info.Seac;
 
-        public double? Width => info.Width;
+        public double? Width { get; set; }
 
         public double MinX => info.Path.MinX;
         public double MaxX => info.Path.MaxX;

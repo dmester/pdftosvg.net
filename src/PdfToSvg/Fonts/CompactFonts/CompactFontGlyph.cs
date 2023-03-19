@@ -44,7 +44,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         public bool IsSingleCodePoint { get; }
 
-        public double Width { get; }
+        public double Width { get; set; }
 
         public override string ToString() => Unicode;
     }

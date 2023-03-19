@@ -25,6 +25,7 @@ namespace PdfToSvg.Fonts.OpenType
     /// Specification:
     /// https://docs.microsoft.com/en-us/typography/opentype/spec/otff
     /// </remarks>
+    [DebuggerDisplay("{Names.FullFontName}")]
     internal class OpenTypeFont
     {
         private readonly List<IBaseTable> tables;

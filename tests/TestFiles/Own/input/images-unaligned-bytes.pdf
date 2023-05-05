@@ -1,0 +1,99 @@
+%PDF-1.7
+
+xref
+0 5
+0000000000 65535 f
+0000000168 00000 n
+0000000219 00000 n
+0000000283 00000 n
+0000000553 00000 n
+trailer
+<< /Root 1 0 R  /Size 5 >>
+      
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >> endobj
+
+3 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /F1 << /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /WinAnsiEncoding >>
+      >>
+   >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj << /Length 934 >>
+stream
+   /F1 25 Tf
+
+   q
+      1 0 0 1 80 720 cm
+      BT
+         (1-bit 10x10 image) Tj
+      ET
+   Q
+
+   q
+      150 0 0 150 80 530 cm
+      BI
+         /W 10
+         /H 10
+         /BPC 1
+         /F /AHx
+         /CS /G
+         /Decode [1 0]
+      ID
+         ff ff
+         ff ff
+         c0 c0
+         c0 c0
+         c0 c0
+         c0 c0
+         c0 c0
+         c0 c0
+         ff ff
+         ff ff>
+      EI
+   Q
+
+   q  
+      1 0 0 1 80 380 cm
+      BT
+         (2-bit 10x10 image with color key mask) Tj
+      ET
+   Q
+
+   q
+      150 0 0 150 80 190 cm
+      BI
+         /W 10
+         /H 10
+         /BPC 2
+         /F /AHx
+         /CS /G
+         /Mask [ 1 2 ]
+      ID
+         00 00 00
+         00 00 00
+         0a aa 0a
+         0a aa 0a
+         0a aa 0a
+         0a aa 0a
+         0a aa 0a
+         0a aa 0a
+         00 00 00
+         00 00 00>
+      EI
+   Q
+
+endstream
+endobj
+
+startxref
+8
+%%EOF

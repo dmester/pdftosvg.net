@@ -180,6 +180,15 @@ namespace PdfToSvg.IO
             return true;
         }
 
+        public void SkipPartialByte()
+        {
+            if (bitCursor > 0)
+            {
+                bitCursor = 0;
+                byteCursor++;
+            }
+        }
+
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         private uint ReadBits(int bits)
         {

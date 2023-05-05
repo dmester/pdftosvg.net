@@ -115,37 +115,19 @@ namespace PdfToSvg.Imaging
 
         private void WriteUnmaskedImage(BitReader componentReader, Stream outputStream, CancellationToken cancellationToken)
         {
-            var componentBuffer = new float[colorSpace.ComponentsPerSample * SampleBufferSize];
-            var componentCursor = componentBuffer.Length;
+            var componentBuffer = new float[colorSpace.ComponentsPerSample * width];
 
             var decodeArray = ImageHelper.GetDecodeArray(imageDictionary, colorSpace);
-
             var pngRgbRow = new byte[1 + width * ColorsRgb];
 
             for (var y = 0; y < height; y++)
             {
-                var pngRgbRowCursor = 1;
+                componentReader.Read(componentBuffer, 0, componentBuffer.Length);
+                componentReader.SkipPartialByte();
 
-                do
-                {
-                    if (componentCursor >= componentBuffer.Length)
-                    {
-                        componentReader.Read(componentBuffer, 0, componentBuffer.Length);
-                        decodeArray.Decode(componentBuffer, 0, componentBuffer.Length);
-                        componentCursor = 0;
-                    }
+                decodeArray.Decode(componentBuffer, 0, componentBuffer.Length);
 
-                    var samplesThisIteration = Math.Min(
-                        (pngRgbRow.Length - pngRgbRowCursor) / ColorsRgb,
-                        (componentBuffer.Length - componentCursor) / colorSpace.ComponentsPerSample
-                        );
-
-                    colorSpace.ToRgb8(componentBuffer, componentCursor, pngRgbRow, pngRgbRowCursor, samplesThisIteration);
-
-                    componentCursor += samplesThisIteration * colorSpace.ComponentsPerSample;
-                    pngRgbRowCursor += samplesThisIteration * ColorsRgb;
-                }
-                while (pngRgbRowCursor < pngRgbRow.Length);
+                colorSpace.ToRgb8(componentBuffer, 0, pngRgbRow, 1, width);
 
                 outputStream.Write(pngRgbRow);
 
@@ -158,78 +140,57 @@ namespace PdfToSvg.Imaging
 
         private void WriteColorKeyMaskedImage(BitReader componentReader, Stream outputStream, CancellationToken cancellationToken)
         {
-            var componentBuffer = new float[colorSpace.ComponentsPerSample * SampleBufferSize];
-            var componentCursor = componentBuffer.Length;
+            var componentBuffer = new float[colorSpace.ComponentsPerSample * width];
 
             var decodeArray = ImageHelper.GetDecodeArray(imageDictionary, colorSpace);
 
             var pngRgbRow = new byte[1 + width * ColorsRgba];
 
-            var transparent = new bool[SampleBufferSize];
-            var transparentCursor = 0;
+            var transparent = new bool[width];
 
             for (var y = 0; y < height; y++)
             {
-                var pngRgbRowCursor = 1;
+                componentReader.Read(componentBuffer, 0, componentBuffer.Length);
+                componentReader.SkipPartialByte();
 
-                do
+                for (var x = 0; x < width; x++)
                 {
-                    if (componentCursor >= componentBuffer.Length)
+                    transparent[x] = true;
+
+                    for (var componentIndex = 0; componentIndex < colorSpace.ComponentsPerSample; componentIndex++)
                     {
-                        componentReader.Read(componentBuffer, 0, componentBuffer.Length);
+                        var component = (int)componentBuffer[x * colorSpace.ComponentsPerSample + componentIndex];
 
-                        for (var sample = 0; sample < SampleBufferSize; sample++)
+                        if (component < colorKey[componentIndex * 2] ||
+                            component > colorKey[componentIndex * 2 + 1])
                         {
-                            transparent[sample] = true;
-
-                            for (var componentIndex = 0; componentIndex < colorSpace.ComponentsPerSample; componentIndex++)
-                            {
-                                var component = (int)componentBuffer[sample * colorSpace.ComponentsPerSample + componentIndex];
-
-                                if (component < colorKey[componentIndex * 2] ||
-                                    component > colorKey[componentIndex * 2 + 1])
-                                {
-                                    transparent[sample] = false;
-                                    break;
-                                }
-                            }
-                        }
-
-                        decodeArray.Decode(componentBuffer, 0, componentBuffer.Length);
-                        componentCursor = 0;
-                        transparentCursor = 0;
-                    }
-
-                    var samplesThisIteration = Math.Min(
-                        (pngRgbRow.Length - pngRgbRowCursor) / 4,
-                        (componentBuffer.Length - componentCursor) / colorSpace.ComponentsPerSample
-                        );
-
-                    colorSpace.ToRgba8(componentBuffer, componentCursor, pngRgbRow, pngRgbRowCursor, samplesThisIteration);
-
-                    for (var i = 0; i < samplesThisIteration; i++)
-                    {
-                        var pixelOffset = pngRgbRowCursor + i * ColorsRgba;
-
-                        if (transparent[transparentCursor + i])
-                        {
-                            // Zero all components to improve compression
-                            pngRgbRow[pixelOffset + OffsetRed] = 0;
-                            pngRgbRow[pixelOffset + OffsetGreen] = 0;
-                            pngRgbRow[pixelOffset + OffsetBlue] = 0;
-                            pngRgbRow[pixelOffset + OffsetAlpha] = 0;
-                        }
-                        else
-                        {
-                            pngRgbRow[pixelOffset + OffsetAlpha] = 255;
+                            transparent[x] = false;
+                            break;
                         }
                     }
-
-                    transparentCursor += samplesThisIteration;
-                    componentCursor += samplesThisIteration * colorSpace.ComponentsPerSample;
-                    pngRgbRowCursor += samplesThisIteration * ColorsRgba;
                 }
-                while (pngRgbRowCursor < pngRgbRow.Length);
+
+                decodeArray.Decode(componentBuffer, 0, componentBuffer.Length);
+
+                colorSpace.ToRgba8(componentBuffer, 0, pngRgbRow, 1, width);
+
+                for (var x = 0; x < width; x++)
+                {
+                    var pixelOffset = 1 + x * ColorsRgba;
+
+                    if (transparent[x])
+                    {
+                        // Zero all components to improve compression
+                        pngRgbRow[pixelOffset + OffsetRed] = 0;
+                        pngRgbRow[pixelOffset + OffsetGreen] = 0;
+                        pngRgbRow[pixelOffset + OffsetBlue] = 0;
+                        pngRgbRow[pixelOffset + OffsetAlpha] = 0;
+                    }
+                    else
+                    {
+                        pngRgbRow[pixelOffset + OffsetAlpha] = 255;
+                    }
+                }
 
                 outputStream.Write(pngRgbRow);
 

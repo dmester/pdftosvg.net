@@ -1,0 +1,21 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.gt4EC2H text{white-space:pre;}
+.txHr6W3{font:25px 'Times New Roman',serif;}
+</style>
+<defs>
+<image id="imWrSfS" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAABGdBTUEAALGPC/xhBQAAABNJREFUeJxjYKAC+I8Bhoo0mQAAJ6FrlUovs8YAAAAASUVORK5CYII=" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
+<image id="im2V3LN" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGPC/xhBQAAABhJREFUeJxjYGBg+E8kJl0hLjC8FVInHAGxqD/Bf+xpPgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
+</defs>
+<g class="gt4EC2H">
+<text x="80" y="121.92" class="txHr6W3">1-bit 10x10 image</text>
+<g transform="matrix(150 0 0 150 80 161.92)">
+<use href="#imWrSfS" />
+</g>
+<text x="80" y="461.92" class="txHr6W3">2-bit 10x10 image with color key mask</text>
+<g transform="matrix(150 0 0 150 80 501.92)">
+<use href="#im2V3LN" />
+</g>
+</g>
+</svg>

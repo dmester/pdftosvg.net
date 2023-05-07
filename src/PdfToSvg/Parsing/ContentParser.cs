@@ -25,6 +25,10 @@ namespace PdfToSvg.Parsing
             { "BI", Token.BeginImage },
             { "ID", Token.BeginImageData },
             { "EI", Token.EndImage },
+
+            // These are lexed as a keyword followed by a number if not getting special treatment
+            { "d0", Token.Keyword },
+            { "d1", Token.Keyword },
         };
 
         public ContentParser(Stream stream) : base(new Lexer(stream, keywords))

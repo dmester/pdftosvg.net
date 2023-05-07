@@ -23,6 +23,8 @@ namespace PdfToSvg.Tests.Parsing
             { "false", Token.False },
             { "null", Token.Null },
             { "R", Token.Ref },
+            { "d0", Token.Keyword },
+            { "d1d1", Token.Keyword },
         };
 
         [Test]
@@ -40,7 +42,7 @@ namespace PdfToSvg.Tests.Parsing
         [Test]
         public void Commands()
         {
-            var lexer = new Lexer("ET\nT* 0 0 1 rg /Ti Tj 12 (T*)", basicKeywords);
+            var lexer = new Lexer("ET\nT* 0 0 1 rg /Ti Tj12 d0 d1d12 (T*)", basicKeywords);
 
             Assert.AreEqual(new Lexeme(Token.Keyword, "ET"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Keyword, "T*"), lexer.Read());
@@ -51,6 +53,9 @@ namespace PdfToSvg.Tests.Parsing
             Assert.AreEqual(new Lexeme(Token.Name, "Ti"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Keyword, "Tj"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Integer, "12"), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Keyword, "d0"), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Keyword, "d1d1"), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Integer, "2"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.LiteralString, "T*"), lexer.Read());
 
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());

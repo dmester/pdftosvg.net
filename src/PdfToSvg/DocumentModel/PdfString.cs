@@ -31,8 +31,20 @@ namespace PdfToSvg.DocumentModel
             }
         }
 
+        public PdfString(byte[] data, int offset, int count)
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (offset < 0) throw new ArgumentOutOfRangeException(nameof(offset));
+            if (count < 0 || offset + count > data.Length) throw new ArgumentOutOfRangeException(nameof(count));
+
+            this.data = new byte[count];
+            Buffer.BlockCopy(data, offset, this.data, 0, count);
+        }
+
         public PdfString(byte[] data)
         {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+
             this.data = new byte[data.Length];
             Buffer.BlockCopy(data, 0, this.data, 0, data.Length);
         }

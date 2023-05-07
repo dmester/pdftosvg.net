@@ -17,20 +17,34 @@ namespace PdfToSvg.Parsing
         private MemoryStream stringBuffer = new MemoryStream();
         private ForwardReadBuffer<Lexeme> forwardLexemeBuffer;
         private Dictionary<string, Token> keywords;
+        private Dictionary<string, int> keywordPrefixesAndMaxLengths;
 
-        public Lexer(string source, Dictionary<string, Token>? keywords = null)
-        {
-            var bytes = Encoding.ASCII.GetBytes(source);
-            Stream = new BufferedMemoryReader(bytes);
-            forwardLexemeBuffer = new ForwardReadBuffer<Lexeme>(ReadLexeme, 2);
-            this.keywords = keywords ?? new Dictionary<string, Token>();
-        }
+        public Lexer(string source, Dictionary<string, Token>? keywords = null) : this(
+            stream: new BufferedMemoryReader(Encoding.ASCII.GetBytes(source)),
+            keywords)
+        { }
 
         public Lexer(Stream stream, Dictionary<string, Token>? keywords = null)
         {
             Stream = stream as BufferedReader ?? new BufferedStreamReader(stream);
             forwardLexemeBuffer = new ForwardReadBuffer<Lexeme>(ReadLexeme, 2);
             this.keywords = keywords ?? new Dictionary<string, Token>();
+            this.keywordPrefixesAndMaxLengths = new Dictionary<string, int>(this.keywords.Comparer);
+
+            foreach (var keyword in this.keywords.Keys)
+            {
+                var prefix = GetKeywordPrefix(keyword);
+                if (prefix == null)
+                {
+                    continue;
+                }
+
+                if (!keywordPrefixesAndMaxLengths.TryGetValue(prefix, out var maxLength) ||
+                    maxLength < keyword.Length)
+                {
+                    keywordPrefixesAndMaxLengths[prefix] = keyword.Length;
+                }
+            }
         }
 
         public BufferedReader Stream { get; }
@@ -86,6 +100,28 @@ namespace PdfToSvg.Parsing
             return false;
         }
 
+        private static bool IsKeywordChar(char ch)
+        {
+            return
+                PdfCharacters.IsLetter(ch) ||
+                ch == '*' ||
+                ch == '\'' ||
+                ch == '"';
+        }
+
+        private static string? GetKeywordPrefix(string keyword)
+        {
+            for (var i = 0; i < keyword.Length; i++)
+            {
+                if (!IsKeywordChar(keyword[i]))
+                {
+                    return keyword.Substring(0, i);
+                }
+            }
+
+            return null;
+        }
+
         private Lexeme ReadKeyword()
         {
             var startPosition = Stream.Position;
@@ -97,16 +133,35 @@ namespace PdfToSvg.Parsing
             {
                 nextChar = Stream.PeekChar();
 
-                if (PdfCharacters.IsLetter(nextChar) ||
-                    nextChar == '*' ||
-                    nextChar == '\'' ||
-                    nextChar == '"')
+                if (IsKeywordChar(nextChar))
                 {
                     Stream.Skip();
                     stringBuffer.WriteByte((byte)nextChar);
                 }
                 else
                 {
+                    var keywordSoFar = new PdfString(stringBuffer).ToString();
+                    var prefixLength = keywordSoFar.Length;
+
+                    if (keywordPrefixesAndMaxLengths.TryGetValue(keywordSoFar, out var maxLength))
+                    {
+                        var buffer = new byte[maxLength - prefixLength];
+
+                        for (var i = 0; i < buffer.Length; i++)
+                        {
+                            nextChar = Stream.PeekChar(i + 1);
+                            buffer[i] = (byte)nextChar;
+                            keywordSoFar += nextChar;
+
+                            if (keywords.ContainsKey(keywordSoFar))
+                            {
+                                stringBuffer.Write(buffer, 0, i + 1);
+                                Stream.Skip(i + 1);
+                                break;
+                            }
+                        }
+                    }
+
                     break;
                 }
             }
@@ -116,6 +171,11 @@ namespace PdfToSvg.Parsing
 
             if (keywords.TryGetValue(keywordName.ToString(), out var keyword))
             {
+                if (keyword == Token.Keyword)
+                {
+                    return new Lexeme(keyword, startPosition, keywordName);
+                }
+
                 if (keyword == Token.Stream)
                 {
                     nextChar = Stream.PeekChar();

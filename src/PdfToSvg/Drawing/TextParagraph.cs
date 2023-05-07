@@ -13,6 +13,10 @@ namespace PdfToSvg.Drawing
     internal class TextParagraph
     {
         public List<TextSpan> Content = new List<TextSpan>();
+
+        public byte[]? Type3Content;
+        public GraphicsState? Type3Style;
+
         public Matrix Matrix = Matrix.Identity;
         public double X;
         public double Y;

@@ -45,6 +45,9 @@ namespace PdfToSvg.Drawing
 
         private bool svgHasDefaultMiterLimit;
 
+        private bool inType3Glyph;
+        private bool ignoreColorChange;
+
         private PathData currentPath = new PathData();
 
         private double currentPointX, currentPointY;
@@ -91,7 +94,8 @@ namespace PdfToSvg.Drawing
 
             textBuilder = new TextBuilder(
                 minSpaceEm: options.KerningThreshold,
-                minSpacePx: 0.001 // Lower space will be rounded to "0" in SVG formatting.
+                minSpacePx: 0.001, // Lower space will be rounded to "0" in SVG formatting.
+                handleType3: options.FontResolver != FontResolver.LocalFonts
                 );
 
             resources = new ResourceCache(pageDict.GetDictionaryOrEmpty(Names.Resources));
@@ -1167,102 +1171,144 @@ namespace PdfToSvg.Drawing
 
         private void SetFillColor(RgbColor newColor)
         {
-            if (graphicsState.FillColor != newColor)
+            if (!ignoreColorChange)
             {
-                graphicsState.FillColor = newColor;
-                textBuilder.InvalidateStyle();
+                if (graphicsState.FillColor != newColor)
+                {
+                    graphicsState.FillColor = newColor;
+                    textBuilder.InvalidateStyle();
+                }
             }
         }
 
         private void SetStrokeColor(RgbColor newColor)
         {
-            if (graphicsState.StrokeColor != newColor)
+            if (!ignoreColorChange)
             {
-                graphicsState.StrokeColor = newColor;
-                textBuilder.InvalidateStyle();
+                if (graphicsState.StrokeColor != newColor)
+                {
+                    graphicsState.StrokeColor = newColor;
+                    textBuilder.InvalidateStyle();
+                }
             }
         }
 
         [Operation("CS")]
         private void CS_StrokeColorSpace(PdfName name)
         {
-            graphicsState.StrokeColorSpace = GetColorSpace(name);
-            SetStrokeColor(graphicsState.StrokeColorSpace.GetDefaultRgbColor());
+            if (!ignoreColorChange)
+            {
+                graphicsState.StrokeColorSpace = GetColorSpace(name);
+                SetStrokeColor(graphicsState.StrokeColorSpace.GetDefaultRgbColor());
+            }
         }
 
         [Operation("cs")]
         private void cs_FillColorSpace(PdfName name)
         {
-            graphicsState.FillColorSpace = GetColorSpace(name);
-            SetFillColor(graphicsState.FillColorSpace.GetDefaultRgbColor());
+            if (!ignoreColorChange)
+            {
+                graphicsState.FillColorSpace = GetColorSpace(name);
+                SetFillColor(graphicsState.FillColorSpace.GetDefaultRgbColor());
+            }
         }
 
         [Operation("SC")]
         public void SC_StrokeColor(params float[] components)
         {
-            SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, components));
+            if (!ignoreColorChange)
+            {
+                SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, components));
+            }
         }
 
         [Operation("sc")]
         public void sc_FillColor(params float[] components)
         {
-            SetFillColor(new RgbColor(graphicsState.FillColorSpace, components));
+            if (!ignoreColorChange)
+            {
+                SetFillColor(new RgbColor(graphicsState.FillColorSpace, components));
+            }
         }
 
         [Operation("SCN")]
         public void SCN_StrokeColor(params float[] components)
         {
             // TODO Should also accept a trailing name argument
-            SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, components));
+            if (!ignoreColorChange)
+            {
+                SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, components));
+            }
         }
 
         [Operation("scn")]
         public void scn_FillColor(params float[] components)
         {
             // TODO Should also accept a trailing name argument
-            SetFillColor(new RgbColor(graphicsState.FillColorSpace, components));
+            if (!ignoreColorChange)
+            {
+                SetFillColor(new RgbColor(graphicsState.FillColorSpace, components));
+            }
         }
 
         [Operation("G")]
         private void G_StrokeGray(float gray)
         {
-            graphicsState.StrokeColorSpace = new DeviceGrayColorSpace();
-            SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, gray));
+            if (!ignoreColorChange)
+            {
+                graphicsState.StrokeColorSpace = new DeviceGrayColorSpace();
+                SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, gray));
+            }
         }
 
         [Operation("g")]
         private void g_FillGray(float gray)
         {
-            graphicsState.FillColorSpace = new DeviceGrayColorSpace();
-            SetFillColor(new RgbColor(graphicsState.FillColorSpace, gray));
+            if (!ignoreColorChange)
+            {
+                graphicsState.FillColorSpace = new DeviceGrayColorSpace();
+                SetFillColor(new RgbColor(graphicsState.FillColorSpace, gray));
+            }
         }
 
         [Operation("RG")]
         private void RG_StrokeRgb(float r, float g, float b)
         {
-            graphicsState.StrokeColorSpace = new DeviceRgbColorSpace();
-            SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, r, g, b));
+            if (!ignoreColorChange)
+            {
+                graphicsState.StrokeColorSpace = new DeviceRgbColorSpace();
+                SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, r, g, b));
+            }
         }
 
         [Operation("rg")]
         private void rg_FillRgb(float r, float g, float b)
         {
-            graphicsState.FillColorSpace = new DeviceRgbColorSpace();
-            SetFillColor(new RgbColor(graphicsState.FillColorSpace, r, g, b));
+            if (!ignoreColorChange)
+            {
+                graphicsState.FillColorSpace = new DeviceRgbColorSpace();
+                SetFillColor(new RgbColor(graphicsState.FillColorSpace, r, g, b));
+            }
         }
 
         [Operation("K")]
         private void K_StrokeCmyk(float c, float m, float y, float k)
         {
-            graphicsState.StrokeColorSpace = new DeviceCmykColorSpace();
-            SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, c, m, y, k));
+            if (!ignoreColorChange)
+            {
+                graphicsState.StrokeColorSpace = new DeviceCmykColorSpace();
+                SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, c, m, y, k));
+            }
         }
 
         [Operation("k")]
         private void k_FillCmyk(float c, float m, float y, float k)
         {
-            graphicsState.FillColorSpace = new DeviceCmykColorSpace();
-            SetFillColor(new RgbColor(graphicsState.FillColorSpace, c, m, y, k));
+            if (!ignoreColorChange)
+            {
+                graphicsState.FillColorSpace = new DeviceCmykColorSpace();
+                SetFillColor(new RgbColor(graphicsState.FillColorSpace, c, m, y, k));
+            }
         }
 
         #endregion
@@ -1477,6 +1523,12 @@ namespace PdfToSvg.Drawing
 
             foreach (var paragraph in paragraphs)
             {
+                if (paragraph.Type3Content != null)
+                {
+                    result.Add(paragraph);
+                    continue;
+                }
+
                 var x = paragraph.X;
                 TextParagraph? newParagraph = null;
 
@@ -1728,154 +1780,213 @@ namespace PdfToSvg.Drawing
 
             foreach (var paragraph in PrepareSvgSpans(textBuilder.paragraphs))
             {
-                if (paragraph.Content.Count == 0)
+                if (paragraph.Type3Content != null)
                 {
-                    continue;
-                }
-
-                var singleSpan = paragraph.Content.Count == 1 ? paragraph.Content[0] : null;
-
-                var textEl = new XElement(ns + "text");
-                var paragraphWidth = 0.0;
-
-                var x = paragraph.X;
-                var y = paragraph.Y;
-
-                if (singleSpan != null)
-                {
-                    x += singleSpan.SpaceBefore;
-                    y += singleSpan.Style.TextRisePx;
-                }
-
-                if (paragraph.Matrix.IsIdentity)
-                {
-                    textEl.SetAttributeValue("x", SvgConversion.FormatCoordinate(x));
-                    textEl.SetAttributeValue("y", SvgConversion.FormatCoordinate(y));
+                    RenderType3Paragraph(paragraph);
                 }
                 else
                 {
-                    textEl.SetAttributeValue("transform", SvgConversion.Matrix(Matrix.Translate(x, y, paragraph.Matrix)));
+                    RenderTextParagraph(paragraph, styleToClassNameLookup);
                 }
+            }
+        }
 
-                if (singleSpan != null)
+        private void RenderType3Paragraph(TextParagraph paragraph)
+        {
+            var originalGraphicsStateStack = graphicsStateStack;
+            var originalGraphicsState = graphicsState;
+            var originalIgnoreColorChange = ignoreColorChange;
+            var originalInType3Glyph = inType3Glyph;
+
+            try
+            {
+                graphicsStateStack = new Stack<GraphicsState>();
+                graphicsState = (paragraph.Type3Style ?? graphicsState).Clone();
+                inType3Glyph = true;
+
+                graphicsState.Transform = Matrix.Translate(paragraph.X, paragraph.Y, paragraph.Matrix);
+
+                using (var contentStream = new MemoryStream(paragraph.Type3Content))
                 {
-                    if (!styleToClassNameLookup.TryGetValue(singleSpan.Style, out string? className))
+                    foreach (var op in ContentParser.Parse(contentStream))
                     {
-                        styleToClassNameLookup[singleSpan.Style] = className = BuildTextCssClass(singleSpan.Style);
-                    }
-
-                    if (className != null)
-                    {
-                        textEl.SetAttributeValue("class", className);
-                    }
-
-                    if (singleSpan.Style.TextScaling != 100)
-                    {
-                        textEl.SetAttributeValue("textLength", SvgConversion.FormatCoordinate(singleSpan.Width) + "px");
-                        textEl.SetAttributeValue("lengthAdjust", "spacingAndGlyphs");
-                    }
-
-                    textEl.Value = singleSpan.Value;
-
-                    paragraphWidth = singleSpan.Width;
-                }
-                else
-                {
-                    var currentYOffset = 0.0;
-
-                    var classNames = new string?[paragraph.Content.Count];
-                    var multipleClasses = false;
-
-                    for (var i = 0; i < classNames.Length; i++)
-                    {
-                        var style = paragraph.Content[i].Style;
-
-                        if (!styleToClassNameLookup.TryGetValue(style, out var className))
-                        {
-                            styleToClassNameLookup[style] = className = BuildTextCssClass(style);
-                        }
-
-                        classNames[i] = className;
-
-                        if (i > 0 && className != classNames[i - 1])
-                        {
-                            multipleClasses = true;
-                        }
-                    }
-
-                    if (!multipleClasses)
-                    {
-                        textEl.SetAttributeValue("class", classNames[0]);
-                    }
-
-                    for (var i = 0; i < classNames.Length; i++)
-                    {
-                        var span = paragraph.Content[i];
-                        var tspan = new XElement(ns + "tspan");
-
-                        if (multipleClasses)
-                        {
-                            tspan.SetAttributeValue("class", classNames[i]);
-                        }
-
-                        var dx = SvgConversion.FormatCoordinate(span.SpaceBefore);
-                        if (dx != "0")
-                        {
-                            tspan.SetAttributeValue("dx", dx);
-                        }
-
-                        var dy = SvgConversion.FormatCoordinate(currentYOffset - span.Style.TextRisePx);
-                        if (dy != "0")
-                        {
-                            tspan.SetAttributeValue("dy", dy);
-                            currentYOffset = span.Style.TextRisePx;
-                        }
-
-                        tspan.Value = span.Value;
-                        textEl.Add(tspan);
-
-                        paragraphWidth += span.Width + span.SpaceBefore;
+                        cancellationToken.ThrowIfCancellationRequested();
+                        dispatcher.Dispatch(this, op.Operator, op.Operands);
                     }
                 }
+            }
+            finally
+            {
+                graphicsStateStack = originalGraphicsStateStack;
+                graphicsState = originalGraphicsState;
+                ignoreColorChange = originalIgnoreColorChange;
+                inType3Glyph = originalInType3Glyph;
+            }
+        }
 
-                if (paragraph.Visible)
+        private void RenderTextParagraph(TextParagraph paragraph, Dictionary<object, string?> styleToClassNameLookup)
+        {
+            if (paragraph.Content.Count == 0)
+            {
+                return;
+            }
+
+            var singleSpan = paragraph.Content.Count == 1 ? paragraph.Content[0] : null;
+
+            var textEl = new XElement(ns + "text");
+            var paragraphWidth = 0.0;
+
+            var x = paragraph.X;
+            var y = paragraph.Y;
+
+            if (singleSpan != null)
+            {
+                x += singleSpan.SpaceBefore;
+                y += singleSpan.Style.TextRisePx;
+            }
+
+            if (paragraph.Matrix.IsIdentity)
+            {
+                textEl.SetAttributeValue("x", SvgConversion.FormatCoordinate(x));
+                textEl.SetAttributeValue("y", SvgConversion.FormatCoordinate(y));
+            }
+            else
+            {
+                textEl.SetAttributeValue("transform", SvgConversion.Matrix(Matrix.Translate(x, y, paragraph.Matrix)));
+            }
+
+            if (singleSpan != null)
+            {
+                if (!styleToClassNameLookup.TryGetValue(singleSpan.Style, out string? className))
                 {
-                    // TODO test simplification of clip path
-                    if (paragraph.Matrix.IsIdentity &&
+                    styleToClassNameLookup[singleSpan.Style] = className = BuildTextCssClass(singleSpan.Style);
+                }
+
+                if (className != null)
+                {
+                    textEl.SetAttributeValue("class", className);
+                }
+
+                if (singleSpan.Style.TextScaling != 100)
+                {
+                    textEl.SetAttributeValue("textLength", SvgConversion.FormatCoordinate(singleSpan.Width) + "px");
+                    textEl.SetAttributeValue("lengthAdjust", "spacingAndGlyphs");
+                }
+
+                textEl.Value = singleSpan.Value;
+
+                paragraphWidth = singleSpan.Width;
+            }
+            else
+            {
+                var currentYOffset = 0.0;
+
+                var classNames = new string?[paragraph.Content.Count];
+                var multipleClasses = false;
+
+                for (var i = 0; i < classNames.Length; i++)
+                {
+                    var style = paragraph.Content[i].Style;
+
+                    if (!styleToClassNameLookup.TryGetValue(style, out var className))
+                    {
+                        styleToClassNameLookup[style] = className = BuildTextCssClass(style);
+                    }
+
+                    classNames[i] = className;
+
+                    if (i > 0 && className != classNames[i - 1])
+                    {
+                        multipleClasses = true;
+                    }
+                }
+
+                if (!multipleClasses)
+                {
+                    textEl.SetAttributeValue("class", classNames[0]);
+                }
+
+                for (var i = 0; i < classNames.Length; i++)
+                {
+                    var span = paragraph.Content[i];
+                    var tspan = new XElement(ns + "tspan");
+
+                    if (multipleClasses)
+                    {
+                        tspan.SetAttributeValue("class", classNames[i]);
+                    }
+
+                    var dx = SvgConversion.FormatCoordinate(span.SpaceBefore);
+                    if (dx != "0")
+                    {
+                        tspan.SetAttributeValue("dx", dx);
+                    }
+
+                    var dy = SvgConversion.FormatCoordinate(currentYOffset - span.Style.TextRisePx);
+                    if (dy != "0")
+                    {
+                        tspan.SetAttributeValue("dy", dy);
+                        currentYOffset = span.Style.TextRisePx;
+                    }
+
+                    tspan.Value = span.Value;
+                    textEl.Add(tspan);
+
+                    paragraphWidth += span.Width + span.SpaceBefore;
+                }
+            }
+
+            if (paragraph.Visible)
+            {
+                // TODO test simplification of clip path
+                if (paragraph.Matrix.IsIdentity &&
                     graphicsState.ClipPath != null &&
                     graphicsState.ClipPath.Parent == null &&
                     graphicsState.ClipPath.IsRectangle)
-                    {
-                        var maxFontSize = paragraph.Content.Max(span => span.Style.FontSize);
-
-                        // This is an approximation of the text bounding rectangle. It is not entirely correct since
-                        // we don't have all the font metrics to determine the height above and below the baseline.
-                        var textBoundingRect = RectangleUtils.GetBoundingRectangleAfterTransform(
-                            new Rectangle(
-                                paragraph.X, paragraph.Y - maxFontSize,
-                                paragraph.X + paragraphWidth, paragraph.Y + maxFontSize / 2
-                            ),
-                            paragraph.Matrix);
-
-                        if (graphicsState.ClipPath.Rectangle.Contains(textBoundingRect))
-                        {
-                            // We can be reasonably sure the text is entiely contained within the clip rectangle.
-                            // Skip clipping. This significally increases the print quality in Internet Explorer, 
-                            // which seems to rasterize all clipped graphics before printing.
-                            clipWrapper = null;
-                            clipWrapperId = null;
-                            rootGraphics.Add(textEl);
-                            continue;
-                        }
-                    }
-
-                    AppendClipped(textEl);
-                }
-
-                if (paragraph.AppendClipping)
                 {
-                    AppendClipping(textEl);
+                    var maxFontSize = paragraph.Content.Max(span => span.Style.FontSize);
+
+                    // This is an approximation of the text bounding rectangle. It is not entirely correct since
+                    // we don't have all the font metrics to determine the height above and below the baseline.
+                    var textBoundingRect = RectangleUtils.GetBoundingRectangleAfterTransform(
+                        new Rectangle(
+                            paragraph.X, paragraph.Y - maxFontSize,
+                            paragraph.X + paragraphWidth, paragraph.Y + maxFontSize / 2
+                        ),
+                        paragraph.Matrix);
+
+                    if (graphicsState.ClipPath.Rectangle.Contains(textBoundingRect))
+                    {
+                        // We can be reasonably sure the text is entiely contained within the clip rectangle.
+                        // Skip clipping. This significally increases the print quality in Internet Explorer, 
+                        // which seems to rasterize all clipped graphics before printing.
+                        clipWrapper = null;
+                        clipWrapperId = null;
+                        rootGraphics.Add(textEl);
+                        return;
+                    }
                 }
+
+                AppendClipped(textEl);
+            }
+
+            if (paragraph.AppendClipping)
+            {
+                AppendClipping(textEl);
+            }
+        }
+
+        [Operation("d0")]
+        private void d0_Type3Width(double wx, double wy)
+        {
+        }
+
+        [Operation("d1")]
+        private void d1_Type3WidthAndBbox(double wx, double wy, double llx, double lly, double urx, double ury)
+        {
+            if (inType3Glyph)
+            {
+                ignoreColorChange = true;
             }
         }
 

@@ -1,0 +1,180 @@
+%PDF-1.7
+
+xref
+0 11
+0000000000 65535 f
+0000000289 00000 n
+0000000340 00000 n
+0000000404 00000 n
+0000000890 00000 n
+0000001078 00000 n
+0000001547 00000 n
+0000001963 00000 n
+0000002339 00000 n
+0000002527 00000 n
+0000002805 00000 n
+trailer
+<< /Root 1 0 R  /Size 11 >>
+     
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 4 0 R ]  /Count 1 >> endobj
+
+3 0 obj << /Length 428 >>
+stream
+   0 0 0 rg
+
+   BT
+      200 600 Td
+      /F1 200 Tf
+      <040503> '
+      
+      1 0 0 1 100 500 Tm
+      /F1 60 Tf
+      5 Tc
+      250 Tz
+           
+      <04050320040503> '
+   ET
+   
+   1 0 0 RG
+   107 490 m 107 510 l S
+   157 490 m 157 510 l S
+   190 490 m 190 510 l S
+   233 490 m 233 510 l S
+   
+   340 490 m 340 510 l S
+   389 490 m 389 510 l S
+   423 490 m 423 510 l S
+   465 490 m 465 510 l S
+endstream
+endobj
+
+4 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /F1 6 0 R
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 3 0 R ]
+>>
+endobj
+
+5 0 obj
+<< 
+   /Type /CMap
+   /Length 387
+>> 
+stream
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+/CIDSystemInfo
+<< /Registry (Adobe)
+/Ordering (UCS) /Supplement 0 >> def
+/CMapName /Adobe-Identity-UCS def
+/CMapType 2 def
+1 begincodespacerange
+<0000> <FFFF>
+endcodespacerange
+3 beginbfchar
+<0003> <0021>
+<0004> <0048>
+<0005> <0049>
+endbfchar 
+endcmap 
+CMapName currentdict /CMap defineresource pop 
+end
+end
+endstream
+endobj
+
+6 0 obj
+<<
+   /Type /Font
+   /Subtype /Type3
+   /CharProcs << /H 7 0 R /I 8 0 R /Exclamation 9 0 R /space 10 0 R >>
+   /Encoding << /Type /Encoding /Differences [ 3 /Exclamation /H /I ] >>
+   /FirstChar 3
+   /LastChar 32
+   /FontBBox [ 0 0 1 -1 ]
+   /FontMatrix [ 1 0 0 1 0 0]
+   /Widths [0.209 0.445 0.227 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.34]
+   /ToUnicode 5 0 R
+>>
+endobj
+
+% H
+7 0 obj
+<< /Length 312 >>
+stream
+   0.445 0 -10 -10 10 10 d1
+   0.01 0 0 0.01 0 0 cm
+   5.19922 0 m
+   5.19922 65.4063 l
+   14.3047 65.4063 l
+   14.3047 39.4063 l
+   29.0039 39.4063 l
+   29.0039 65.4063 l
+   37.793 65.4063 l
+   37.793 0 l
+   29.0039 0 l
+   29.0039 29.8086 l
+   14.3047 29.8086 l
+   14.3047 0 l
+   5.19922 0 l
+   f
+endstream
+endobj
+
+% I
+8 0 obj
+<< /Length 124 >>
+stream
+   0.227 0 -10 -10 10 10 d1
+   0.01 0 0 0.01 0 0 cm
+   1 0 0 rg % Should be ignored
+   7.39844 0 7.19922 63.9883 re
+   f
+endstream
+endobj
+
+% !
+9 0 obj
+<< /Length 210 >>
+stream
+   0.209 0 d0
+   0.08 0 0 0.64 0.05 0 cm
+   BI
+      /W 1
+      /H 8
+      /BPC 8
+      /F /AHx
+      /CS /G
+   ID
+      00
+      00
+      00
+      00
+      00
+      00
+      ff
+      00>
+   EI
+endstream
+endobj
+
+% space
+10 0 obj
+<< /Length 19 >>
+stream
+   0.2 0 0 0 0 0 d1
+endstream
+endobj
+
+
+startxref
+8
+%%EOF

@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Fonts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,8 @@ namespace PdfToSvg.Drawing
 
         private readonly double minSpaceEm;
         private readonly double minSpacePx;
+        private readonly bool handleType3;
+
         private GraphicsState? textStyle;
         private double pendingSpace;
         private TextParagraph? currentParagraph;
@@ -31,10 +34,11 @@ namespace PdfToSvg.Drawing
 
         private const double ScalingMultiplier = 1.0 / 100;
 
-        public TextBuilder(double minSpaceEm, double minSpacePx)
+        public TextBuilder(double minSpaceEm, double minSpacePx, bool handleType3)
         {
             this.minSpaceEm = minSpaceEm;
             this.minSpacePx = minSpacePx;
+            this.handleType3 = handleType3;
             Clear();
         }
 
@@ -118,11 +122,23 @@ namespace PdfToSvg.Drawing
 
         public void AddSpan(GraphicsState graphicsState, PdfString text)
         {
-            if (text.Length == 0)
+            if (text.Length > 0)
             {
-                return;
+                if (handleType3 &&
+                    graphicsState.Font is Type3Font type3 &&
+                    !type3.IsExtractable)
+                {
+                    AddSpanType3(graphicsState, text, type3);
+                }
+                else
+                {
+                    AddTextSpan(graphicsState, text);
+                }
             }
+        }
 
+        private void AddTextSpan(GraphicsState graphicsState, PdfString text)
+        {
             var decodedText = graphicsState.Font.Decode(text, out var width);
 
             decodedText = SvgConversion.ReplaceInvalidChars(decodedText);
@@ -136,7 +152,8 @@ namespace PdfToSvg.Drawing
                 NewParagraph();
             }
 
-            var totalWidth = width + text.Length * style.TextCharSpacingPx;
+            var textScaling = graphicsState.TextScaling * ScalingMultiplier;
+            var totalWidth = (width + text.Length * style.TextCharSpacingPx) * textScaling;
 
             var wordSpacing = graphicsState.TextWordSpacingPx;
             if (wordSpacing != 0)
@@ -147,7 +164,7 @@ namespace PdfToSvg.Drawing
 
                 // This is not accurate, but the width of each individual word is not important
                 // TODO but maybe for clipping?
-                var wordWidth = width / words.Length;
+                var wordWidth = totalWidth / words.Length;
 
                 if (!string.IsNullOrEmpty(words[0]))
                 {
@@ -160,16 +177,63 @@ namespace PdfToSvg.Drawing
                     AddSpanNoSpacing(style, " " + words[i], wordWidth);
                 }
 
-                totalWidth += (words.Length - 1) * wordSpacingGlobalUnits;
+                totalWidth += (words.Length - 1) * wordSpacingGlobalUnits * textScaling;
             }
             else
             {
-                AddSpanNoSpacing(style, decodedText, width);
+                AddSpanNoSpacing(style, decodedText, totalWidth);
             }
 
-            totalWidth *= graphicsState.TextScaling * ScalingMultiplier;
-
             Translate(graphicsState, totalWidth);
+        }
+
+        private void AddSpanType3(GraphicsState graphicsState, PdfString text, Type3Font type3)
+        {
+            currentParagraph = null;
+            pendingSpace = 0;
+
+            var style = GetTextStyle(graphicsState);
+            var wordSpacingGlobalUnits = style.TextWordSpacingPx * scale;
+
+            var fontMatrix = type3.FontMatrix * Matrix.Scale(normalizedFontSize, -normalizedFontSize);
+
+            if (style.TextScaling != 100)
+            {
+                fontMatrix = Matrix.Scale(style.TextScaling * ScalingMultiplier, 1, fontMatrix);
+            }
+
+            for (var i = 0; i < text.Length; i++)
+            {
+                var charCode = text[i];
+
+                var charInfo = type3.GetChar(charCode);
+                var width = charInfo.Width * normalizedFontSize;
+
+                if (charInfo.GlyphDefinition != null &&
+                    charInfo.GlyphDefinition.Length > 0)
+                {
+                    var paragraph = new TextParagraph
+                    {
+                        Matrix = fontMatrix * Matrix.Translate(translateX, translateY, remainingTransform),
+                        X = 0,
+                        Y = 0,
+                        Type3Content = charInfo.GlyphDefinition,
+                        Type3Style = style,
+                    };
+                    paragraphs.Add(paragraph);
+                }
+
+                var dx = width + style.TextCharSpacingPx;
+
+                if (charCode == ' ')
+                {
+                    dx += wordSpacingGlobalUnits;
+                }
+
+                dx *= style.TextScaling * ScalingMultiplier;
+
+                Translate(graphicsState, dx);
+            }
         }
 
         public void AddSpace(GraphicsState graphicsState, double widthGlyphSpaceUnits)
@@ -188,8 +252,6 @@ namespace PdfToSvg.Drawing
 
         private void AddSpanNoSpacing(GraphicsState style, string text, double width)
         {
-            width *= style.TextScaling * ScalingMultiplier;
-
             if (currentParagraph == null)
             {
                 currentParagraph = NewParagraph();
@@ -198,7 +260,7 @@ namespace PdfToSvg.Drawing
             var absolutePendingSpace = Math.Abs(pendingSpace);
 
             var mergeWithPrevious =
-                absolutePendingSpace < minSpacePx ||
+                    absolutePendingSpace < minSpacePx ||
                 absolutePendingSpace < minSpaceEm * normalizedFontSize;
 
             if (mergeWithPrevious && currentParagraph.Content.Count > 0)

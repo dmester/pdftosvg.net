@@ -54,6 +54,15 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
             Assert.AreEqual(charsetId, parsedCff.Fonts[0].TopDict.Charset);
         }
 
+        [TestCase("", "")]
+        [TestCase("abc", "abc")]
+        [TestCase("a[](){}<>/%\0 \t\r\n\fa", "a________________a")]
+        public void SanitizeName(string input, string expectedOutput)
+        {
+            var actualOutput = CompactFontBuilder.SanitizeName(input);
+            Assert.AreEqual(expectedOutput, actualOutput);
+        }
+
         [Test]
         public void Charset_Format0()
         {

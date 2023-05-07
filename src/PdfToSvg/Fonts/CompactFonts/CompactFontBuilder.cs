@@ -23,10 +23,49 @@ namespace PdfToSvg.Fonts.CompactFonts
             this.inlineSubrs = inlineSubrs;
         }
 
+        public static string SanitizeName(string input)
+        {
+            const int MaxLength = 63;
+            var result = new char[Math.Min(input.Length, MaxLength)];
+
+            for (var i = 0; i < result.Length; i++)
+            {
+                var ch = input[i];
+
+                // Invalid chars according to CFF spec section 7
+                if (ch < 33 ||
+                    ch > 126 ||
+                    ch == '[' ||
+                    ch == ']' ||
+                    ch == '(' ||
+                    ch == ')' ||
+                    ch == '{' ||
+                    ch == '}' ||
+                    ch == '<' ||
+                    ch == '>' ||
+                    ch == '/' ||
+                    ch == '%' ||
+                    ch == ' ' ||
+                    ch == '\t' ||
+                    ch == '\r' ||
+                    ch == '\n' ||
+                    ch == '\f')
+                {
+                    ch = '_';
+                }
+
+                result[i] = ch;
+            }
+
+            return new string(result);
+        }
+
         private void WriteNameIndex()
         {
             var nameIndex = fontSet.Fonts
-                .Select(font => Encoding.ASCII.GetBytes(font.Name))
+                .Select(font => string.IsNullOrEmpty(font.Name) ? "Untitled" : font.Name)
+                .Select(name => SanitizeName(name))
+                .Select(name => Encoding.ASCII.GetBytes(name))
                 .Select(arr => new ArraySegment<byte>(arr))
                 .ToList();
 

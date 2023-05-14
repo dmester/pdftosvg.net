@@ -1,0 +1,27 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.gt4EC2H text{white-space:pre;}
+.txYuIDW{font:22px 'Times New Roman',serif;fill:#0f0f0f;}
+.txBXTEj{font:18px 'Times New Roman',serif;letter-spacing:82.8px;fill:#0f0f0f;}
+.txwGsEd{font:22px 'Times New Roman',serif;letter-spacing:-0.55px;fill:#0f0f0f;}
+</style>
+<g class="gt4EC2H">
+<g class="txYuIDW">
+<text x="242.0296" y="119.2652">2</text>
+<text x="155.3056" y="119.2652">5</text>
+<text x="172.5316" y="118.2752">-</text>
+<text x="186.8316" y="119.2652">4</text>
+</g>
+<text x="146" y="117.2034" class="txBXTEj">··</text>
+<g class="txYuIDW">
+<text x="100.7176" y="119.2652">5</text>
+<text x="201.7196" y="117.1972">+</text>
+<text x="114.6656" y="117.1972">+</text>
+<text x="218.9676" y="119.2652">8</text>
+<text x="132.3096" y="119.2652">3</text>
+<text x="100" y="179.2652">Expected:</text>
+</g>
+<text x="100" y="211.92" class="txwGsEd">5 + 3 · 5 - 4 + 8 · 2</text>
+</g>
+</svg>

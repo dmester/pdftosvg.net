@@ -248,6 +248,22 @@ namespace PdfToSvg.Drawing
 
             pendingSpace += widthTextSpace;
             Translate(graphicsState, widthTextSpace);
+
+            // Some pdfs use TJ operators where the substrings are rendered out of order by using negative offsets.
+            //
+            // Those cases could previously end up with <tspan>s being rendered to the left of the owning <text>.
+            // SVG viewers seem to treat this scenario in different ways. Some places the owner <text> based on the
+            // first <tspan> (e.g. Inkscape), while others (e.g. Chrome and Firefox) places the owner <text> based on
+            // the leftmost <tspan>, even if it is not the first <tspan>.
+            //
+            // To prevent this, don't allow <tspan>s growing to the left of the parent <text>.
+            //
+            if (currentParagraph != null &&
+                currentParagraph.X > translateX)
+            {
+                currentParagraph = null;
+                pendingSpace = 0;
+            }
         }
 
         private void AddSpanNoSpacing(GraphicsState style, string text, double width)
@@ -260,7 +276,7 @@ namespace PdfToSvg.Drawing
             var absolutePendingSpace = Math.Abs(pendingSpace);
 
             var mergeWithPrevious =
-                    absolutePendingSpace < minSpacePx ||
+                absolutePendingSpace < minSpacePx ||
                 absolutePendingSpace < minSpaceEm * normalizedFontSize;
 
             if (mergeWithPrevious && currentParagraph.Content.Count > 0)

@@ -15,7 +15,9 @@ namespace PdfToSvg.Fonts.CharStrings
         {
             return
                 code == CharStringOpCode.VStem ||
+                code == CharStringOpCode.VStem3 ||
                 code == CharStringOpCode.HStem ||
+                code == CharStringOpCode.HStem3 ||
                 code == CharStringOpCode.VStemHm ||
                 code == CharStringOpCode.HStemHm ||
                 code == CharStringOpCode.HintMask ||
@@ -28,11 +30,16 @@ namespace PdfToSvg.Fonts.CharStrings
 
             if (bchar != null)
             {
-                foreach (var lexeme in bchar.ContentInlinedSubrs)
+                foreach (var lexeme in bchar.Content)
                 {
                     if (lexeme.OpCode == CharStringOpCode.EndChar)
                     {
                         break;
+                    }
+
+                    if (lexeme.Token == CharStringToken.Mask || IsHint(lexeme.OpCode))
+                    {
+                        continue;
                     }
 
                     result.Add(lexeme);
@@ -46,35 +53,21 @@ namespace PdfToSvg.Fonts.CharStrings
             result.Add(CharStringLexeme.Operand(ady));
             result.Add(CharStringLexeme.Operator(CharStringOpCode.RMoveTo));
 
-            // TODO handle hints
-
             if (achar != null)
             {
-                var startOperandIndex = -1;
-
-                for (var i = 0; i < achar.ContentInlinedSubrs.Count; i++)
+                foreach (var lexeme in achar.Content)
                 {
-                    var lexeme = achar.ContentInlinedSubrs[i];
-
-                    if (lexeme.Token == CharStringToken.Operand)
+                    if (lexeme.OpCode == CharStringOpCode.EndChar)
                     {
-                        if (startOperandIndex < 0)
-                        {
-                            startOperandIndex = i;
-                        }
+                        break;
                     }
-                    else if (lexeme.Token == CharStringToken.Operator)
-                    {
-                        if (!IsHint(achar.ContentInlinedSubrs[i].OpCode))
-                        {
-                            for (var j = startOperandIndex < 0 ? i : startOperandIndex; j <= i; j++)
-                            {
-                                result.Add(achar.ContentInlinedSubrs[j]);
-                            }
-                        }
 
-                        startOperandIndex = -1;
+                    if (lexeme.Token == CharStringToken.Mask || IsHint(lexeme.OpCode))
+                    {
+                        continue;
                     }
+
+                    result.Add(lexeme);
                 }
             }
 

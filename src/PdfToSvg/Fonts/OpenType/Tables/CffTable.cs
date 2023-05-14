@@ -20,7 +20,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
         {
             if (Content != null)
             {
-                var data = CompactFontBuilder.Build(Content, inlineSubrs: true);
+                var data = CompactFontBuilder.Build(Content);
                 writer.WriteBytes(data);
             }
         }

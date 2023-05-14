@@ -86,6 +86,93 @@ namespace PdfToSvg.Tests.Fonts.CharStrings.Parser
         {
             Helper.Operators(width, minx, maxx, miny, maxy, data);
         }
+
+        [Test]
+        public void Othersubr_Flex()
+        {
+            var data = new Type2CharStringWriter();
+
+            data.WriteOperand(0); // args
+            data.WriteOperand(1); // subr# start
+            data.WriteOperator((int)CharStringOpCode.CallOtherSubr);
+
+            // Start
+            data.WriteOperand(0);
+            data.WriteOperator((int)CharStringOpCode.HMoveTo);
+
+            data.WriteOperand(0); // args
+            data.WriteOperand(2); // subr# add vector
+            data.WriteOperator((int)CharStringOpCode.CallOtherSubr);
+
+            // P1
+            data.WriteOperand(3);
+            data.WriteOperator((int)CharStringOpCode.HMoveTo);
+
+            data.WriteOperand(0); // args
+            data.WriteOperand(2); // subr# add vector
+            data.WriteOperator((int)CharStringOpCode.CallOtherSubr);
+
+            // P2
+            data.WriteOperand(2);
+            data.WriteOperator((int)CharStringOpCode.VMoveTo);
+
+            data.WriteOperand(0); // args
+            data.WriteOperand(2); // subr# add vector
+            data.WriteOperator((int)CharStringOpCode.CallOtherSubr);
+
+            // P3
+            data.WriteOperand(4);
+            data.WriteOperand(1);
+            data.WriteOperator((int)CharStringOpCode.RMoveTo);
+
+            data.WriteOperand(0); // args
+            data.WriteOperand(2); // subr# add vector
+            data.WriteOperator((int)CharStringOpCode.CallOtherSubr);
+
+            // P4
+            data.WriteOperand(4);
+            data.WriteOperand(-1);
+            data.WriteOperator((int)CharStringOpCode.RMoveTo);
+
+            data.WriteOperand(0); // args
+            data.WriteOperand(2); // subr# add vector
+            data.WriteOperator((int)CharStringOpCode.CallOtherSubr);
+
+            // P5
+            data.WriteOperand(4);
+            data.WriteOperand(-2);
+            data.WriteOperator((int)CharStringOpCode.RMoveTo);
+
+            data.WriteOperand(0); // args
+            data.WriteOperand(2); // subr# add vector
+            data.WriteOperator((int)CharStringOpCode.CallOtherSubr);
+
+            // P6
+            data.WriteOperand(4);
+            data.WriteOperator((int)CharStringOpCode.HMoveTo);
+
+            data.WriteOperand(0); // args
+            data.WriteOperand(2); // subr# add vector
+            data.WriteOperator((int)CharStringOpCode.CallOtherSubr);
+
+            data.WriteOperand(0); // args
+            data.WriteOperand(0); // subr# end flex
+            data.WriteOperator((int)CharStringOpCode.CallOtherSubr);
+
+            var glyph = CharStringParser.Parse(
+                CharStringType.Type1, new ArraySegment<byte>(data.ToArray()),
+                new CharStringSubRoutine[0], new CharStringSubRoutine[0]);
+
+            Assert.AreEqual(
+                "0, 19, 0, 3",
+                glyph.MinX + ", " + glyph.MaxX + ", " + glyph.MinY + ", " + glyph.MaxY,
+                "BBox");
+
+            Assert.AreEqual(
+                "3 0 0 2 4 1 4 -1 4 -2 4 0 3 Flex",
+                string.Join(" ", glyph.Content),
+                "Content");
+        }
     }
 
     internal class FinishOperators
@@ -122,6 +209,45 @@ namespace PdfToSvg.Tests.Fonts.CharStrings.Parser
         public void Exec(double? width, double minx, double maxx, double miny, double maxy, params string[] data)
         {
             Helper.Operators(width, minx, maxx, miny, maxy, data);
+        }
+
+        [Test]
+        public void Stem3()
+        {
+            var data = new Type2CharStringWriter();
+
+            data.WriteOperand(0);
+            data.WriteOperand(0);
+            data.WriteOperand(2); // sbx
+            data.WriteOperand(3); // sby
+            data.WriteOperator((int)CharStringOpCode.Sbw);
+
+            data.WriteOperand(1); // Absolute -> 4
+            data.WriteOperand(2); // Relative
+            data.WriteOperand(5); // Absolute -> 8
+            data.WriteOperand(2); // Relative
+            data.WriteOperand(9); // Absolute -> 12
+            data.WriteOperand(3); // Relative
+            data.WriteOperator((int)CharStringOpCode.HStem3);
+
+            data.WriteOperand(2); // Absolute -> 4
+            data.WriteOperand(1); // Relative
+            data.WriteOperand(5); // Absolute -> 7
+            data.WriteOperand(2); // Relative
+            data.WriteOperand(10);// Absolute -> 12
+            data.WriteOperand(2); // Relative
+            data.WriteOperator((int)CharStringOpCode.VStem3);
+
+            var glyph = CharStringParser.Parse(
+                CharStringType.Type1, new ArraySegment<byte>(data.ToArray()),
+                new CharStringSubRoutine[0], new CharStringSubRoutine[0]);
+
+            Assert.AreEqual(
+                // If we would handle hints:
+                // "4 2 2 2 2 3 HStem 4 1 2 2 3 2 VStem",
+                "",
+                string.Join(" ", glyph.Hints),
+                "Content");
         }
     }
 
@@ -263,7 +389,7 @@ namespace PdfToSvg.Tests.Fonts.CharStrings.Parser
                 .Select(x => new CharStringSubRoutine(x))
                 .ToList();
 
-            return Type2CharStringParser.Parse(new ArraySegment<byte>(main), globalSubrs, localSubrs);
+            return CharStringParser.Parse(CharStringType.Type2, new ArraySegment<byte>(main), globalSubrs, localSubrs);
         }
 
         public static void Operators(double? width, double minx, double maxx, double miny, double maxy, params string[] data)

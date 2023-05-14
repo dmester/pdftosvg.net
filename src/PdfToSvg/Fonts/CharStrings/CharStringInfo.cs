@@ -13,9 +13,9 @@ namespace PdfToSvg.Fonts.CharStrings
     {
         public CharStringPath Path = new CharStringPath();
 
-        public List<CharStringLexeme> Content = new List<CharStringLexeme>();
+        public List<CharStringLexeme> Hints = new List<CharStringLexeme>();
 
-        public List<CharStringLexeme> ContentInlinedSubrs = new List<CharStringLexeme>();
+        public List<CharStringLexeme> Content = new List<CharStringLexeme>();
 
         public CharStringSeacInfo? Seac;
 

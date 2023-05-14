@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -70,10 +71,10 @@ namespace PdfToSvg.Fonts.CharStrings
                     return "0x" + ((int)Value).ToString("x2");
 
                 case CharStringToken.Operator:
-                    return OpCode.ToString();
+                    return Enum.IsDefined(typeof(CharStringOpCode), OpCode) ? OpCode.ToString() : "OP " + OpCode;
 
                 case CharStringToken.Operand:
-                    return Value.ToString();
+                    return Value.ToString("0.##", CultureInfo.InvariantCulture);
 
                 default:
                     return "";

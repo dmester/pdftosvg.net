@@ -65,10 +65,11 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
                 NullableInt = null,
             };
 
-            CompactFontDictSerializer.Serialize(target, source, new TestDict(), stringTable);
+            CompactFontDictSerializer.Serialize(target, source, new TestDict(), stringTable, false);
 
             var expectedDict = new List<KeyValuePair<int, double[]>>();
             Assert.AreEqual(expectedDict, target);
+            Assert.AreEqual(0, stringTable.GetCustomStrings().Count);
         }
 
         [Test]
@@ -77,10 +78,11 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
             var target = new List<KeyValuePair<int, double[]>>();
             var stringTable = new CompactFontStringTable();
 
-            CompactFontDictSerializer.Serialize(target, new TestDict(), new TestDict(), stringTable);
+            CompactFontDictSerializer.Serialize(target, new TestDict(), new TestDict(), stringTable, false);
 
             var expectedDict = new List<KeyValuePair<int, double[]>>();
             Assert.AreEqual(expectedDict, target);
+            Assert.AreEqual(0, stringTable.GetCustomStrings().Count);
         }
 
         [TestCase(false, 0d)]
@@ -97,7 +99,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
                 BoolArray = new[] { input, input, false },
             };
 
-            CompactFontDictSerializer.Serialize(target, source, new TestDict(), stringTable);
+            CompactFontDictSerializer.Serialize(target, source, new TestDict(), stringTable, false);
 
             var expectedDict = new List<KeyValuePair<int, double[]>>();
 
@@ -111,6 +113,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
             expectedDict.Add(new KeyValuePair<int, double[]>(10, new[] { expected, expected, 0d }));
 
             Assert.AreEqual(expectedDict, target);
+            Assert.AreEqual(0, stringTable.GetCustomStrings().Count);
         }
 
         [TestCase(0, 0d)]
@@ -127,7 +130,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
                 IntArray = new[] { input, input, 7 },
             };
 
-            CompactFontDictSerializer.Serialize(target, source, new TestDict(), stringTable);
+            CompactFontDictSerializer.Serialize(target, source, new TestDict(), stringTable, false);
 
             var expectedDict = new List<KeyValuePair<int, double[]>>
             {
@@ -136,6 +139,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
                 new KeyValuePair<int, double[]>(9, new []{ expected, expected, 7d }),
             };
             Assert.AreEqual(expectedDict, target);
+            Assert.AreEqual(0, stringTable.GetCustomStrings().Count);
         }
 
         [TestCase(0d)]
@@ -152,7 +156,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
                 DoubleArray = new[] { input, input, 0d },
             };
 
-            CompactFontDictSerializer.Serialize(target, source, new TestDict(), stringTable);
+            CompactFontDictSerializer.Serialize(target, source, new TestDict(), stringTable, false);
 
             var expectedDict = new List<KeyValuePair<int, double[]>>
             {
@@ -161,14 +165,16 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
                 new KeyValuePair<int, double[]>(8, new []{ input, input, 0d }),
             };
             Assert.AreEqual(expectedDict, target);
+            Assert.AreEqual(0, stringTable.GetCustomStrings().Count);
         }
 
-        [TestCase(".notdef", 0d)]
-        [TestCase("Semibold", 390d)]
-        [TestCase("mystr1", 391d)]
-        [TestCase("mystr2", 392d)]
-        [TestCase("not a known string", -1d)]
-        public void SerializeString(string input, double expected)
+        [TestCase(".notdef", 0d, true)]
+        [TestCase("Semibold", 390d, true)]
+        [TestCase("mystr1", 391d, true)]
+        [TestCase("mystr2", 392d, true)]
+        [TestCase("not a known string", -1d, true)]
+        [TestCase("not a known string", 393d, false)]
+        public void SerializeString(string input, double expected, bool readOnlyStrings)
         {
             var target = new List<KeyValuePair<int, double[]>>();
             var stringTable = new CompactFontStringTable(new[]
@@ -183,7 +189,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
                 StringArray = new[] { input, input, "oneeighth" },
             };
 
-            CompactFontDictSerializer.Serialize(target, source, new TestDict(), stringTable);
+            CompactFontDictSerializer.Serialize(target, source, new TestDict(), stringTable, readOnlyStrings);
 
             var expectedDict = new List<KeyValuePair<int, double[]>>
             {

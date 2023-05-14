@@ -13,7 +13,7 @@ namespace PdfToSvg.Fonts.CompactFonts
     internal class CompactFontStringTable
     {
         // CFF spec Appendix A
-        private static readonly string[] sid = new string[]
+        private static readonly string[] sids = new string[]
         {
             ".notdef",
             "space",
@@ -407,35 +407,53 @@ namespace PdfToSvg.Fonts.CompactFonts
             "Roman",
             "Semibold",
         };
+        private static readonly Dictionary<string, int> sidLookup = new(StringComparer.Ordinal);
+
+        private List<string> customStrings;
+        private Dictionary<string, int> customStringLookup = new(StringComparer.Ordinal);
+
+        static CompactFontStringTable()
+        {
+            for (var i = 0; i < sids.Length; i++)
+            {
+                sidLookup[sids[i]] = i;
+            }
+        }
 
         public CompactFontStringTable()
         {
-            CustomStrings = ArrayUtils.Empty<string>();
+            customStrings = new List<string>();
         }
 
         public CompactFontStringTable(string[] customStrings)
         {
-            CustomStrings = customStrings;
+            this.customStrings = customStrings.ToList();
+
+            for (var i = 0; i < customStrings.Length; i++)
+            {
+                customStringLookup[customStrings[i]] = i + sids.Length;
+            }
         }
 
-        public string[] CustomStrings { get; }
-
-        public static CompactFontStringTable Standard { get; } = new CompactFontStringTable();
+        public IList<string> GetCustomStrings()
+        {
+            return customStrings;
+        }
 
         public string? Lookup(int index)
         {
             if (index >= 0)
             {
-                if (index < sid.Length)
+                if (index < sids.Length)
                 {
-                    return sid[index];
+                    return sids[index];
                 }
 
-                index -= sid.Length;
+                index -= sids.Length;
 
-                if (index < CustomStrings.Length)
+                if (index < customStrings.Count)
                 {
-                    return CustomStrings[index];
+                    return customStrings[index];
                 }
             }
 
@@ -444,23 +462,29 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         public int Lookup(string str)
         {
-            for (var i = 0; i < sid.Length; i++)
-            {
-                if (sid[i] == str)
-                {
-                    return i;
-                }
-            }
+            int sid;
 
-            for (var i = 0; i < CustomStrings.Length; i++)
+            if (sidLookup.TryGetValue(str, out sid) ||
+                customStringLookup.TryGetValue(str, out sid))
             {
-                if (CustomStrings[i] == str)
-                {
-                    return i + sid.Length;
-                }
+                return sid;
             }
 
             return -1;
+        }
+
+        public int AddOrLookup(string str)
+        {
+            var sid = Lookup(str);
+
+            if (sid < 0)
+            {
+                sid = customStrings.Count + sids.Length;
+                customStrings.Add(str);
+                customStringLookup[str] = sid;
+            }
+
+            return sid;
         }
     }
 }

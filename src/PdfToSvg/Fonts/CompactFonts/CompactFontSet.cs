@@ -14,7 +14,7 @@ namespace PdfToSvg.Fonts.CompactFonts
     {
         public IList<CompactFont> Fonts { get; } = new List<CompactFont>();
 
-        public CompactFontStringTable Strings { get; set; } = CompactFontStringTable.Standard;
+        public CompactFontStringTable Strings { get; set; } = new CompactFontStringTable();
 
         public IList<CharStringSubRoutine> Subrs { get; } = new List<CharStringSubRoutine>();
     }

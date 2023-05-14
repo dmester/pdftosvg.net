@@ -47,22 +47,32 @@ Microsoft OpenType Specification
 
 https://docs.microsoft.com/en-us/typography/opentype/spec/
 
+### WOFF
+W3C WOFF File Format 1.0
+
+https://www.w3.org/TR/WOFF/
+
+### Type 1 Font
+Adobe Type 1 Font Format
+
+https://adobe-type-tools.github.io/font-tech-notes/pdfs/T1_SPEC.pdf
+
 ### CFF - Compact Font Format
 Adobe Technical Note #5176 - The Compact Font Format Specification
 
 https://adobe-type-tools.github.io/font-tech-notes/pdfs/5176.CFF.pdf
-
-### CMap / CIDFont
-Adobe CMap and CIDFont Files Specification
-
-https://wwwimages2.adobe.com/content/dam/acom/en/devnet/font/pdfs/5014.CIDFont_Spec.pdf
 
 ### Type 2 CharString
 Adobe Technical Note #5177 - The Type 2 Charstring Format
 
 https://adobe-type-tools.github.io/font-tech-notes/pdfs/5177.Type2.pdf
 
-### WOFF
-W3C WOFF File Format 1.0
+### CMap / CIDFont
+Adobe CMap and CIDFont Files Specification
 
-https://www.w3.org/TR/WOFF/
+https://wwwimages2.adobe.com/content/dam/acom/en/devnet/font/pdfs/5014.CIDFont_Spec.pdf
+
+### PostScript
+PostScript Language Reference
+
+https://www.adobe.com/jp/print/postscript/pdfs/PLRM.pdf

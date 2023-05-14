@@ -216,9 +216,11 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         private static class Serializer<TDict>
         {
-            private static Action<OutputDictData, TDict, TDict, CompactFontStringTable>? serializer;
+            private static Action<OutputDictData, TDict, TDict, CompactFontStringTable, bool>? serializer;
 
-            public static void Serialize(OutputDictData target, TDict dict, TDict defaultValues, CompactFontStringTable strings)
+            public static void Serialize(OutputDictData target,
+                TDict dict, TDict defaultValues,
+                CompactFontStringTable strings, bool readOnlyStrings)
             {
                 if (serializer == null)
                 {
@@ -231,7 +233,7 @@ namespace PdfToSvg.Fonts.CompactFonts
                     }
                 }
 
-                serializer(target, dict, defaultValues, strings);
+                serializer(target, dict, defaultValues, strings, readOnlyStrings);
             }
 
             private static Expression Equals(Expression a, Expression b)
@@ -259,19 +261,19 @@ namespace PdfToSvg.Fonts.CompactFonts
                 return Expression.Call(comparer, a, b);
             }
 
-            private static Expression ConvertValue(Expression value, Expression strings)
+            private static Expression ConvertValue(Expression value, Expression strings, Expression readOnlyStrings)
             {
                 if (value.Type.IsArray)
                 {
-                    return ConvertArrayValue(value, strings);
+                    return ConvertArrayValue(value, strings, readOnlyStrings);
                 }
                 else
                 {
-                    return Expression.NewArrayInit(typeof(double), ConvertSingleValue(value, strings));
+                    return Expression.NewArrayInit(typeof(double), ConvertSingleValue(value, strings, readOnlyStrings));
                 }
             }
 
-            private static Expression ConvertArrayValue(Expression inputArray, Expression strings)
+            private static Expression ConvertArrayValue(Expression inputArray, Expression strings, Expression readOnlyStrings)
             {
                 var breakLabel = Expression.Label("LoopBreak");
 
@@ -290,7 +292,7 @@ namespace PdfToSvg.Fonts.CompactFonts
                             Expression.LessThan(Expression.PreIncrementAssign(i), length),
                             Expression.Assign(
                                 Expression.ArrayAccess(outputArray, i),
-                                ConvertSingleValue(Expression.ArrayAccess(inputArray, i), strings)
+                                ConvertSingleValue(Expression.ArrayAccess(inputArray, i), strings, readOnlyStrings)
                                 ),
                             Expression.Break(breakLabel)
                             ),
@@ -301,14 +303,24 @@ namespace PdfToSvg.Fonts.CompactFonts
                     );
             }
 
-            private static Expression ConvertSingleValue(Expression value, Expression strings)
+            private static Expression ConvertSingleValue(Expression value, Expression strings, Expression readOnlyStrings)
             {
                 if (value.Type == typeof(string))
                 {
-                    var stringIndex = Expression.Call(strings,
+                    var readOnlyStringIndex = Expression.Call(strings,
                         methodName: nameof(CompactFontStringTable.Lookup),
                         typeArguments: null,
                         arguments: Expression.Convert(value, typeof(string)));
+
+                    var mutableStringIndex = Expression.Call(strings,
+                        methodName: nameof(CompactFontStringTable.AddOrLookup),
+                        typeArguments: null,
+                        arguments: Expression.Convert(value, typeof(string)));
+
+                    var stringIndex = Expression.Condition(
+                        readOnlyStrings,
+                        readOnlyStringIndex,
+                        mutableStringIndex);
 
                     return Expression.Convert(stringIndex, typeof(double));
                 }
@@ -337,9 +349,8 @@ namespace PdfToSvg.Fonts.CompactFonts
                 throw new CompactFontException("Unsupported DICT property data type " + value.Type + ".");
             }
 
-            private static Expression ShouldSerialize(PropertyInfo property, Expression sourceInstance, Expression defaultInstance, Expression strings)
+            private static Expression ShouldSerialize(PropertyInfo property, Expression sourceInstance, Expression defaultInstance)
             {
-
                 Expression notEqual = Expression.Not(Equals(
                     Expression.Property(sourceInstance, property),
                     Expression.Property(defaultInstance, property)));
@@ -370,12 +381,13 @@ namespace PdfToSvg.Fonts.CompactFonts
                 }
             }
 
-            private static Action<OutputDictData, TDict, TDict, CompactFontStringTable> Compile()
+            private static Action<OutputDictData, TDict, TDict, CompactFontStringTable, bool> Compile()
             {
                 var targetParam = Expression.Parameter(typeof(OutputDictData), "target");
                 var sourceParam = Expression.Parameter(typeof(TDict), "source");
                 var defaultParam = Expression.Parameter(typeof(TDict), "defaultValues");
                 var stringsParam = Expression.Parameter(typeof(CompactFontStringTable), "strings");
+                var readOnlyStringsParam = Expression.Parameter(typeof(bool), "readOnlyStrings");
 
                 var addMethod = typeof(ICollection<KeyValuePair<int, double[]>>)
                     .GetTypeInfo()
@@ -403,17 +415,19 @@ namespace PdfToSvg.Fonts.CompactFonts
                     .ThenBy(p => p.Attribute.Value)
 
                     .Select(p => Expression.IfThen(
-                        ShouldSerialize(p.Property, sourceParam, defaultParam, stringsParam),
+                        ShouldSerialize(p.Property, sourceParam, defaultParam),
                         Expression.Call(targetParam, addMethod,
                             Expression.New(keyValuePairConstructor,
                                 Expression.Constant(p.Attribute.Value),
-                                ConvertValue(Expression.Property(sourceParam, p.Property), stringsParam)))
+                                ConvertValue(
+                                    Expression.Property(sourceParam, p.Property),
+                                    stringsParam, readOnlyStringsParam)))
                         ));
 
                 var lambda = Expression
-                    .Lambda<Action<OutputDictData, TDict, TDict, CompactFontStringTable>>(
+                    .Lambda<Action<OutputDictData, TDict, TDict, CompactFontStringTable, bool>>(
                         Expression.Block(new[] { sourceElementValue }, body),
-                        targetParam, sourceParam, defaultParam, stringsParam);
+                        targetParam, sourceParam, defaultParam, stringsParam, readOnlyStringsParam);
 
                 return lambda.Compile();
             }
@@ -425,9 +439,11 @@ namespace PdfToSvg.Fonts.CompactFonts
             Deserializer<TDict>.Deserialize(target, dictData, strings);
         }
 
-        public static void Serialize<TDict>(OutputDictData target, TDict dict, TDict defaultValues, CompactFontStringTable strings)
+        public static void Serialize<TDict>(OutputDictData target,
+            TDict dict, TDict defaultValues,
+            CompactFontStringTable strings, bool readOnlyStrings)
         {
-            Serializer<TDict>.Serialize(target, dict, defaultValues, strings);
+            Serializer<TDict>.Serialize(target, dict, defaultValues, strings, readOnlyStrings);
         }
     }
 }

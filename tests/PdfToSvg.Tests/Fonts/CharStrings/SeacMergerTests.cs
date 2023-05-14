@@ -18,52 +18,44 @@ namespace PdfToSvg.Tests.Fonts.CharStrings
         {
             var acharInfo = new CharStringInfo();
 
-            acharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(1));
-            acharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(2));
-            acharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operator(CharStringOpCode.HStemHm));
-            acharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operator(CharStringOpCode.HintMask));
-            acharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Mask(0));
+            acharInfo.Hints.Add(CharStringLexeme.Operand(1));
+            acharInfo.Hints.Add(CharStringLexeme.Operand(2));
+            acharInfo.Hints.Add(CharStringLexeme.Operator(CharStringOpCode.HStemHm));
+            acharInfo.Hints.Add(CharStringLexeme.Operator(CharStringOpCode.HintMask));
+            acharInfo.Hints.Add(CharStringLexeme.Mask(0));
 
-            acharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(20));
-            acharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(40));
-            acharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operator(CharStringOpCode.RMoveTo));
+            acharInfo.Content.Add(CharStringLexeme.Operand(20));
+            acharInfo.Content.Add(CharStringLexeme.Operand(40));
+            acharInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.RMoveTo));
 
-            acharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(10));
-            acharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(15));
-            acharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operator(CharStringOpCode.RLineTo));
+            acharInfo.Content.Add(CharStringLexeme.Operand(10));
+            acharInfo.Content.Add(CharStringLexeme.Operand(15));
+            acharInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.RLineTo));
 
             var bcharInfo = new CharStringInfo();
 
             bcharInfo.Path.RMoveTo(74, 75);
 
-            bcharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(1));
-            bcharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(2));
-            bcharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(3));
-            bcharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(4));
-            bcharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operator(CharStringOpCode.HStemHm));
-            bcharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operator(CharStringOpCode.HintMask));
-            bcharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Mask(0));
+            bcharInfo.Hints.Add(CharStringLexeme.Operand(1));
+            bcharInfo.Hints.Add(CharStringLexeme.Operand(2));
+            bcharInfo.Hints.Add(CharStringLexeme.Operand(3));
+            bcharInfo.Hints.Add(CharStringLexeme.Operand(4));
+            bcharInfo.Hints.Add(CharStringLexeme.Operator(CharStringOpCode.HStemHm));
+            bcharInfo.Hints.Add(CharStringLexeme.Operator(CharStringOpCode.HintMask));
+            bcharInfo.Hints.Add(CharStringLexeme.Mask(0));
 
-            bcharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(30));
-            bcharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(50));
-            bcharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operator(CharStringOpCode.RMoveTo));
+            bcharInfo.Content.Add(CharStringLexeme.Operand(30));
+            bcharInfo.Content.Add(CharStringLexeme.Operand(50));
+            bcharInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.RMoveTo));
 
-            bcharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(20));
-            bcharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operand(25));
-            bcharInfo.ContentInlinedSubrs.Add(CharStringLexeme.Operator(CharStringOpCode.RLineTo));
+            bcharInfo.Content.Add(CharStringLexeme.Operand(20));
+            bcharInfo.Content.Add(CharStringLexeme.Operand(25));
+            bcharInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.RLineTo));
 
             var merged = SeacMerger.Merge(new CharString(acharInfo), new CharString(bcharInfo), 10, 20);
 
-            var expected = new List<CharStringLexeme>
+            var expectedContent = new List<CharStringLexeme>
             {
-                CharStringLexeme.Operand(1),
-                CharStringLexeme.Operand(2),
-                CharStringLexeme.Operand(3),
-                CharStringLexeme.Operand(4),
-                CharStringLexeme.Operator(CharStringOpCode.HStemHm),
-                CharStringLexeme.Operator(CharStringOpCode.HintMask),
-                CharStringLexeme.Mask(0),
-
                 CharStringLexeme.Operand(30),
                 CharStringLexeme.Operand(50),
                 CharStringLexeme.Operator(CharStringOpCode.RMoveTo),
@@ -85,7 +77,7 @@ namespace PdfToSvg.Tests.Fonts.CharStrings
                 CharStringLexeme.Operator(CharStringOpCode.RLineTo),
             };
 
-            Assert.AreEqual(expected, merged);
+            Assert.AreEqual(expectedContent, merged);
         }
     }
 }

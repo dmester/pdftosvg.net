@@ -6,8 +6,11 @@ using PdfToSvg.DocumentModel;
 using PdfToSvg.Encodings;
 using PdfToSvg.Fonts.OpenType;
 using PdfToSvg.Fonts.OpenType.Tables;
+using PdfToSvg.Fonts.Type1;
 using PdfToSvg.Fonts.WidthMaps;
+using PdfToSvg.IO;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -47,7 +50,11 @@ namespace PdfToSvg.Fonts
         {
             // ISO 32000-2 section 9.6.5.2
             var encodingDefinition = fontDict.GetValueOrDefault(Names.Encoding);
-            var encoding = EncodingFactory.Create(encodingDefinition);
+            var encoding =
+                EncodingFactory.Create(encodingDefinition) ??
+                openTypeFontEncoding ??
+                new StandardEncoding();
+
             var postGlyphIndexes = GetPostGlyphIndexLookup();
             var cmap = openTypeFont?.CMaps.OrderByPriority().FirstOrDefault();
 

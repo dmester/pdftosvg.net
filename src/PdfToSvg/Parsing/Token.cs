@@ -51,5 +51,13 @@ namespace PdfToSvg.Parsing
         BeginBlock,
         EndBlock,
         UseCMap,
+        Def,
+        Dup,
+        Array,
+        Begin,
+        Dict,
+        RD,
+        ND,
+        NP,
     }
 }

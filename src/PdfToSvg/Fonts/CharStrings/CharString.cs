@@ -19,7 +19,6 @@ namespace PdfToSvg.Fonts.CharStrings
 
             var info = new CharStringInfo();
             info.Content.Add(endchar);
-            info.ContentInlinedSubrs.Add(endchar);
 
             Empty = new CharString(info);
         }
@@ -30,8 +29,8 @@ namespace PdfToSvg.Fonts.CharStrings
             this.Width = info.Width;
         }
 
+        public IList<CharStringLexeme> Hints => info.Hints;
         public IList<CharStringLexeme> Content => info.Content;
-        public IList<CharStringLexeme> ContentInlinedSubrs => info.ContentInlinedSubrs;
 
         public CharStringSeacInfo? Seac => info.Seac;
 

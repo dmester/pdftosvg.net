@@ -3,34 +3,40 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.Common;
+using PdfToSvg.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PdfToSvg.Fonts.CharStrings
 {
-    internal class Type2CharStringParser
+    internal class CharStringParser
     {
-        private readonly Stack<Type2CharStringLexer> parkedLexers = new Stack<Type2CharStringLexer>();
+        private readonly Stack<CharStringLexer> parkedLexers = new Stack<CharStringLexer>();
 
         private double[]? storage;
 
         private readonly IList<CharStringSubRoutine> globalSubrs, localSubrs;
 
-        private Type2CharStringParser(ArraySegment<byte> data, IList<CharStringSubRoutine> globalSubrs, IList<CharStringSubRoutine> localSubrs)
+        private CharStringParser(CharStringType type, ArraySegment<byte> data, IList<CharStringSubRoutine> globalSubrs, IList<CharStringSubRoutine> localSubrs)
         {
-            Lexer = new Type2CharStringLexer(data);
+            Type = type;
+            Lexer = new CharStringLexer(type, data);
             this.globalSubrs = globalSubrs;
             this.localSubrs = localSubrs;
         }
 
-        public bool InSubRoutine => parkedLexers.Count > 0;
+        public CharStringType Type { get; }
+
+        public Stack<double> PostScriptStack { get; } = new Stack<double>();
 
         public CharStringStack Stack { get; } = new CharStringStack();
 
         public CharStringPath Path => CharString.Path;
 
-        public Type2CharStringLexer Lexer { get; private set; }
+        public List<Point>? FlexPoints { get; set; }
+
+        public CharStringLexer Lexer { get; private set; }
 
         // The storage is limited to 32 fields according to spec, but it doesn't mention if the 
         // field indexes are zero or one based => allocate up to field 32.
@@ -38,9 +44,11 @@ namespace PdfToSvg.Fonts.CharStrings
 
         public CharStringInfo CharString { get; } = new CharStringInfo();
 
-        public static CharString Parse(ArraySegment<byte> data, IList<CharStringSubRoutine> globalSubrs, IList<CharStringSubRoutine> localSubrs)
+        public static CharString Parse(
+            CharStringType type, ArraySegment<byte> data,
+            IList<CharStringSubRoutine> globalSubrs, IList<CharStringSubRoutine> localSubrs)
         {
-            var parser = new Type2CharStringParser(data, globalSubrs, localSubrs);
+            var parser = new CharStringParser(type, data, globalSubrs, localSubrs);
             return parser.ReadCharString();
         }
 
@@ -59,22 +67,12 @@ namespace PdfToSvg.Fonts.CharStrings
             {
                 if (lexeme.Token == CharStringToken.Operand)
                 {
-                    if (!InSubRoutine)
-                    {
-                        CharString.Content.Add(lexeme);
-                    }
-
                     Stack.Push(lexeme.Value);
                 }
                 else if (lexeme.Token == CharStringToken.Operator)
                 {
                     if (CharStringOperators.TryGetOperator(lexeme.OpCode, out var op))
                     {
-                        if (!InSubRoutine)
-                        {
-                            CharString.Content.Add(lexeme);
-                        }
-
                         op.Invoke(this);
 
                         if (op.ClearStack)
@@ -107,7 +105,7 @@ namespace PdfToSvg.Fonts.CharStrings
             }
         }
 
-        public void AppendInlinedSubrs(CharStringOpCode code, int? last = null, int? from = null)
+        public void AppendContent(CharStringOpCode code, int? last = null, int? from = null)
         {
             var startAt =
                 last.HasValue ? Stack.Count - last.Value :
@@ -116,34 +114,39 @@ namespace PdfToSvg.Fonts.CharStrings
 
             for (var i = startAt; i < Stack.Count; i++)
             {
-                CharString.ContentInlinedSubrs.Add(CharStringLexeme.Operand(Stack[i]));
+                CharString.Content.Add(CharStringLexeme.Operand(Stack[i]));
             }
 
-            CharString.ContentInlinedSubrs.Add(CharStringLexeme.Operator(code));
+            CharString.Content.Add(CharStringLexeme.Operator(code));
         }
 
         public void Return()
         {
-            Lexer = Type2CharStringLexer.EmptyLexer;
+            Lexer = CharStringLexer.EmptyLexer;
         }
 
         public void EndChar()
         {
-            Lexer = Type2CharStringLexer.EmptyLexer;
+            Lexer = CharStringLexer.EmptyLexer;
             parkedLexers.Clear();
         }
 
         public void CallSubr(int number, bool global)
         {
             var subrs = global ? globalSubrs : localSubrs;
+            var subrIndex = number;
 
-            var bias =
-                subrs.Count < 1240 ? 107 :
-                subrs.Count < 33900 ? 1131 :
-                32768;
+            if (Type == CharStringType.Type2)
+            {
+                var bias =
+                    subrs.Count < 1240 ? 107 :
+                    subrs.Count < 33900 ? 1131 :
+                    32768;
 
-            var subrIndex = number + bias;
-            if (subrIndex < 0 || subrIndex >= subrs.Count)
+                subrIndex += bias;
+            }
+
+            if (subrIndex < 0 || subrIndex >= subrs.Count || subrs[subrIndex] == null)
             {
                 throw new CharStringException((global ? "Global" : "Local") + " subroutine with number " + number + " not found.");
             }
@@ -155,14 +158,14 @@ namespace PdfToSvg.Fonts.CharStrings
                 throw new CharStringException("Char string subroutine stack overflow.");
             }
 
-            Lexer = new Type2CharStringLexer(subrs[subrIndex].Content);
+            Lexer = new CharStringLexer(Type, subrs[subrIndex].Content);
             subrs[subrIndex].Used = true;
 
             ExecCharString();
 
             Lexer = parkedLexers.Count > 0
                 ? parkedLexers.Pop()
-                : Type2CharStringLexer.EmptyLexer;
+                : CharStringLexer.EmptyLexer;
         }
     }
 }

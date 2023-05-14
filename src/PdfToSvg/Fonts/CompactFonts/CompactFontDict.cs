@@ -85,7 +85,7 @@ namespace PdfToSvg.Fonts.CompactFonts
         /// This value is overwritten when the font is built.
         /// </summary>
         [CompactFontDictOperator(18)]
-        public int[] Private { get; set; } = ArrayUtils.Empty<int>();
+        public int[]? Private { get; set; }
 
         [CompactFontDictOperator(12, 20, Order = -2)]
         public double SynthenticBase { get; set; }

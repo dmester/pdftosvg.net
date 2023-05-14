@@ -2,7 +2,6 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
-using PdfToSvg.Common;
 using PdfToSvg.Fonts.CharStrings;
 using System;
 using System.Collections.Generic;
@@ -15,12 +14,11 @@ namespace PdfToSvg.Fonts.CompactFonts
     {
         private readonly CompactFontSet fontSet;
         private readonly CompactFontWriter writer = new CompactFontWriter();
-        private readonly bool inlineSubrs;
+        private bool readOnlyStrings;
 
-        private CompactFontBuilder(CompactFontSet fontSet, bool inlineSubrs)
+        private CompactFontBuilder(CompactFontSet fontSet)
         {
             this.fontSet = fontSet;
-            this.inlineSubrs = inlineSubrs;
         }
 
         public static string SanitizeName(string input)
@@ -74,7 +72,8 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         private void WriteStringIndex()
         {
-            var stringIndex = fontSet.Strings.CustomStrings
+            var stringIndex = fontSet.Strings
+                .GetCustomStrings()
                 .Select(str => Encoding.ASCII.GetBytes(str))
                 .Select(arr => new ArraySegment<byte>(arr))
                 .ToList();
@@ -84,19 +83,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         private void WriteGlobalSubrs()
         {
-            IList<ArraySegment<byte>> subrIndex;
-
-            if (inlineSubrs)
-            {
-                subrIndex = new ArraySegment<byte>[0];
-            }
-            else
-            {
-                subrIndex = fontSet.Subrs
-                    .Select(subr => subr.Used ? subr.Content : new ArraySegment<byte>(ArrayUtils.Empty<byte>(), 0, 0))
-                    .ToList();
-            }
-
+            var subrIndex = new ArraySegment<byte>[0];
             writer.WriteIndex(subrIndex);
         }
 
@@ -130,7 +117,12 @@ namespace PdfToSvg.Fonts.CompactFonts
             foreach (var font in fontSet.Fonts)
             {
                 var dict = new List<KeyValuePair<int, double[]>>();
-                CompactFontDictSerializer.Serialize(dict, font.TopDict, new CompactFontDict(), fontSet.Strings);
+                CompactFontDictSerializer.Serialize(
+                    target: dict,
+                    dict: font.TopDict,
+                    defaultValues: new CompactFontDict(),
+                    strings: fontSet.Strings,
+                    readOnlyStrings);
 
                 var dictWriter = new CompactFontWriter();
                 dictWriter.WriteDict(dict);
@@ -157,6 +149,11 @@ namespace PdfToSvg.Fonts.CompactFonts
             var topDictPosition = writer.Position;
             WriteTopDictIndex();
             WriteStringIndex();
+
+            // We cannot allow modifying the strings table below this point, as it would cause the second round at the
+            // bottom of the method to overwrite the fonts
+            readOnlyStrings = true;
+
             WriteGlobalSubrs();
 
             foreach (var font in fontSet.Fonts)
@@ -293,16 +290,20 @@ namespace PdfToSvg.Fonts.CompactFonts
                 WriteFDArray(font);
             }
 
-            WritePrivateDictAndSubrs(font.TopDict, font.PrivateDict, font.Subrs);
+            if (font.IsCIDFont)
+            {
+                font.TopDict.Private = null;
+            }
+            else
+            {
+                WritePrivateDictAndSubrs(font.TopDict, font.PrivateDict);
+            }
         }
 
         private void WriteCharStrings(CompactFont font)
         {
-            Func<CompactFontGlyph, ArraySegment<byte>> mapper;
-
-            if (inlineSubrs)
-            {
-                mapper = glyph =>
+            var charStringIndex = font.Glyphs
+                .Select(glyph =>
                 {
                     var charStringWriter = new Type2CharStringWriter();
 
@@ -311,19 +312,10 @@ namespace PdfToSvg.Fonts.CompactFonts
                         charStringWriter.WriteLexeme(CharStringLexeme.Operand(glyph.CharString.Width.Value));
                     }
 
-                    foreach (var lexeme in glyph.CharString.ContentInlinedSubrs)
+                    foreach (var lexeme in glyph.CharString.Hints)
                     {
                         charStringWriter.WriteLexeme(lexeme);
                     }
-
-                    return charStringWriter.GetBuffer();
-                };
-            }
-            else
-            {
-                mapper = glyph =>
-                {
-                    var charStringWriter = new Type2CharStringWriter();
 
                     foreach (var lexeme in glyph.CharString.Content)
                     {
@@ -331,10 +323,8 @@ namespace PdfToSvg.Fonts.CompactFonts
                     }
 
                     return charStringWriter.GetBuffer();
-                };
-            }
-
-            var charStringIndex = font.Glyphs.Select(mapper).ToList();
+                })
+                .ToList();
 
             font.TopDict.CharStrings = writer.Position;
             writer.WriteIndex(charStringIndex);
@@ -350,7 +340,7 @@ namespace PdfToSvg.Fonts.CompactFonts
         private int EstimateDictSize<T>(T dict) where T : new()
         {
             var dictData = new List<KeyValuePair<int, double[]>>();
-            CompactFontDictSerializer.Serialize(dictData, dict, new T(), fontSet.Strings);
+            CompactFontDictSerializer.Serialize(dictData, dict, new T(), fontSet.Strings, readOnlyStrings);
 
             var dictWriter = new CompactFontWriter();
             dictWriter.WriteDict(dictData);
@@ -360,41 +350,17 @@ namespace PdfToSvg.Fonts.CompactFonts
         private void WriteDict<T>(CompactFontWriter dictWriter, T dict) where T : new()
         {
             var dictData = new List<KeyValuePair<int, double[]>>();
-            CompactFontDictSerializer.Serialize(dictData, dict, new T(), fontSet.Strings);
+            CompactFontDictSerializer.Serialize(dictData, dict, new T(), fontSet.Strings, readOnlyStrings);
             dictWriter.WriteDict(dictData);
         }
 
-        private void WritePrivateDictAndSubrs(CompactFontDict fontDict, CompactFontPrivateDict privateDict, IList<CharStringSubRoutine> subrs)
+        private void WritePrivateDictAndSubrs(CompactFontDict fontDict, CompactFontPrivateDict privateDict)
         {
             var startPosition = writer.Position;
 
-            if (subrs.Count > 0 && !inlineSubrs)
-            {
-                // Private dict
-                privateDict.Subrs = ushort.MaxValue;
-                privateDict.Subrs = EstimateDictSize(privateDict);
-
-                WriteDict(writer, privateDict);
-                fontDict.Private = new int[] { writer.Position - startPosition, startPosition };
-
-                writer.Position = startPosition + privateDict.Subrs.Value;
-
-                // Subrs
-                var subrsData = new List<ArraySegment<byte>>(subrs.Count);
-
-                foreach (var subr in subrs)
-                {
-                    subrsData.Add(subr.Content);
-                }
-
-                writer.WriteIndex(subrsData);
-            }
-            else
-            {
-                privateDict.Subrs = null;
-                WriteDict(writer, privateDict);
-                fontDict.Private = new int[] { writer.Position - startPosition, startPosition };
-            }
+            privateDict.Subrs = null;
+            WriteDict(writer, privateDict);
+            fontDict.Private = new int[] { writer.Position - startPosition, startPosition };
         }
 
         private void WriteFDArray(CompactFont font)
@@ -403,10 +369,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
             foreach (var subFont in font.FDArray)
             {
-                WritePrivateDictAndSubrs(
-                    subFont.FontDict,
-                    subFont.PrivateDict,
-                    font.Subrs == subFont.Subrs ? new CharStringSubRoutine[0] : subFont.Subrs);
+                WritePrivateDictAndSubrs(subFont.FontDict, subFont.PrivateDict);
 
                 fdArrayData.Add(SerializeDict(subFont.FontDict));
             }
@@ -463,9 +426,9 @@ namespace PdfToSvg.Fonts.CompactFonts
             writer.WriteCard16(sentinel);
         }
 
-        public static byte[] Build(CompactFontSet fontSet, bool inlineSubrs)
+        public static byte[] Build(CompactFontSet fontSet)
         {
-            var serializer = new CompactFontBuilder(fontSet, inlineSubrs);
+            var serializer = new CompactFontBuilder(fontSet);
             serializer.WriteFontSet();
             return serializer.writer.ToArray();
         }

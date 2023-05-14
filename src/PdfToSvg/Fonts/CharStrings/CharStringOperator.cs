@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using Parser = PdfToSvg.Fonts.CharStrings.Type2CharStringParser;
+using Parser = PdfToSvg.Fonts.CharStrings.CharStringParser;
 
 namespace PdfToSvg.Fonts.CharStrings
 {

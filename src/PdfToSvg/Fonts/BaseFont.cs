@@ -10,6 +10,7 @@ using PdfToSvg.Fonts.CompactFonts;
 using PdfToSvg.Fonts.OpenType;
 using PdfToSvg.Fonts.OpenType.Enums;
 using PdfToSvg.Fonts.OpenType.Tables;
+using PdfToSvg.Fonts.Type1;
 using PdfToSvg.Fonts.WidthMaps;
 using PdfToSvg.Fonts.Woff;
 using PdfToSvg.IO;
@@ -30,6 +31,7 @@ namespace PdfToSvg.Fonts
         private string? name;
 
         protected OpenTypeFont? openTypeFont;
+        protected SingleByteEncoding? openTypeFontEncoding;
         protected Exception? openTypeFontException;
 
         protected PdfDictionary fontDict = emptyDict;
@@ -62,16 +64,18 @@ namespace PdfToSvg.Fonts
             // Read font
             try
             {
-                openTypeFont = GetOpenTypeFont(cancellationToken);
+                PopulateOpenTypeFont(cancellationToken);
+
+                if (openTypeFont != null)
+                {
+                    OpenTypeSanitizer.Sanitize(openTypeFont);
+                    HasGlyphSubstitutions = openTypeFont.Tables.Any(t => t.Tag == "GSUB");
+                }
             }
             catch (Exception ex)
             {
+                openTypeFont = null;
                 openTypeFontException = ex;
-            }
-
-            if (openTypeFont != null)
-            {
-                HasGlyphSubstitutions = openTypeFont.Tables.Any(t => t.Tag == "GSUB");
             }
 
             // ToUnicode
@@ -105,11 +109,42 @@ namespace PdfToSvg.Fonts
             chars.TryPopulate(GetChars, toUnicode, optimizeForEmbeddedFont: false);
         }
 
-        private OpenTypeFont? GetOpenTypeFont(CancellationToken cancellationToken)
+        private void PopulateOpenTypeFont(CancellationToken cancellationToken)
         {
             if (fontDict.TryGetDictionary(Names.FontDescriptor, out var fontDescriptor) ||
                 fontDict.TryGetDictionary(Names.DescendantFonts / Indexes.First / Names.FontDescriptor, out fontDescriptor))
             {
+                // FontFile (Type 1)
+                if (fontDescriptor.TryGetDictionary(Names.FontFile, out var fontFile) &&
+                    fontFile.Stream != null)
+                {
+                    if (!fontFile.TryGetInteger(Names.Length1, out var length1))
+                    {
+                        throw new FontException("Failed to parse Type 1 font. Missing Length1.");
+                    }
+
+                    if (!fontFile.TryGetInteger(Names.Length2, out var length2))
+                    {
+                        throw new FontException("Failed to parse Type 1 font. Missing Length2.");
+                    }
+
+                    try
+                    {
+                        using var fontFileStream = fontFile.Stream.OpenDecoded(cancellationToken);
+                        var fontFileData = fontFileStream.ToArray();
+                        var info = Type1Parser.Parse(fontFileData, length1, length2);
+
+                        openTypeFont = Type1Converter.ConvertToOpenType(info);
+                        openTypeFontEncoding = info.Encoding;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new FontException("Failed to parse Type 1 font.", ex);
+                    }
+
+                    return;
+                }
+
                 // FontFile2 (TrueType)
                 if (fontDescriptor.TryGetStream(Names.FontFile2, out var fontFile2))
                 {
@@ -117,14 +152,14 @@ namespace PdfToSvg.Fonts
                     {
                         using var fontFileStream = fontFile2.OpenDecoded(cancellationToken);
                         var fontFileData = fontFileStream.ToArray();
-                        var openTypeFont = OpenTypeFont.Parse(fontFileData);
-                        OpenTypeSanitizer.Sanitize(openTypeFont);
-                        return openTypeFont;
+                        openTypeFont = OpenTypeFont.Parse(fontFileData);
                     }
                     catch (Exception ex)
                     {
                         throw new FontException("Failed to parse TrueType font.", ex);
                     }
+
+                    return;
                 }
 
                 // FontFile3 (CFF or OpenType)
@@ -136,9 +171,7 @@ namespace PdfToSvg.Fonts
                         {
                             using var fontFileStream = fontFile3.Stream.OpenDecoded(cancellationToken);
                             var fontFileData = fontFileStream.ToArray();
-                            var openTypeFont = OpenTypeFont.Parse(fontFileData);
-                            OpenTypeSanitizer.Sanitize(openTypeFont);
-                            return openTypeFont;
+                            openTypeFont = OpenTypeFont.Parse(fontFileData);
                         }
                         catch (Exception ex)
                         {
@@ -154,22 +187,19 @@ namespace PdfToSvg.Fonts
 
                             var compactFontSet = CompactFontParser.Parse(fontFileData, maxFontCount: 1);
 
-                            var openTypeFont = new OpenTypeFont();
+                            openTypeFont = new OpenTypeFont();
                             var cffTable = new CffTable { Content = compactFontSet };
                             openTypeFont.Tables.Add(cffTable);
-
-                            OpenTypeSanitizer.Sanitize(openTypeFont);
-                            return openTypeFont;
                         }
                         catch (Exception ex)
                         {
                             throw new FontException("Failed to parse CFF font.", ex);
                         }
                     }
+
+                    return;
                 }
             }
-
-            return null;
         }
 
         protected virtual IEnumerable<CharInfo> GetChars()

@@ -28,8 +28,6 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         public List<int> CharSet { get; } = new();
 
-        public CompactFontStringTable Strings { get; set; } = CompactFontStringTable.Standard;
-
         public List<CompactFontGlyph> Glyphs { get; } = new();
 
         public CompactFontDict TopDict { get; } = new();

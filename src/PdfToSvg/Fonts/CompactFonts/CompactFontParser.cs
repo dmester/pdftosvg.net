@@ -166,7 +166,7 @@ namespace PdfToSvg.Fonts.CompactFonts
             }
 
             // Private DICT
-            if (font.TopDict.Private.Length == 2)
+            if (font.TopDict.Private?.Length == 2)
             {
                 var privateDictStart = font.TopDict.Private[1];
                 ReadDict(font.PrivateDict, privateDictStart, font.TopDict.Private[0]);
@@ -230,7 +230,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
                 var subrsFound = false;
 
-                if (fdFont.FontDict.Private.Length == 2)
+                if (fdFont.FontDict.Private?.Length == 2)
                 {
                     var privateDictStart = fdFont.FontDict.Private[1];
                     var fdPrivateDict = new CompactFontPrivateDict();
@@ -261,7 +261,6 @@ namespace PdfToSvg.Fonts.CompactFonts
                 if (seac != null)
                 {
                     var content = glyph.CharString.Content;
-                    var contentInlinedSubrs = glyph.CharString.ContentInlinedSubrs;
                     var standardEncoding = new StandardEncoding();
 
                     var acharValue = standardEncoding.GetString(new byte[] { (byte)seac.Achar });
@@ -278,24 +277,15 @@ namespace PdfToSvg.Fonts.CompactFonts
                     var mergedCharString = SeacMerger.Merge(achar.CharString, bchar.CharString, seac.Adx, seac.Ady);
 
                     content.Clear();
-                    contentInlinedSubrs.Clear();
-
-                    content.Add(CharStringLexeme.Operand(glyph.Width - font.PrivateDict.NominalWidthX));
 
                     foreach (var lexeme in mergedCharString)
                     {
                         content.Add(lexeme);
-                        contentInlinedSubrs.Add(lexeme);
                     }
 
                     if (content.LastOrDefault().OpCode != CharStringOpCode.EndChar)
                     {
                         content.Add(CharStringLexeme.Operator(CharStringOpCode.EndChar));
-                    }
-
-                    if (contentInlinedSubrs.LastOrDefault().OpCode != CharStringOpCode.EndChar)
-                    {
-                        contentInlinedSubrs.Add(CharStringLexeme.Operator(CharStringOpCode.EndChar));
                     }
                 }
             }
@@ -337,7 +327,9 @@ namespace PdfToSvg.Fonts.CompactFonts
             try
             {
                 var charStringData = new ArraySegment<byte>(data, startIndex, endIndex - startIndex);
-                charString = Type2CharStringParser.Parse(charStringData, font.FontSet.Subrs, charLocalSubrs);
+                charString = CharStringParser.Parse(
+                    CharStringType.Type2, charStringData,
+                    font.FontSet.Subrs, charLocalSubrs);
             }
             catch (Exception ex)
             {

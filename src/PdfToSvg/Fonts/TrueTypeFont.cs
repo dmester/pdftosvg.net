@@ -52,7 +52,7 @@ namespace PdfToSvg.Fonts
 
             var cmaps = openTypeFont?.CMaps ?? ArrayUtils.Empty<OpenTypeCMap>();
             var postGlyphNames = GetGlyphNameLookup();
-            var encoding = EncodingFactory.Create(encodingDefinition);
+            var encoding = EncodingFactory.Create(encodingDefinition) ?? new StandardEncoding();
 
             var chars = Enumerable.Empty<CharInfo>();
 

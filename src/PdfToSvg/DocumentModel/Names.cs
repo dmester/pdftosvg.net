@@ -57,6 +57,8 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Prev { get; } = new PdfName("Prev");
         public static PdfName Index { get; } = new PdfName("Index");
         public static PdfName Length { get; } = new PdfName("Length");
+        public static PdfName Length1 { get; } = new PdfName("Length1");
+        public static PdfName Length2 { get; } = new PdfName("Length2");
 
         public static PdfName Page { get; } = new PdfName("Page");
         public static PdfName Pages { get; } = new PdfName("Pages");
@@ -101,6 +103,8 @@ namespace PdfToSvg.DocumentModel
         public static PdfName DescendantFonts { get; } = new PdfName("DescendantFonts");
         public static PdfName FontDescriptor { get; } = new PdfName("FontDescriptor");
         public static PdfName CIDToGIDMap { get; } = new PdfName("CIDToGIDMap");
+        public static PdfName FontName { get; } = new PdfName("FontName");
+        public static PdfName FontFile { get; } = new PdfName("FontFile");
         public static PdfName FontFile2 { get; } = new PdfName("FontFile2");
         public static PdfName FontFile3 { get; } = new PdfName("FontFile3");
         public static PdfName W { get; } = new PdfName("W");

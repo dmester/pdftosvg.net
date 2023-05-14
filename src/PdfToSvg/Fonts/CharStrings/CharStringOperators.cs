@@ -3,11 +3,12 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.Common;
+using PdfToSvg.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Parser = PdfToSvg.Fonts.CharStrings.Type2CharStringParser;
+using Parser = PdfToSvg.Fonts.CharStrings.CharStringParser;
 
 namespace PdfToSvg.Fonts.CharStrings
 {
@@ -68,31 +69,49 @@ namespace PdfToSvg.Fonts.CharStrings
         [Operator(CharStringOpCode.RMoveTo, clearStack: true)]
         private static void RMoveTo(Parser parser)
         {
-            parser.AppendInlinedSubrs(CharStringOpCode.RMoveTo, last: 2);
-
-            parser.Stack.Pop(out double dx1, out double dy1);
-
-            parser.Path.RMoveTo(dx1, dy1);
+            if (parser.FlexPoints == null)
+            {
+                parser.AppendContent(CharStringOpCode.RMoveTo, last: 2);
+                parser.Stack.Pop(out double dx1, out double dy1);
+                parser.Path.RMoveTo(dx1, dy1);
+            }
+            else
+            {
+                parser.Stack.Pop(out double dx1, out double dy1);
+                parser.FlexPoints.Add(new Point(dx1, dy1));
+            }
         }
 
         [Operator(CharStringOpCode.HMoveTo, clearStack: true)]
         private static void HMoveTo(Parser parser)
         {
-            parser.AppendInlinedSubrs(CharStringOpCode.HMoveTo, last: 1);
-
-            parser.Stack.Pop(out double dx1);
-
-            parser.Path.RMoveTo(dx1, 0);
+            if (parser.FlexPoints == null)
+            {
+                parser.AppendContent(CharStringOpCode.HMoveTo, last: 1);
+                parser.Stack.Pop(out double dx1);
+                parser.Path.RMoveTo(dx1, 0);
+            }
+            else
+            {
+                parser.Stack.Pop(out double dx1);
+                parser.FlexPoints.Add(new Point(dx1, 0));
+            }
         }
 
         [Operator(CharStringOpCode.VMoveTo, clearStack: true)]
         private static void VMoveTo(Parser parser)
         {
-            parser.AppendInlinedSubrs(CharStringOpCode.VMoveTo, last: 1);
-
-            parser.Stack.Pop(out double dy1);
-
-            parser.Path.RMoveTo(0, dy1);
+            if (parser.FlexPoints == null)
+            {
+                parser.AppendContent(CharStringOpCode.VMoveTo, last: 1);
+                parser.Stack.Pop(out double dy1);
+                parser.Path.RMoveTo(0, dy1);
+            }
+            else
+            {
+                parser.Stack.Pop(out double dy1);
+                parser.FlexPoints.Add(new Point(0, dy1));
+            }
         }
 
         [Operator(CharStringOpCode.RLineTo, clearStack: true)]
@@ -105,7 +124,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 parser.Path.RLineTo(parser.Stack[i], parser.Stack[i + 1]);
             }
 
-            parser.AppendInlinedSubrs(CharStringOpCode.RLineTo, from: startAt);
+            parser.AppendContent(CharStringOpCode.RLineTo, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -113,7 +132,7 @@ namespace PdfToSvg.Fonts.CharStrings
         {
             var horizontal = startHorizontally;
 
-            parser.AppendInlinedSubrs(
+            parser.AppendContent(
                 startHorizontally ? CharStringOpCode.HLineTo : CharStringOpCode.VLineTo,
                 from: 0);
 
@@ -163,7 +182,7 @@ namespace PdfToSvg.Fonts.CharStrings
                     );
             }
 
-            parser.AppendInlinedSubrs(CharStringOpCode.RRCurveTo, from: startAt);
+            parser.AppendContent(CharStringOpCode.RRCurveTo, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -203,7 +222,7 @@ namespace PdfToSvg.Fonts.CharStrings
                     0);
             }
 
-            parser.AppendInlinedSubrs(CharStringOpCode.HHCurveTo, from: removeFrom);
+            parser.AppendContent(CharStringOpCode.HHCurveTo, from: removeFrom);
             parser.Stack.RemoveFrom(removeFrom);
         }
 
@@ -225,7 +244,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 endOrthogonal = false;
             }
 
-            parser.AppendInlinedSubrs(
+            parser.AppendContent(
                 startHorizontal ? CharStringOpCode.HVCurveTo : CharStringOpCode.VHCurveTo,
                 from: startAt);
 
@@ -299,7 +318,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 parser.Stack[parser.Stack.Count - 1]
                 );
 
-            parser.AppendInlinedSubrs(CharStringOpCode.RCurveLine, from: startAt);
+            parser.AppendContent(CharStringOpCode.RCurveLine, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -328,7 +347,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 parser.Stack[parser.Stack.Count - 2],
                 parser.Stack[parser.Stack.Count - 1]);
 
-            parser.AppendInlinedSubrs(CharStringOpCode.RLineCurve, from: startAt);
+            parser.AppendContent(CharStringOpCode.RLineCurve, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -369,7 +388,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 dx1 = 0;
             }
 
-            parser.AppendInlinedSubrs(CharStringOpCode.VVCurveTo, from: removeFrom);
+            parser.AppendContent(CharStringOpCode.VVCurveTo, from: removeFrom);
             parser.Stack.RemoveFrom(removeFrom);
         }
 
@@ -400,7 +419,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 parser.Stack[startAt + 11]
                 );
 
-            parser.AppendInlinedSubrs(CharStringOpCode.Flex, from: startAt);
+            parser.AppendContent(CharStringOpCode.Flex, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -429,7 +448,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 parser.Stack[startAt + 6],
                 0);
 
-            parser.AppendInlinedSubrs(CharStringOpCode.HFlex, from: startAt);
+            parser.AppendContent(CharStringOpCode.HFlex, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -458,7 +477,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 parser.Stack[startAt + 8],
                 0);
 
-            parser.AppendInlinedSubrs(CharStringOpCode.HFlex1, from: startAt);
+            parser.AppendContent(CharStringOpCode.HFlex1, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -502,7 +521,7 @@ namespace PdfToSvg.Fonts.CharStrings
             parser.Path.RRCurveTo(dx1, dy1, dx2, dy2, dx3, dy3);
             parser.Path.RRCurveTo(dx4, dy4, dx5, dy5, dx6, dy6);
 
-            parser.AppendInlinedSubrs(CharStringOpCode.Flex1, from: startAt);
+            parser.AppendContent(CharStringOpCode.Flex1, from: startAt);
             parser.Stack.RemoveFrom(startAt);
         }
 
@@ -521,12 +540,12 @@ namespace PdfToSvg.Fonts.CharStrings
                     bchar: (int)parser.Stack[parser.Stack.Count - 2],
                     achar: (int)parser.Stack[parser.Stack.Count - 1]);
 
-                parser.AppendInlinedSubrs(CharStringOpCode.EndChar, last: 4);
+                parser.AppendContent(CharStringOpCode.EndChar, last: 4);
                 parser.Stack.RemoveFrom(parser.Stack.Count - 4);
             }
             else
             {
-                parser.AppendInlinedSubrs(CharStringOpCode.EndChar);
+                parser.AppendContent(CharStringOpCode.EndChar);
             }
 
             parser.EndChar();
@@ -536,21 +555,36 @@ namespace PdfToSvg.Fonts.CharStrings
 
         #region Hint operators
 
-        private static void Hint(Parser parser, CharStringOpCode? opCode = null)
+        private static void Hint(Parser parser, bool isHorizontal, CharStringOpCode? opCode = null)
         {
             // All hints use an even number of arguments
             var startAt = parser.Stack.Count % 2;
 
-            parser.CharString.HintCount += parser.Stack.Count / 2;
-
-            for (var i = startAt; i < parser.Stack.Count; i++)
+            // We could handle hints from type 1 char strings as well, but as long as we don't support turning on and
+            // off hints by othersubr #3, they will not work optimally. After testing, it was decided to ignore hints
+            // as it caused better and more consistent results than having all hints enabled all the time.
+            if (parser.Type == CharStringType.Type2)
             {
-                parser.CharString.ContentInlinedSubrs.Add(CharStringLexeme.Operand(parser.Stack[i]));
-            }
+                parser.CharString.HintCount += parser.Stack.Count / 2;
 
-            if (opCode.HasValue)
-            {
-                parser.CharString.ContentInlinedSubrs.Add(CharStringLexeme.Operator(opCode.Value));
+                if (startAt < parser.Stack.Count)
+                {
+                    var sideBearing = isHorizontal
+                        ? parser.Path.LastY
+                        : parser.Path.LastX;
+
+                    parser.Stack[startAt] = parser.Stack[startAt] + sideBearing;
+
+                    for (var i = startAt; i < parser.Stack.Count; i++)
+                    {
+                        parser.CharString.Hints.Add(CharStringLexeme.Operand(parser.Stack[i]));
+                    }
+                }
+
+                if (opCode.HasValue)
+                {
+                    parser.CharString.Hints.Add(CharStringLexeme.Operator(opCode.Value));
+                }
             }
 
             parser.Stack.RemoveFrom(startAt);
@@ -559,39 +593,39 @@ namespace PdfToSvg.Fonts.CharStrings
         [Operator(CharStringOpCode.HStem, clearStack: true)]
         private static void HStem(Parser parser)
         {
-            Hint(parser, CharStringOpCode.HStem);
+            Hint(parser, isHorizontal: true, CharStringOpCode.HStem);
         }
 
         [Operator(CharStringOpCode.VStem, clearStack: true)]
         private static void VStem(Parser parser)
         {
-            Hint(parser, CharStringOpCode.VStem);
+            Hint(parser, isHorizontal: false, CharStringOpCode.VStem);
         }
 
         [Operator(CharStringOpCode.HStemHm, clearStack: true)]
         private static void HStemHm(Parser parser)
         {
-            Hint(parser, CharStringOpCode.HStemHm);
+            Hint(parser, isHorizontal: true, CharStringOpCode.HStemHm);
         }
 
         [Operator(CharStringOpCode.VStemHm, clearStack: true)]
         private static void VStemHm(Parser parser)
         {
-            Hint(parser, CharStringOpCode.VStemHm);
+            Hint(parser, isHorizontal: false, CharStringOpCode.VStemHm);
         }
 
         private static void Mask(Parser parser, CharStringOpCode opCode)
         {
             // vstem hint operator is optional if hstem and vstem direcly preceeds the hintmask operator.
-            var lastOperator = parser.CharString.ContentInlinedSubrs.LastOrDefault(x => x.Token == CharStringToken.Operator);
+            var lastOperator = parser.CharString.Hints.LastOrDefault(x => x.Token == CharStringToken.Operator);
 
             if (lastOperator.OpCode == CharStringOpCode.HStem ||
                 lastOperator.OpCode == CharStringOpCode.HStemHm)
             {
-                Hint(parser);
+                Hint(parser, isHorizontal: true);
             }
 
-            parser.CharString.ContentInlinedSubrs.Add(CharStringLexeme.Operator(opCode));
+            parser.CharString.Content.Add(CharStringLexeme.Operator(opCode));
 
             // Mask
             var maskBytes = MathUtils.BitsToBytes(parser.CharString.HintCount);
@@ -599,13 +633,7 @@ namespace PdfToSvg.Fonts.CharStrings
             for (var i = 0; i < maskBytes; i++)
             {
                 var lexeme = CharStringLexeme.Mask(parser.Lexer.ReadByte());
-
-                if (!parser.InSubRoutine)
-                {
-                    parser.CharString.Content.Add(lexeme);
-                }
-
-                parser.CharString.ContentInlinedSubrs.Add(lexeme);
+                parser.CharString.Content.Add(lexeme);
             }
         }
 
@@ -835,6 +863,212 @@ namespace PdfToSvg.Fonts.CharStrings
         private static void DotSection(Parser parser)
         {
             // Treat as a noop according to spec
+        }
+
+        #endregion
+
+        #region Type 1 operators
+
+        [Operator(CharStringOpCode.VStem3, clearStack: true)]
+        private static void VStem3(Parser parser)
+        {
+            var startAt = parser.Stack.Count - 6;
+            if (startAt < 0)
+            {
+                throw new CharStringStackUnderflowException();
+            }
+
+            // Make relative
+            parser.Stack[startAt + 4] =
+                parser.Stack[startAt + 4] - parser.Stack[startAt + 2] - parser.Stack[startAt + 3];
+
+            parser.Stack[startAt + 2] =
+                parser.Stack[startAt + 2] - parser.Stack[startAt + 0] - parser.Stack[startAt + 1];
+
+            VStem(parser);
+        }
+
+
+        [Operator(CharStringOpCode.HStem3, clearStack: true)]
+        private static void HStem3(Parser parser)
+        {
+            var startAt = parser.Stack.Count - 6;
+            if (startAt < 0)
+            {
+                throw new CharStringStackUnderflowException();
+            }
+
+            // Make relative
+            parser.Stack[startAt + 4] =
+                parser.Stack[startAt + 4] - parser.Stack[startAt + 2] - parser.Stack[startAt + 3];
+
+            parser.Stack[startAt + 2] =
+                parser.Stack[startAt + 2] - parser.Stack[startAt + 0] - parser.Stack[startAt + 1];
+
+            HStem(parser);
+        }
+
+        [Operator(CharStringOpCode.Pop, clearStack: false)]
+        private static void Pop(Parser parser)
+        {
+            if (parser.PostScriptStack.Count > 0)
+            {
+                parser.Stack.Push(parser.PostScriptStack.Pop());
+            }
+        }
+
+        [Operator(CharStringOpCode.Hsbw, clearStack: true)]
+        private static void Hsbw(Parser parser)
+        {
+            parser.Stack.Pop(out double sbx, out double wx);
+
+            parser.CharString.Width = wx;
+
+            if (sbx != 0)
+            {
+                parser.CharString.Content.Add(CharStringLexeme.Operand(sbx));
+                parser.CharString.Content.Add(CharStringLexeme.Operator(CharStringOpCode.HMoveTo));
+                parser.Path.RMoveTo(sbx, 0);
+            }
+        }
+
+        [Operator(CharStringOpCode.Seac, clearStack: true)]
+        private static void Seac(Parser parser)
+        {
+            parser.Stack.Pop(out int bchar, out int achar);
+            parser.Stack.Pop(out double adx, out double ady);
+            parser.Stack.Pop(out double asb);
+
+            parser.CharString.Seac = new CharStringSeacInfo(adx, ady, bchar, achar);
+        }
+
+        [Operator(CharStringOpCode.Sbw, clearStack: true)]
+        private static void Sbw(Parser parser)
+        {
+            parser.Stack.Pop(out double wx, out double wy);
+            parser.Stack.Pop(out double sbx, out double sby);
+
+            parser.CharString.Width = wx;
+
+            if (sbx != 0 || sby != 0)
+            {
+                parser.CharString.Content.Add(CharStringLexeme.Operand(sbx));
+                parser.CharString.Content.Add(CharStringLexeme.Operand(sby));
+                parser.CharString.Content.Add(CharStringLexeme.Operator(CharStringOpCode.RMoveTo));
+                parser.Path.RMoveTo(sbx, sby);
+            }
+        }
+
+        [Operator(CharStringOpCode.CallOtherSubr, clearStack: true)]
+        private static void CallOtherSubr(Parser parser)
+        {
+            // OtherSubrs are PostScript subroutines included in Type 1 fonts. The routines are however highly
+            // standardized, so they are hardcoded in C# below to prevent having to implement the entire PostScript
+            // language.
+            //
+            // What the routines do is not well documented, and the spec only include their source code in PostScript.
+            // The routines below were instead created by looking at other implementations and a lot of trial and error.
+            //
+            // Reference implementations:
+            // https://gitlab.freedesktop.org/freetype/freetype/-/blob/872a759b468ef0d88b0636d6beb074fe6b87f9cd/src/psaux/psintrp.c#L1704
+            // https://github.com/mozilla/pdf.js/blob/96e34fbb7d7bb556392646a7a6720182953ac275/src/core/type1_parser.js#L260
+
+            parser.Stack.Pop(out int n, out int othersubr);
+
+            var args = new double[n];
+            for (var i = 0; i < args.Length; i++)
+            {
+                parser.Stack.Pop(out args[args.Length - i - 1]);
+            }
+
+            switch ((CharStringOtherSubr)othersubr)
+            {
+                case CharStringOtherSubr.StartFlex:
+                    parser.FlexPoints = new List<Point>(7);
+                    break;
+
+                case CharStringOtherSubr.AddFlexVector:
+                    break;
+
+                case CharStringOtherSubr.EndFlex:
+                    var flexPoints = parser.FlexPoints;
+                    parser.FlexPoints = null;
+
+                    if (flexPoints?.Count == 7)
+                    {
+                        parser.Stack.Push(flexPoints[0].X + flexPoints[1].X);
+                        parser.Stack.Push(flexPoints[0].Y + flexPoints[1].Y);
+
+                        parser.Stack.Push(flexPoints[2].X);
+                        parser.Stack.Push(flexPoints[2].Y);
+
+                        parser.Stack.Push(flexPoints[3].X);
+                        parser.Stack.Push(flexPoints[3].Y);
+
+                        parser.Stack.Push(flexPoints[4].X);
+                        parser.Stack.Push(flexPoints[4].Y);
+
+                        parser.Stack.Push(flexPoints[5].X);
+                        parser.Stack.Push(flexPoints[5].Y);
+
+                        parser.Stack.Push(flexPoints[6].X);
+                        parser.Stack.Push(flexPoints[6].Y);
+
+                        var x3 = flexPoints[0].X + flexPoints[1].X + flexPoints[2].X + flexPoints[3].X;
+                        var y3 = flexPoints[0].Y + flexPoints[1].Y + flexPoints[2].Y + flexPoints[3].Y;
+
+                        var x6 = x3 + flexPoints[4].X + flexPoints[5].X + flexPoints[6].X;
+                        var y6 = y3 + flexPoints[4].Y + flexPoints[5].Y + flexPoints[6].Y;
+
+                        var flex = Math.Abs(x6 * y3 - y6 * x3) / Math.Sqrt(x6 * x6 + y6 * y6);
+
+                        parser.Stack.Push(flex);
+
+                        Flex(parser);
+
+                        parser.PostScriptStack.Push(parser.Path.LastY);
+                        parser.PostScriptStack.Push(parser.Path.LastX);
+                    }
+                    break;
+
+                case CharStringOtherSubr.ChangeHints:
+                    if (args.Length < 1)
+                    {
+                        throw new ArgumentException("Too few arguments specified to othersubr 3.");
+                    }
+
+                    parser.PostScriptStack.Push(args[0]);
+
+                    // Potential improvement:
+                    // Right now all hints will be enabled at all time. A better approach would be to transform the Type 1
+                    // stems to hstemhm/vstemh and turn on/off stems after calling othersubr 3. This would however require
+                    // a complete rewrite of the hint handling. Type 1 fonts are pretty rare, so let's skip this for now.
+                    break;
+            }
+        }
+
+
+        [Operator(CharStringOpCode.ClosePath, clearStack: false)]
+        private static void ClosePath(Parser parser)
+        {
+            // Noop in type 2
+        }
+
+        [Operator(CharStringOpCode.SetCurrentPoint, clearStack: false)]
+        private static void SetCurrentPoint(Parser parser)
+        {
+            parser.Stack.Pop(out double x, out double y);
+
+            var dx = x - parser.Path.LastX;
+            var dy = y - parser.Path.LastY;
+
+            if (dx != 0 || dy != 0)
+            {
+                // This is not entirely correct, but hopefully good enough.
+                parser.CharString.Content.Add(CharStringLexeme.Operand(dx));
+                parser.CharString.Content.Add(CharStringLexeme.Operand(dy));
+                parser.CharString.Content.Add(CharStringLexeme.Operator(CharStringOpCode.RLineTo));
+            }
         }
 
         #endregion

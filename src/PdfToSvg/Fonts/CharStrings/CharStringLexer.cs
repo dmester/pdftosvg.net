@@ -10,20 +10,24 @@ using System.Text;
 
 namespace PdfToSvg.Fonts.CharStrings
 {
-    internal class Type2CharStringLexer
+    internal class CharStringLexer
     {
+        private readonly CharStringType type;
         private readonly byte[] data;
         private int cursor = 0;
         private int endIndex;
 
-        public Type2CharStringLexer(ArraySegment<byte> data)
+        public CharStringLexer(CharStringType type, ArraySegment<byte> data)
         {
+            this.type = type;
             this.data = data.Array;
             this.cursor = data.Offset;
             this.endIndex = data.Offset + data.Count;
         }
 
-        public static Type2CharStringLexer EmptyLexer { get; } = new Type2CharStringLexer(new ArraySegment<byte>(ArrayUtils.Empty<byte>(), 0, 0));
+        public static CharStringLexer EmptyLexer { get; } = new CharStringLexer(
+            CharStringType.Type2,
+            new ArraySegment<byte>(ArrayUtils.Empty<byte>(), 0, 0));
 
         public int Position => cursor;
 
@@ -121,13 +125,19 @@ namespace PdfToSvg.Fonts.CharStrings
                 return CharStringLexeme.EndOfInput;
             }
 
-            var num =
+            var num = (double)(
                 (data[cursor - 4] << 24) |
                 (data[cursor - 3] << 16) |
                 (data[cursor - 2] << 8) |
-                (data[cursor - 1]);
+                (data[cursor - 1])
+                );
 
-            return CharStringLexeme.Operand(num / (double)(1 << 16));
+            if (type == CharStringType.Type2)
+            {
+                num *= 1 / (double)(1 << 16);
+            }
+
+            return CharStringLexeme.Operand(num);
         }
     }
 }

@@ -53,3 +53,8 @@ https://github.com/khaledhosny/ots
 A description of OpenType and CFF.
 
 https://pomax.github.io/CFF-glyphlet-fonts/
+
+### Notes on reading Adobe font files
+Describes the .pfb file format.
+
+https://personal.math.ubc.ca/~cass/piscript/type1.pdf

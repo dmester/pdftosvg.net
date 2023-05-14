@@ -13,7 +13,7 @@ namespace PdfToSvg.Encodings
 {
     internal static class EncodingFactory
     {
-        public static SingleByteEncoding Create(object? definition)
+        public static SingleByteEncoding? Create(object? definition)
         {
             if (definition is PdfName encodingName)
             {
@@ -37,7 +37,7 @@ namespace PdfToSvg.Encodings
                 return CustomEncoding.Create(encodingDict);
             }
 
-            return new StandardEncoding();
+            return null;
         }
     }
 }

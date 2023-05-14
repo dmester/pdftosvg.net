@@ -7,12 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PdfToSvg.Fonts
+namespace PdfToSvg.Encodings
 {
-    internal class FontException : PdfException
+    internal class Type1Encoding : SingleByteEncoding
     {
-        public FontException(string message, Exception? innerException = null) :
-            base(message + " " + innerException?.Message, innerException)
+        public Type1Encoding(string?[] glyphNames) : base(GetUnicodeLookup(glyphNames), glyphNames)
         {
         }
     }

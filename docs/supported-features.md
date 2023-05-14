@@ -28,7 +28,7 @@ Impl | Description
 ✅ | CFF fonts
 ✅ | CID fonts
 ✅ | OpenType fonts
-❌ | Type 1 fonts
+✅ | Type 1 fonts
 ✅ | Type 3 fonts
 
 

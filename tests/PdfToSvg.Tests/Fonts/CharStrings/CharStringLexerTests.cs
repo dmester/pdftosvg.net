@@ -12,7 +12,7 @@ using System.Text;
 
 namespace PdfToSvg.Tests.Fonts.CharStrings
 {
-    internal class Type2CharStringLexerTests
+    internal class CharStringLexerTests
     {
         [TestCase("1C 80 00", -32768d)]
         [TestCase("1C 7F FF", 32767d)]
@@ -29,7 +29,7 @@ namespace PdfToSvg.Tests.Fonts.CharStrings
         public void ReadOperand(string data, double expectedValue)
         {
             var bytes = Hex.Decode(data);
-            var lexer = new Type2CharStringLexer(new ArraySegment<byte>(bytes));
+            var lexer = new CharStringLexer(CharStringType.Type2, new ArraySegment<byte>(bytes));
 
             var lexeme = lexer.Read();
 
@@ -51,7 +51,7 @@ namespace PdfToSvg.Tests.Fonts.CharStrings
         public void ReadOperator(string data, int expectedOperator)
         {
             var bytes = Hex.Decode(data);
-            var lexer = new Type2CharStringLexer(new ArraySegment<byte>(bytes));
+            var lexer = new CharStringLexer(CharStringType.Type2, new ArraySegment<byte>(bytes));
 
             var lexeme = lexer.Read();
 

@@ -58,7 +58,6 @@ namespace PdfToSvg.Fonts.Type3
             {
                 Path = converter.bbox,
                 Content = converter.content.ToList(),
-                ContentInlinedSubrs = converter.content.ToList(),
                 Width = converter.width,
             };
 

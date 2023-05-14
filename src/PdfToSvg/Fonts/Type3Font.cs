@@ -101,7 +101,7 @@ namespace PdfToSvg.Fonts
 
             var charProcs = fontDict.GetDictionaryOrEmpty(Names.CharProcs);
             var encodingDefinition = fontDict.GetValueOrDefault(Names.Encoding);
-            var encoding = EncodingFactory.Create(encodingDefinition);
+            var encoding = EncodingFactory.Create(encodingDefinition) ?? new StandardEncoding();
 
             // Handle glyphs
             var glyphs = new List<CompactFontGlyph>();

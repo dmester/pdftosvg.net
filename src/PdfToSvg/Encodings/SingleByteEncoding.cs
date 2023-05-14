@@ -84,6 +84,23 @@ namespace PdfToSvg.Encodings
             return result;
         }
 
+        protected static string?[] GetUnicodeLookup(string?[] glyphNames)
+        {
+            var result = new string?[glyphNames.Length];
+
+            for (var i = 0; i < glyphNames.Length; i++)
+            {
+                var glyphName = glyphNames[i];
+
+                if (glyphName != null && AdobeGlyphList.TryGetUnicode(glyphName, out var unicode))
+                {
+                    result[i] = unicode;
+                }
+            }
+
+            return result;
+        }
+
         public override int GetByteCount(char[] chars, int index, int count)
         {
             if (chars == null) throw new ArgumentNullException(nameof(chars));

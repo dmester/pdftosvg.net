@@ -26,7 +26,7 @@ namespace PdfToSvg.Fonts.WidthMaps
             // PDF Specification 1.7, Table 111, page 263
             firstChar = (uint)font.GetValueOrDefault(Names.FirstChar, 0);
             lastChar = (uint)font.GetValueOrDefault(Names.LastChar, int.MaxValue);
-            missingWidth = font.GetValueOrDefault(Names.MissingWidth, 0.0) * WidthMultiplier;
+            missingWidth = font.GetValueOrDefault(Names.FontDescriptor / Names.MissingWidth, 0.0) * WidthMultiplier;
 
             for (var i = 0u; i < widths.Length; i++)
             {

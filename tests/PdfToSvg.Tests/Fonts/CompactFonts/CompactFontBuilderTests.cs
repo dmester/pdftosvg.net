@@ -34,7 +34,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
         {
             var fontSet = Charset(sids);
 
-            var builtCff = CompactFontBuilder.Build(fontSet, inlineSubrs: false);
+            var builtCff = CompactFontBuilder.Build(fontSet);
             var parsedCff = CompactFontParser.Parse(builtCff);
 
             var actualFormat = builtCff[parsedCff.Fonts[0].TopDict.Charset];
@@ -47,7 +47,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
         {
             var fontSet = Charset(sids);
 
-            var builtCff = CompactFontBuilder.Build(fontSet, inlineSubrs: false);
+            var builtCff = CompactFontBuilder.Build(fontSet);
             var parsedCff = CompactFontParser.Parse(builtCff);
 
             Assert.AreEqual(sids, parsedCff.Fonts[0].CharSet.ToArray());
@@ -121,46 +121,27 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
             fontSet.Subrs.Add(Subr(1, 2));
             font.Subrs.Add(Subr(3, 4));
 
-            var charStringInfo = new CharStringInfo();
+            var writer = new Type2CharStringWriter();
 
-            charStringInfo.Width = 400;
+            writer.WriteOperand(400); // Width
+            writer.WriteOperand(-107);
+            writer.WriteOperator((int)CharStringOpCode.CallGSubr);
+            writer.WriteOperand(-107);
+            writer.WriteOperator((int)CharStringOpCode.CallSubr);
+            writer.WriteOperator((int)CharStringOpCode.EndChar);
 
-            charStringInfo.Content.Add(CharStringLexeme.Operand(-107));
-            charStringInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.CallGSubr));
-            charStringInfo.Content.Add(CharStringLexeme.Operand(-107));
-            charStringInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.CallSubr));
-            charStringInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.EndChar));
+            var charString = CharStringParser.Parse(
+                CharStringType.Type2, new ArraySegment<byte>(writer.ToArray()),
+                fontSet.Subrs, font.Subrs);
 
-            font.Glyphs.Add(new CompactFontGlyph(new CharString(charStringInfo), "x", 0, 0, null, 0));
+            font.Glyphs.Add(new CompactFontGlyph(charString, "x", 0, 0, null, 0));
 
             fontSet.Fonts.Add(font);
 
-            var builtCff = CompactFontBuilder.Build(fontSet, inlineSubrs: false);
+            var builtCff = CompactFontBuilder.Build(fontSet);
             var parsedCff = CompactFontParser.Parse(builtCff);
 
             return parsedCff;
-        }
-
-        [Test]
-        public void CharString_KeepSubrs()
-        {
-            var fontSet = FontWithSubrs();
-
-            var builtCff = CompactFontBuilder.Build(fontSet, inlineSubrs: false);
-            var parsedCff = CompactFontParser.Parse(builtCff);
-
-            var expected = new List<CharStringLexeme>
-            {
-                CharStringLexeme.Operand(-107),
-                CharStringLexeme.Operator(CharStringOpCode.CallGSubr),
-                CharStringLexeme.Operand(-107),
-                CharStringLexeme.Operator(CharStringOpCode.CallSubr),
-                CharStringLexeme.Operator(CharStringOpCode.EndChar),
-            };
-
-            Assert.AreEqual(expected, parsedCff.Fonts[0].Glyphs[0].CharString.Content);
-            Assert.AreEqual(1, parsedCff.Subrs.Count);
-            Assert.AreEqual(1, parsedCff.Fonts[0].Subrs.Count);
         }
 
         [Test]
@@ -168,7 +149,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
         {
             var fontSet = FontWithSubrs();
 
-            var builtCff = CompactFontBuilder.Build(fontSet, inlineSubrs: true);
+            var builtCff = CompactFontBuilder.Build(fontSet);
             var parsedCff = CompactFontParser.Parse(builtCff);
 
             var expected = new List<CharStringLexeme>
@@ -203,18 +184,26 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
             subFont0.Subrs.Add(Subr(5, 6));
             subFont1.Subrs = font.Subrs;
 
-            var charStringInfo = new CharStringInfo();
-            charStringInfo.Width = 400;
+            var writer = new Type2CharStringWriter();
 
-            charStringInfo.Content.Add(CharStringLexeme.Operand(-107));
-            charStringInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.CallGSubr));
-            charStringInfo.Content.Add(CharStringLexeme.Operand(-107));
-            charStringInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.CallSubr));
-            charStringInfo.Content.Add(CharStringLexeme.Operator(CharStringOpCode.EndChar));
+            writer.WriteOperand(400); // Width
+            writer.WriteOperand(-107);
+            writer.WriteOperator((int)CharStringOpCode.CallGSubr);
+            writer.WriteOperand(-107);
+            writer.WriteOperator((int)CharStringOpCode.CallSubr);
+            writer.WriteOperator((int)CharStringOpCode.EndChar);
 
-            font.Glyphs.Add(new CompactFontGlyph(new CharString(charStringInfo), "x", 0, 0, null, 0));
-            font.Glyphs.Add(new CompactFontGlyph(new CharString(charStringInfo), "x", 1, 1, null, 0));
-            font.Glyphs.Add(new CompactFontGlyph(new CharString(charStringInfo), "x", 2, 2, null, 0));
+            var charString1 = CharStringParser.Parse(
+                CharStringType.Type2, new ArraySegment<byte>(writer.ToArray()),
+                fontSet.Subrs, subFont0.Subrs);
+
+            var charString2 = CharStringParser.Parse(
+                CharStringType.Type2, new ArraySegment<byte>(writer.ToArray()),
+                fontSet.Subrs, subFont1.Subrs);
+
+            font.Glyphs.Add(new CompactFontGlyph(charString1, "x", 0, 0, null, 0));
+            font.Glyphs.Add(new CompactFontGlyph(charString1, "x", 1, 1, null, 0));
+            font.Glyphs.Add(new CompactFontGlyph(charString2, "x", 2, 2, null, 0));
 
             font.FDArray.Add(subFont0);
             font.FDArray.Add(subFont1);
@@ -224,9 +213,9 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
             font.FDSelect.Add(0);
             font.FDSelect.Add(1);
 
-            var builtCff = CompactFontBuilder.Build(fontSet, inlineSubrs: false);
+            var builtCff = CompactFontBuilder.Build(fontSet);
             var parsedCff = CompactFontParser.Parse(builtCff);
-            builtCff = CompactFontBuilder.Build(CompactFontParser.Parse(builtCff), inlineSubrs: true);
+            builtCff = CompactFontBuilder.Build(CompactFontParser.Parse(builtCff));
             parsedCff = CompactFontParser.Parse(builtCff);
 
             var expected1 = new List<CharStringLexeme>

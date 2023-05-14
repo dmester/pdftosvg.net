@@ -19,6 +19,11 @@ namespace PdfToSvg.Parsing
         private Dictionary<string, Token> keywords;
         private Dictionary<string, int> keywordPrefixesAndMaxLengths;
 
+        public Lexer(byte[] source, Dictionary<string, Token>? keywords = null) : this(
+            stream: new BufferedMemoryReader(source),
+            keywords)
+        { }
+
         public Lexer(string source, Dictionary<string, Token>? keywords = null) : this(
             stream: new BufferedMemoryReader(Encoding.ASCII.GetBytes(source)),
             keywords)

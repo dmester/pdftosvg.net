@@ -395,7 +395,7 @@ namespace PdfToSvg.Fonts.CharStrings
         [Operator(CharStringOpCode.Flex, clearStack: true)]
         private static void Flex(Parser parser)
         {
-            var startAt = parser.Stack.Count - 12;
+            var startAt = parser.Stack.Count - 13;
             if (startAt < 0)
             {
                 throw new CharStringStackUnderflowException();

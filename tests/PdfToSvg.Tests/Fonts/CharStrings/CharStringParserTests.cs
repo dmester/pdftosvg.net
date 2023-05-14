@@ -74,7 +74,7 @@ namespace PdfToSvg.Tests.Fonts.CharStrings.Parser
         [TestCase(null, 0, 2, -4, 1, "              1 2 -1 -4  (26)", TestName = "vvcurveto 4")]
         [TestCase(null, 0, 2, -3, 2, "     1 0 0 0  1 2 -1 -4  (26)", TestName = "vvcurveto 8")]
 
-        [TestCase(null, -5, 25, -9, 21, "1 2 3 5 5 6  7 8 9 -10 -30 -20  (12_35)", TestName = "flex")]
+        [TestCase(null, -5, 25, -9, 21, "1 2 3 5 5 6  7 8 9 -10 -30 -20 1  (12_35)", TestName = "flex")]
 
         [TestCase(null, -3, 27, 0, 3, "1 2 3 7 8 9 -30  (12_34)", TestName = "hflex")]
 

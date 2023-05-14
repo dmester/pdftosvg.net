@@ -212,72 +212,60 @@ namespace PdfToSvg.Fonts
             var head = inputFont.Tables.Get<HeadTable>();
             var hhea = inputFont.Tables.Get<HheaTable>();
             var maxp = inputFont.Tables.Get<MaxpTable>();
-
-            if (head == null || hhea == null || maxp == null)
-            {
-                return;
-            }
-
-            var nonZeroWidthGlyphs = chars
-                .Where(ch => ch.GlyphIndex != null)
-                .Select(ch => new
-                {
-                    Index = (int)ch.GlyphIndex!,
-                    Char = ch,
-                    Width = widthMap.GetWidth(ch) * head.UnitsPerEm,
-                })
-                .Where(ch => ch.Width != 0)
-                .ToList();
-
-            if (nonZeroWidthGlyphs.Count == 0)
-            {
-                return;
-            }
-
-            // Update hmtx table (it is used by Firefox)
             var hmtx = inputFont.Tables.Get<HmtxTable>();
-            if (hmtx != null)
+
+            if (head == null || hhea == null || maxp == null || hmtx == null)
             {
-                var originalMetrics = hmtx.HorMetrics;
-                var originalLsb = hmtx.LeftSideBearings;
+                return;
+            }
 
-                hmtx.HorMetrics = new LongHorMetricRecord[maxp.NumGlyphs];
-                hmtx.LeftSideBearings = new short[0];
-                hhea.NumberOfHMetrics = maxp.NumGlyphs;
+            // Expand hmtx table with one entry per glyph
+            var originalMetrics = hmtx.HorMetrics;
+            var originalLsb = hmtx.LeftSideBearings;
 
-                for (var i = 0; i < hmtx.HorMetrics.Length; i++)
+            hmtx.HorMetrics = new LongHorMetricRecord[maxp.NumGlyphs];
+            hmtx.LeftSideBearings = new short[0];
+            hhea.NumberOfHMetrics = maxp.NumGlyphs;
+
+            for (var i = 0; i < hmtx.HorMetrics.Length; i++)
+            {
+                var metric = hmtx.HorMetrics[i] = new LongHorMetricRecord();
+
+                if (i < originalMetrics.Length)
                 {
-                    var metric = hmtx.HorMetrics[i] = new LongHorMetricRecord();
-
-                    if (i < originalMetrics.Length)
+                    metric.AdvanceWidth = originalMetrics[i].AdvanceWidth;
+                    metric.LeftSideBearing = originalMetrics[i].LeftSideBearing;
+                }
+                else
+                {
+                    if (originalMetrics.Length > 0)
                     {
-                        metric.AdvanceWidth = originalMetrics[i].AdvanceWidth;
-                        metric.LeftSideBearing = originalMetrics[i].LeftSideBearing;
+                        metric.AdvanceWidth = originalMetrics[originalMetrics.Length - 1].AdvanceWidth;
                     }
-                    else
-                    {
-                        if (originalMetrics.Length > 0)
-                        {
-                            metric.AdvanceWidth = originalMetrics[originalMetrics.Length - 1].AdvanceWidth;
-                        }
 
-                        var lsbIndex = i - originalMetrics.Length;
-                        if (lsbIndex < originalLsb.Length)
-                        {
-                            metric.LeftSideBearing = originalLsb[lsbIndex];
-                        }
+                    var lsbIndex = i - originalMetrics.Length;
+                    if (lsbIndex < originalLsb.Length)
+                    {
+                        metric.LeftSideBearing = originalLsb[lsbIndex];
                     }
                 }
+            }
 
-                foreach (var glyph in nonZeroWidthGlyphs)
+            // Update hmtx metrics (it is used by Firefox)
+            foreach (var ch in chars)
+            {
+                if (ch.GlyphIndex == null)
                 {
-                    if (glyph.Index < hmtx.HorMetrics.Length)
-                    {
-                        hmtx.HorMetrics[glyph.Index].AdvanceWidth =
-                            glyph.Width <= ushort.MinValue ? ushort.MinValue :
-                            glyph.Width >= ushort.MaxValue ? ushort.MaxValue :
-                            (ushort)glyph.Width;
-                    }
+                    continue;
+                }
+
+                var width = widthMap.GetWidth(ch) * head.UnitsPerEm;
+                if (width != 0)
+                {
+                    hmtx.HorMetrics[(int)ch.GlyphIndex].AdvanceWidth =
+                        width <= ushort.MinValue ? ushort.MinValue :
+                        width >= ushort.MaxValue ? ushort.MaxValue :
+                        (ushort)width;
                 }
             }
 
@@ -285,10 +273,10 @@ namespace PdfToSvg.Fonts
             var cff = inputFont.Tables.Get<CffTable>()?.Content?.Fonts[0];
             if (cff != null)
             {
-                var medianWidth = nonZeroWidthGlyphs
-                    .Select(glyph => glyph.Width)
+                var medianWidth = hmtx.HorMetrics
+                    .Select(glyph => glyph.AdvanceWidth)
                     .OrderBy(width => width)
-                    .ElementAt(nonZeroWidthGlyphs.Count / 2);
+                    .ElementAt(hmtx.HorMetrics.Length / 2);
 
                 cff.PrivateDict.DefaultWidthX = medianWidth;
                 cff.PrivateDict.NominalWidthX = medianWidth;
@@ -299,15 +287,17 @@ namespace PdfToSvg.Fonts
                     fd.PrivateDict.NominalWidthX = medianWidth;
                 }
 
-                foreach (var glyph in nonZeroWidthGlyphs)
-                {
-                    if (glyph.Index < cff.Glyphs.Count)
-                    {
-                        var cffGlyph = cff.Glyphs[glyph.Index];
+                var count = Math.Min(cff.Glyphs.Count, hmtx.HorMetrics.Length);
 
-                        cffGlyph.Width = glyph.Width;
-                        cffGlyph.CharString.Width = glyph.Width == medianWidth ? null : glyph.Width - medianWidth;
-                    }
+                for (var i = 0; i < count; i++)
+                {
+                    var cffGlyph = cff.Glyphs[i];
+                    var horMetric = hmtx.HorMetrics[i];
+
+                    cffGlyph.Width = horMetric.AdvanceWidth;
+                    cffGlyph.CharString.Width = horMetric.AdvanceWidth == medianWidth
+                        ? null // Use NominalWidthX
+                        : horMetric.AdvanceWidth - medianWidth;
                 }
             }
         }

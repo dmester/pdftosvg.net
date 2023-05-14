@@ -2,7 +2,6 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
-using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Drawing;
 using PdfToSvg.Encodings;
@@ -89,8 +88,7 @@ namespace PdfToSvg.Fonts
             var fontMatrixArray = fontDict.GetArrayOrNull<double>(Names.FontMatrix);
             var fontBBoxArray = fontDict.GetArrayOrNull<double>(Names.FontBBox);
 
-            if (fontMatrixArray == null || fontMatrixArray.Length != 6 ||
-                fontBBoxArray == null || fontBBoxArray.Length != 4)
+            if (fontMatrixArray?.Length != 6 || fontBBoxArray?.Length != 4)
             {
                 return;
             }
@@ -106,7 +104,7 @@ namespace PdfToSvg.Fonts
             // Handle glyphs
             var glyphs = new List<CompactFontGlyph>();
 
-            var emptyGlyph = new CompactFontGlyph(CharString.Empty, "\0", 0, 0, null, 0);
+            var emptyGlyph = new CompactFontGlyph(CharString.Empty, "\0", 0, 0, ".notdef", 0);
             glyphs.Add(emptyGlyph);
 
             var validFont = true;
@@ -172,13 +170,18 @@ namespace PdfToSvg.Fonts
                 var cff = new CompactFont(cffFontSet);
                 cffFontSet.Fonts.Add(cff);
 
-                cff.Name = Name ?? "Type3 font";
+                cff.Name = fontDict.GetNameOrNull(Names.FontDescriptor / Names.FontName)?.Value ?? "Type3 font";
                 cff.TopDict.FontMatrix = new[] { 1d / TargetEmSize, 0, 0, 1d / TargetEmSize, 0, 0 };
                 cff.TopDict.FontBBox = GetFontBBox(glyphs);
 
+                cff.TopDict.ROS = new[] {
+                    cffFontSet.Strings.AddOrLookup("Adobe"),
+                    cffFontSet.Strings.AddOrLookup("Identity"),
+                    0d
+                };
+                cff.TopDict.CIDCount = glyphs.Count;
+
                 var fdFont = new CompactSubFont();
-                fdFont.FontDict.FontMatrix = cff.TopDict.FontMatrix;
-                fdFont.FontDict.FontBBox = cff.TopDict.FontBBox;
                 cff.FDArray.Add(fdFont);
 
                 foreach (var glyph in glyphs)

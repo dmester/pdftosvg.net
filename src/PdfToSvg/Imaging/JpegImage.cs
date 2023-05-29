@@ -4,6 +4,7 @@
 
 using PdfToSvg.ColorSpaces;
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Imaging.Jpeg;
 using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,9 @@ namespace PdfToSvg.Imaging
     internal class JpegImage : Image
     {
         private readonly PdfStream imageDictionaryStream;
+        private readonly ColorSpace colorSpace;
 
-        public JpegImage(PdfDictionary imageDictionary) : base("image/jpeg")
+        public JpegImage(PdfDictionary imageDictionary, ColorSpace colorSpace) : base("image/jpeg")
         {
             if (imageDictionary.Stream == null)
             {
@@ -27,11 +29,67 @@ namespace PdfToSvg.Imaging
             }
 
             this.imageDictionaryStream = imageDictionary.Stream;
+            this.colorSpace = colorSpace;
         }
 
-        public static bool IsSupported(ColorSpace colorSpace)
+        private byte[] Convert(byte[] sourceJpegData)
         {
-            return colorSpace is DeviceRgbColorSpace || colorSpace is DeviceGrayColorSpace;
+            if (colorSpace is DeviceRgbColorSpace ||
+                colorSpace is DeviceGrayColorSpace)
+            {
+                return sourceJpegData;
+            }
+
+            var decoder = new JpegDecoder();
+            decoder.ReadMetadata(sourceJpegData, 0, sourceJpegData.Length);
+
+            var sourceColorSpace = decoder.ColorSpace;
+
+            if (sourceColorSpace == JpegColorSpace.YCbCr ||
+                sourceColorSpace == JpegColorSpace.Gray)
+            {
+                return sourceJpegData;
+            }
+
+            if (!decoder.IsSupported)
+            {
+                // Possible cause: progressive JPEG.
+                // Just return it and hope for the best.
+                return sourceJpegData;
+            }
+
+            var encoder = new JpegEncoder();
+
+            encoder.Width = decoder.Width;
+            encoder.Height = decoder.Height;
+            encoder.ColorSpace = JpegColorSpace.YCbCr;
+            encoder.Quality = 90;
+
+            encoder.WriteMetadata();
+
+            foreach (var scan in decoder.ReadImageData())
+            {
+                var length = scan.Length;
+
+                if (sourceColorSpace == JpegColorSpace.Ycck)
+                {
+                    length = JpegColorSpaceTransform.YcckToYcc(scan, 0, length);
+                }
+                else if (sourceColorSpace == JpegColorSpace.Cmyk)
+                {
+                    length = JpegColorSpaceTransform.CmykToYcc(scan, 0, length);
+                }
+                else
+                {
+                    throw new PdfException("Unexpected state. Color space should have been either YCCK or CMYK but was " + sourceColorSpace + ".");
+                }
+
+                encoder.WriteImageData(scan, 0, length);
+            }
+
+            encoder.WriteEndImage();
+
+            return encoder.ToByteArray();
         }
 
         private Stream GetStream(CancellationToken cancellationToken)
@@ -65,7 +123,7 @@ namespace PdfToSvg.Imaging
                 jpegStream.CopyTo(memoryStream, cancellationToken);
             }
 
-            return memoryStream.ToArray();
+            return Convert(memoryStream.ToArray());
         }
 
 #if HAVE_ASYNC
@@ -78,7 +136,7 @@ namespace PdfToSvg.Imaging
                 await jpegStream.CopyToAsync(memoryStream, cancellationToken).ConfigureAwait(false);
             }
 
-            return memoryStream.ToArray();
+            return Convert(memoryStream.ToArray());
         }
 #endif
     }

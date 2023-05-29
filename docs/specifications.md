@@ -34,6 +34,11 @@ Portable Network Graphics (PNG) Specification (Second Edition)
 
 https://www.w3.org/TR/PNG/
 
+### JPEG
+CCITT Rec. T.81
+
+https://www.w3.org/Graphics/JPEG/itu-t81.pdf
+
 
 ## Fonts
 

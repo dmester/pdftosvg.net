@@ -20,6 +20,11 @@ namespace PdfToSvg.ColorSpaces
             var y = input[inputOffset++];
             var k = input[inputOffset++];
 
+            ToRgb(c, m, y, k, out red, out green, out blue);
+        }
+
+        public static void ToRgb(float c, float m, float y, float k, out float red, out float green, out float blue)
+        {
             // Since ICC color profiles are currently not supported, we will do an approximated color conversion from CMYK to sRGB.
             //
             // The approximation is based on the samples provided in

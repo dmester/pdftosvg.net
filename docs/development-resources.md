@@ -15,12 +15,28 @@ Validate PDF files online. Good when constructing test files by hand.
 
 https://www.pdf-online.com/osa/validate.aspx
 
+
 ## PNG
 
 ### pngcheck
 Verifying the integrity of PNG files.
 
 http://www.libpng.org/pub/png/apps/pngcheck.html
+
+
+## JPEG
+
+### JPEGsnoop
+Shows information about JPEG files.
+
+https://github.com/ImpulseAdventure/JPEGsnoop
+
+### Let's Write a Simple JPEG Library
+Overview how the JPEG format works.
+
+https://koushtav.me/jpeg/tutorial/2017/11/25/lets-write-a-simple-jpeg-library-part-1/
+https://koushtav.me/jpeg/tutorial/c++/decoder/2019/03/02/lets-write-a-simple-jpeg-library-part-2/
+
 
 ## Fonts
 

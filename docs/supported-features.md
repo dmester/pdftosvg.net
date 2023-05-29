@@ -37,7 +37,10 @@ Impl | Description
 Impl | Description
 :--: | :----------
 ✅ | DCTDecode (JPEG)
-❌ | DCTDecode (JPEG) CMYK
+✅ | DCTDecode (JPEG) CMYK
+✅ | DCTDecode (JPEG) YCCK
+❌ | DCTDecode (JPEG) Progressive CMYK
+❌ | DCTDecode (JPEG) Progressive YCCK
 ✅ | FlateDecode without predictor
 ✅ | FlateDecode with PNG predictor
 ✅ | FlateDecode with TIFF predictor

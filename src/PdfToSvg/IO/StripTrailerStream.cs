@@ -103,7 +103,7 @@ namespace PdfToSvg.IO
                 var cursor = trailerBufferLength;
                 if (cursor < count)
                 {
-                    cursor += baseStream.Read(buffer, offset + cursor, count - cursor);
+                    cursor += baseStream.ReadAll(buffer, offset + cursor, count - cursor);
                 }
 
                 trailerBufferLength = Math.Min(cursor, trailerLength);
@@ -161,7 +161,7 @@ namespace PdfToSvg.IO
                 var cursor = trailerBufferLength;
                 if (cursor < count)
                 {
-                    cursor += await baseStream.ReadAsync(buffer, offset + cursor, count - cursor, cancellationToken).ConfigureAwait(false);
+                    cursor += await baseStream.ReadAllAsync(buffer, offset + cursor, count - cursor, cancellationToken).ConfigureAwait(false);
                 }
 
                 trailerBufferLength = Math.Min(cursor, trailerLength);

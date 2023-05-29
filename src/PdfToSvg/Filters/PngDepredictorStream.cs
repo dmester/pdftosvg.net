@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.Common;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -71,7 +72,7 @@ namespace PdfToSvg.Filters
             SwapBuffers();
 
             bufferCursor = 1;
-            bufferLength = stream.Read(buffer, 0, buffer.Length);
+            bufferLength = stream.ReadAll(buffer, 0, buffer.Length);
 
             if (bufferLength == 0)
             {

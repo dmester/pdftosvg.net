@@ -163,7 +163,7 @@ namespace PdfToSvg.Parsing
                             {
                                 // Read and cache small objects
                                 var streamContent = new byte[streamLength];
-                                var read = lexer.Stream.Read(streamContent, 0, streamLength);
+                                var read = lexer.Stream.ReadAll(streamContent, 0, streamLength);
                                 objectStream = new PdfMemoryStream(dict, streamContent, read);
                             }
                             else
@@ -263,7 +263,7 @@ namespace PdfToSvg.Parsing
 
                 while (true)
                 {
-                    var read = data.Read(entryBuffer, 0, entryBuffer.Length);
+                    var read = data.ReadAll(entryBuffer, 0, entryBuffer.Length);
                     if (read < entryBuffer.Length)
                     {
                         break;

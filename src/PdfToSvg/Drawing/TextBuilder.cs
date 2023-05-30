@@ -18,7 +18,6 @@ namespace PdfToSvg.Drawing
 
         private readonly double minSpaceEm;
         private readonly double minSpacePx;
-        private readonly bool handleType3;
 
         private GraphicsState? textStyle;
         private double pendingSpace;
@@ -34,11 +33,10 @@ namespace PdfToSvg.Drawing
 
         private const double ScalingMultiplier = 1.0 / 100;
 
-        public TextBuilder(double minSpaceEm, double minSpacePx, bool handleType3)
+        public TextBuilder(double minSpaceEm, double minSpacePx)
         {
             this.minSpaceEm = minSpaceEm;
             this.minSpacePx = minSpacePx;
-            this.handleType3 = handleType3;
             Clear();
         }
 
@@ -124,11 +122,10 @@ namespace PdfToSvg.Drawing
         {
             if (text.Length > 0)
             {
-                if (handleType3 &&
-                    graphicsState.Font is Type3Font type3 &&
-                    !type3.IsExtractable)
+                if (graphicsState.Font.SubstituteFont is InlinedFont inlinedFont &&
+                    inlinedFont.SourceFont is Type3Font type3Font)
                 {
-                    AddSpanType3(graphicsState, text, type3);
+                    AddSpanType3(graphicsState, text, type3Font);
                 }
                 else
                 {

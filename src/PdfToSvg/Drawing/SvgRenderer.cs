@@ -94,8 +94,7 @@ namespace PdfToSvg.Drawing
 
             textBuilder = new TextBuilder(
                 minSpaceEm: options.KerningThreshold,
-                minSpacePx: 0.001, // Lower space will be rounded to "0" in SVG formatting.
-                handleType3: options.FontResolver != FontResolver.LocalFonts
+                minSpacePx: 0.001 // Lower space will be rounded to "0" in SVG formatting.
                 );
 
             resources = new ResourceCache(pageDict.GetDictionaryOrEmpty(Names.Resources));
@@ -1631,7 +1630,7 @@ namespace PdfToSvg.Drawing
             }
             else
             {
-                throw new Exception("Unexpected font type.");
+                throw new PdfException("Unexpected font type.");
             }
 
             // Use shorthand font property if possible

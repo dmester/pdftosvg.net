@@ -33,7 +33,7 @@ namespace PdfToSvg.Fonts
 
         public Matrix FontMatrix { get; private set; } = Matrix.Identity;
 
-        public bool IsExtractable { get; private set; }
+        public override bool CanBeInlined => true;
 
         protected override void OnInit(CancellationToken cancellationToken)
         {
@@ -191,11 +191,12 @@ namespace PdfToSvg.Fonts
                     cff.FDSelect.Add(0);
                 }
 
-                openTypeFont = new OpenTypeFont();
+                var openTypeFont = new OpenTypeFont();
                 openTypeFont.Tables.Add(new CffTable { Content = cffFontSet });
 
                 OpenTypeSanitizer.Sanitize(openTypeFont);
-                IsExtractable = true;
+
+                this.openTypeFont = openTypeFont;
             }
         }
 

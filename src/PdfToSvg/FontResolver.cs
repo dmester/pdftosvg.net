@@ -81,25 +81,36 @@ namespace PdfToSvg
     ///             <see href="https://en.wikipedia.org/wiki/Data_URI_scheme">data URLs</see> only.
     ///         </description>
     ///     </item>
+    ///     <item>
+    ///         <term><see cref="InlinedFont"/></term>
+    ///         <description>
+    ///             Inlines the glyphs from the font as paths and other elements within the SVG. This differs from
+    ///             <see cref="WebFont"/>, which are embedded as font files in the SVG. The inlined glyphs cannot be
+    ///             selected as text in the SVG. Currently only Type 3 fonts can be inlined, but more font types might
+    ///             be supported in the future.
+    ///         </description>
+    ///     </item>
     /// </list>
     /// </example>
     public abstract class FontResolver
     {
         /// <summary>
-        /// Font resolver substituting fonts in the PDF with commonly available fonts. No fonts are embedded in the
-        /// resulting SVG. The resolved fonts need to be available on the viewing machine.
+        /// Font resolver substituting fonts in the PDF with commonly available fonts. No fonts are embedded or inlined
+        /// in the resulting SVG. The resolved fonts need to be available on the viewing machine.
         /// </summary>
         public static FontResolver LocalFonts { get; } = new LocalFontResolver();
 
         /// <summary>
         /// Font resolver converting fonts in the PDF to WOFF format and embedding them in the output SVG.
-        /// If the font cannot be converted, this resolver falls back to the <see cref="LocalFonts"/> resolver.
+        /// If the font cannot be converted, the resolver in first hand tries to inline the glyphs. If this is not
+        /// possible, the resolver falls back to the <see cref="LocalFonts"/> resolver.
         /// </summary>
         public static FontResolver EmbedWoff { get; } = new EmbedWoffFontResolver();
 
         /// <summary>
         /// Font resolver converting fonts in the PDF to OpenType (.otf) format and embedding them in the output SVG.
-        /// If the font cannot be converted, this resolver falls back to the <see cref="LocalFonts"/> resolver.
+        /// If the font cannot be converted, the resolver in first hand tries to inline the glyphs. If this is not
+        /// possible, the resolver falls back to the <see cref="LocalFonts"/> resolver.
         /// </summary>
         public static FontResolver EmbedOpenType { get; } = new EmbedOpenTypeFontResolver();
 

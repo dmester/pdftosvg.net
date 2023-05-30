@@ -55,6 +55,8 @@ namespace PdfToSvg.Fonts
 
         public Font SubstituteFont { get; private set; } = fallbackSubstituteFont;
 
+        public override bool CanBeExtracted => openTypeFont != null;
+
         protected BaseFont() { }
 
         protected virtual void OnInit(CancellationToken cancellationToken)

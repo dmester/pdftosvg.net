@@ -20,6 +20,17 @@ namespace PdfToSvg
         public abstract string? Name { get; }
 
         /// <summary>
+        /// Specifies whether this font can be inlined. When a font is inlined, its glyphs will be embedded as paths
+        /// and other elements in the SVG markup.
+        /// </summary>
+        public virtual bool CanBeInlined => false;
+
+        /// <summary>
+        /// Specifies whether this font can be extracted to a font file that can be embedded in the SVG.
+        /// </summary>
+        public virtual bool CanBeExtracted => false;
+
+        /// <summary>
         /// Tries to convert this source font to an OpenType (.otf) font.
         /// </summary>
         /// <returns>Binary content of the OpenType font.</returns>

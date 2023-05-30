@@ -14,16 +14,24 @@ namespace PdfToSvg.Fonts.FontResolvers
     {
         public override Font ResolveFont(SourceFont sourceFont, CancellationToken cancellationToken)
         {
-            try
+            if (sourceFont.CanBeExtracted)
             {
-                var woff = sourceFont.ToWoff();
-                var woffDataUrl = "data:font/woff;base64," + Convert.ToBase64String(woff);
-                return new WebFont(woffUrl: woffDataUrl);
+                try
+                {
+                    var woff = sourceFont.ToWoff();
+                    var woffDataUrl = "data:font/woff;base64," + Convert.ToBase64String(woff);
+                    return new WebFont(woffUrl: woffDataUrl);
+                }
+                catch
+                {
+                }
             }
-            catch
+            else if (sourceFont.CanBeInlined)
             {
-                return LocalFonts.ResolveFont(sourceFont, cancellationToken);
+                return new InlinedFont(sourceFont);
             }
+
+            return LocalFonts.ResolveFont(sourceFont, cancellationToken);
         }
     }
 }

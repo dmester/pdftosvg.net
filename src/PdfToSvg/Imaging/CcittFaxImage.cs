@@ -111,51 +111,17 @@ namespace PdfToSvg.Imaging
             return pngStream.ToArray();
         }
 
-        private Stream GetStream(CancellationToken cancellationToken)
-        {
-            Stream? resultStream = null;
-
-            var filters = imageDictionaryStream.Filters;
-            var encodedStream = imageDictionaryStream.Open(cancellationToken);
-
-            try
-            {
-                resultStream = filters.Take(filters.Count - 1).Decode(encodedStream);
-            }
-            finally
-            {
-                if (resultStream == null)
-                {
-                    encodedStream.Dispose();
-                }
-            }
-
-            return resultStream;
-        }
-
         public override byte[] GetContent(CancellationToken cancellationToken)
         {
-            var memoryStream = new MemoryStream();
-
-            using (var jpegStream = GetStream(cancellationToken))
-            {
-                jpegStream.CopyTo(memoryStream, cancellationToken);
-            }
-
-            return Convert(memoryStream.ToArray());
+            return Convert(ImageHelper.GetContent(imageDictionaryStream, cancellationToken));
         }
 
 #if HAVE_ASYNC
         public override async Task<byte[]> GetContentAsync(CancellationToken cancellationToken)
         {
-            var memoryStream = new MemoryStream();
-
-            using (var jpegStream = GetStream(cancellationToken))
-            {
-                await jpegStream.CopyToAsync(memoryStream, cancellationToken).ConfigureAwait(false);
-            }
-
-            return Convert(memoryStream.ToArray());
+            return Convert(await ImageHelper
+                .GetContentAsync(imageDictionaryStream, cancellationToken)
+                .ConfigureAwait(false));
         }
 #endif
     }

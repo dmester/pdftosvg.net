@@ -4,10 +4,13 @@
 
 using PdfToSvg.ColorSpaces;
 using PdfToSvg.DocumentModel;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Imaging
@@ -46,5 +49,53 @@ namespace PdfToSvg.Imaging
 
             return result;
         }
+
+        private static Stream GetImageStream(PdfStream imageDictionaryStream, CancellationToken cancellationToken)
+        {
+            Stream? resultStream = null;
+
+            var filters = imageDictionaryStream.Filters;
+            var encodedStream = imageDictionaryStream.Open(cancellationToken);
+
+            try
+            {
+                resultStream = filters.Take(filters.Count - 1).Decode(encodedStream);
+            }
+            finally
+            {
+                if (resultStream == null)
+                {
+                    encodedStream.Dispose();
+                }
+            }
+
+            return resultStream;
+        }
+
+        public static byte[] GetContent(PdfStream imageDictionaryStream, CancellationToken cancellationToken)
+        {
+            var memoryStream = new MemoryStream();
+
+            using (var jpegStream = GetImageStream(imageDictionaryStream, cancellationToken))
+            {
+                jpegStream.CopyTo(memoryStream, cancellationToken);
+            }
+
+            return memoryStream.ToArray();
+        }
+
+#if HAVE_ASYNC
+        public static async Task<byte[]> GetContentAsync(PdfStream imageDictionaryStream, CancellationToken cancellationToken)
+        {
+            var memoryStream = new MemoryStream();
+
+            using (var jpegStream = GetImageStream(imageDictionaryStream, cancellationToken))
+            {
+                await jpegStream.CopyToAsync(memoryStream, cancellationToken).ConfigureAwait(false);
+            }
+
+            return memoryStream.ToArray();
+        }
+#endif
     }
 }

@@ -10,7 +10,6 @@ The by far most commonly used image formats in PDFs are images encoded with DCTD
 
 The following image formats are not supported:
 
-* CCITT Fax
 * JPEG 2000
 * Progressive CMYK or YCCK JPEG
 * JBIG2

@@ -41,6 +41,11 @@ namespace PdfToSvg.Imaging
                 {
                     return new KeepDataPngImage(imageDictionary, colorSpace);
                 }
+
+                if (lastFilter.Filter == Filter.CcittFaxDecode)
+                {
+                    return new CcittFaxImage(imageDictionary, lastFilter.DecodeParms, colorSpace);
+                }
             }
 
             return new ResampledPngImage(imageDictionary, colorSpace);

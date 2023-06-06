@@ -45,7 +45,7 @@ Impl | Description
 ✅ | FlateDecode with PNG predictor
 ✅ | FlateDecode with TIFF predictor
 ✅ | FlateDecode CMYK
-❌ | CCITTFaxDecode
+✅ | CCITTFaxDecode
 ❌ | JBIG2Decode
 ❌ | JPXDecode (JPEG2000)
 ✅ | Crypt

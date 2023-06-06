@@ -39,6 +39,16 @@ CCITT Rec. T.81
 
 https://www.w3.org/Graphics/JPEG/itu-t81.pdf
 
+### CCITT Fax Group 3
+T.4 : Standardization of Group 3 facsimile terminals for document transmission
+
+https://www.itu.int/rec/T-REC-T.4/en
+
+### CCITT Fax Group 4
+T.6 : Facsimile coding schemes and coding control functions for Group 4 facsimile apparatus
+
+https://www.itu.int/rec/T-REC-T.6/en
+
 
 ## Fonts
 

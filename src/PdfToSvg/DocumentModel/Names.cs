@@ -142,6 +142,10 @@ namespace PdfToSvg.DocumentModel
         public static PdfName EarlyChange { get; } = new PdfName("EarlyChange");
         public static PdfName Predictor { get; } = new PdfName("Predictor");
         public static PdfName Columns { get; } = new PdfName("Columns");
+        public static PdfName Rows { get; } = new PdfName("Rows");
+        public static PdfName EncodedByteAlign { get; } = new PdfName("EncodedByteAlign");
+        public static PdfName BlackIs1 { get; } = new PdfName("BlackIs1");
+        public static PdfName K { get; } = new PdfName("K");
         public static PdfName BitsPerComponent { get; } = new PdfName("BitsPerComponent");
         public static PdfName Colors { get; } = new PdfName("Colors");
         public static PdfName Interpolate { get; } = new PdfName("Interpolate");

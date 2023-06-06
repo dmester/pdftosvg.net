@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -193,55 +194,8 @@ namespace PdfToSvg.Imaging.Jpeg
         }
 
 #if DEBUG
-        private string DebugView
-        {
-            get
-            {
-                var result = "";
-
-                string Format(int cursorOffset) => Convert
-                    .ToString(buffer[offset + cursor + cursorOffset], 2)
-                    .PadLeft(8, '0');
-
-                if (cursor < count)
-                {
-                    result += cursor < 2 ? "|- " : "... ";
-
-                    if (cursor > 0)
-                    {
-                        result += Format(-1) + " ";
-                    }
-
-                    var num = Format(0);
-
-                    result += num.Substring(0, bitCursor) + "\u1401" + num.Substring(bitCursor);
-
-                    if (cursor + 1 < count)
-                    {
-                        result += " " + Format(+1);
-
-                        if (cursor + 2 < count)
-                        {
-                            result += " ...";
-                        }
-                        else
-                        {
-                            result += " -|";
-                        }
-                    }
-                    else
-                    {
-                        result += " -|";
-                    }
-                }
-                else
-                {
-                    result = "-|";
-                }
-
-                return result;
-            }
-        }
+        private string DebugView => BitReaderUtils.FormatDebugView(
+            new ArraySegment<byte>(buffer, offset, count), cursor, bitCursor, byteValue);
 #endif
     }
 }

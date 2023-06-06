@@ -21,6 +21,8 @@ namespace PdfToSvg.Filters
         public static Filter FlateDecode { get; } = new FlateDecodeFilter();
         public static Filter LzwDecode { get; } = new LzwDecodeFilter();
         public static Filter RunLengthDecode { get; } = new RunLengthDecodeFilter();
+
+        public static Filter CcittFaxDecode { get; } = new CcittFaxDecodeFilter();
         public static Filter Identity { get; } = new IdentityFilter();
 
         private static readonly Dictionary<PdfName, Filter> filters = new Dictionary<PdfName, Filter>
@@ -28,6 +30,7 @@ namespace PdfToSvg.Filters
             { Names.ASCII85Decode, Ascii85Decode },
             { Names.ASCIIHexDecode, AsciiHexDecode },
             { Names.Crypt, Crypt },
+            { Names.CCITTFaxDecode, CcittFaxDecode },
             { Names.DCTDecode, DctDecode },
             { Names.FlateDecode, FlateDecode },
             { Names.LZWDecode, LzwDecode },

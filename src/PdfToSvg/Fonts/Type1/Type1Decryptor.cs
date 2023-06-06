@@ -50,7 +50,7 @@ namespace PdfToSvg.Fonts.Type1
             for (var i = 0; i < sampleSize; i++)
             {
                 var val = (char)input[offset + i];
-                
+
                 if (!PdfCharacters.IsWhiteSpace(val) &&
                     PdfCharacters.ParseHexDigit(val) < 0)
                 {

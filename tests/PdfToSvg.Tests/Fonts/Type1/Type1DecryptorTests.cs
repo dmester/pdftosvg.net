@@ -33,7 +33,7 @@ namespace PdfToSvg.Tests.Fonts.Type1
         {
             var bytes = Encoding.ASCII.GetBytes("  \n   \t  0   f ab cdef0122345678  ");
             var expectedBytes = new byte[] { 0x0f, 0xab, 0xcd, 0xef, 0x01, 0x22, 0x34, 0x56, 0x78 };
-            
+
             var newLength = Type1Decryptor.DecodeAscii(bytes, 0, bytes.Length);
             var resultBytes = bytes.Slice(0, newLength);
 

@@ -424,9 +424,9 @@ namespace PdfToSvg.Imaging.Jpeg
                                 componentId,
                                 subSamplingX, subSamplingY);
 
-                            JpegDct.Forward(inputBlock, dctBlock);
+                            JpegDct.Forward(inputBlock);
 
-                            JpegZigZag.ZigZag(dctBlock, zzBlock);
+                            JpegZigZag.ZigZag(inputBlock, zzBlock);
 
                             component.QuantizationTable.Quantize(zzBlock);
 

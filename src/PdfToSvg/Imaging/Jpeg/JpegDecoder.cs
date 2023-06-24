@@ -332,9 +332,9 @@ namespace PdfToSvg.Imaging.Jpeg
 
                                 component.QuantizationTable.Dequantize(rawDataUnit);
 
-                                JpegZigZag.ReverseZigZag(rawDataUnit, deZigZaggedDataUnit);
+                                JpegZigZag.ReverseZigZag(rawDataUnit, dataUnitBitmap.Data);
 
-                                JpegDct.Inverse(deZigZaggedDataUnit, dataUnitBitmap.Data);
+                                JpegDct.Inverse(dataUnitBitmap.Data);
 
                                 dataUnitBitmap.DrawNearestNeighbourClippedOnto(
                                     dest: mcuRowBitmap,

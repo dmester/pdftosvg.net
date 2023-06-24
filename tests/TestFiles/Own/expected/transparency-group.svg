@@ -1,0 +1,47 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.gt4EC2H text{white-space:pre;}
+.tx3vYyE{font:8px Helvetica,Arial,sans-serif;}
+</style>
+<defs>
+<image id="imG3c31" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkAQMAAABKLAcXAAAABGdBTUEAALGPC/xhBQAAAAZQTFRFAAAA////pdmf3QAAAc9JREFUeJzN1DFy5CAQBVBUCuRMG27GFXwDruQboKm5GK69CI6cdpUTAgr2/26kMRM49iQzb4QQgt/tOj/ivn0157aHsnMuXgLcfqpS6ymhOFSV8Cu7MMQJG2+kKv/uaTUVnVcWk3A6jDClXZeF8dQRVMmrdFFY3k61RdHLRtXVhG+obCaMgcSmxP1U9kNHpMJQolIcygE6Brp4aDlVdmg9VaH20AZtpxpUz4f3voorDy2Qv3QTJ7PCpfSsHC/lN9U/LCuauOtRt1HeXOJm+84Tk1dK3N7conrnQW84UIx5dTfM/HctK+4tf1R9KR7bY7r1QwJWCN3xJj3liNVX1b1/SKxh6LN/1d4idW2L5ub36v5NeIc2ciabaXyo20PlZ723zfCyF+78eGLxeg7jiUJlbK6dZRCeZjKlqGc7InlQEsbJO8uEpQIhp7zlBwVwMFmWtLIyS2WvVt0bU1d3yyvKCInEFa3G5JlWXDn4CBeYZJ6zZ5405aiAjGnKYhVwaBnn1aojxcpk7VY5KWjXCPhhFZe0TWjFCauXEXSjUhvbi1Uqqzi7s4rnCp+r/6kzzF0jTx1l7jZzJ5q71FMHy1N3mzvf3BWfOuYZsKnFdvkPes67BvUYH9MAAAAASUVORK5CYII=" width="1" height="1" preserveAspectRatio="none" />
+<clipPath id="cliLjty">
+<rect x="0" y="0" width="594.96" height="841.92" />
+</clipPath>
+<clipPath id="cljriXH">
+<rect x="230" y="41.92" width="135" height="800" />
+</clipPath>
+</defs>
+<g stroke-miterlimit="10" class="gt4EC2H">
+<g fill="none" stroke="#e5e5e5" stroke-width="10">
+<path d="M80 161.92h434z" />
+<path d="M80 294.92h434z" />
+</g>
+<path d="M170 191.92h60v-60h-60z" fill="#000" fill-opacity="0.2" stroke="#00f" stroke-width="10" stroke-opacity="0.6" />
+<g transform="matrix(40 0 0 40 180 141.92)" opacity="0.2">
+<use href="#imG3c31" />
+</g>
+<path d="M267 191.92h60v-60h-60z" fill="#000" fill-opacity="0.2" stroke="#00f" stroke-width="10" stroke-opacity="0.6" />
+<g clip-path="url(#cliLjty)">
+<g transform="matrix(40 0 0 40 277 141.92)" opacity="0.2">
+<use href="#imG3c31" />
+</g>
+</g>
+<g opacity="0.9">
+<path d="M364 191.92h60v-60h-60z" fill="#000" fill-opacity="0.2222" stroke="#00f" stroke-width="10" stroke-opacity="0.6667" />
+<g clip-path="url(#cliLjty)">
+<g transform="matrix(40 0 0 40 374 141.92)" opacity="0.2222">
+<use href="#imG3c31" />
+</g>
+</g>
+</g>
+<text x="200" y="381.92" class="tx3vYyE">Red rectangle should not be visible through the blue one</text>
+<g opacity="0.2">
+<g clip-path="url(#cljriXH)">
+<path d="M0 361.92h320v-90h-320z" fill="#f00" />
+<path d="M275 316.92h900v-90h-900z" fill="#00f" />
+</g>
+</g>
+</g>
+</svg>

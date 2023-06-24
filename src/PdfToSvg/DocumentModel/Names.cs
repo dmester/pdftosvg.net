@@ -126,6 +126,8 @@ namespace PdfToSvg.DocumentModel
         public static PdfName SMask { get; } = new PdfName("SMask");
         public static PdfName Mask { get; } = new PdfName("Mask");
         public static PdfName ImageMask { get; } = new PdfName("ImageMask");
+        public static PdfName Group { get; } = new PdfName("Group");
+        public static PdfName Transparency { get; } = new PdfName("Transparency");
         public static PdfName Decode { get; } = new PdfName("Decode");
 
         public static PdfName Filter { get; } = new PdfName("Filter");

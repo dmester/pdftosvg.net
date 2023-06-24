@@ -1,0 +1,186 @@
+%PDF-1.7
+
+xref
+0 9
+0000000000 65535 f
+0000000242 00000 n
+0000000293 00000 n
+0000000357 00000 n
+0000000839 00000 n
+0000001537 00000 n
+0000001880 00000 n
+0000002300 00000 n
+0000002600 00000 n
+trailer
+<< /Root 1 0 R  /Size 9 >>
+
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >> endobj
+
+3 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /XObject <<
+         /I1 5 0 R
+         /I2 6 0 R
+         /I3 7 0 R
+         /Im 8 0 R
+      >>
+      /ExtGState <<
+         /GS1 << /ca 0.2 /CA 0.6 >>
+         /GS2 << /ca 0.9 /CA 0.1 >>
+      >>
+      /Font <<
+         /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+      >>
+   >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj << /Length 640 >>
+stream
+   0 0 0 rg
+   0.9 0.9 0.9 RG
+
+   10 w
+   80 680 m 514 680 l s
+   80 547 m 514 547 l s
+
+   0 0 1 RG
+
+   % Transparent page object
+   q
+      /GS1 gs
+      170 650 60 60 re B
+      40 0 0 40 180 660 cm
+      /Im Do
+   Q
+   
+   % Transparent xobject
+   q
+      /I1 Do
+   Q
+   
+   % Transparency group
+   q
+      /GS2 gs
+      /I2 Do
+   Q
+   
+   % Transparency group with two objects
+   q
+      BT
+         1 0 0 1 200 460 Tm
+         /F1 8 Tf
+         (Red rectangle should not be visible through the blue one) Tj
+      ET
+      
+      230 0 500 800 re
+      W n
+      
+      /GS1 gs
+      /I3 Do
+   Q
+endstream
+endobj
+
+5 0 obj <<
+   /Type /XObject
+   /Subtype /Form
+   /BBox [ 0 0 594.96 841.92 ]
+   /Resources <<
+      /ExtGState <<
+         /GS1 << /ca 0.2 /CA 0.6 >>
+      >>
+      /XObject <<
+         /Im 8 0 R
+      >>
+   >>
+   /Length 69
+>>
+stream
+   /GS1 gs
+   267 650 60 60 re B
+   40 0 0 40 277 660 cm
+   /Im Do
+endstream
+endobj
+
+6 0 obj <<
+   /Type /XObject
+   /Subtype /Form
+   /BBox [ 0 0 594.96 841.92 ]
+   /Resources <<
+      /ExtGState <<
+         /GS1 << /ca 0.2222222 /CA 0.6666666 >>
+      >>
+      /XObject <<
+         /Im 8 0 R
+      >>
+   >>
+   /Group <<
+      /Type /Group
+      /S /Transparency
+   >>
+   /Length 69
+>>
+stream
+   /GS1 gs
+   364 650 60 60 re B
+   40 0 0 40 374 660 cm
+   /Im Do
+endstream
+endobj
+
+7 0 obj <<
+   /Type /XObject
+   /Subtype /Form
+   /BBox [ 0 0 594.96 841.92 ]
+   /Group <<
+      /Type /Group
+      /S /Transparency
+   >>
+   /Length 102
+>>
+stream
+   0 0 365 800 re
+   W n
+   
+   1 0 0 rg
+   0 480 320 90 re f
+   0 0 1 rg
+   275 525 900 90 re f
+endstream
+endobj
+
+8 0 obj
+<<
+   /Type /XObject
+   /Subtype /Image
+   /Width 100
+   /Height 100
+   /BitsPerComponent 1
+   /ColorSpace /DeviceGray
+   /Filter [ /ASCIIHexDecode /CCITTFaxDecode ]
+   /DecodeParms [ null <<
+      /K -1
+      /Columns 100
+      /Rows 100
+   >> ]
+   /Length 479
+>>
+stream
+   25a1e4a01bc8a0344103841c207088613b84410987081030e820dd041b841061d041ba4dd041ba4dd26e93749bd3d26e93749bd3d6f4f49bade9ebe9bfd26f95
+   6c847e8103040dea1061077d34fd269bd5111da223bbf040dc1037f49b49bf493a4efdda76be1a6834d751111bfffffffffff7ae6810aa09f8fdebfffde4a081
+   20eab6d8d2f75ef6956db497daf6dd24bb697bb496edad6db496eda55b61a495b6c24b761a0ab6c3092db0c18492b6c83a024b61884b6c3495b0c24ad830495b
+   25c112b62958612b6958612b0c20a18612b0c250c1820a190c270ac541828614182830525a1e>
+endstream
+endobj
+
+startxref
+12
+%%EOF

@@ -37,11 +37,11 @@ namespace PdfToSvg.Drawing
         private static readonly string TextStyle = $"." + RootClassName + " text{white-space:pre;}";
 
         private GraphicsState graphicsState = new GraphicsState();
-
         private Stack<GraphicsState> graphicsStateStack = new Stack<GraphicsState>();
 
         private XElement svg;
         private XElement rootGraphics;
+        private XElement currentTransparencyGroup;
 
         private bool svgHasDefaultMiterLimit;
 
@@ -112,6 +112,7 @@ namespace PdfToSvg.Drawing
             var pageHeight = cropBox.Height;
 
             rootGraphics = new XElement(ns + "g");
+            currentTransparencyGroup = rootGraphics;
 
             if (pageDict.TryGetInteger(Names.Rotate, out var rotate))
             {
@@ -539,11 +540,36 @@ namespace PdfToSvg.Drawing
         {
             if (xobject.Stream != null)
             {
-                q_SaveState();
-
                 var previousResources = resources;
+                var previousGraphicsState = graphicsState;
+                var previousGraphicsStateStack = graphicsStateStack;
+                var previousTransparencyGroup = currentTransparencyGroup;
 
                 resources = new ResourceCache(xobject.GetDictionaryOrEmpty(Names.Resources));
+
+                graphicsStateStack = new Stack<GraphicsState>();
+                graphicsState = graphicsState.Clone();
+
+                var isTransparencyGroup = xobject.GetNameOrNull(Names.Group / Names.S) == Names.Transparency;
+                if (isTransparencyGroup)
+                {
+                    if (graphicsState.FillAlpha < MaxAlpha)
+                    {
+                        var newGroup = new XElement(ns + "g");
+                        newGroup.SetAttributeValue("opacity", SvgConversion.FormatCoordinate(graphicsState.FillAlpha));
+
+                        currentTransparencyGroup.Add(newGroup);
+                        currentTransparencyGroup = newGroup;
+
+                        clipWrapper = null;
+                        clipWrapperId = null;
+                    }
+
+                    graphicsState.FillAlpha = 1d;
+                    graphicsState.StrokeAlpha = 1d;
+
+                    // Isolated groups and knockout groups are currently not supported
+                }
 
                 if (xobject.TryGetArray<double>(Names.Matrix, out var matrixArr) && matrixArr.Length == 6)
                 {
@@ -572,8 +598,13 @@ namespace PdfToSvg.Drawing
                 }
 
                 resources = previousResources;
+                graphicsState = previousGraphicsState;
+                graphicsStateStack = previousGraphicsStateStack;
+                currentTransparencyGroup = previousTransparencyGroup;
+                clipWrapper = null;
+                clipWrapperId = null;
 
-                Q_RestoreState();
+                textBuilder.InvalidateStyle();
             }
         }
 
@@ -883,7 +914,7 @@ namespace PdfToSvg.Drawing
                 clipWrapperId = null;
                 clipWrapper = null;
 
-                return rootGraphics;
+                return currentTransparencyGroup;
             }
             else
             {
@@ -891,7 +922,7 @@ namespace PdfToSvg.Drawing
                 {
                     clipWrapper = new XElement(ns + "g", new XAttribute("clip-path", "url(#" + graphicsState.ClipPath.Id + ")"));
                     clipWrapperId = graphicsState.ClipPath.Id;
-                    rootGraphics.Add(clipWrapper);
+                    currentTransparencyGroup.Add(clipWrapper);
 
                     var cursor = graphicsState.ClipPath;
                     while (cursor != null && !cursor.Referenced)
@@ -1079,7 +1110,7 @@ namespace PdfToSvg.Drawing
                 {
                     clipWrapper = null;
                     clipWrapperId = null;
-                    rootGraphics.Add(el);
+                    currentTransparencyGroup.Add(el);
                 }
                 else
                 {
@@ -1665,7 +1696,7 @@ namespace PdfToSvg.Drawing
             // Fill
             if (style.TextRenderingMode.HasFlag(TextRenderingMode.Fill))
             {
-                if (style.FillAlpha < MinAlpha)
+                if (graphicsState.FillAlpha < MinAlpha)
                 {
                     cssClass["fill"] = "none";
                 }
@@ -1676,9 +1707,9 @@ namespace PdfToSvg.Drawing
                         cssClass["fill"] = SvgConversion.FormatColor(style.FillColor);
                     }
 
-                    if (style.FillAlpha < MaxAlpha)
+                    if (graphicsState.FillAlpha < MaxAlpha)
                     {
-                        cssClass["fill-opacity"] = SvgConversion.FormatCoordinate(style.FillAlpha);
+                        cssClass["fill-opacity"] = SvgConversion.FormatCoordinate(graphicsState.FillAlpha);
                     }
                 }
             }
@@ -1688,15 +1719,15 @@ namespace PdfToSvg.Drawing
             }
 
             // Stroke
-            if (style.TextRenderingMode.HasFlag(TextRenderingMode.Stroke) && style.StrokeAlpha > 0.001)
+            if (style.TextRenderingMode.HasFlag(TextRenderingMode.Stroke) && graphicsState.StrokeAlpha > MinAlpha)
             {
                 // Color
                 cssClass["stroke"] = SvgConversion.FormatColor(style.StrokeColor);
 
                 // Opacity
-                if (style.StrokeAlpha < MaxAlpha)
+                if (graphicsState.StrokeAlpha < MaxAlpha)
                 {
-                    cssClass["stroke-opacity"] = SvgConversion.FormatCoordinate(style.StrokeAlpha);
+                    cssClass["stroke-opacity"] = SvgConversion.FormatCoordinate(graphicsState.StrokeAlpha);
                 }
 
                 // Width
@@ -1961,7 +1992,7 @@ namespace PdfToSvg.Drawing
                         // which seems to rasterize all clipped graphics before printing.
                         clipWrapper = null;
                         clipWrapperId = null;
-                        rootGraphics.Add(textEl);
+                        currentTransparencyGroup.Add(textEl);
                         return;
                     }
                 }

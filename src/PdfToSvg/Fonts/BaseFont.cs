@@ -319,7 +319,7 @@ namespace PdfToSvg.Fonts
             var nameTable = new NameTable();
 
             var allChars = chars
-                .Where(ch => ch.GlyphIndex != null)
+                .Where(ch => ch.GlyphIndex != null && ch.GlyphIndex < numGlyphs)
                 .Select(ch =>
                 {
                     var unicode = Utf16Encoding.DecodeCodePoint(ch.Unicode, 0, out var _);

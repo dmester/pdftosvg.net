@@ -76,6 +76,19 @@ namespace PdfToSvg.Fonts
                 if (cmap != null)
                 {
                     chars = cmap.Chars
+                        .Where(ch =>
+                        {
+                            // Allowed ranges according to section 9.6.6.4:
+                            // 0x0000-0x00FF, 0xF000-0xF0FF, 0xF100-0xF1FF, 0xF200-0xF2FF
+
+                            var hibyte = ch.Unicode >> 8;
+
+                            return
+                                hibyte == 0x00 ||
+                                hibyte == 0xF0 ||
+                                hibyte == 0xF1 ||
+                                hibyte == 0xF2;
+                        })
                         .Select(ch => new CharInfo
                         {
                             CharCode = ch.Unicode & 0xff,

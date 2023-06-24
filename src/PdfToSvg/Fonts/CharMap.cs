@@ -19,8 +19,10 @@ namespace PdfToSvg.Fonts
 
         public bool TryGetChar(uint charCode, out CharInfo foundChar) => chars.TryGetValue(charCode, out foundChar);
 
-        private string ResolveUnicode(CharInfo ch, UnicodeMap toUnicode, bool preferSingleChar)
+        private string ResolveUnicode(CharInfo ch, UnicodeMap toUnicode, SingleByteEncoding? explicitEncoding, bool preferSingleChar)
         {
+            // PDF 1.7 section 9.10.2
+
             var pdfUnicode = toUnicode.GetUnicode(ch.CharCode);
 
             // Prio 1: Single char ToUnicode
@@ -29,19 +31,29 @@ namespace PdfToSvg.Fonts
                 return pdfUnicode;
             }
 
-            // Prio 2: Unicode from font CMap
+            // Prio 2: Explicit PDF encoding
+            if (explicitEncoding != null && ch.CharCode <= byte.MaxValue)
+            {
+                var encodingUnicode = explicitEncoding.GetUnicode((byte)ch.CharCode);
+                if (encodingUnicode != null)
+                {
+                    return encodingUnicode;
+                }
+            }
+
+            // Prio 3: Unicode from font CMap
             if (ch.Unicode.Length != 0 && ch.Unicode != CharInfo.NotDef)
             {
                 return ch.Unicode;
             }
 
-            // Prio 3: Multi char ToUnicode
+            // Prio 4: Multi char ToUnicode
             if (pdfUnicode != null)
             {
                 return pdfUnicode;
             }
 
-            // Prio 4: Unicode from glyph name
+            // Prio 5: Unicode from glyph name
             if (AdobeGlyphList.TryGetUnicode(ch.GlyphName, out var aglUnicode))
             {
                 return aglUnicode;
@@ -72,7 +84,7 @@ namespace PdfToSvg.Fonts
             return false;
         }
 
-        private void PopulateForEmbeddedFont(IEnumerable<CharInfo> chars, UnicodeMap toUnicode)
+        private void PopulateForEmbeddedFont(IEnumerable<CharInfo> chars, UnicodeMap toUnicode, SingleByteEncoding? explicitEncoding)
         {
             const char StartPrivateUseArea = '\uE000';
             const char EndPrivateUseArea = '\uF8FF';
@@ -88,7 +100,7 @@ namespace PdfToSvg.Fonts
                     continue;
                 }
 
-                ch.Unicode = ResolveUnicode(ch, toUnicode, preferSingleChar: true);
+                ch.Unicode = ResolveUnicode(ch, toUnicode, explicitEncoding, preferSingleChar: true);
                 ch.Unicode = Ligatures.Lookup(ch.Unicode);
 
                 if (ch.GlyphIndex == null)
@@ -141,16 +153,16 @@ namespace PdfToSvg.Fonts
             }
         }
 
-        private void PopulateForTextExtract(IEnumerable<CharInfo> chars, UnicodeMap toUnicode)
+        private void PopulateForTextExtract(IEnumerable<CharInfo> chars, UnicodeMap toUnicode, SingleByteEncoding? explicitEncoding)
         {
             foreach (var ch in chars)
             {
-                ch.Unicode = ResolveUnicode(ch, toUnicode, preferSingleChar: false);
+                ch.Unicode = ResolveUnicode(ch, toUnicode, explicitEncoding, preferSingleChar: false);
                 this.chars.TryAdd(ch.CharCode, ch);
             }
         }
 
-        public bool TryPopulate(Func<IEnumerable<CharInfo>> charEnumerator, UnicodeMap toUnicode, bool optimizeForEmbeddedFont)
+        public bool TryPopulate(Func<IEnumerable<CharInfo>> charEnumerator, UnicodeMap toUnicode, SingleByteEncoding? explicitEncoding, bool optimizeForEmbeddedFont)
         {
             if (charsPopulated)
             {
@@ -173,11 +185,11 @@ namespace PdfToSvg.Fonts
 
                 if (optimizeForEmbeddedFont)
                 {
-                    PopulateForEmbeddedFont(chars, toUnicode);
+                    PopulateForEmbeddedFont(chars, toUnicode, explicitEncoding);
                 }
                 else
                 {
-                    PopulateForTextExtract(chars, toUnicode);
+                    PopulateForTextExtract(chars, toUnicode, explicitEncoding);
                 }
 
                 charsPopulated = true;

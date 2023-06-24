@@ -30,6 +30,8 @@ namespace PdfToSvg.Fonts
 
         private string? name;
 
+        protected SingleByteEncoding? pdfFontEncoding;
+
         protected OpenTypeFont? openTypeFont;
         protected SingleByteEncoding? openTypeFontEncoding;
         protected Exception? openTypeFontException;
@@ -80,6 +82,10 @@ namespace PdfToSvg.Fonts
                 openTypeFontException = ex;
             }
 
+            // Encoding
+            var encodingDefinition = fontDict.GetValueOrDefault(Names.Encoding);
+            pdfFontEncoding = EncodingFactory.Create(encodingDefinition);
+
             // ToUnicode
             if (fontDict.TryGetDictionary(Names.ToUnicode, out var toUnicode) && toUnicode.Stream != null)
             {
@@ -108,7 +114,7 @@ namespace PdfToSvg.Fonts
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            chars.TryPopulate(GetChars, toUnicode, optimizeForEmbeddedFont: false);
+            chars.TryPopulate(GetChars, toUnicode, pdfFontEncoding ?? openTypeFontEncoding, optimizeForEmbeddedFont: false);
         }
 
         private void PopulateOpenTypeFont(CancellationToken cancellationToken)
@@ -426,7 +432,7 @@ namespace PdfToSvg.Fonts
                 throw openTypeFontException ?? new NotSupportedException("This font cannot be converted to OpenType format.");
             }
 
-            chars.TryPopulate(GetChars, toUnicode, optimizeForEmbeddedFont: true);
+            chars.TryPopulate(GetChars, toUnicode, pdfFontEncoding ?? openTypeFontEncoding, optimizeForEmbeddedFont: true);
 
             var preparedFont = new OpenTypeFont();
 

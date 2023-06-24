@@ -49,11 +49,7 @@ namespace PdfToSvg.Fonts
         protected override IEnumerable<CharInfo> GetChars()
         {
             // ISO 32000-2 section 9.6.5.2
-            var encodingDefinition = fontDict.GetValueOrDefault(Names.Encoding);
-            var encoding =
-                EncodingFactory.Create(encodingDefinition) ??
-                openTypeFontEncoding ??
-                new StandardEncoding();
+            var encoding = pdfFontEncoding ?? openTypeFontEncoding ?? new StandardEncoding();
 
             var postGlyphIndexes = GetPostGlyphIndexLookup();
             var cmap = openTypeFont?.CMaps.OrderByPriority().FirstOrDefault();

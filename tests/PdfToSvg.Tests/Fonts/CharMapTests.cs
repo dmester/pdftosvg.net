@@ -79,8 +79,8 @@ namespace PdfToSvg.Tests.Fonts
 
             var clonedChars = chars.Select(x => x.Clone());
 
-            optimizedForEmbeddedFont.TryPopulate(() => clonedChars, unicodeMap, optimizeForEmbeddedFont: true);
-            optimizedForTextExtract.TryPopulate(() => clonedChars, unicodeMap, optimizeForEmbeddedFont: false);
+            optimizedForEmbeddedFont.TryPopulate(() => clonedChars, unicodeMap, null, optimizeForEmbeddedFont: true);
+            optimizedForTextExtract.TryPopulate(() => clonedChars, unicodeMap, null, optimizeForEmbeddedFont: false);
         }
 
         [TestCase(1, "a", 1)]
@@ -143,8 +143,8 @@ namespace PdfToSvg.Tests.Fonts
         public void PopulateOnlyOnce()
         {
             var map = new CharMap();
-            map.TryPopulate(() => new[] { new CharInfo { CharCode = 1, Unicode = "a" } }, UnicodeMap.Empty, false);
-            map.TryPopulate(() => new[] { new CharInfo { CharCode = 2, Unicode = "b" } }, UnicodeMap.Empty, false);
+            map.TryPopulate(() => new[] { new CharInfo { CharCode = 1, Unicode = "a" } }, UnicodeMap.Empty, null, false);
+            map.TryPopulate(() => new[] { new CharInfo { CharCode = 2, Unicode = "b" } }, UnicodeMap.Empty, null, false);
 
             Assert.IsTrue(map.TryGetChar(1, out _));
             Assert.IsFalse(map.TryGetChar(2, out _));
@@ -165,14 +165,14 @@ namespace PdfToSvg.Tests.Fonts
                     startEvent.Set();
                     stopEvent.Wait(5000);
                     return Enumerable.Empty<CharInfo>();
-                }, UnicodeMap.Empty, false);
+                }, UnicodeMap.Empty, null, false);
             });
 
             thread.IsBackground = true;
             thread.Start();
 
             Assert.IsTrue(startEvent.Wait(5000), "Thread did not start");
-            Assert.IsFalse(map.TryPopulate(() => new[] { new CharInfo { CharCode = 2, Unicode = "b" } }, UnicodeMap.Empty, false));
+            Assert.IsFalse(map.TryPopulate(() => new[] { new CharInfo { CharCode = 2, Unicode = "b" } }, UnicodeMap.Empty, null, false));
 
             stopEvent.Set();
             thread.Join();

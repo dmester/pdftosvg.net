@@ -48,11 +48,10 @@ namespace PdfToSvg.Fonts
             var descriptor = fontDict.GetDictionaryOrEmpty(Names.FontDescriptor);
             var fontFlags = (FontFlags)descriptor.GetValueOrDefault(Names.Flags, 0);
             var isSymbolic = fontFlags.HasFlag(FontFlags.Symbolic);
-            var encodingDefinition = fontDict.GetValueOrDefault(Names.Encoding);
 
             var cmaps = openTypeFont?.CMaps ?? ArrayUtils.Empty<OpenTypeCMap>();
             var postGlyphNames = GetGlyphNameLookup();
-            var encoding = EncodingFactory.Create(encodingDefinition) ?? new StandardEncoding();
+            var encoding = pdfFontEncoding ?? new StandardEncoding();
 
             var chars = Enumerable.Empty<CharInfo>();
 
@@ -67,7 +66,7 @@ namespace PdfToSvg.Fonts
                     })
                     .Where(ch => ch.Unicode != null);
             }
-            else if (encodingDefinition == null || isSymbolic)
+            else if (pdfFontEncoding == null || isSymbolic)
             {
                 // Symbolic font
                 var cmap =

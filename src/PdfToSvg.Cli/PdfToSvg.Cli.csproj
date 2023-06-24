@@ -11,6 +11,10 @@
     <Compile Remove="..\PdfToSvg\bin\**\*.cs" Visible="false"/>
     <Compile Remove="..\PdfToSvg\obj\**\*.cs" Visible="false"/>
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\PdfToSvg\CMaps\PredefinedCMaps.bin" />
+  </ItemGroup>
     
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net45" Version="1.0.3">

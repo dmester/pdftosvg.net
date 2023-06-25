@@ -817,7 +817,7 @@ namespace PdfToSvg.Drawing
 
                 var element = new XElement(ns + "path",
                     new XAttribute("d", SvgConversion.PathData(path)),
-                    evenOdd ? new XAttribute("fill-rule", "evenodd") : null);
+                    evenOdd ? new XAttribute("clip-rule", "evenodd") : null);
 
                 AppendClipping(new ClipPath(parent, id, element));
             }

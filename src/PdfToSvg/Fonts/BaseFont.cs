@@ -501,5 +501,7 @@ namespace PdfToSvg.Fonts
 
             return sb.ToString();
         }
+
+        public override string ToString() => (Name ?? "Unnamed font") + (openTypeFont == null ? "; Not embedded" : "");
     }
 }

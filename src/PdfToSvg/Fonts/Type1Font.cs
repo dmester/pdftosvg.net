@@ -87,5 +87,6 @@ namespace PdfToSvg.Fonts
             }
         }
 
+        public override string ToString() => base.ToString() + "; Type 1";
     }
 }

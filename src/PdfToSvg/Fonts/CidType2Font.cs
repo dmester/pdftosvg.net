@@ -115,5 +115,7 @@ namespace PdfToSvg.Fonts
                 }
             }
         }
+
+        public override string ToString() => base.ToString() + "; CID Type 2";
     }
 }

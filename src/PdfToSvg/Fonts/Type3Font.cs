@@ -208,5 +208,7 @@ namespace PdfToSvg.Fonts
                 glyphDefinition: glyphDefinitions[charCode]
             );
         }
+
+        public override string ToString() => base.ToString() + "; Type 3";
     }
 }

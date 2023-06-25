@@ -195,5 +195,6 @@ namespace PdfToSvg.Fonts
             return chars;
         }
 
+        public override string ToString() => base.ToString() + "; TrueType";
     }
 }

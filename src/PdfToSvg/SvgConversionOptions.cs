@@ -100,5 +100,12 @@ namespace PdfToSvg
         /// Note that other types of links, including links within the document, are currently not supported.
         /// </remarks>
         public bool IncludeLinks { get; set; } = true;
+
+#if DEBUG
+        /// <summary>
+        /// If <c>true</c>, the content stream operators are logged in the output SVG.
+        /// </summary>
+        public bool DebugLogOperators { get; set; }
+#endif
     }
 }

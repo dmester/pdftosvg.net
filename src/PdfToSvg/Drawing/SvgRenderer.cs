@@ -10,10 +10,13 @@ using PdfToSvg.Fonts;
 using PdfToSvg.Imaging;
 using PdfToSvg.Parsing;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -292,6 +295,104 @@ namespace PdfToSvg.Drawing
             }
         }
 
+        [Conditional("DEBUG")]
+        private void DebugLogOperation(string op, object?[] operands, bool isGs = false)
+        {
+#if DEBUG
+            if (!options.DebugLogOperators)
+            {
+                return;
+            }
+
+            XElement target;
+
+            if (graphicsState.ClipPath == null ||
+                clipWrapperId != graphicsState.ClipPath.Id)
+            {
+                target = currentTransparencyGroup;
+                clipWrapper = null;
+                clipWrapperId = null;
+            }
+            else
+            {
+                target = clipWrapper ?? currentTransparencyGroup;
+            }
+
+            void FormatArray(StringBuilder output, IEnumerable enumerable, int depth)
+            {
+                var index = 0;
+
+                foreach (var item in enumerable)
+                {
+                    if (index++ > 50)
+                    {
+                        output.Append("... ");
+                        break;
+                    }
+
+                    if (depth > 10)
+                    {
+                        output.Append("item ");
+                    }
+                    else
+                    {
+                        Format(output, item, depth);
+                        output.Append(" ");
+                    }
+                }
+            }
+
+            void Format(StringBuilder output, object? value, int depth)
+            {
+                if (value == null)
+                {
+                    output.Append("null");
+                }
+                else if (value is PdfString pdfString)
+                {
+                    var decodedText = graphicsState.Font.Decode(pdfString, out _);
+                    decodedText = SvgConversion.ReplaceInvalidChars(decodedText);
+                    output.Append('(');
+                    output.Append(decodedText);
+                    output.Append(')');
+                }
+                else if (value is IFormattable formattable)
+                {
+                    output.Append(formattable.ToString(null, CultureInfo.InvariantCulture));
+                }
+                else if (value is IEnumerable enumerable && !(value is string))
+                {
+                    output.Append("[ ");
+                    FormatArray(output, enumerable, depth);
+                    output.Append("]");
+                }
+                else
+                {
+                    output.Append(value.ToString());
+                }
+            }
+
+            var text = new StringBuilder();
+
+            if (isGs)
+            {
+                text.Append("   ");
+                text.Append(op);
+                text.Append(' ');
+                FormatArray(text, operands, 0);
+            }
+            else
+            {
+                text.Append(' ');
+                FormatArray(text, operands, 0);
+                text.Append(op);
+                text.Append(' ');
+            }
+
+            target.Add(new XComment(text.ToString()));
+#endif
+        }
+
         public static XElement Convert(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, CancellationToken cancellationToken)
         {
             var renderer = new SvgRenderer(pageDict, options, documentCache, cancellationToken);
@@ -301,6 +402,7 @@ namespace PdfToSvg.Drawing
                 foreach (var op in ContentParser.Parse(contentStream))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
+                    renderer.DebugLogOperation(op.Operator, op.Operands);
                     dispatcher.Dispatch(renderer, op.Operator, op.Operands);
                 }
             }
@@ -319,6 +421,7 @@ namespace PdfToSvg.Drawing
                 foreach (var op in ContentParser.Parse(contentStream))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
+                    renderer.DebugLogOperation(op.Operator, op.Operands);
                     await dispatcher.DispatchAsync(renderer, op.Operator, op.Operands).ConfigureAwait(false);
                 }
             }
@@ -439,6 +542,7 @@ namespace PdfToSvg.Drawing
             {
                 foreach (var state in extGState)
                 {
+                    DebugLogOperation(state.Key.ToString(), new[] { state.Value }, isGs: true);
                     dispatcher.Dispatch(this, "gs" + state.Key, new[] { state.Value });
                 }
             }
@@ -594,6 +698,7 @@ namespace PdfToSvg.Drawing
 
                 foreach (var operation in ContentParser.Parse(bufferedFormContent))
                 {
+                    DebugLogOperation(operation.Operator, operation.Operands);
                     dispatcher.Dispatch(this, operation.Operator, operation.Operands);
                 }
 

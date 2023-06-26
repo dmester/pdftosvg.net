@@ -18,16 +18,16 @@
 .tx7rg1s{font:20.0024px 'Times New Roman',serif;}
 </style>
 <defs>
-<clipPath id="cllw80s">
+<clipPath id="clbtUwj">
 <text x="70" y="561.92" class="tx2rBzY" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
 </clipPath>
-<clipPath id="cljQfPl">
+<clipPath id="clgLO7o">
 <text x="70" y="631.92" class="tx16d2M" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
 </clipPath>
-<clipPath id="clb0Vgt">
+<clipPath id="cl6Y2lP">
 <text x="70" y="701.92" class="txMO0W1" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
 </clipPath>
-<clipPath id="cl0wylh">
+<clipPath id="clEr970">
 <text x="70" y="771.92" class="tx2rBzY" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
 </clipPath>
 </defs>
@@ -57,18 +57,18 @@
 </g>
 <path d="M70 91.92h330" fill="none" stroke="#f00" stroke-width="1" />
 <text x="70" y="561.92" class="tx2rBzY" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
-<g clip-path="url(#cllw80s)">
+<g clip-path="url(#clbtUwj)">
 <path d="M100 556.92h400v-43h-400z" fill="#0f0" />
 </g>
 <text x="70" y="631.92" class="tx16d2M" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
-<g clip-path="url(#cljQfPl)">
+<g clip-path="url(#clgLO7o)">
 <path d="M100 626.92h400v-43h-400z" fill="#0f0" />
 </g>
 <text x="70" y="701.92" class="txMO0W1" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
-<g clip-path="url(#clb0Vgt)">
+<g clip-path="url(#cl6Y2lP)">
 <path d="M100 696.92h400v-43h-400z" fill="#0f0" />
 </g>
-<g clip-path="url(#cl0wylh)">
+<g clip-path="url(#clEr970)">
 <path d="M100 766.92h400v-43h-400z" fill="#0f0" />
 </g>
 <text transform="matrix(0.5739 -0.8189 0.8189 0.5739 420 461.92)" class="tx7rg1s" textLength="74.6728px" lengthAdjust="spacingAndGlyphs">Rotated</text>

@@ -763,16 +763,16 @@ namespace PdfToSvg.Drawing
             graphicsState.ClipPath = clipPath;
         }
 
-        private void AppendClipping(XElement element)
+        private void AppendClipping(IList<XElement> elements)
         {
             var parent = graphicsState.ClipPath;
 
             var id = StableID.Generate("cl",
                 "el",
                 parent?.Id,
-                element);
+                elements);
 
-            AppendClipping(new ClipPath(parent, id, element));
+            AppendClipping(new ClipPath(parent, id, elements));
         }
 
         private void AppendClipping(bool evenOdd)
@@ -1800,6 +1800,7 @@ namespace PdfToSvg.Drawing
         private void ET_EndText()
         {
             var styleToClassNameLookup = new Dictionary<object, string?>();
+            var clipElements = new List<XElement>();
 
             if (!hasTextStyle)
             {
@@ -1816,8 +1817,13 @@ namespace PdfToSvg.Drawing
                 }
                 else
                 {
-                    RenderTextParagraph(paragraph, styleToClassNameLookup);
+                    RenderTextParagraph(paragraph, styleToClassNameLookup, clipElements);
                 }
+            }
+
+            if (clipElements.Count > 0)
+            {
+                AppendClipping(clipElements);
             }
         }
 
@@ -1854,7 +1860,7 @@ namespace PdfToSvg.Drawing
             }
         }
 
-        private void RenderTextParagraph(TextParagraph paragraph, Dictionary<object, string?> styleToClassNameLookup)
+        private void RenderTextParagraph(TextParagraph paragraph, Dictionary<object, string?> styleToClassNameLookup, List<XElement> clipElements)
         {
             if (paragraph.Content.Count == 0)
             {
@@ -2002,7 +2008,7 @@ namespace PdfToSvg.Drawing
 
             if (paragraph.AppendClipping)
             {
-                AppendClipping(textEl);
+                clipElements.Add(textEl);
             }
         }
 

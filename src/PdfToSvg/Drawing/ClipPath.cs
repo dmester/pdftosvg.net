@@ -17,7 +17,7 @@ namespace PdfToSvg.Drawing
         public readonly string Id;
         public readonly ClipPath? Parent;
 
-        public readonly XElement ClipElement;
+        public readonly object ClipElement;
 
         public readonly bool IsRectangle;
         public readonly Rectangle Rectangle;
@@ -25,18 +25,18 @@ namespace PdfToSvg.Drawing
         public readonly Dictionary<string, ClipPath> Children = new Dictionary<string, ClipPath>();
         public bool Referenced;
 
-        public ClipPath(ClipPath? parent, string id, XElement element)
+        public ClipPath(ClipPath? parent, string id, object clipElement)
         {
             Parent = parent;
             Id = id;
-            ClipElement = element;
+            ClipElement = clipElement;
         }
 
-        public ClipPath(ClipPath? parent, string id, XElement element, Rectangle rectangle)
+        public ClipPath(ClipPath? parent, string id, object clipElement, Rectangle rectangle)
         {
             Parent = parent;
             Id = id;
-            ClipElement = element;
+            ClipElement = clipElement;
             IsRectangle = true;
             Rectangle = rectangle;
         }

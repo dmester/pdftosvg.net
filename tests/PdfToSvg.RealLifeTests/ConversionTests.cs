@@ -2,12 +2,14 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.RealLifeTests
@@ -34,6 +36,8 @@ namespace PdfToSvg.RealLifeTests
         private static readonly string testDir;
         private static readonly string currentResultsDir;
         private static readonly List<string> previousResultsDirs;
+
+        private int counter;
 
         static ConversionTests()
         {
@@ -79,6 +83,12 @@ namespace PdfToSvg.RealLifeTests
         [OneTimeTearDown]
         public void TearDown()
         {
+            WriteDiffHtml();
+            CleanUpOldResults();
+        }
+
+        private void CleanUpOldResults()
+        {
             var testFilesDir = Path.Combine(testDir, TestFilesDir, ThirdPartyTestFilesDir);
 
             var expectedResultsCount =
@@ -109,6 +119,18 @@ namespace PdfToSvg.RealLifeTests
                 {
                 }
             }
+        }
+
+        private void WriteDiffHtml()
+        {
+            var assemblyPath = typeof(ConversionTests).Assembly.Location;
+            var templatePath = Path.Combine(Path.GetDirectoryName(assemblyPath), "diff-template.html");
+            var template = File.ReadAllText(templatePath);
+            var diffPath = Path.Combine(currentResultsDir, "_diff.html");
+
+            template = template.Replace("fileCount = 0", "fileCount = " + counter);
+
+            File.WriteAllText(diffPath, template);
         }
 
         [TestCaseSource(nameof(TestCases))]
@@ -154,6 +176,23 @@ namespace PdfToSvg.RealLifeTests
                 {
                     for (var i = 0; i < previousPages.Length; i++)
                     {
+                        if (previousPages[i] != null &&
+                            previousPages[i] != currentPages[i])
+                        {
+                            var id = Interlocked.Increment(ref counter) - 1;
+
+                            var scriptPath = Path.Combine(currentResultsDir, "diff-" + id + ".js");
+                            var script = "load(" + JsonConvert.SerializeObject(new
+                            {
+                                Id = id,
+                                Name = fileName + " page " + (i + 1),
+                                Before = previousPages[i],
+                                After = currentPages[i],
+                            }) + ")";
+
+                            File.WriteAllText(scriptPath, script);
+                        }
+
                         Assert.AreEqual(previousPages[i], currentPages[i]);
                     }
                 });

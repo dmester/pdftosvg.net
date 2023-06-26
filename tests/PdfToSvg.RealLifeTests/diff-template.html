@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diffs</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font: 14px Arial;
+        }
+        .workspace {
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
+        }
+        .topbar {
+            background: #ddd;
+            padding: 1em;
+            text-align: center;
+            position: relative;
+        }
+        .beforeOrAfter {
+            display: inline-block;
+            width: 5em;
+            font-weight: bold;
+            margin-left: 1em;
+            text-align: left;
+            text-transform: uppercase;
+        }
+        .progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: #3c88ff;
+            transition: width ease 200ms;
+        }
+        .content {
+            background: #eee;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+        }
+        .content svg {
+            position: absolute;
+            top: 1em;
+            left: 1em;
+            width: calc(100% - 2em);
+            height: calc(100% - 2em);
+            filter: drop-shadow(0 0 0.15rem rgb(0 0 0 / 0.2));
+        }
+    </style>
+</head>
+<body>
+    <div class="workspace">
+        <div class="topbar">
+            <span class="filename"></span>
+            <span class="beforeOrAfter"></span>
+            <div class="progress"></div>
+        </div>
+        <div class="content">
+        </div>
+    </div>
+    <script>
+        function load(file) {
+            if (file.Id === currentId) {
+                loadedFile = file;
+                update();
+            }
+        }
+
+        var filenameEl = document.querySelector(".filename");
+        var beforeOrAfterEl = document.querySelector(".beforeOrAfter");
+        var contentEl = document.querySelector(".content");
+        var progressEl = document.querySelector(".progress");
+        
+        var fileCount = 0;
+        var loadedFile;
+        var currentId = 0;
+        var showBeforeImage = true;
+        var scriptEl;
+
+        addEventListener("keydown", ev => {
+            if (fileCount) {
+                if (ev.key === "ArrowLeft") {
+                    if (!showBeforeImage) {
+                        showBeforeImage = true;
+                        update();
+                    } else if (currentId) {
+                        showBeforeImage = false;
+                        currentId--;
+                        update();
+                    }
+
+                } else if (ev.key === "ArrowRight") {
+                    if (showBeforeImage) {
+                        showBeforeImage = false;
+                        update();
+
+                    } else if (currentId + 1 < fileCount) {
+                        showBeforeImage = true;
+                        currentId++;
+                        update();
+                    }
+                }
+            }
+        });
+
+        function update() {
+            if (loadedFile?.Id !== currentId) {
+                scriptEl?.remove();
+                scriptEl = document.createElement("script");
+                scriptEl.src = "diff-" + currentId + ".js";
+                document.body.appendChild(scriptEl);
+                return;
+            }
+
+            filenameEl.innerText = loadedFile.Name;
+            beforeOrAfterEl.innerText = showBeforeImage ? "before" : "after";
+            contentEl.innerHTML = showBeforeImage ? loadedFile.Before : loadedFile.After;
+            
+            progressEl.className = "progress";
+            progressEl.style.width = (100 * (currentId * 2 + (showBeforeImage ? 0 : 1) + 1) / (fileCount * 2)) + "%";
+            
+            var page = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            page.setAttribute("x", "0");
+            page.setAttribute("y", "0");
+            page.setAttribute("width", "100%");
+            page.setAttribute("height", "100%");
+            page.setAttribute("fill", "white");
+            
+            var svg = contentEl.querySelector("svg");
+            svg.insertAdjacentElement("afterbegin", page);
+        }
+
+        if (fileCount) {
+            update();
+        } else {
+            contentEl.innerHTML = "No diffs found 👏";
+        }
+
+    </script>
+</body>
+</html>

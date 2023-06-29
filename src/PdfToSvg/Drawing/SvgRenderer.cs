@@ -1189,7 +1189,8 @@ namespace PdfToSvg.Drawing
                     }
                 }
 
-                if (graphicsState.StrokeDashArray != null)
+                if (graphicsState.StrokeDashArray != null &&
+                    graphicsState.StrokeDashArray.Length > 0)
                 {
                     attributes.Add(new XAttribute("stroke-dasharray", string.Join(" ",
                         graphicsState.StrokeDashArray.Select(x => x.ToString(CultureInfo.InvariantCulture)))));
@@ -1881,7 +1882,8 @@ namespace PdfToSvg.Drawing
                 }
 
                 // Dash
-                if (style.StrokeDashArray != null)
+                if (style.StrokeDashArray != null &&
+                    style.StrokeDashArray.Length > 0)
                 {
                     cssClass["stroke-dasharray"] = string.Join(" ",
                         style.StrokeDashArray.Select(x => x.ToString(CultureInfo.InvariantCulture)));

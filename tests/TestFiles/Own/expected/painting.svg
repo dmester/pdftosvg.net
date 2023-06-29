@@ -47,7 +47,7 @@
 <path d="M70 546.92h100" fill="none" stroke="#000" stroke-width="12" stroke-linecap="round" />
 <path d="M70 561.92h100" fill="none" stroke="#000" stroke-width="12" stroke-linecap="square" />
 <text x="70" y="621.92" class="txgy4Tu">d Dash array</text>
-<path d="M70 631.92h100" fill="none" stroke="#000" stroke-width="6" stroke-dasharray="" />
+<path d="M70 631.92h100" fill="none" stroke="#000" stroke-width="6" />
 <path d="M70 641.92h100" fill="none" stroke="#000" stroke-width="6" stroke-dasharray="3" />
 <path d="M70 651.92h100" fill="none" stroke="#000" stroke-width="6" stroke-dasharray="2" stroke-dashoffset="1" />
 <path d="M70 661.92h100" fill="none" stroke="#000" stroke-width="6" stroke-dasharray="2 1" />

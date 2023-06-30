@@ -41,6 +41,19 @@ namespace PdfToSvg.Tests.Drawing
         }
 
         [Test]
+        public void Invert()
+        {
+            var matrix = Matrix.Rotate(90) * Matrix.Scale(1.2, 1.5) * Matrix.Translate(152, 12);
+
+            var inverse = matrix.Invert();
+
+            var matrix2 = matrix * inverse;
+            var matrix3 = inverse * matrix;
+            Assert.IsTrue(matrix2.IsIdentity);
+            Assert.IsTrue(matrix3.IsIdentity);
+        }
+
+        [Test]
         public void Multiply()
         {
             Assert.AreEqual(new Matrix(10, 13, 22, 29, 40, 52), new Matrix(1, 2, 3, 4, 5, 6) * new Matrix(2, 3, 4, 5, 6, 7));

@@ -36,9 +36,12 @@ namespace PdfToSvg.Drawing
         public double F { get; private set; }
 
         public bool IsIdentity =>
-            A == 1 && B == 0 &&
-            C == 0 && D == 1 &&
-            E == 0 && F == 0;
+            ReferenceEquals(this, Identity) ||
+            IsZero(E) && IsZero(F) &&
+            IsOne(A) && IsOne(D) &&
+            IsZero(B) && IsZero(C);
+
+        public double Determinant => A * D - B * C;
 
         public static Matrix Identity { get; } = new Matrix(1, 0, 0, 1, 0, 0);
 
@@ -98,6 +101,26 @@ namespace PdfToSvg.Drawing
                 sy * source.C,
                 sy * source.D,
                 source.E, source.F);
+        }
+
+        public Matrix Invert()
+        {
+            var determinant = Determinant;
+            if (IsZero(determinant))
+            {
+                throw new InvalidOperationException("This matrix is not invertible.");
+            }
+
+            var multiplier = 1 / determinant;
+
+            return new Matrix(
+                a: multiplier * D,
+                b: multiplier * -B,
+                c: multiplier * -C,
+                d: multiplier * A,
+                e: multiplier * (C * F - D * E),
+                f: multiplier * (B * E - A * F)
+                );
         }
 
         public void DecomposeScale(out double scale, out Matrix remainder)
@@ -175,6 +198,9 @@ namespace PdfToSvg.Drawing
                 unchecked((int)(E * 10000000)) ^
                 unchecked((int)(F * 100000000));
         }
+
+        private static bool IsZero(double v) => v > -0.0000001 && v < 0.0000001;
+        private static bool IsOne(double v) => v > 0.9999999 && v < 1.0000001;
 
         public override string ToString()
         {

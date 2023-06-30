@@ -15,63 +15,63 @@ namespace PdfToSvg.Functions
 {
     internal class StitchingFunction : Function
     {
-        private readonly double[] domain;
-        private readonly double[]? range;
+        public readonly double[] Domain;
+        public readonly double[]? Range;
 
-        private readonly Function[] functions;
-        private readonly double[] bounds;
-        private readonly double[] encode;
+        public readonly Function[] Functions;
+        public readonly double[] Bounds;
+        public readonly double[] Encode;
 
 
         public StitchingFunction(PdfDictionary dictionary, CancellationToken cancellationToken = default)
         {
-            if (!dictionary.TryGetArray(Names.Domain, out domain!))
+            if (!dictionary.TryGetArray(Names.Domain, out Domain!))
             {
                 throw new ArgumentException($"Missing {Names.Domain}");
             }
 
-            dictionary.TryGetArray(Names.Range, out range);
+            dictionary.TryGetArray(Names.Range, out Range);
 
             if (!dictionary.TryGetArray(Names.Functions, out var funcDicts))
             {
                 throw new ArgumentException($"Missing {Names.Functions}");
             }
 
-            if (!dictionary.TryGetArray(Names.Bounds, out bounds!))
+            if (!dictionary.TryGetArray(Names.Bounds, out Bounds!))
             {
                 throw new ArgumentException($"Missing {Names.Bounds}");
             }
 
-            if (!dictionary.TryGetArray(Names.Encode, out encode!))
+            if (!dictionary.TryGetArray(Names.Encode, out Encode!))
             {
                 throw new ArgumentException($"Missing {Names.Encode}");
             }
 
-            this.functions = new Function[funcDicts.Length];
+            this.Functions = new Function[funcDicts.Length];
 
-            for (var i = 0; i < functions.Length; i++)
+            for (var i = 0; i < Functions.Length; i++)
             {
-                functions[i] = Parse(funcDicts[i], cancellationToken);
+                Functions[i] = Parse(funcDicts[i], cancellationToken);
             }
 
-            this.domain = EnsureArrayLength(this.domain, 2);
-            this.bounds = EnsureArrayLength(this.bounds, this.functions.Length - 1);
-            this.encode = EnsureArrayLength(this.encode, this.functions.Length * 2);
+            this.Domain = EnsureArrayLength(this.Domain, 2);
+            this.Bounds = EnsureArrayLength(this.Bounds, this.Functions.Length - 1);
+            this.Encode = EnsureArrayLength(this.Encode, this.Functions.Length * 2);
         }
 
         public override double[] Evaluate(params double[] arguments)
         {
-            arguments = ImmutableClip(domain, arguments);
+            arguments = ImmutableClip(Domain, arguments);
 
             var value = arguments.Length < 1 ? 0d : arguments[0];
 
             var funcIndexMin = 0;
-            var funcIndexMax = bounds.Length - 1;
+            var funcIndexMax = Bounds.Length - 1;
 
             while (funcIndexMin <= funcIndexMax)
             {
                 var middleIndex = (funcIndexMin + funcIndexMax) / 2;
-                var middle = bounds[middleIndex];
+                var middle = Bounds[middleIndex];
 
                 if (value < middle)
                 {
@@ -85,13 +85,13 @@ namespace PdfToSvg.Functions
 
             var funcIndex = funcIndexMin;
 
-            var bounds0 = funcIndex == 0 ? domain[0] : bounds[funcIndex - 1];
-            var bounds1 = funcIndex < bounds.Length ? bounds[funcIndex] : domain[1];
+            var bounds0 = funcIndex == 0 ? Domain[0] : Bounds[funcIndex - 1];
+            var bounds1 = funcIndex < Bounds.Length ? Bounds[funcIndex] : Domain[1];
 
-            var encoded = MathUtils.Interpolate(value, bounds0, bounds1, encode[2 * funcIndex], encode[2 * funcIndex + 1]);
-            var output = functions[funcIndex].Evaluate(encoded);
+            var encoded = MathUtils.Interpolate(value, bounds0, bounds1, Encode[2 * funcIndex], Encode[2 * funcIndex + 1]);
+            var output = Functions[funcIndex].Evaluate(encoded);
 
-            return Clip(range, output);
+            return Clip(Range, output);
         }
     }
 }

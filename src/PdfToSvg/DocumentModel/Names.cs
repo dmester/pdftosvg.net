@@ -130,6 +130,14 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Transparency { get; } = new PdfName("Transparency");
         public static PdfName Decode { get; } = new PdfName("Decode");
 
+        public static PdfName PatternType { get; } = new PdfName("PatternType");
+        public static PdfName Shading { get; } = new PdfName("Shading");
+        public static PdfName ShadingType { get; } = new PdfName("ShadingType");
+        public static PdfName Coords { get; } = new PdfName("Coords");
+        public static PdfName Extend { get; } = new PdfName("Extend");
+        public static PdfName Background { get; } = new PdfName("Background");
+        public static PdfName Function { get; } = new PdfName("Function");
+
         public static PdfName Filter { get; } = new PdfName("Filter");
         public static PdfName Crypt { get; } = new PdfName("Crypt");
         public static PdfName DCTDecode { get; } = new PdfName("DCTDecode");
@@ -163,6 +171,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName ICCBased { get; } = new PdfName("ICCBased");
         public static PdfName Separation { get; } = new PdfName("Separation");
         public static PdfName DeviceN { get; } = new PdfName("DeviceN");
+        public static PdfName Pattern { get; } = new PdfName("Pattern");
 
         public static PdfName Alternate { get; } = new PdfName("Alternate");
         public static PdfName N { get; } = new PdfName("N");

@@ -209,6 +209,9 @@ namespace PdfToSvg.ColorSpaces
                     case nameof(Names.DeviceGray):
                     case nameof(AbbreviatedNames.G):
                         return new DeviceGrayColorSpace();
+
+                    case nameof(Names.Pattern):
+                        return new PatternColorSpace();
                 }
 
                 if (colorSpaceResourcesDictionary != null &&
@@ -260,6 +263,9 @@ namespace PdfToSvg.ColorSpaces
 
                     case nameof(Names.DeviceN):
                         return ParseDeviceN(definitionArray, colorSpaceResourcesDictionary, recursionCount + 1, cancellationToken);
+
+                    case nameof(Names.Pattern):
+                        return new PatternColorSpace();
                 }
 
                 Log.WriteLine("Unsupported color space: {0}.", colorSpaceName);

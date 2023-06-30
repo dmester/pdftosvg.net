@@ -1,0 +1,72 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<defs>
+<radialGradient fx="50" fy="60" fr="15" cx="50" cy="50" r="50" gradientTransform="matrix(1 0 0 -1 100 191.92)" gradientUnits="userSpaceOnUse" id="pt1kGUn">
+<stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
+<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset="99.999%" stop-color="#0c2b33" />
+<stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
+</radialGradient>
+<radialGradient fx="50" fy="60" fr="15" cx="50" cy="50" r="50" gradientTransform="matrix(1 0 0 -1 250 191.92)" gradientUnits="userSpaceOnUse" id="ptRhfIe">
+<stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
+<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset="99.999%" stop-color="#0c2b33" />
+<stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
+</radialGradient>
+<radialGradient fx="50" fy="60" fr="15" cx="50" cy="50" r="50" gradientTransform="matrix(1 0 0 -1 400 191.92)" gradientUnits="userSpaceOnUse" id="ptFQA2n">
+<stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
+<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset="99.999%" stop-color="#0c2b33" />
+<stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
+</radialGradient>
+<radialGradient fx="50" fy="60" fr="15" cx="50" cy="50" r="50" gradientTransform="matrix(1 0 0 -1 100 341.92)" gradientUnits="userSpaceOnUse" id="ptDdIRG">
+<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset="99.999%" stop-color="#0c2b33" />
+<stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
+</radialGradient>
+<radialGradient fx="50" fy="60" fr="15" cx="50" cy="50" r="50" gradientTransform="matrix(1 0 0 -1 250 341.92)" gradientUnits="userSpaceOnUse" id="ptgezAb">
+<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset="99.999%" stop-color="#0c2b33" />
+</radialGradient>
+<radialGradient fx="50" fy="60" fr="15" cx="50" cy="50" r="50" gradientTransform="matrix(1 0 0 -1 400 341.92)" gradientUnits="userSpaceOnUse" id="ptmzcen">
+<stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
+<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset="99.999%" stop-color="#0c2b33" />
+<stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
+</radialGradient>
+<radialGradient fx="150" fy="410" fr="15" cx="150" cy="400" r="50" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="ptEsk1S">
+<stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
+<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset="99.999%" stop-color="#0c2b33" />
+<stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
+</radialGradient>
+<radialGradient fx="5" fy="6" fr="1.5" cx="5" cy="5" r="5" gradientTransform="matrix(10 0 0 -9.901 0 99.0099)" gradientUnits="userSpaceOnUse" id="ptE0gxN">
+<stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
+<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset="99.999%" stop-color="#0c2b33" />
+<stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
+</radialGradient>
+<radialGradient fx="450" fy="410" fr="15" cx="450" cy="400" r="50" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="pt0u2SI">
+<stop offset="0%" stop-color="#a82800" />
+<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset="99.999%" stop-color="#0c2b33" />
+<stop offset="0%" stop-color="#a82800" />
+</radialGradient>
+<clipPath id="cliqMOw">
+<path d="M450 191.92l-50 -100h100" />
+</clipPath>
+</defs>
+<g stroke-miterlimit="10">
+<path d="M100 191.92h100v-100h-100z" fill="url(#pt1kGUn)" />
+<path d="M250 191.92h100v-100h-100z" fill="url(#ptRhfIe)" />
+<g clip-path="url(#cliqMOw)">
+<path d="M0 841.92h594.96v-841.92h-594.96z" fill="url(#ptFQA2n)" />
+</g>
+<path d="M100 341.92h100v-100h-100z" fill="url(#ptDdIRG)" />
+<path d="M250 341.92h100v-100h-100z" fill="url(#ptgezAb)" />
+<path d="M400 341.92h100v-100h-100z" fill="url(#ptmzcen)" />
+<path d="M100 491.92h100v-100h-100z" fill="url(#ptEsk1S)" stroke="#000" stroke-width="1" />
+<path d="M0 0h100v100h-100z" transform="matrix(1 0 0 1.01 250 391.92)" fill="url(#ptE0gxN)" stroke="#000" stroke-width="1" />
+<path d="M400 491.92h100v-100h-100z" fill="url(#pt0u2SI)" stroke="#000" stroke-width="1" />
+</g>
+</svg>

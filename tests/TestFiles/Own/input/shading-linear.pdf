@@ -1,0 +1,265 @@
+%PDF-1.7
+
+xref
+0 7
+0000000000 65535 f
+0000000202 00000 n
+0000000253 00000 n
+0000000317 00000 n
+0000000451 00000 n
+0000000618 00000 n
+0000004252 00000 n
+trailer
+<< /Root 1 0 R  /Size 7 >>
+
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 5 0 R ]  /Count 1 >> endobj
+
+3 0 obj
+<<
+   /FunctionType 2
+   /N 1
+   /Domain [ 0.0 1.0 ]
+   /C0 [ 0.73 0.88 0.93 ]
+   /C1 [ 0.05 0.17 0.20 ]
+>>
+endobj
+
+4 0 obj
+<<
+   /FunctionType 4
+   /Domain [ 2 4 ]
+   /Range [ 0 1 0 1 0 1 ]
+   /Length 37
+>>
+stream
+{ 
+   2 div
+   1 sub
+   dup dup
+}
+endstream
+endobj
+
+5 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Pattern <<
+         /ShP <<
+            /PatternType 2
+            /Shading <<
+               /ShadingType 2
+               /ColorSpace /DeviceRGB
+               /Coords [ 120 370 180 430 ]
+               /Function 3 0 R
+            >>
+         >>
+         /ShPMatrix <<
+            /PatternType 2
+            /Matrix [ 10 0 0 10 250 350 ]
+            /Shading <<
+               /ShadingType 2
+               /ColorSpace /DeviceRGB
+               /Coords [ 2 2 8 8 ]
+               /Function 3 0 R
+            >>
+         >>
+         /ShPBackground <<
+            /PatternType 2
+            /Shading <<
+               /ShadingType 2
+               /ColorSpace /DeviceRGB
+               /Coords [ 420 370 480 430 ]
+               /Background [ 0.66 0.16 0 ]
+               /Function 3 0 R
+            >>
+         >>
+         /ShPHuesStitched <<
+            /PatternType 2
+            /Shading <<
+               /ShadingType 2
+               /ColorSpace /DeviceRGB
+               /Coords [ 100 0 500 0 ]
+               /Function <<
+                  /FunctionType 3 % Stitched
+                  /Domain [ 0.0 1.0 ]
+                  /Bounds [ 0.17 0.33 0.5 0.67 0.83 ]
+                  /Encode [ 0 1 0 1 0 1 0 1 0 1 0 1 ]
+                  /Functions [
+                     << /FunctionType 2 /N 1 /Domain [ 0.0 1.0 ] /C0 [ 1 0 0 ] /C1 [ 1 1 0 ] >>
+                     << /FunctionType 2 /N 1 /Domain [ 0.0 1.0 ] /C0 [ 1 1 0 ] /C1 [ 0 1 0 ] >>
+                     << /FunctionType 2 /N 1 /Domain [ 0.0 1.0 ] /C0 [ 0 1 0 ] /C1 [ 0 1 1 ] >>
+                     << /FunctionType 2 /N 1 /Domain [ 0.0 1.0 ] /C0 [ 0 1 1 ] /C1 [ 0 0 1 ] >>
+                     << /FunctionType 2 /N 1 /Domain [ 0.0 1.0 ] /C0 [ 0 0 1 ] /C1 [ 1 0 1 ] >>
+                     << /FunctionType 2 /N 1 /Domain [ 0.0 1.0 ] /C0 [ 1 0 1 ] /C1 [ 1 0 0 ] >>
+                  ]
+               >>
+            >>
+         >>
+         /ShPPostScript <<
+            /PatternType 2
+            /Shading <<
+               /ShadingType 2
+               /ColorSpace /DeviceRGB
+               /Coords [ 120 0 460 0 ]
+               /Domain [ 2 4 ]
+               /Function 4 0 R
+            >>
+         >>
+      >>
+      /Shading <<
+         /Sh <<
+            /ShadingType 2
+            /ColorSpace /DeviceRGB
+            /Coords [ 20 20 80 80 ]
+            /Function 3 0 R
+         >>
+         /ShBbox <<
+            /ShadingType 2
+            /ColorSpace /DeviceRGB
+            /Coords [ 20 20 80 80 ]
+            /BBox [ 0 0 100 100 ]
+            /Function 3 0 R
+         >>
+         /ShBboxExt1 <<
+            /ShadingType 2
+            /ColorSpace /DeviceRGB
+            /Coords [ 20 20 80 80 ]
+            /BBox [ 0 0 100 100 ]
+            /Extend [ true false ]
+            /Function 3 0 R
+         >>
+         /ShBboxExt2 <<
+            /ShadingType 2
+            /ColorSpace /DeviceRGB
+            /Coords [ 20 20 80 80 ]
+            /BBox [ 0 0 100 100 ]
+            /Extend [ true true ]
+            /Function 3 0 R
+         >>
+         /ShBboxBackground <<
+            /ShadingType 2
+            /ColorSpace /DeviceRGB
+            /Coords [ 20 20 80 80 ]
+            /BBox [ 0 0 100 100 ]
+            /Background [ 0.66 0.16 0 ]
+            /Function 3 0 R
+         >>
+      >>
+      /Font <<
+         /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+      >>
+   >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 6 0 R ]
+>>
+endobj
+
+6 0 obj << /Length 1621 >>
+stream
+   
+   % Shading with BBox
+   q
+      1 0 0 1 100 650 cm
+      /ShBbox sh
+   Q
+   
+   % Shading without BBox
+   q
+      1 0 0 1 250 650 cm
+      0 0 100 100 re
+      W n
+      /Sh sh
+   Q
+   
+   % Clipped shading 
+   q
+      1 0 0 1 400 650 cm
+      40 0 m
+      0 100 l
+      100 60 l
+      W n
+      /Sh sh
+   Q
+   
+   % Shading with BBox, extended x1
+   q
+      1 0 0 1 100 500 cm
+      /ShBboxExt1 sh
+   Q
+   
+   % Shading with BBox, extended x2
+   q
+      1 0 0 1 250 500 cm
+      /ShBboxExt2 sh
+   Q
+   
+   % Shading with BBox and background
+   q
+      1 0 0 1 400 500 cm
+      /ShBboxBackground sh
+   Q
+
+   % Shading pattern
+   q
+      1 0 0 1 100 350 cm
+      /Pattern cs
+      /ShP scn
+      0 0 100 100 re
+      B
+   Q
+
+   % Shading pattern with matrix
+   q
+      1 0 0 -1.01 250 450 cm
+      /Pattern cs
+      /ShPMatrix scn
+      0 0 100 100 re
+      B
+   Q
+   
+   % Shading pattern with background
+   q
+      1 0 0 1 400 350 cm
+      /Pattern cs
+      /ShPBackground scn
+      0 0 100 100 re
+      B
+   Q
+
+   % Stroke: All hues, stitched function
+   % Fill: PostScript
+   q
+      /Pattern cs
+      /Pattern CS
+      /ShPPostScript scn
+      /ShPHuesStitched SCN
+      20 w
+      110 130 380 170 re
+      B
+      
+      BT
+         % Without matrix
+         1 0 0 1 145 190 Tm
+         /F1 80 Tf
+         2 Tr
+         5 w
+         (TEXT) Tj
+         
+         % With matrix
+         /ShPHuesStitched scn
+         0 Tr
+         /F1 40 Tf
+         0.94 -0.34 0.34 0.94 350 200 Tm
+         (TEXT) Tj
+      ET
+   Q
+
+endstream
+endobj
+
+startxref
+12
+%%EOF

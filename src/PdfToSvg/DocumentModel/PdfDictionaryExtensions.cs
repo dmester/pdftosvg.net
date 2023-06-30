@@ -434,6 +434,20 @@ namespace PdfToSvg.DocumentModel
                     return true;
                 }
             }
+            else if (destinationType == typeof(float))
+            {
+                if (value is double dbl)
+                {
+                    result = (float)dbl;
+                    return true;
+                }
+
+                if (value is int intval)
+                {
+                    result = (float)intval;
+                    return true;
+                }
+            }
 
             result = default;
             return false;

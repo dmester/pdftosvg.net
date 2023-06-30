@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.ColorSpaces;
+using PdfToSvg.Drawing.Patterns;
 using PdfToSvg.Fonts;
 using System;
 using System.Collections.Generic;
@@ -24,12 +25,13 @@ namespace PdfToSvg.Drawing
         public ClipPath? ClipPath;
 
         public ColorSpace FillColorSpace = new DeviceGrayColorSpace();
-        public ColorSpace StrokeColorSpace = new DeviceGrayColorSpace();
-
         public RgbColor FillColor = RgbColor.Black;
+        public Pattern? FillPattern;
         public double FillAlpha = 1d;
 
+        public ColorSpace StrokeColorSpace = new DeviceGrayColorSpace();
         public RgbColor StrokeColor = RgbColor.Black;
+        public Pattern? StrokePattern;
         public double StrokeAlpha = 1d;
 
         public double StrokeWidth = 1d;

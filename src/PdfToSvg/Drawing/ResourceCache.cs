@@ -4,6 +4,8 @@
 
 using PdfToSvg.ColorSpaces;
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Drawing.Patterns;
+using PdfToSvg.Drawing.Shadings;
 using PdfToSvg.Fonts;
 using PdfToSvg.Threading;
 using System;
@@ -17,6 +19,8 @@ namespace PdfToSvg.Drawing
 {
     internal class ResourceCache
     {
+        private readonly Dictionary<PdfName, Pattern?> patterns = new();
+        private readonly Dictionary<PdfName, Shading?> shadings = new();
         private readonly Dictionary<PdfName, BaseFont?> fonts = new();
         private readonly Dictionary<PdfName, ColorSpace> colorSpaces = new();
 
@@ -26,6 +30,34 @@ namespace PdfToSvg.Drawing
         }
 
         public PdfDictionary Dictionary { get; }
+
+        public Pattern? GetPattern(PdfName patternName, CancellationToken cancellationToken)
+        {
+            if (!patterns.TryGetValue(patternName, out var pattern))
+            {
+                if (Dictionary.TryGetDictionary(Names.Pattern / patternName, out var patternDict))
+                {
+                    pattern = Pattern.Create(patternDict, cancellationToken);
+                }
+                patterns[patternName] = pattern;
+            }
+
+            return pattern;
+        }
+
+        public Shading? GetShading(PdfName shadingName, CancellationToken cancellationToken)
+        {
+            if (!shadings.TryGetValue(shadingName, out var shading))
+            {
+                if (Dictionary.TryGetDictionary(Names.Shading / shadingName, out var shadingDict))
+                {
+                    shading = Shading.Create(shadingDict, cancellationToken);
+                }
+                shadings[shadingName] = shading;
+            }
+
+            return shading;
+        }
 
         public BaseFont? GetFont(PdfName fontName, FontResolver fontResolver, DocumentCache documentCache, CancellationToken cancellationToken)
         {

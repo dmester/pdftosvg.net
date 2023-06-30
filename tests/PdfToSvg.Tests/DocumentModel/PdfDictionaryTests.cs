@@ -68,6 +68,20 @@ namespace PdfToSvg.Tests.DocumentModel
             Assert.AreEqual(42.0, dict.GetValueOrDefault(new PdfName("name"), 55.0));
         }
 
+        [TestCase(42.0)]
+        [TestCase(42)]
+        public void GetSingle(object value)
+        {
+            var dict = new PdfDictionary();
+
+            dict[new PdfName("name")] = value;
+
+            Assert.IsTrue(dict.TryGetValue<float>(new PdfName("name"), out var actual));
+            Assert.AreEqual(42f, actual);
+
+            Assert.AreEqual(42f, dict.GetValueOrDefault(new PdfName("name"), 55f));
+        }
+
         [TestCase(1.0d, 2, 3, 4, 5, 6)]
         [TestCase(1, 2, 3, 4, 5, 6)]
         public void GetMatrix(object[] arr)

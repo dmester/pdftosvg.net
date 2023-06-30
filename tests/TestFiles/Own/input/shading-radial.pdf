@@ -1,0 +1,205 @@
+%PDF-1.7
+
+xref
+0 7
+0000000000 65535 f
+0000000202 00000 n
+0000000253 00000 n
+0000000317 00000 n
+0000000451 00000 n
+0000000618 00000 n
+0000002871 00000 n
+trailer
+<< /Root 1 0 R  /Size 7 >>
+
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 5 0 R ]  /Count 1 >> endobj
+
+3 0 obj
+<<
+   /FunctionType 2
+   /N 1
+   /Domain [ 0.0 1.0 ]
+   /C0 [ 0.73 0.88 0.93 ]
+   /C1 [ 0.05 0.17 0.20 ]
+>>
+endobj
+
+4 0 obj
+<<
+   /FunctionType 4
+   /Domain [ 2 4 ]
+   /Range [ 0 1 0 1 0 1 ]
+   /Length 37
+>>
+stream
+{ 
+   2 div
+   1 sub
+   dup dup
+}
+endstream
+endobj
+
+5 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Pattern <<
+         /ShP <<
+            /Type /Pattern
+            /PatternType 2
+            /Shading <<
+               /ShadingType 3
+               /ColorSpace /DeviceRGB
+               /Coords [ 150 410 15 150 400 50 ]
+               /Function 3 0 R
+            >>
+         >>
+         /ShPMatrix <<
+            /Type /Pattern
+            /PatternType 2
+            /Matrix [ 10 0 0 10 250 350 ]
+            /Shading <<
+               /ShadingType 3
+               /ColorSpace /DeviceRGB
+               /Coords [ 5 6 1.5 5 5 5 ]
+               /Function 3 0 R
+            >>
+         >>
+         /ShPBackground <<
+            /Type /Pattern
+            /PatternType 2
+            /Shading <<
+               /ShadingType 3
+               /ColorSpace /DeviceRGB
+               /Coords [ 450 410 15 450 400 50 ]
+               /Background [ 0.66 0.16 0 ]
+               /Function 3 0 R
+            >>
+         >>
+      >>
+      /Shading <<
+         /Sh <<
+            /ShadingType 3
+            /ColorSpace /DeviceRGB
+            /Coords [ 50 60 15 50 50 50 ]
+            /Function 3 0 R
+         >>
+         /ShBbox <<
+            /ShadingType 3
+            /ColorSpace /DeviceRGB
+            /Coords [ 50 60 15 50 50 50 ]
+            /BBox [ 0 0 100 100 ]
+            /Function 3 0 R
+         >>
+         /ShBboxExt1 <<
+            /ShadingType 3
+            /ColorSpace /DeviceRGB
+            /Coords [ 50 60 15 50 50 50 ]
+            /BBox [ 0 0 100 100 ]
+            /Extend [ true false ]
+            /Function 3 0 R
+         >>
+         /ShBboxExt2 <<
+            /ShadingType 3
+            /ColorSpace /DeviceRGB
+            /Coords [ 50 60 15 50 50 50 ]
+            /BBox [ 0 0 100 100 ]
+            /Extend [ true true ]
+            /Function 3 0 R
+         >>
+         /ShBboxBackground <<
+            /ShadingType 3
+            /ColorSpace /DeviceRGB
+            /Coords [ 50 60 15 50 50 50 ]
+            /BBox [ 0 0 100 100 ]
+            /Background [ 0.66 0.16 0 ]
+            /Function 3 0 R
+         >>
+      >>
+   >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 6 0 R ]
+>>
+endobj
+
+6 0 obj << /Length 1091 >>
+stream
+   
+   % Shading with BBox
+   q
+      1 0 0 1 100 650 cm
+      /ShBbox sh
+   Q
+   
+   % Shading without BBox
+   q
+      1 0 0 1 250 650 cm
+      0 0 100 100 re
+      W n
+      /Sh sh
+   Q
+   
+   % Clipped shading 
+   q
+      1 0 0 1 400 650 cm
+      50 0 m
+      0 100 l
+      100 100 l
+      W n
+      /Sh sh
+   Q
+   
+   % Shading with BBox, extended x1
+   q
+      1 0 0 1 100 500 cm
+      /ShBboxExt1 sh
+   Q
+   
+   % Shading with BBox, extended x2
+   q
+      1 0 0 1 250 500 cm
+      /ShBboxExt2 sh
+   Q
+   
+   % Shading with BBox and background
+   q
+      1 0 0 1 400 500 cm
+      /ShBboxBackground sh
+   Q
+
+   % Shading pattern
+   q
+      1 0 0 1 100 350 cm
+      /Pattern cs
+      /ShP scn
+      0 0 100 100 re
+      B
+   Q
+
+   % Shading pattern with matrix
+   q
+      1 0 0 -1.01 250 450 cm
+      /Pattern cs
+      /ShPMatrix scn
+      0 0 100 100 re
+      B
+   Q
+   
+   % Shading pattern with background
+   q
+      1 0 0 1 400 350 cm
+      /Pattern cs
+      /ShPBackground scn
+      0 0 100 100 re
+      B
+   Q
+   
+endstream
+endobj
+
+startxref
+12
+%%EOF

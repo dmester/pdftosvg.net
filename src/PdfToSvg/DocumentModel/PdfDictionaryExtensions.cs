@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.Common;
+using PdfToSvg.Drawing;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -291,6 +292,32 @@ namespace PdfToSvg.DocumentModel
             return false;
         }
 
+        private static bool TryConvertDoubleArray(object? value, int minLength, [NotNullWhen(true)] out double[]? result)
+        {
+            if (value is object[] objArray && objArray.Length >= minLength)
+            {
+                result = new double[objArray.Length];
+
+                for (var i = 0; i < objArray.Length; i++)
+                {
+                    if (TryConvert(objArray[i], typeof(double), out var convertedValue))
+                    {
+                        result[i] = (float)(double)convertedValue;
+                    }
+                    else
+                    {
+                        result = null;
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            result = null;
+            return false;
+        }
+
         private static bool TryConvertFloatArray(object? value, int minLength, [NotNullWhen(true)] out float[]? result)
         {
             if (value is object[] objArray && objArray.Length >= minLength)
@@ -393,6 +420,17 @@ namespace PdfToSvg.DocumentModel
                         arr[0], arr[1], arr[2],
                         arr[3], arr[4], arr[5],
                         arr[6], arr[7], arr[8]);
+                    return true;
+                }
+            }
+            else if (destinationType == typeof(Matrix))
+            {
+                if (TryConvertDoubleArray(value, 6, out var arr))
+                {
+                    result = new Matrix(
+                        arr[0], arr[1],
+                        arr[2], arr[3],
+                        arr[4], arr[5]);
                     return true;
                 }
             }

@@ -21,21 +21,11 @@ namespace PdfToSvg.Fonts.WidthMaps
         public Type3WidthMap(PdfDictionary font)
         {
             // PDF Specification 1.7, Table 112, page 266
-            var fontMatrixArray = font.GetArrayOrNull<double>(Names.FontMatrix);
             var firstChar = font.GetValueOrDefault(Names.FirstChar, 0);
 
-            if (fontMatrixArray != null &&
-                fontMatrixArray.Length == 6 &&
+            if (font.TryGetValue<Matrix>(Names.FontMatrix, out var fontMatrix) &&
                 font.TryGetArray<double>(Names.Widths, out var widths))
             {
-                var fontMatrix = new Matrix(
-                    fontMatrixArray[0],
-                    fontMatrixArray[1],
-                    fontMatrixArray[2],
-                    fontMatrixArray[3],
-                    fontMatrixArray[4],
-                    fontMatrixArray[5]);
-
                 fontMatrix.DecomposeScaleX(out var scaleX);
 
                 for (var i = 0; i < widths.Length; i++)

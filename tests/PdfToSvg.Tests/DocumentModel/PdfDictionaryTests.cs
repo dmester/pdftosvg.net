@@ -5,6 +5,7 @@
 using NUnit.Framework;
 using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -65,6 +66,22 @@ namespace PdfToSvg.Tests.DocumentModel
             Assert.AreEqual(42.0, actual);
 
             Assert.AreEqual(42.0, dict.GetValueOrDefault(new PdfName("name"), 55.0));
+        }
+
+        [TestCase(1.0d, 2, 3, 4, 5, 6)]
+        [TestCase(1, 2, 3, 4, 5, 6)]
+        public void GetMatrix(object[] arr)
+        {
+            var dict = new PdfDictionary();
+
+            dict[new PdfName("name")] = arr;
+
+            var expected = new Matrix(1, 2, 3, 4, 5, 6);
+
+            Assert.IsTrue(dict.TryGetValue<Matrix>(new PdfName("name"), out var actual));
+            Assert.AreEqual(expected, actual);
+
+            Assert.AreEqual(expected, dict.GetValueOrDefault(new PdfName("name"), Matrix.Identity));
         }
 
         [TestCase(1.0d, 2.1d, 3.1d)]

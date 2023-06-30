@@ -44,17 +44,6 @@ namespace PdfToSvg.Fonts
             PopulateOpenType(cancellationToken);
         }
 
-        private static Matrix GetFontMatrix(double[] sourceMatrix)
-        {
-            return new Matrix(
-                sourceMatrix[0],
-                sourceMatrix[1],
-                sourceMatrix[2],
-                sourceMatrix[3],
-                sourceMatrix[4],
-                sourceMatrix[5]);
-        }
-
         private static double[] GetFontBBox(IEnumerable<CompactFontGlyph> glyphs)
         {
             var minX = double.MaxValue;
@@ -85,15 +74,18 @@ namespace PdfToSvg.Fonts
 
         private void PopulateOpenType(CancellationToken cancellationToken)
         {
-            var fontMatrixArray = fontDict.GetArrayOrNull<double>(Names.FontMatrix);
             var fontBBoxArray = fontDict.GetArrayOrNull<double>(Names.FontBBox);
-
-            if (fontMatrixArray?.Length != 6 || fontBBoxArray?.Length != 4)
+            if (fontBBoxArray?.Length != 4)
             {
                 return;
             }
 
-            FontMatrix = GetFontMatrix(fontMatrixArray);
+            if (!fontDict.TryGetValue<Matrix>(Names.FontMatrix, out var fontMatrix))
+            {
+                return;
+            }
+
+            FontMatrix = fontMatrix;
 
             var transform = FontMatrix * Matrix.Scale(TargetEmSize, TargetEmSize);
 

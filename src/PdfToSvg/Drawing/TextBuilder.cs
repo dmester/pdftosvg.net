@@ -16,11 +16,13 @@ namespace PdfToSvg.Drawing
     {
         public List<TextParagraph> paragraphs = new List<TextParagraph>();
 
-        private readonly double minSpaceEm;
+        private readonly double collapseSpaceLocalFont;
+        private readonly double collapseSpaceEmbeddedFont;
         private readonly double minSpacePx;
 
         private GraphicsState? textStyle;
         private double pendingSpace;
+        private double aggregateOffset;
         private TextParagraph? currentParagraph;
 
         private double normalizedFontSize;
@@ -33,9 +35,10 @@ namespace PdfToSvg.Drawing
 
         private const double ScalingMultiplier = 1.0 / 100;
 
-        public TextBuilder(double minSpaceEm, double minSpacePx)
+        public TextBuilder(double collapseSpaceLocalFont, double collapseSpaceEmbeddedFont, double minSpacePx)
         {
-            this.minSpaceEm = minSpaceEm;
+            this.collapseSpaceLocalFont = collapseSpaceLocalFont;
+            this.collapseSpaceEmbeddedFont = collapseSpaceEmbeddedFont;
             this.minSpacePx = minSpacePx;
             Clear();
         }
@@ -52,6 +55,7 @@ namespace PdfToSvg.Drawing
             translateY = double.NaN;
             remainingTransform = Matrix.Identity;
             pendingSpace = 0;
+            aggregateOffset = 0;
             currentParagraph = null;
             paragraphs.Clear();
             textStyle = null;
@@ -104,11 +108,14 @@ namespace PdfToSvg.Drawing
                 // Don't overdo merging of adjacent text spans to avoid issues e.g. in tabular views
                 Math.Abs(translateX - previousTranslateX) < 10)
             {
-                pendingSpace += translateX - previousTranslateX;
+                var offset = translateX - previousTranslateX;
+                pendingSpace += offset;
+                aggregateOffset += offset;
             }
             else
             {
                 pendingSpace = 0;
+                aggregateOffset = 0;
                 currentParagraph = null;
             }
 
@@ -170,7 +177,8 @@ namespace PdfToSvg.Drawing
 
                 for (var i = 1; i < words.Length; i++)
                 {
-                    pendingSpace = wordSpacingGlobalUnits;
+                    pendingSpace += wordSpacingGlobalUnits;
+                    aggregateOffset += wordSpacingGlobalUnits;
                     AddSpanNoSpacing(style, " " + words[i], wordWidth);
                 }
 
@@ -188,6 +196,7 @@ namespace PdfToSvg.Drawing
         {
             currentParagraph = null;
             pendingSpace = 0;
+            aggregateOffset = 0;
 
             var style = GetTextStyle(graphicsState);
             var wordSpacingGlobalUnits = style.TextWordSpacingPx * scale;
@@ -244,6 +253,7 @@ namespace PdfToSvg.Drawing
                 scale;
 
             pendingSpace += widthTextSpace;
+            aggregateOffset += widthTextSpace;
             Translate(graphicsState, widthTextSpace);
 
             // Some pdfs use TJ operators where the substrings are rendered out of order by using negative offsets.
@@ -260,6 +270,7 @@ namespace PdfToSvg.Drawing
             {
                 currentParagraph = null;
                 pendingSpace = 0;
+                aggregateOffset = 0;
             }
         }
 
@@ -270,11 +281,26 @@ namespace PdfToSvg.Drawing
                 currentParagraph = NewParagraph();
             }
 
+            var isLocalFont = style.Font.SubstituteFont is LocalFont;
+            var collapseSpaceEm = isLocalFont
+                ? collapseSpaceLocalFont
+                : collapseSpaceEmbeddedFont;
+
             var absolutePendingSpace = Math.Abs(pendingSpace);
 
             var mergeWithPrevious =
+                // Too small offsets will be rounded to 0, so they should not cause an extra <tspan>
                 absolutePendingSpace < minSpacePx ||
-                absolutePendingSpace < minSpaceEm * normalizedFontSize;
+
+                // When the threshold is low, it is most important to produce an as accurate result as possible, so in
+                // this case, we will look at the total aggregate offset from the real line matrix. If the threshold is
+                // high, it is probably most important that the text runs are looking good, even if, e.g., the font has
+                // not been exported.
+                (
+                    collapseSpaceEm < 0.1
+                    ? Math.Abs(aggregateOffset) < collapseSpaceEm * normalizedFontSize
+                    : absolutePendingSpace < collapseSpaceEm * normalizedFontSize
+                );
 
             if (mergeWithPrevious && currentParagraph.Content.Count > 0)
             {
@@ -288,8 +314,9 @@ namespace PdfToSvg.Drawing
                 }
             }
 
-            currentParagraph.Content.Add(new TextSpan(pendingSpace, style, text, width));
+            currentParagraph.Content.Add(new TextSpan(isLocalFont ? pendingSpace : aggregateOffset, style, text, width));
             pendingSpace = 0;
+            aggregateOffset = 0;
         }
 
         private TextParagraph NewParagraph()
@@ -303,6 +330,7 @@ namespace PdfToSvg.Drawing
             paragraphs.Add(currentParagraph);
 
             pendingSpace = 0;
+            aggregateOffset = 0;
 
             return currentParagraph;
         }

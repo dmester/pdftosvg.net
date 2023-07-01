@@ -234,14 +234,14 @@
 </g>
 <text x="238.61" y="588.79" class="txzdkPn"> </text>
 <text x="35.4" y="636.46" class="txCKMbI">The </text>
-<text x="79.464" y="636.46" class="txhiayD">quick brown</text>
+<text x="79.464" y="636.46" class="txhiayD"><tspan>quic</tspan><tspan dx="0.4392">k brow</tspan><tspan dx="0.527">n</tspan></text>
 <text x="201.41" y="636.46" class="txMdEzB"> </text>
 <g clip-path="url(#clcbE3L)">
 <text transform="matrix(1 0 -0.3333 1 212.45 636.46)" class="txMdEzB">fox</text>
 </g>
 <text x="245.33" y="636.46" class="txMdEzB"> </text>
 <text x="35.4" y="678.1" class="txXwARg">The </text>
-<text x="83.064" y="678.1" class="txlZ5Ho">quick brown</text>
+<text x="83.064" y="678.1" class="txlZ5Ho"><tspan>quick bro</tspan><tspan dx="0.4831">wn</tspan></text>
 <text x="204.65" y="678.1" class="txXwARg"> </text>
 <g clip-path="url(#clcbE3L)">
 <text transform="matrix(1 0 -0.3333 1 215.33 678.1)" class="txXwARg">fox</text>
@@ -274,7 +274,7 @@
 </g>
 <text x="562.78" y="185.3" class="txrm326"> </text>
 <text x="311.93" y="229.1" class="tx76fyk">The </text>
-<text x="355.99" y="229.1" class="txctOCo">quick brown</text>
+<text x="355.99" y="229.1" class="txctOCo"><tspan>quic</tspan><tspan dx="0.4392">k brow</tspan><tspan dx="0.527">n</tspan></text>
 <text x="477.94" y="229.1" class="txh52Kg"> </text>
 <g clip-path="url(#clcbE3L)">
 <text transform="matrix(1 0 -0.3333 1 488.98 229.1)" class="txh52Kg">fox</text>

@@ -99,7 +99,8 @@ namespace PdfToSvg.Drawing
             this.cancellationToken = cancellationToken;
 
             textBuilder = new TextBuilder(
-                minSpaceEm: options.KerningThreshold,
+                collapseSpaceLocalFont: options.CollapseSpaceLocalFont,
+                collapseSpaceEmbeddedFont: options.CollapseSpaceEmbeddedFont,
                 minSpacePx: 0.001 // Lower space will be rounded to "0" in SVG formatting.
                 );
 

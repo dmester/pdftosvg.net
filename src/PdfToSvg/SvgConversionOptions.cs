@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -87,11 +88,42 @@ namespace PdfToSvg
         /// </summary>
         public double MinStrokeWidth { get; set; } = 0.5;
 
+        /// <exclude />
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete(
+            "Use " + nameof(SvgConversionOptions) + "." + nameof(CollapseSpaceLocalFont) + " " +
+            "and " + nameof(SvgConversionOptions) + "." + nameof(CollapseSpaceEmbeddedFont) + " instead.")]
+        public double KerningThreshold
+        {
+            get => CollapseSpaceLocalFont;
+            set
+            {
+                CollapseSpaceLocalFont = value;
+                CollapseSpaceEmbeddedFont = value;
+            }
+        }
+
         /// <summary>
-        /// Spacing between letters below this threshold is assumed to be kerning and removed.
-        /// The value is relative to the current font size, where 1.0 represents the font size.
+        /// Explicit spacing between letters below this threshold will be removed and merged to a single text span when
+        /// using a local font.
         /// </summary>
-        public double KerningThreshold { get; set; } = 0.2;
+        /// <remarks>
+        /// The value is relative to the current font size, where 1.0 represents the font size.
+        /// This property affects text using a local font. A high value produces long text spans. This is better for
+        /// local fonts, where the actual font metrics might not match the metrics of the original font.
+        /// </remarks>
+        public double CollapseSpaceLocalFont { get; set; } = 0.2;
+
+        /// <summary>
+        /// Explicit spacing between letters below this threshold will be removed and merged to a single text span when
+        /// using an embedded font.
+        /// </summary>
+        /// <remarks>
+        /// The value is relative to the current font size, where 1.0 represents the font size.
+        /// This property affects text formatted with an embedded font. Text inlined as paths is not affected. A low
+        /// value produces a more accurate result, while a high value produces a more compact SVG markup.
+        /// </remarks>
+        public double CollapseSpaceEmbeddedFont { get; set; } = 0.02;
 
         /// <summary>
         /// Determines whether web links from the PDF will be included in the generated SVG.

@@ -52,14 +52,14 @@
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="0%" stop-color="#a82800" />
 </radialGradient>
-<clipPath id="cliqMOw">
+<clipPath id="clRLeXk">
 <path d="M450 191.92l-50 -100h100" />
 </clipPath>
 </defs>
 <g stroke-miterlimit="10">
 <path d="M100 191.92h100v-100h-100z" fill="url(#pt1kGUn)" />
 <path d="M250 191.92h100v-100h-100z" fill="url(#ptRhfIe)" />
-<g clip-path="url(#cliqMOw)">
+<g clip-path="url(#clRLeXk)">
 <path d="M0 841.92h594.96v-841.92h-594.96z" fill="url(#ptFQA2n)" />
 </g>
 <path d="M100 341.92h100v-100h-100z" fill="url(#ptDdIRG)" />

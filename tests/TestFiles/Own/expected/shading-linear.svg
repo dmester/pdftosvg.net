@@ -98,14 +98,14 @@
 <stop offset="99.999%" stop-color="#f00" />
 <stop offset="100%" stop-color="#f00" stop-opacity="0" />
 </linearGradient>
-<clipPath id="clrVjyJ">
+<clipPath id="clZb6UV">
 <path d="M440 191.92l-40 -100l100 40" />
 </clipPath>
 </defs>
 <g stroke-miterlimit="10" class="gt4EC2H">
 <path d="M100 191.92h100v-100h-100z" fill="url(#ptAImqc)" />
 <path d="M250 191.92h100v-100h-100z" fill="url(#ptaTCL1)" />
-<g clip-path="url(#clrVjyJ)">
+<g clip-path="url(#clZb6UV)">
 <path d="M0 841.92h594.96v-841.92h-594.96z" fill="url(#ptJRYFh)" />
 </g>
 <path d="M100 341.92h100v-100h-100z" fill="url(#pt51J8S)" />

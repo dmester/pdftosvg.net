@@ -1031,13 +1031,15 @@ namespace PdfToSvg.Drawing
             }
             else
             {
+                var svgPathData = SvgConversion.PathData(path);
+
                 var id = StableID.Generate("cl",
                     "pathdata",
                     parent?.Id,
-                    path, evenOdd);
+                    svgPathData, evenOdd);
 
                 var element = new XElement(ns + "path",
-                    new XAttribute("d", SvgConversion.PathData(path)),
+                    new XAttribute("d", svgPathData),
                     evenOdd ? new XAttribute("clip-rule", "evenodd") : null);
 
                 AppendClipping(new ClipPath(parent, id, element));

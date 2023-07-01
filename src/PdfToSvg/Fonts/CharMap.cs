@@ -4,9 +4,11 @@
 
 using PdfToSvg.CMaps;
 using PdfToSvg.Encodings;
+using PdfToSvg.Fonts.WidthMaps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
@@ -162,7 +164,41 @@ namespace PdfToSvg.Fonts
             }
         }
 
-        public bool TryPopulate(Func<IEnumerable<CharInfo>> charEnumerator, UnicodeMap toUnicode, SingleByteEncoding? explicitEncoding, bool optimizeForEmbeddedFont)
+        private void PopulateWidths(WidthMap widthMap)
+        {
+            // With mapped glyph
+            var charsByGlyphIndex = chars
+                    .Values
+                    .Where(ch => ch.GlyphIndex != null)
+                    .GroupBy(ch => ch.GlyphIndex!.Value);
+
+            foreach (var glyph in charsByGlyphIndex)
+            {
+                // Prefer width of lower char codes if there are multiple char codes mapping to the same glyph. It
+                // is more likely that the PDF producer mapped used chars to a low char code.
+                var width = glyph
+                    .OrderBy(ch => ch.CharCode)
+                    .Select(ch => widthMap.GetWidth(ch))
+                    .Where(w => w > 0)
+                    .FirstOrDefault();
+
+                foreach (var ch in glyph)
+                {
+                    ch.Width = width;
+                }
+            }
+
+            // Without mapped glyph
+            foreach (var ch in chars.Values)
+            {
+                if (ch.GlyphIndex == null)
+                {
+                    ch.Width = widthMap.GetWidth(ch);
+                }
+            }
+        }
+
+        public bool TryPopulate(Func<IEnumerable<CharInfo>> charEnumerator, UnicodeMap toUnicode, SingleByteEncoding? explicitEncoding, WidthMap widthMap, bool optimizeForEmbeddedFont)
         {
             if (charsPopulated)
             {
@@ -191,6 +227,8 @@ namespace PdfToSvg.Fonts
                 {
                     PopulateForTextExtract(chars, toUnicode, explicitEncoding);
                 }
+
+                PopulateWidths(widthMap);
 
                 charsPopulated = true;
                 return true;

@@ -352,7 +352,7 @@ namespace PdfToSvg.Drawing
                 }
                 else if (value is PdfString pdfString)
                 {
-                    var decodedText = graphicsState.Font.Decode(pdfString, out _);
+                    var decodedText = graphicsState.Font.DecodeString(pdfString).Value;
                     decodedText = SvgConversion.ReplaceInvalidChars(decodedText);
                     output.Append('(');
                     output.Append(decodedText);

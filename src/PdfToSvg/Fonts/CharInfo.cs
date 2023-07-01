@@ -23,6 +23,8 @@ namespace PdfToSvg.Fonts
 
         public string Unicode = NotDef;
 
+        public double Width;
+
         public CharInfo Clone() => (CharInfo)MemberwiseClone();
 
         public override string ToString()

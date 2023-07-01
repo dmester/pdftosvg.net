@@ -5,6 +5,7 @@
 using NUnit.Framework;
 using PdfToSvg.CMaps;
 using PdfToSvg.Fonts;
+using PdfToSvg.Fonts.WidthMaps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,8 +80,8 @@ namespace PdfToSvg.Tests.Fonts
 
             var clonedChars = chars.Select(x => x.Clone());
 
-            optimizedForEmbeddedFont.TryPopulate(() => clonedChars, unicodeMap, null, optimizeForEmbeddedFont: true);
-            optimizedForTextExtract.TryPopulate(() => clonedChars, unicodeMap, null, optimizeForEmbeddedFont: false);
+            optimizedForEmbeddedFont.TryPopulate(() => clonedChars, unicodeMap, null, new EmptyWidthMap(), optimizeForEmbeddedFont: true);
+            optimizedForTextExtract.TryPopulate(() => clonedChars, unicodeMap, null, new EmptyWidthMap(), optimizeForEmbeddedFont: false);
         }
 
         [TestCase(1, "a", 1)]
@@ -143,8 +144,8 @@ namespace PdfToSvg.Tests.Fonts
         public void PopulateOnlyOnce()
         {
             var map = new CharMap();
-            map.TryPopulate(() => new[] { new CharInfo { CharCode = 1, Unicode = "a" } }, UnicodeMap.Empty, null, false);
-            map.TryPopulate(() => new[] { new CharInfo { CharCode = 2, Unicode = "b" } }, UnicodeMap.Empty, null, false);
+            map.TryPopulate(() => new[] { new CharInfo { CharCode = 1, Unicode = "a" } }, UnicodeMap.Empty, null, new EmptyWidthMap(), false);
+            map.TryPopulate(() => new[] { new CharInfo { CharCode = 2, Unicode = "b" } }, UnicodeMap.Empty, null, new EmptyWidthMap(), false);
 
             Assert.IsTrue(map.TryGetChar(1, out _));
             Assert.IsFalse(map.TryGetChar(2, out _));
@@ -165,14 +166,14 @@ namespace PdfToSvg.Tests.Fonts
                     startEvent.Set();
                     stopEvent.Wait(5000);
                     return Enumerable.Empty<CharInfo>();
-                }, UnicodeMap.Empty, null, false);
+                }, UnicodeMap.Empty, null, new EmptyWidthMap(), false);
             });
 
             thread.IsBackground = true;
             thread.Start();
 
             Assert.IsTrue(startEvent.Wait(5000), "Thread did not start");
-            Assert.IsFalse(map.TryPopulate(() => new[] { new CharInfo { CharCode = 2, Unicode = "b" } }, UnicodeMap.Empty, null, false));
+            Assert.IsFalse(map.TryPopulate(() => new[] { new CharInfo { CharCode = 2, Unicode = "b" } }, UnicodeMap.Empty, null, new EmptyWidthMap(), false));
 
             stopEvent.Set();
             thread.Join();

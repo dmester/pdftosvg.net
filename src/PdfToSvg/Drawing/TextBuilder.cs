@@ -76,6 +76,8 @@ namespace PdfToSvg.Drawing
             // each text vertically as well.
             transform = Matrix.Scale(1, -1, transform);
 
+            // Potential improvement:
+            // This is not correct in case the horizontal and vertical scaling are not the same.
             transform.DecomposeScale(out scale, out transform);
 
             normalizedFontSize = graphicsState.FontSize * scale;
@@ -143,50 +145,37 @@ namespace PdfToSvg.Drawing
 
         private void AddTextSpan(GraphicsState graphicsState, PdfString text)
         {
-            var decodedText = graphicsState.Font.Decode(text, out var width);
-
-            decodedText = SvgConversion.ReplaceInvalidChars(decodedText);
-
-            width *= normalizedFontSize;
-
-            var style = GetTextStyle(graphicsState);
-
             if (currentParagraph == null)
             {
                 NewParagraph();
             }
 
-            var textScaling = graphicsState.TextScaling * ScalingMultiplier;
-            var totalWidth = (width + text.Length * style.TextCharSpacingPx) * textScaling;
+            var style = GetTextStyle(graphicsState);
 
-            var wordSpacing = graphicsState.TextWordSpacingPx;
-            if (wordSpacing != 0)
+            var textScaling = style.TextScaling * ScalingMultiplier;
+            var wordSpacing = graphicsState.TextWordSpacingPx * textScaling * scale;
+            var totalWidth = 0d;
+
+            var words = graphicsState.Font.DecodeString(text, splitWords: wordSpacing != 0);
+
+            for (var i = 0; i < words.Count; i++)
             {
-                // TODO not correct, scale is not horizontal
-                var wordSpacingGlobalUnits = wordSpacing * scale;
-                var words = decodedText.Split(' ');
+                var word = words[i];
+                var wordWidth = (word.Width * normalizedFontSize + word.Length * style.TextCharSpacingPx) * textScaling;
 
-                // This is not accurate, but the width of each individual word is not important
-                // TODO but maybe for clipping?
-                var wordWidth = totalWidth / words.Length;
-
-                if (!string.IsNullOrEmpty(words[0]))
+                if (i > 0)
                 {
-                    AddSpanNoSpacing(style, words[0], wordWidth);
+                    pendingSpace += wordSpacing;
+                    aggregateOffset += wordSpacing;
+                    totalWidth += wordSpacing;
                 }
 
-                for (var i = 1; i < words.Length; i++)
+                if (!string.IsNullOrEmpty(word.Value))
                 {
-                    pendingSpace += wordSpacingGlobalUnits;
-                    aggregateOffset += wordSpacingGlobalUnits;
-                    AddSpanNoSpacing(style, " " + words[i], wordWidth);
+                    AddSpanNoSpacing(style, word.Value, wordWidth);
                 }
 
-                totalWidth += (words.Length - 1) * wordSpacingGlobalUnits * textScaling;
-            }
-            else
-            {
-                AddSpanNoSpacing(style, decodedText, totalWidth);
+                totalWidth += wordWidth;
             }
 
             Translate(graphicsState, totalWidth);
@@ -281,6 +270,8 @@ namespace PdfToSvg.Drawing
                 currentParagraph = NewParagraph();
             }
 
+            var svgText = SvgConversion.ReplaceInvalidChars(text);
+
             var isLocalFont = style.Font.SubstituteFont is LocalFont;
             var collapseSpaceEm = isLocalFont
                 ? collapseSpaceLocalFont
@@ -307,14 +298,14 @@ namespace PdfToSvg.Drawing
                 var span = currentParagraph.Content.Last();
                 if (span.Style == style)
                 {
-                    span.Value += text;
+                    span.Value += svgText;
                     span.Width += pendingSpace + width;
                     pendingSpace = 0;
                     return;
                 }
             }
 
-            currentParagraph.Content.Add(new TextSpan(isLocalFont ? pendingSpace : aggregateOffset, style, text, width));
+            currentParagraph.Content.Add(new TextSpan(isLocalFont ? pendingSpace : aggregateOffset, style, svgText, width));
             pendingSpace = 0;
             aggregateOffset = 0;
         }

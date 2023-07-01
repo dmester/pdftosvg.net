@@ -114,7 +114,7 @@ namespace PdfToSvg.Fonts
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            chars.TryPopulate(GetChars, toUnicode, pdfFontEncoding ?? openTypeFontEncoding, optimizeForEmbeddedFont: false);
+            chars.TryPopulate(GetChars, toUnicode, pdfFontEncoding ?? openTypeFontEncoding, widthMap, optimizeForEmbeddedFont: false);
         }
 
         private void PopulateOpenTypeFont(CancellationToken cancellationToken)
@@ -267,7 +267,7 @@ namespace PdfToSvg.Fonts
                     continue;
                 }
 
-                var width = widthMap.GetWidth(ch) * head.UnitsPerEm;
+                var width = ch.Width * head.UnitsPerEm;
                 if (width != 0)
                 {
                     hmtx.HorMetrics[(int)ch.GlyphIndex].AdvanceWidth =
@@ -432,7 +432,7 @@ namespace PdfToSvg.Fonts
                 throw openTypeFontException ?? new NotSupportedException("This font cannot be converted to OpenType format.");
             }
 
-            chars.TryPopulate(GetChars, toUnicode, pdfFontEncoding ?? openTypeFontEncoding, optimizeForEmbeddedFont: true);
+            chars.TryPopulate(GetChars, toUnicode, pdfFontEncoding ?? openTypeFontEncoding, widthMap, optimizeForEmbeddedFont: true);
 
             var preparedFont = new OpenTypeFont();
 
@@ -461,18 +461,37 @@ namespace PdfToSvg.Fonts
             return WoffBuilder.FromOpenType(binaryOtf);
         }
 
-        public string Decode(PdfString value, out double width)
+        public DecodedString DecodeString(PdfString value) => DecodeString(value, splitWords: false)[0];
+
+        /// <remarks>
+        /// The resulting list will always contain at least one string.
+        /// </remarks>
+        public List<DecodedString> DecodeString(PdfString value, bool splitWords)
         {
-            var sb = new StringBuilder(value.Length);
-            width = 0;
+            const uint Whitespace = 0x20;
+
+            var result = new List<DecodedString>(1);
+
+            var wordValue = new StringBuilder(value.Length);
+            var wordLength = 0;
+            var wordWidth = 0d;
 
             for (var i = 0; i < value.Length;)
             {
-                var handled = false;
                 var character = cmap.GetCharCode(value, i);
 
                 if (!character.IsEmpty)
                 {
+                    if (splitWords &&
+                        character.CharCode == Whitespace &&
+                        character.CharCodeLength == 1)
+                    {
+                        result.Add(new DecodedString(wordValue.ToString(), wordLength, wordWidth));
+                        wordValue.Clear();
+                        wordWidth = 0d;
+                        wordLength = 0;
+                    }
+
                     if (!chars.TryGetChar(character.CharCode, out var charInfo))
                     {
                         charInfo = new CharInfo
@@ -484,22 +503,22 @@ namespace PdfToSvg.Fonts
 
                     if (charInfo.Unicode != null)
                     {
-                        sb.Append(charInfo.Unicode);
                         i += character.CharCodeLength;
-                        width += widthMap.GetWidth(charInfo);
-                        handled = true;
+                        wordValue.Append(charInfo.Unicode);
+                        wordWidth += charInfo.Width;
+                        wordLength++;
+                        continue;
                     }
                 }
 
-                if (!handled)
-                {
-                    // TODO width
-                    sb.Append('\ufffd');
-                    i++;
-                }
+                // TODO width
+                wordValue.Append('\ufffd');
+                wordLength++;
+                i++;
             }
 
-            return sb.ToString();
+            result.Add(new DecodedString(wordValue.ToString(), wordLength, wordWidth));
+            return result;
         }
 
         public override string ToString() => (Name ?? "Unnamed font") + (openTypeFont == null ? "; Not embedded" : "");

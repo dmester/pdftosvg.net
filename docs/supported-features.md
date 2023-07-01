@@ -176,7 +176,7 @@ Impl | Operator | Description
 ❌ | ri | Rendering intent
 ✅ | s | Close path and stroke
 ✅ | S | Stroke
-❌ | sh | Paint area shading pattern
+✅ | sh | Paint area shading pattern
 ✅ | v | Curve to
 ✅ | w | Line width
 ✅ | W | Update clip path, non-zero

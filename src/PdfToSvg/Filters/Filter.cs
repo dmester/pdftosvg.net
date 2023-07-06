@@ -28,13 +28,20 @@ namespace PdfToSvg.Filters
         private static readonly Dictionary<PdfName, Filter> filters = new Dictionary<PdfName, Filter>
         {
             { Names.ASCII85Decode, Ascii85Decode },
+            { AbbreviatedNames.A85, Ascii85Decode },
             { Names.ASCIIHexDecode, AsciiHexDecode },
+            { AbbreviatedNames.AHx, AsciiHexDecode },
             { Names.Crypt, Crypt },
             { Names.CCITTFaxDecode, CcittFaxDecode },
+            { AbbreviatedNames.CCF, CcittFaxDecode },
             { Names.DCTDecode, DctDecode },
+            { AbbreviatedNames.DCT, DctDecode },
             { Names.FlateDecode, FlateDecode },
+            { AbbreviatedNames.Fl, FlateDecode },
             { Names.LZWDecode, LzwDecode },
+            { AbbreviatedNames.LZW, LzwDecode },
             { Names.RunLengthDecode, RunLengthDecode },
+            { AbbreviatedNames.RL, RunLengthDecode },
         };
 
         public abstract Stream Decode(Stream encodedStream, PdfDictionary? decodeParms);

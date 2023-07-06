@@ -20,6 +20,8 @@ namespace PdfToSvg.Fonts.OpenType.Tables
         {
             if (Content != null)
             {
+                CompactFontSanitizer.Sanitize(Content);
+
                 var data = CompactFontBuilder.Build(Content);
                 writer.WriteBytes(data);
             }

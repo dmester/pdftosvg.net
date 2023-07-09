@@ -42,6 +42,7 @@ namespace PdfToSvg.Fonts
         protected UnicodeMap toUnicode = UnicodeMap.Empty;
         protected CMap cmap = CMap.OneByteIdentity;
         protected WidthMap widthMap = WidthMap.Empty;
+        protected bool isSymbolic;
 
         public static BaseFont Fallback { get; } = Create(
             new PdfDictionary {
@@ -65,6 +66,11 @@ namespace PdfToSvg.Fonts
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            // Symbolic
+            var descriptor = fontDict.GetDictionaryOrEmpty(Names.FontDescriptor);
+            var fontFlags = (FontFlags)descriptor.GetValueOrDefault(Names.Flags, 0);
+            isSymbolic = fontFlags.HasFlag(FontFlags.Symbolic);
+
             // Read font
             try
             {
@@ -83,8 +89,9 @@ namespace PdfToSvg.Fonts
             }
 
             // Encoding
+            var baseEncoding = (isSymbolic ? openTypeFontEncoding : null) ?? new StandardEncoding();
             var encodingDefinition = fontDict.GetValueOrDefault(Names.Encoding);
-            pdfFontEncoding = EncodingFactory.Create(encodingDefinition);
+            pdfFontEncoding = EncodingFactory.Create(encodingDefinition, baseEncoding);
 
             // ToUnicode
             if (fontDict.TryGetDictionary(Names.ToUnicode, out var toUnicode) && toUnicode.Stream != null)
@@ -198,6 +205,8 @@ namespace PdfToSvg.Fonts
                             openTypeFont = new OpenTypeFont();
                             var cffTable = new CffTable { Content = compactFontSet };
                             openTypeFont.Tables.Add(cffTable);
+
+                            openTypeFontEncoding = compactFontSet.Fonts.FirstOrDefault()?.Encoding;
                         }
                         catch (Exception ex)
                         {

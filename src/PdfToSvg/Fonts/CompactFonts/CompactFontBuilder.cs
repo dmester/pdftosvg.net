@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Encodings;
 using PdfToSvg.Fonts.CharStrings;
 using System;
 using System.Collections.Generic;
@@ -96,7 +97,10 @@ namespace PdfToSvg.Fonts.CompactFonts
                     font.TopDict.Charset = int.MaxValue;
                 }
 
-                if (font.TopDict.Encoding != 0)
+                if (!(
+                    font.Encoding is StandardEncoding ||
+                    font.Encoding is MacExpertEncoding
+                    ))
                 {
                     font.TopDict.Encoding = int.MaxValue;
                 }
@@ -274,6 +278,111 @@ namespace PdfToSvg.Fonts.CompactFonts
             }
         }
 
+        private void WriteEncoding(CompactFont font)
+        {
+            if (font.Encoding is StandardEncoding)
+            {
+                font.TopDict.Encoding = 0;
+            }
+            else if (font.Encoding is MacExpertEncoding)
+            {
+                font.TopDict.Encoding = 1;
+            }
+            else
+            {
+                font.TopDict.Encoding = writer.Position;
+
+                var codesByGlyphName = Enumerable
+                    .Range(0, 256)
+                    .Select(code => new
+                    {
+                        Code = code,
+                        GlyphName = font.Encoding.GetGlyphName((byte)code),
+                    })
+                    .ToLookup(x => x.GlyphName, x => x.Code);
+
+                var glyphs = font
+                    .Glyphs
+                    .Select(glyph => new
+                    {
+                        Glyph = glyph,
+                        Codes = codesByGlyphName[glyph.CharName].OrderBy(code => code).ToList(),
+                    })
+                    .Skip(1) // .notdef
+                    .ToList();
+
+                List<int>? range = null;
+                var ranges = new List<List<int>>();
+                var supplementalCodeToSid = new List<Tuple<int, int>>();
+
+                var previousCode = int.MinValue;
+
+                foreach (var glyph in glyphs)
+                {
+                    foreach (var code in glyph.Codes.Skip(1))
+                    {
+                        supplementalCodeToSid.Add(Tuple.Create(code, glyph.Glyph.SID));
+                    }
+
+                    var mainCharCode = glyph.Codes.FirstOrDefault();
+
+                    if (range == null ||
+                        mainCharCode != previousCode + 1)
+                    {
+                        range = new List<int>();
+                        ranges.Add(range);
+                    }
+
+                    range.Add(mainCharCode);
+                    previousCode = mainCharCode;
+                }
+
+                var format = ranges.Count * 2 < glyphs.Count ? 1 : 0;
+
+                writer.WriteCard8(format | (supplementalCodeToSid.Count > 0 ? 0x80 : 0));
+
+                if (format == 0)
+                {
+                    // Format 0
+                    writer.WriteCard8(glyphs.Count);
+
+                    foreach (var glyph in glyphs)
+                    {
+                        writer.WriteCard8(glyph.Codes.FirstOrDefault());
+                    }
+                }
+                else
+                {
+                    // Format 1
+                    writer.WriteCard8(ranges.Count);
+
+                    foreach (var r in ranges)
+                    {
+                        var first = r[0];
+                        var left = r.Count - 1;
+
+                        writer.WriteCard8(first);
+                        writer.WriteCard8(left);
+                    }
+                }
+
+                // Supplemental
+                if (supplementalCodeToSid.Count > 0)
+                {
+                    writer.WriteCard8(supplementalCodeToSid.Count);
+
+                    foreach (var mapping in supplementalCodeToSid)
+                    {
+                        var code = mapping.Item1;
+                        var sid = mapping.Item2;
+
+                        writer.WriteCard8(code);
+                        writer.WriteSID(sid);
+                    }
+                }
+            }
+        }
+
         private void WriteFont(CompactFont font)
         {
             font.TopDict.Charset = 0;
@@ -283,6 +392,7 @@ namespace PdfToSvg.Fonts.CompactFonts
             WriteCharStrings(font);
 
             WriteCharset(font);
+            WriteEncoding(font);
 
             if (font.IsCIDFont)
             {

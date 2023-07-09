@@ -45,10 +45,6 @@ namespace PdfToSvg.Fonts
         protected override IEnumerable<CharInfo> GetChars()
         {
             // ISO 32000-2 section 9.6.5.4
-            var descriptor = fontDict.GetDictionaryOrEmpty(Names.FontDescriptor);
-            var fontFlags = (FontFlags)descriptor.GetValueOrDefault(Names.Flags, 0);
-            var isSymbolic = fontFlags.HasFlag(FontFlags.Symbolic);
-
             var cmaps = openTypeFont?.CMaps ?? ArrayUtils.Empty<OpenTypeCMap>();
             var postGlyphNames = GetGlyphNameLookup();
             var encoding = pdfFontEncoding ?? new StandardEncoding();

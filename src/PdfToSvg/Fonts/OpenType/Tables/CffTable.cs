@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Encodings;
 using PdfToSvg.Fonts.CompactFonts;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,13 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             if (Content != null)
             {
                 CompactFontSanitizer.Sanitize(Content);
+
+                // OTS does not support supplemental codes, so let's skip writing an encoding to the font. The CFF
+                // encoding has no meaning in an OpenType font.
+                foreach (var font in Content.Fonts)
+                {
+                    font.Encoding = new StandardEncoding();
+                }
 
                 var data = CompactFontBuilder.Build(Content);
                 writer.WriteBytes(data);

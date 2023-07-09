@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.Common;
+using PdfToSvg.Encodings;
 using PdfToSvg.Fonts.CharStrings;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,8 @@ namespace PdfToSvg.Fonts.CompactFonts
         public List<int> FDSelect { get; } = new();
 
         public List<int> CharSet { get; } = new();
+
+        public SingleByteEncoding Encoding { get; set; } = new StandardEncoding();
 
         public List<CompactFontGlyph> Glyphs { get; } = new();
 

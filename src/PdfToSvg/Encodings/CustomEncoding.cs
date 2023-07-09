@@ -18,7 +18,7 @@ namespace PdfToSvg.Encodings
         {
         }
 
-        public static CustomEncoding Create(PdfDictionary encodingDict)
+        public static CustomEncoding Create(PdfDictionary encodingDict, SingleByteEncoding defaultBaseEncoding)
         {
             // PDF spec 1.7, Table 114, page 271
 
@@ -26,12 +26,12 @@ namespace PdfToSvg.Encodings
 
             if (encodingDict.TryGetName(Names.BaseEncoding, out var baseEncodingName))
             {
-                baseEncoding = EncodingFactory.Create(baseEncodingName);
+                baseEncoding = EncodingFactory.Create(baseEncodingName, defaultBaseEncoding);
             }
 
             if (baseEncoding == null)
             {
-                baseEncoding = new StandardEncoding();
+                baseEncoding = defaultBaseEncoding;
             }
 
             var toUnicode = new string?[256];

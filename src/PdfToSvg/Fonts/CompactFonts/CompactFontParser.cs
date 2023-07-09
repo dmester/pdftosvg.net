@@ -146,6 +146,93 @@ namespace PdfToSvg.Fonts.CompactFonts
             }
         }
 
+        private SingleByteEncoding ReadEncoding(CompactFont font, int offsetOrId)
+        {
+            var isCidFont = font.TopDict.FDArray != null;
+
+            if (isCidFont || offsetOrId <= 0)
+            {
+                return new StandardEncoding();
+            }
+
+            if (offsetOrId == 1)
+            {
+                return new MacExpertEncoding();
+            }
+
+            reader.Position = offsetOrId;
+
+            var toUnicode = new string?[256];
+            var glyphNames = new string?[256];
+
+            var format = reader.ReadCard8();
+            var codes = new List<int>(font.Glyphs.Count);
+
+            switch (format & 0xf)
+            {
+                case 0:
+                    var nCodes = reader.ReadCard8();
+
+                    for (var gid = 0; gid < nCodes; gid++)
+                    {
+                        var code = reader.ReadCard8();
+                        codes.Add(code);
+                    }
+                    break;
+
+                case 1:
+                    var nRanges = reader.ReadCard8();
+
+                    for (var iRange = 0; iRange < nRanges; iRange++)
+                    {
+                        var first = reader.ReadCard8();
+                        codes.Add(first);
+
+                        var nLeft = reader.ReadCard8();
+                        for (var i = 1; i <= nLeft; i++)
+                        {
+                            codes.Add(first + i);
+                        }
+                    }
+                    break;
+
+                default:
+                    throw new CompactFontException("Invalid CFF encoding format " + format + ".");
+            }
+
+            var gids = Math.Min(codes.Count, font.Glyphs.Count - 1);
+
+            for (var gid = 1; gid <= gids; gid++)
+            {
+                var code = codes[gid - 1];
+                var glyph = font.Glyphs[gid];
+
+                toUnicode[code] = glyph.Unicode;
+                glyphNames[code] = glyph.CharName;
+            }
+
+            // Supplemental codes
+            if ((format & 0x80) == 0x80)
+            {
+                var nSups = reader.ReadCard8();
+
+                for (var iSup = 0; iSup < nSups; iSup++)
+                {
+                    var code = reader.ReadCard8();
+                    var glyphSid = reader.ReadSID();
+                    var glyphName = font.FontSet.Strings.Lookup(glyphSid);
+
+                    if (glyphName != null && AdobeGlyphList.TryGetUnicode(glyphName, out var unicode))
+                    {
+                        toUnicode[code] = unicode;
+                        glyphNames[code] = glyphName;
+                    }
+                }
+            }
+
+            return new CompactFontEncoding(toUnicode, glyphNames);
+        }
+
         private void ReadSubrs(IList<CharStringSubRoutine> target)
         {
             var subrIndex = reader.ReadIndex();
@@ -204,6 +291,9 @@ namespace PdfToSvg.Fonts.CompactFonts
             {
                 ReadGlyph(font, charStringsIndex, glyphIndex);
             }
+
+            // Encoding
+            font.Encoding = ReadEncoding(font, font.TopDict.Encoding);
 
             ReplaceSeacChars(font);
         }

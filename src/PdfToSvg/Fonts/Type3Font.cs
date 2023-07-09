@@ -90,7 +90,7 @@ namespace PdfToSvg.Fonts
             var transform = FontMatrix * Matrix.Scale(TargetEmSize, TargetEmSize);
 
             var charProcs = fontDict.GetDictionaryOrEmpty(Names.CharProcs);
-            var encoding = pdfFontEncoding ?? new StandardEncoding();
+            var encoding = pdfFontEncoding ?? SingleByteEncoding.Standard;
 
             // Handle glyphs
             var glyphs = new List<CompactFontGlyph>();

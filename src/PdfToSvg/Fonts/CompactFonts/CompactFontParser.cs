@@ -152,12 +152,12 @@ namespace PdfToSvg.Fonts.CompactFonts
 
             if (isCidFont || offsetOrId <= 0)
             {
-                return new StandardEncoding();
+                return SingleByteEncoding.Standard;
             }
 
             if (offsetOrId == 1)
             {
-                return new MacExpertEncoding();
+                return SingleByteEncoding.MacExpert;
             }
 
             reader.Position = offsetOrId;
@@ -351,7 +351,7 @@ namespace PdfToSvg.Fonts.CompactFonts
                 if (seac != null)
                 {
                     var content = glyph.CharString.Content;
-                    var standardEncoding = new StandardEncoding();
+                    var standardEncoding = SingleByteEncoding.Standard;
 
                     var acharValue = standardEncoding.GetString(new byte[] { (byte)seac.Achar });
                     var bcharValue = standardEncoding.GetString(new byte[] { (byte)seac.Bchar });

@@ -26,7 +26,7 @@ namespace PdfToSvg.Tests.Encodings
                     39, new PdfName("Ebreve"),
                     128, new PdfName("Ncaron"), new PdfName("Wcircumflex"),
                 } },
-            }, new StandardEncoding());
+            }, SingleByteEncoding.Standard);
 
             var str = decoder.GetString(new byte[] { 39, 128, 129, 198 });
             var bytes = decoder.GetBytes("ĔŇŴÆ");

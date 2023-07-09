@@ -29,7 +29,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         public List<int> CharSet { get; } = new();
 
-        public SingleByteEncoding Encoding { get; set; } = new StandardEncoding();
+        public SingleByteEncoding Encoding { get; set; } = SingleByteEncoding.Standard;
 
         public List<CompactFontGlyph> Glyphs { get; } = new();
 

@@ -32,7 +32,7 @@ namespace PdfToSvg.DocumentModel
                 {
                     using (var stream = streamInfo.OpenDecoded(CancellationToken.None))
                     {
-                        var encoding = new PdfDocEncoding();
+                        var encoding = SingleByteEncoding.PdfDoc;
                         var buffer = new byte[8 * 1024];
                         var read = stream.Read(buffer, 0, buffer.Length);
 

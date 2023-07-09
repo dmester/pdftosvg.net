@@ -43,7 +43,7 @@ namespace PdfToSvg.Security
 #endif
 
             // Convert codepage encoding to PDFDocEncoding
-            var encoding = new PdfDocEncoding();
+            var encoding = SingleByteEncoding.PdfDoc;
             var decodeCharCount = Math.Min(PaddedPasswordLength, password.Length);
             var passwordLength = encoding.GetBytes(password, 0, decodeCharCount, output, 0);
 

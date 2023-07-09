@@ -25,7 +25,7 @@ namespace PdfToSvg.Tests.Encodings
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#¤%&/()=?" +
                 "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
 
-            var winAnsi = new WinAnsiEncoding();
+            var winAnsi = SingleByteEncoding.WinAnsi;
             var net1252 = Encoding.GetEncoding(1252);
 
             Assert.AreEqual(source, net1252.GetString(winAnsi.GetBytes(source)));
@@ -41,7 +41,7 @@ namespace PdfToSvg.Tests.Encodings
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#¤%&/()=?" +
                 "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜßàáâãäåæçèéêëìíîïñòóôõö÷øùúûüÿ";
 
-            var macRoman = new MacRomanEncoding();
+            var macRoman = SingleByteEncoding.MacRoman;
 
             Assert.AreEqual(source, macRoman.GetString(macRoman.GetBytes(source)));
             Assert.AreEqual("ÊËÎ", macRoman.GetString(new byte[] { 0xe6, 0xe8, 0xeb }));
@@ -53,7 +53,7 @@ namespace PdfToSvg.Tests.Encodings
         {
             var source = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#¤%&/()=?";
 
-            var standard = new StandardEncoding();
+            var standard = SingleByteEncoding.Standard;
 
             Assert.AreEqual(source, standard.GetString(standard.GetBytes(source)));
             Assert.AreEqual("ÆŁæ", standard.GetString(new byte[] { 0xe1, 0xe8, 0xf1 }));
@@ -67,7 +67,7 @@ namespace PdfToSvg.Tests.Encodings
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#¤%&/()=?" +
                 "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖ×ØÙÚÛÜßàáâãäåæçèéêëìíîïñòóôõö÷øùúûüÿ";
 
-            var pdfDoc = new PdfDocEncoding();
+            var pdfDoc = SingleByteEncoding.PdfDoc;
 
             Assert.AreEqual(source, pdfDoc.GetString(pdfDoc.GetBytes(source)));
             Assert.AreEqual("œž¥", pdfDoc.GetString(new byte[] { 0x9c, 0x9e, 0xa5 }));

@@ -19,17 +19,17 @@ namespace PdfToSvg.Encodings
             {
                 if (encodingName == Names.WinAnsiEncoding)
                 {
-                    return new WinAnsiEncoding();
+                    return SingleByteEncoding.WinAnsi;
                 }
 
                 if (encodingName == Names.MacExpertEncoding)
                 {
-                    return new MacExpertEncoding();
+                    return SingleByteEncoding.MacExpert;
                 }
 
                 if (encodingName == Names.MacRomanEncoding)
                 {
-                    return new MacRomanEncoding();
+                    return SingleByteEncoding.MacRoman;
                 }
             }
             else if (definition is PdfDictionary encodingDict)

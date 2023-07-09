@@ -47,7 +47,7 @@ namespace PdfToSvg.Fonts
             // ISO 32000-2 section 9.6.5.4
             var cmaps = openTypeFont?.CMaps ?? ArrayUtils.Empty<OpenTypeCMap>();
             var postGlyphNames = GetGlyphNameLookup();
-            var encoding = pdfFontEncoding ?? new StandardEncoding();
+            var encoding = pdfFontEncoding ?? SingleByteEncoding.Standard;
 
             var chars = Enumerable.Empty<CharInfo>();
 

@@ -89,7 +89,7 @@ namespace PdfToSvg.Fonts
             }
 
             // Encoding
-            var baseEncoding = (isSymbolic ? openTypeFontEncoding : null) ?? new StandardEncoding();
+            var baseEncoding = (isSymbolic ? openTypeFontEncoding : null) ?? SingleByteEncoding.Standard;
             var encodingDefinition = fontDict.GetValueOrDefault(Names.Encoding);
             pdfFontEncoding = EncodingFactory.Create(encodingDefinition, baseEncoding);
 

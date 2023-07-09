@@ -89,7 +89,7 @@ namespace PdfToSvg.Fonts.Type1
             {
                 if (startLexeme.Value.ToString() == "StandardEncoding")
                 {
-                    return new StandardEncoding();
+                    return SingleByteEncoding.Standard;
                 }
                 else
                 {

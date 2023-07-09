@@ -27,7 +27,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
                 // encoding has no meaning in an OpenType font.
                 foreach (var font in Content.Fonts)
                 {
-                    font.Encoding = new StandardEncoding();
+                    font.Encoding = SingleByteEncoding.Standard;
                 }
 
                 var data = CompactFontBuilder.Build(Content);

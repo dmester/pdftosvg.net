@@ -196,7 +196,7 @@ namespace PdfToSvg.DocumentModel
                 return Encoding.BigEndianUnicode.GetString(data, 2, data.Length - 2);
             }
 
-            return new PdfDocEncoding().GetString(data);
+            return SingleByteEncoding.PdfDoc.GetString(data);
         }
 
         public string ToString(Encoding encoding) => encoding.GetString(data);

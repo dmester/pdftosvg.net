@@ -14,20 +14,12 @@ namespace PdfToSvg.Fonts.OpenType
 {
     internal static class OpenTypeCMapEncoder
     {
-        private const int GlyphArrayGroupThreshold = 5;
-
-        internal static List<List<OpenTypeCMapRange>> GroupRanges(IEnumerable<OpenTypeCMapRange> inputRanges)
+        internal static List<OpenTypeCMapRange> CombineGlyphRanges(IEnumerable<OpenTypeCMapRange> inputRanges)
         {
             var ranges = inputRanges.ToList();
 
             ranges.Sort(x => x.StartUnicode, x => x.StartGlyphIndex);
 
-            CombineGlyphRanges(ranges);
-            return GroupUnicodeRanges(ranges);
-        }
-
-        private static void CombineGlyphRanges(List<OpenTypeCMapRange> ranges)
-        {
             var readCursor = 0;
             var writeCursor = -1;
 
@@ -50,85 +42,72 @@ namespace PdfToSvg.Fonts.OpenType
             }
 
             ranges.RemoveRange(writeCursor + 1, ranges.Count - writeCursor - 1);
+
+            return ranges;
         }
 
-        private static List<List<OpenTypeCMapRange>> GroupUnicodeRanges(List<OpenTypeCMapRange> ranges)
+        public static CMapFormat12 EncodeFormat12(IEnumerable<OpenTypeCMapRange> ranges)
         {
-            var groups = new List<List<OpenTypeCMapRange>>();
+            var optimizedRanges = CombineGlyphRanges(ranges);
 
-            List<OpenTypeCMapRange>? group = null;
-
-            foreach (var range in ranges.OrderBy(x => x.StartUnicode))
+            var format12 = new CMapFormat12
             {
-                var forceOwnGroup = range.EndGlyphIndex - range.StartGlyphIndex > GlyphArrayGroupThreshold;
-                if (forceOwnGroup)
-                {
-                    groups.Add(new List<OpenTypeCMapRange> { range });
-                    group = null;
-                }
-                else
-                {
-                    if (group == null ||
-                        group.Last().EndUnicode + 1 != range.StartUnicode)
+                Language = 0,
+                Groups = optimizedRanges
+                    .Select(range => new CMapFormat12Group
                     {
-                        group = new List<OpenTypeCMapRange>();
-                        groups.Add(group);
+                        StartCharCode = range.StartUnicode,
+                        EndCharCode = range.EndUnicode,
+                        StartGlyphID = range.StartGlyphIndex,
+                    })
+                    .ToArray(),
+            };
+
+            return format12;
+        }
+
+        public static CMapFormat4 EncodeFormat4(IEnumerable<OpenTypeCMapRange> ranges, out bool wasSubsetted)
+        {
+            var localWasSubsetted = false;
+
+            var filteredRanges = ranges
+                .Where(range =>
+                {
+                    if (range.StartUnicode > 0xffff ||
+                        range.EndUnicode > 0xffff)
+                    {
+                        localWasSubsetted = true;
                     }
 
-                    group.Add(range);
-                }
+                    return range.StartUnicode < 0xffff;
+                });
+            var optimizedRanges = CombineGlyphRanges(filteredRanges);
+
+            // The length field of the Format 4 table is limited to 16 bit, so the table must not exceed 2^16 = 64k bytes
+            const int TableMaxSize = ushort.MaxValue;
+            const int HeaderSize = 8 * 2; // incl "reservedPad"
+            const int RangeSize = 4 * 2;
+            const int MaxRangeCount = (TableMaxSize - HeaderSize) / RangeSize - 1;
+
+            if (optimizedRanges.Count > MaxRangeCount)
+            {
+                optimizedRanges.RemoveRange(MaxRangeCount, optimizedRanges.Count - MaxRangeCount);
+                localWasSubsetted = true;
             }
 
-            return groups;
-        }
-
-        public static CMapFormat4 EncodeFormat4(IEnumerable<OpenTypeCMapRange> ranges)
-        {
-            var groups = GroupRanges(ranges
-                .Where(range => range.StartUnicode < 0xffff));
-
-            var startCodes = new ushort[groups.Count + 1];
-            var endCodes = new ushort[groups.Count + 1];
-            var idDeltas = new short[groups.Count + 1];
-            var idRangeOffsets = new ushort[groups.Count + 1];
-            var glyphIdList = new List<ushort>();
+            var startCodes = new ushort[optimizedRanges.Count + 1];
+            var endCodes = new ushort[optimizedRanges.Count + 1];
+            var idDeltas = new short[optimizedRanges.Count + 1];
+            var idRangeOffsets = new ushort[optimizedRanges.Count + 1];
+            var glyphIdList = new ushort[0];
 
             var index = 0;
 
-            foreach (var group in groups)
+            foreach (var range in optimizedRanges)
             {
-                if (group.Count == 1)
-                {
-                    var range = group[0];
-                    startCodes[index] = (ushort)range.StartUnicode;
-                    endCodes[index] = (ushort)Math.Min(range.EndUnicode, 0xfffe);
-                    idDeltas[index] = unchecked((short)(range.StartGlyphIndex - range.StartUnicode));
-                }
-                else
-                {
-                    startCodes[index] = (ushort)group.First().StartUnicode;
-                    endCodes[index] = (ushort)Math.Min(group.Last().EndUnicode, 0xfffe);
-                    idRangeOffsets[index] = (ushort)((idRangeOffsets.Length - index + glyphIdList.Count) * 2);
-
-                    foreach (var range in group)
-                    {
-                        for (var glyph = range.StartGlyphIndex; ;)
-                        {
-                            glyphIdList.Add((ushort)glyph);
-
-                            // Prevent infinity loop on overflow
-                            if (glyph < range.EndGlyphIndex)
-                            {
-                                glyph++;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-
+                startCodes[index] = (ushort)range.StartUnicode;
+                endCodes[index] = (ushort)Math.Min(range.EndUnicode, 0xfffe);
+                idDeltas[index] = unchecked((short)(range.StartGlyphIndex - range.StartUnicode));
                 index++;
             }
 
@@ -145,9 +124,10 @@ namespace PdfToSvg.Fonts.OpenType
                 EndCode = endCodes,
                 IdDelta = idDeltas,
                 IdRangeOffsets = idRangeOffsets,
-                GlyphIdArray = glyphIdList.ToArray(),
+                GlyphIdArray = glyphIdList,
             };
 
+            wasSubsetted = localWasSubsetted;
             return format4;
         }
     }

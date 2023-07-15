@@ -22,7 +22,7 @@ namespace PdfToSvg.Tests.Fonts
         });
 
         [Test]
-        public void OptimizedRanges()
+        public void CombineGlyphRanges()
         {
             var ranges = new List<OpenTypeCMapRange>
             {
@@ -31,35 +31,22 @@ namespace PdfToSvg.Tests.Fonts
                 new OpenTypeCMapRange(4, 7, 304),
                 new OpenTypeCMapRange(8, 11, 308),
 
-                // The following two should be grouped together
+                // Not combined
                 new OpenTypeCMapRange(70, 72, 200),
                 new OpenTypeCMapRange(73, 74, 500),
-
                 new OpenTypeCMapRange(12, 50, 400),
                 new OpenTypeCMapRange(60, 64, 208),
             };
 
-            var actualGroups = OpenTypeCMapEncoder.GroupRanges(ranges);
+            var actualGroups = OpenTypeCMapEncoder.CombineGlyphRanges(ranges);
 
             var expectedGroups = new[]
             {
-                new []
-                {
-                    new OpenTypeCMapRange(0, 11, 300),
-                },
-                new []
-                {
-                    new OpenTypeCMapRange(12, 50, 400),
-                },
-                new []
-                {
-                    new OpenTypeCMapRange(60, 64, 208),
-                },
-                new []
-                {
-                    new OpenTypeCMapRange(70, 72, 200),
-                    new OpenTypeCMapRange(73, 74, 500),
-                },
+                new OpenTypeCMapRange(0, 11, 300),
+                new OpenTypeCMapRange(12, 50, 400),
+                new OpenTypeCMapRange(60, 64, 208),
+                new OpenTypeCMapRange(70, 72, 200),
+                new OpenTypeCMapRange(73, 74, 500),
             };
 
             Assert.AreEqual(

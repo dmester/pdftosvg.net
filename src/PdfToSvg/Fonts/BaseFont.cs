@@ -329,6 +329,10 @@ namespace PdfToSvg.Fonts
 
             var allChars = chars
                 .Where(ch => ch.GlyphIndex != null && ch.GlyphIndex < numGlyphs)
+
+                // Some PDF producers map all non-included chars to glyph 0. Those mappings have no value for us.
+                .Where(ch => ch.GlyphIndex > 0)
+
                 .Select(ch =>
                 {
                     var unicode = Utf16Encoding.DecodeCodePoint(ch.Unicode, 0, out var _);
@@ -336,30 +340,52 @@ namespace PdfToSvg.Fonts
                 })
                 .DistinctBy(ch => ch.StartUnicode);
 
-            cmapTable.EncodingRecords = new[]
+            var encodingRecords = new List<CMapEncodingRecord>(2)
             {
                 new CMapEncodingRecord
                 {
                     PlatformID = OpenTypePlatformID.Windows,
                     EncodingID = 1,
-                    Content = OpenTypeCMapEncoder.EncodeFormat4(allChars),
-                }
+                    Content = OpenTypeCMapEncoder.EncodeFormat4(allChars, out var format4WasSubsetted),
+                },
             };
+
+            if (format4WasSubsetted)
+            {
+                encodingRecords.Add(new CMapEncodingRecord
+                {
+                    PlatformID = OpenTypePlatformID.Windows,
+                    EncodingID = 10,
+                    Content = OpenTypeCMapEncoder.EncodeFormat12(allChars),
+                });
+            }
+
+            cmapTable.EncodingRecords = encodingRecords
+
+                // Order stipulated by spec
+                .OrderBy(x => x.PlatformID)
+                .ThenBy(x => x.EncodingID)
+
+                .ToArray();
 
             nameTable.Version = 0;
             nameTable.NameRecords = font
                 .Names
-                .Select(name => new NameRecord
-                {
-                    NameID = name.Key,
-                    PlatformID = OpenTypePlatformID.Windows,
-                    EncodingID = 1,
-                    LanguageID = 0x0409,
-                    Content = Encoding.BigEndianUnicode.GetBytes(name.Value),
-                })
+                .SelectMany(name => encodingRecords
+                    .Select(encoding => new NameRecord
+                    {
+                        NameID = name.Key,
+                        PlatformID = OpenTypePlatformID.Windows,
+                        EncodingID = encoding.EncodingID,
+                        LanguageID = 0x0409,
+                        Content = Encoding.BigEndianUnicode.GetBytes(name.Value),
+                    }))
 
                 // Order stipulated by spec
-                .OrderBy(x => x.NameID)
+                .OrderBy(x => x.PlatformID)
+                .ThenBy(x => x.EncodingID)
+                .ThenBy(x => x.LanguageID)
+                .ThenBy(x => x.NameID)
 
                 .ToArray();
 

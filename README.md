@@ -18,13 +18,6 @@ Fully managed library for converting PDF files to SVG. Potential usage is seamle
 * Focus on producing compact SVG markup ready for the web
 * Dependency free
 
-## State
-Some PDF features are not yet implemented by this library.
-
-📖 [Read more about limitations](https://github.com/dmester/pdftosvg.net/blob/master/docs/limitations.md)
-
-⚠️ New versions of the library might include breaking changes to the public API until version 1.0 is released.
-
 ## Quick start
 Install the [PdfToSvg.NET NuGet package](https://www.nuget.org/packages/PdfToSvg.NET/).
 

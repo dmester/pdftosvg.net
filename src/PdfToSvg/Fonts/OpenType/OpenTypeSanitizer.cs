@@ -37,7 +37,7 @@ namespace PdfToSvg.Fonts.OpenType
             CMapTable cmap;
             HmtxTable hmtx;
             NameTable name;
-            HheaTable hhea;
+            HheaTable? hhea;
             PostTable post;
             MaxpTable maxp;
             OS2Table os2;
@@ -50,6 +50,7 @@ namespace PdfToSvg.Fonts.OpenType
                 maxp = GetOrThrow<MaxpTable>();
                 cmap = GetOrCreate(() => CreateEmptyCMap());
                 name = GetOrCreate(() => CreateName(head, cmap, cff));
+                hhea = GetOrNull<HheaTable>();
                 post = GetOrCreate(() => CreatePost(head, cff));
                 os2 = GetOrCreate(() => CreateOS2(head, hmtx, cff));
             }
@@ -69,6 +70,11 @@ namespace PdfToSvg.Fonts.OpenType
 
             UpdateOS2(os2, head, cmap, cff);
             UpdateHmtx(hmtx, maxp);
+
+            if (hhea != null)
+            {
+                UpdateHhea(hhea, hmtx);
+            }
         }
 
         private List<CompactFontGlyph> GetGlyphs(CompactFont cff)
@@ -109,6 +115,11 @@ namespace PdfToSvg.Fonts.OpenType
             }
 
             return table;
+        }
+
+        private T? GetOrNull<T>() where T : IBaseTable
+        {
+            return font.Tables.OfType<T>().FirstOrDefault();
         }
 
         private CompactFont? GetCff()
@@ -387,6 +398,14 @@ namespace PdfToSvg.Fonts.OpenType
                     .Concat(Enumerable.Repeat((short)0, maxpTable.NumGlyphs))
                     .Take(expectedLeftSideBearings)
                     .ToArray();
+            }
+        }
+
+        private void UpdateHhea(HheaTable hheaTable, HmtxTable hmtxTable)
+        {
+            if (hmtxTable.HorMetrics.Length > 0)
+            {
+                hheaTable.AdvanceWidthMax = hmtxTable.HorMetrics.Max(x => x.AdvanceWidth);
             }
         }
 

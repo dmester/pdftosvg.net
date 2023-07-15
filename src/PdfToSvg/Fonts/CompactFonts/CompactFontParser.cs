@@ -36,23 +36,22 @@ namespace PdfToSvg.Fonts.CompactFonts
         private void ReadFDSelect(IList<int> fdSelect, int nGlyphs)
         {
             var format = reader.ReadCard8();
+            var fd = 0;
 
             switch (format)
             {
                 case 0:
-                    for (var i = 0; i < nGlyphs - 1; i++)
+                    for (var i = 0; i < nGlyphs; i++)
                     {
-                        var sid = reader.ReadSID();
+                        fd = reader.ReadCard8();
 
-                        fdSelect.Add(sid);
+                        fdSelect.Add(fd);
                     }
                     break;
 
                 case 3:
                     var nRanges = reader.ReadCard16();
-
                     var first = 0;
-                    var fd = 0;
 
                     for (var i = 0; i <= nRanges; i++)
                     {

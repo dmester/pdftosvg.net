@@ -2171,7 +2171,7 @@ namespace PdfToSvg.Drawing
             if (singleSpan != null)
             {
                 x += singleSpan.SpaceBefore;
-                y += singleSpan.Style.TextRisePx;
+                y -= singleSpan.Style.TextRisePx;
             }
 
             if (paragraph.Matrix.IsIdentity)

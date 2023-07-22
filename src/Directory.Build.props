@@ -33,4 +33,12 @@
       Condition="$(Configuration) == 'Release' And $(PdfToSvgKeyFile) == ''" />
   </Target>
 
+  <!-- Embedded resources -->
+  <ItemGroup Condition=" '$(TargetName)' != 'PdfToSvg.Packer' ">
+    <EmbeddedResource Include="..\..\third-party\AdobeCMaps\PredefinedCMaps.bin" Link="CMaps\PredefinedCMaps.bin" Visible="false" />
+
+    <EmbeddedResource Include="..\..\third-party\AdobeGlyphList\glyphlist.txt" Link="Encodings\AdobeGlyphList\glyphlist.txt" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\AdobeGlyphList\zapfdingbats.txt" Link="Encodings\AdobeGlyphList\zapfdingbats.txt" Visible="false" />
+  </ItemGroup>
+
 </Project>

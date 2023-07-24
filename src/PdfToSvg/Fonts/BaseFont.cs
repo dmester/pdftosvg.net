@@ -43,6 +43,7 @@ namespace PdfToSvg.Fonts
         protected CMap cmap = CMap.OneByteIdentity;
         protected WidthMap widthMap = WidthMap.Empty;
         protected bool isSymbolic;
+        protected bool isStandardFont;
 
         public static BaseFont Fallback { get; } = Create(
             new PdfDictionary {
@@ -59,6 +60,8 @@ namespace PdfToSvg.Fonts
         public Font SubstituteFont { get; private set; } = fallbackSubstituteFont;
 
         public override bool CanBeExtracted => openTypeFont != null;
+
+        public override bool IsStandardFont => isStandardFont;
 
         protected BaseFont() { }
 
@@ -86,6 +89,7 @@ namespace PdfToSvg.Fonts
             {
                 openTypeFont = null;
                 openTypeFontException = ex;
+                isStandardFont = false;
             }
 
             // Encoding
@@ -238,6 +242,8 @@ namespace PdfToSvg.Fonts
                         {
                             openTypeFont.Names.License = standardFont.License;
                         }
+
+                        isStandardFont = true;
                     }
                     catch (Exception ex)
                     {
@@ -562,6 +568,13 @@ namespace PdfToSvg.Fonts
             return result;
         }
 
-        public override string ToString() => (Name ?? "Unnamed font") + (openTypeFont == null ? "; Not embedded" : "");
+        public override string ToString()
+        {
+            var extra =
+                openTypeFont == null ? "; Not embedded" :
+                isStandardFont ? "; Standard font" :
+                "";
+            return (Name ?? "Unnamed font") + extra;
+        }
     }
 }

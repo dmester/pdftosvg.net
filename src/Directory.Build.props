@@ -39,6 +39,22 @@
 
     <EmbeddedResource Include="..\..\third-party\AdobeGlyphList\glyphlist.txt" Link="Encodings\AdobeGlyphList\glyphlist.txt" Visible="false" />
     <EmbeddedResource Include="..\..\third-party\AdobeGlyphList\zapfdingbats.txt" Link="Encodings\AdobeGlyphList\zapfdingbats.txt" Visible="false" />
+
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitDingbats.cff" Link="Fonts\StandardFonts\FoxitDingbats.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitFixed.modified.cff" Link="Fonts\StandardFonts\FoxitFixed.modified.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitFixedBold.modified.cff" Link="Fonts\StandardFonts\FoxitFixedBold.modified.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitFixedBoldItalic.modified.cff" Link="Fonts\StandardFonts\FoxitFixedBoldItalic.modified.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitFixedItalic.cff" Link="Fonts\StandardFonts\FoxitFixedItalic.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSans.cff" Link="Fonts\StandardFonts\FoxitSans.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSansBold.cff" Link="Fonts\StandardFonts\FoxitSansBold.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSansBoldItalic.cff" Link="Fonts\StandardFonts\FoxitSansBoldItalic.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSansItalic.cff" Link="Fonts\StandardFonts\FoxitSansItalic.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSerif.cff" Link="Fonts\StandardFonts\FoxitSerif.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSerifBold.cff" Link="Fonts\StandardFonts\FoxitSerifBold.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSerifBoldItalic.cff" Link="Fonts\StandardFonts\FoxitSerifBoldItalic.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSerifItalic.cff" Link="Fonts\StandardFonts\FoxitSerifItalic.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSymbol.cff" Link="Fonts\StandardFonts\FoxitSymbol.cff" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\LICENSE" Link="Fonts\StandardFonts\LICENSE" Visible="false" />
   </ItemGroup>
 
 </Project>

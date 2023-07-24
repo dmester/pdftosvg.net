@@ -217,6 +217,36 @@ namespace PdfToSvg.Fonts
                     return;
                 }
             }
+
+            // Standard font
+            if (fontDict.TryGetName(Names.BaseFont, out var name))
+            {
+                var standardFont = StandardFonts.GetFont(name);
+                if (standardFont != null)
+                {
+                    try
+                    {
+                        var compactFontSet = CompactFontParser.Parse(standardFont.Data, maxFontCount: 1);
+
+                        openTypeFont = new OpenTypeFont();
+                        var cffTable = new CffTable { Content = compactFontSet };
+                        openTypeFont.Tables.Add(cffTable);
+
+                        openTypeFontEncoding = standardFont.Encoding;
+
+                        if (standardFont.License != null)
+                        {
+                            openTypeFont.Names.License = standardFont.License;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new FontException("Failed to parse standard font " + name + ".", ex);
+                    }
+
+                    return;
+                }
+            }
         }
 
         protected virtual IEnumerable<CharInfo> GetChars()

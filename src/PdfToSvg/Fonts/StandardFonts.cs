@@ -3,9 +3,13 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Encodings;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,6 +34,27 @@ namespace PdfToSvg.Fonts
 
         public static PdfName Symbol { get; } = new PdfName("Symbol");
         public static PdfName ZapfDingbats { get; } = new PdfName("ZapfDingbats");
+
+        private static readonly Dictionary<PdfName, string> resourceNames = new()
+        {
+            { TimesRoman, "FoxitSerif.cff" },
+            { TimesBold, "FoxitSerifBold.cff" },
+            { TimesBoldItalic, "FoxitSerifBoldItalic.cff" },
+            { TimesItalic, "FoxitSerifItalic.cff" },
+
+            { Helvetica, "FoxitSans.cff" },
+            { HelveticaBold, "FoxitSansBold.cff" },
+            { HelveticaBoldOblique, "FoxitSansBoldItalic.cff" },
+            { HelveticaOblique, "FoxitSansItalic.cff" },
+
+            { Courier, "FoxitFixed.modified.cff" },
+            { CourierBold, "FoxitFixedBold.modified.cff" },
+            { CourierBoldOblique, "FoxitFixedBoldItalic.modified.cff" },
+            { CourierOblique, "FoxitFixedItalic.cff" },
+
+            { Symbol, "FoxitSymbol.cff" },
+            { ZapfDingbats, "FoxitDingbats.cff" },
+        };
 
         public static PdfName TranslateAlternativeNames(PdfName name)
         {
@@ -109,6 +134,43 @@ namespace PdfToSvg.Fonts
                 default:
                     return name;
             }
+        }
+
+        public static StandardFont? GetFont(PdfName name)
+        {
+            var normalizedName = TranslateAlternativeNames(name);
+
+            if (resourceNames.TryGetValue(normalizedName, out var baseResourceName))
+            {
+                var type = typeof(StandardFonts);
+                var assembly = type.GetTypeInfo().Assembly;
+                var fontResourceName = type.FullName + "." + baseResourceName;
+                var licenseResourceName = type.FullName + ".LICENSE";
+
+                byte[] data;
+                string license;
+
+                using (var fontStream = assembly.GetManifestResourceStream(fontResourceName))
+                {
+                    data = new byte[fontStream.Length];
+                    fontStream.ReadAll(data, 0, data.Length);
+                }
+
+                using (var licenseStream = assembly.GetManifestResourceStream(licenseResourceName))
+                {
+                    using var licenseReader = new StreamReader(licenseStream);
+                    license = licenseReader.ReadToEnd();
+                }
+
+                var encoding =
+                    normalizedName == Symbol ? SingleByteEncoding.Symbol :
+                    normalizedName == ZapfDingbats ? SingleByteEncoding.ZapfDingbats :
+                    SingleByteEncoding.Standard;
+
+                return new StandardFont(normalizedName, data, encoding, license);
+            }
+
+            return null;
         }
     }
 }

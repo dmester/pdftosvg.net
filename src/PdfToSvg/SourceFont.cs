@@ -21,7 +21,7 @@ namespace PdfToSvg
 
         /// <summary>
         /// Indicates whether this font is one of the 14 standard PDF fonts. If so, the font returned by
-        /// <see cref="ToOpenType"/> and <see cref="ToWoff"/> are not extracted from the PDF, but rather provided by
+        /// <see cref="ToOpenType"/> and <see cref="ToWoff"/> is not extracted from the PDF, but rather provided by
         /// PdfToSvg.NET.
         /// </summary>
         /// <remarks>

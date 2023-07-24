@@ -325,7 +325,6 @@ namespace PdfToSvg.Fonts
             var numGlyphs = maxpTable?.NumGlyphs ?? ushort.MaxValue;
 
             var cmapTable = new CMapTable();
-            var nameTable = new NameTable();
 
             var allChars = chars
                 .Where(ch => ch.GlyphIndex != null && ch.GlyphIndex < numGlyphs)
@@ -368,31 +367,8 @@ namespace PdfToSvg.Fonts
 
                 .ToArray();
 
-            nameTable.Version = 0;
-            nameTable.NameRecords = font
-                .Names
-                .SelectMany(name => encodingRecords
-                    .Select(encoding => new NameRecord
-                    {
-                        NameID = name.Key,
-                        PlatformID = OpenTypePlatformID.Windows,
-                        EncodingID = encoding.EncodingID,
-                        LanguageID = 0x0409,
-                        Content = Encoding.BigEndianUnicode.GetBytes(name.Value),
-                    }))
-
-                // Order stipulated by spec
-                .OrderBy(x => x.PlatformID)
-                .ThenBy(x => x.EncodingID)
-                .ThenBy(x => x.LanguageID)
-                .ThenBy(x => x.NameID)
-
-                .ToArray();
-
-            font.Tables.Remove<NameTable>();
             font.Tables.Remove<CMapTable>();
             font.Tables.Add(cmapTable);
-            font.Tables.Add(nameTable);
         }
 
         private static BaseFont Create(PdfDictionary fontDict, CancellationToken cancellationToken)

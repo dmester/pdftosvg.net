@@ -49,10 +49,7 @@ namespace PdfToSvg.Fonts.OpenType
                 hmtx = GetOrThrow<HmtxTable>();
                 maxp = GetOrThrow<MaxpTable>();
                 cmap = GetOrCreate(() => CreateEmptyCMap());
-                name = GetOrCreate(() => CreateName(head, cmap, cff));
                 hhea = GetOrNull<HheaTable>();
-                post = GetOrCreate(() => CreatePost(head, cff));
-                os2 = GetOrCreate(() => CreateOS2(head, hmtx, cff));
             }
             else
             {
@@ -63,10 +60,11 @@ namespace PdfToSvg.Fonts.OpenType
                 hmtx = GetOrCreate(() => CreateHmtx(cff));
                 cmap = GetOrCreate(() => CreateCMap(cff));
                 hhea = GetOrCreate(() => CreateHhea(head, cff, glyphs));
-                post = GetOrCreate(() => CreatePost(head, cff));
-                name = GetOrCreate(() => CreateName(head, cmap, cff));
-                os2 = GetOrCreate(() => CreateOS2(head, hmtx, cff));
             }
+
+            post = GetOrCreate(() => CreatePost(head, cff));
+            os2 = GetOrCreate(() => CreateOS2(head, hmtx, cff));
+            name = Replace(CreateName(head, cmap, font.Names, cff));
 
             UpdateOS2(os2, head, cmap, cff);
             UpdateHmtx(hmtx, maxp);
@@ -120,6 +118,13 @@ namespace PdfToSvg.Fonts.OpenType
         private T? GetOrNull<T>() where T : IBaseTable
         {
             return font.Tables.OfType<T>().FirstOrDefault();
+        }
+
+        private T Replace<T>(T newTable) where T : IBaseTable
+        {
+            font.Tables.Remove<NameTable>();
+            font.Tables.Add(newTable);
+            return newTable;
         }
 
         private CompactFont? GetCff()
@@ -225,12 +230,13 @@ namespace PdfToSvg.Fonts.OpenType
             return hhea;
         }
 
-        private NameTable CreateName(HeadTable head, CMapTable cmap, CompactFont? cff)
+        private NameTable CreateName(HeadTable head, CMapTable cmap, OpenTypeNames names, CompactFont? cff)
         {
             string name;
             string fontFamily;
             string fontSubFamily;
             string copyright;
+            string version;
 
             if (cff == null)
             {
@@ -238,6 +244,7 @@ namespace PdfToSvg.Fonts.OpenType
                 fontFamily = "Untitled exported font";
                 fontSubFamily = "Regular";
                 copyright = "";
+                version = "Version 1.0";
             }
             else
             {
@@ -245,6 +252,7 @@ namespace PdfToSvg.Fonts.OpenType
                 fontFamily = cff.TopDict.FamilyName ?? cff.Name;
                 fontSubFamily = cff.TopDict.Weight ?? "Regular";
                 copyright = cff.TopDict.Notice ?? "";
+                version = cff.TopDict.Version ?? "Version 1.0";
 
                 if (head.MacStyle.HasFlag(MacStyle.Italic))
                 {
@@ -252,34 +260,50 @@ namespace PdfToSvg.Fonts.OpenType
                 }
             }
 
-            var nameValues = new[]
+            var backupNames = new[]
             {
-                new { ID = OpenTypeNameID.Copyright, Value = copyright },
-                new { ID = OpenTypeNameID.FontFamily, Value = fontFamily},
-                new { ID = OpenTypeNameID.FontSubfamily, Value = fontSubFamily },
-                new { ID = OpenTypeNameID.UniqueId, Value = "PdfToSvg.NET : " + fontFamily + " " + fontSubFamily },
-                new { ID = OpenTypeNameID.FullFontName, Value = fontFamily + " " + fontSubFamily },
-                new { ID = OpenTypeNameID.Version, Value = "Version 1.0" },
-                new { ID = OpenTypeNameID.PostScriptName, Value = ConversionUtils.PostScriptName(name) },
+                KeyValuePair.Create(OpenTypeNameID.Copyright, copyright),
+                KeyValuePair.Create(OpenTypeNameID.FontFamily, fontFamily),
+                KeyValuePair.Create(OpenTypeNameID.FontSubfamily, fontSubFamily),
+                KeyValuePair.Create(OpenTypeNameID.UniqueId, "PdfToSvg.NET : " + fontFamily + " " + fontSubFamily),
+                KeyValuePair.Create(OpenTypeNameID.FullFontName, fontFamily + " " + fontSubFamily),
+                KeyValuePair.Create(OpenTypeNameID.Version, version),
+                KeyValuePair.Create(OpenTypeNameID.PostScriptName, name),
             };
 
             var nameRecords = cmap.EncodingRecords
-                .SelectMany(cmap => nameValues
-                    .Select(x =>
+                .SelectMany(cmap => Enumerable
+                    .Concat(names, backupNames)
+                    .Select(name => new
                     {
-                        var isWindows = cmap.PlatformID == OpenTypePlatformID.Windows;
-                        var encoding = isWindows ? Encoding.BigEndianUnicode : Encoding.ASCII;
-
-                        return new NameRecord
-                        {
-                            PlatformID = cmap.PlatformID,
-                            EncodingID = cmap.EncodingID,
-                            LanguageID = isWindows ? (ushort)0x0409 : (ushort)0,
-                            NameID = x.ID,
-                            Content = encoding.GetBytes(x.Value ?? "")
-                        };
+                        CMap = cmap,
+                        ID = name.Key,
+                        name.Value,
                     }))
-                .Where(x => x.Content.Length > 0)
+
+                .Where(name => !string.IsNullOrEmpty(name.Value))
+                .DistinctBy(name => name.ID)
+
+                .Select(name =>
+                {
+                    var isWindows = name.CMap.PlatformID == OpenTypePlatformID.Windows;
+                    var encoding = isWindows ? Encoding.BigEndianUnicode : Encoding.ASCII;
+                    var value = name.Value;
+
+                    if (name.ID == OpenTypeNameID.PostScriptName)
+                    {
+                        value = ConversionUtils.PostScriptName(value);
+                    }
+
+                    return new NameRecord
+                    {
+                        PlatformID = name.CMap.PlatformID,
+                        EncodingID = name.CMap.EncodingID,
+                        LanguageID = isWindows ? (ushort)0x0409 : (ushort)0,
+                        NameID = name.ID,
+                        Content = encoding.GetBytes(value)
+                    };
+                })
 
                 // Order stipulated by spec
                 .OrderBy(x => x.PlatformID)

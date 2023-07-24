@@ -272,7 +272,7 @@ namespace PdfToSvg.Parsing
                 {
                     if (pair.Value is PdfRef reference)
                     {
-                        refs.Add(new KeyValuePair<PdfName, PdfObjectId>(pair.Key, reference.Id));
+                        refs.Add(KeyValuePair.Create(pair.Key, reference.Id));
                     }
                     else if (recurse)
                     {

@@ -2,6 +2,8 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.CMaps;
+using PdfToSvg.Common;
 using PdfToSvg.Fonts.OpenType.Enums;
 using PdfToSvg.Fonts.OpenType.Tables;
 using System;
@@ -14,57 +16,134 @@ namespace PdfToSvg.Fonts.OpenType
 {
     internal class OpenTypeNames : IEnumerable<KeyValuePair<OpenTypeNameID, string>>
     {
-        private readonly IEnumerable<IBaseTable> tables;
+        private readonly IList<IBaseTable> tables;
+        private readonly Dictionary<OpenTypeNameID, string?> overrides = new();
 
-        public OpenTypeNames(IEnumerable<IBaseTable> tables)
+        public OpenTypeNames(IList<IBaseTable> tables)
         {
             this.tables = tables;
         }
 
-        public string? FontFamily => GetName(OpenTypeNameID.FontFamily);
-        public string? FontSubfamily => GetName(OpenTypeNameID.FontSubfamily);
-        public string? Copyright => GetName(OpenTypeNameID.Copyright);
-        public string? UniqueId => GetName(OpenTypeNameID.UniqueId);
-        public string? FullFontName => GetName(OpenTypeNameID.FullFontName);
-        public string? Version => GetName(OpenTypeNameID.Version);
-        public string? PostScriptName => GetName(OpenTypeNameID.PostScriptName);
-        public string? Trademark => GetName(OpenTypeNameID.Trademark);
-        public string? Manufacturer => GetName(OpenTypeNameID.Manufacturer);
-        public string? Designer => GetName(OpenTypeNameID.Designer);
-        public string? Description => GetName(OpenTypeNameID.Description);
-        public string? VendorUrl => GetName(OpenTypeNameID.VendorUrl);
-        public string? DesignerUrl => GetName(OpenTypeNameID.DesignerUrl);
-        public string? License => GetName(OpenTypeNameID.License);
-        public string? LicenseUrl => GetName(OpenTypeNameID.LicenseUrl);
-
-        public IEnumerator<KeyValuePair<OpenTypeNameID, string>> GetEnumerator()
+        public string? FontFamily
         {
-            return Enumerate(rec => rec.Content.Length > 0).GetEnumerator();
+            get => GetName(OpenTypeNameID.FontFamily);
+            set => overrides[OpenTypeNameID.FontFamily] = value;
         }
 
+        public string? FontSubfamily
+        {
+            get => GetName(OpenTypeNameID.FontSubfamily);
+            set => overrides[OpenTypeNameID.FontSubfamily] = value;
+        }
+
+        public string? Copyright
+        {
+            get => GetName(OpenTypeNameID.Copyright);
+            set => overrides[OpenTypeNameID.Copyright] = value;
+        }
+
+        public string? UniqueId
+        {
+            get => GetName(OpenTypeNameID.UniqueId);
+            set => overrides[OpenTypeNameID.UniqueId] = value;
+        }
+
+        public string? FullFontName
+        {
+            get => GetName(OpenTypeNameID.FullFontName);
+            set => overrides[OpenTypeNameID.FullFontName] = value;
+        }
+
+        public string? Version
+        {
+            get => GetName(OpenTypeNameID.Version);
+            set => overrides[OpenTypeNameID.Version] = value;
+        }
+
+        public string? PostScriptName
+        {
+            get => GetName(OpenTypeNameID.PostScriptName);
+            set => overrides[OpenTypeNameID.PostScriptName] = value;
+        }
+
+        public string? Trademark
+        {
+            get => GetName(OpenTypeNameID.Trademark);
+            set => overrides[OpenTypeNameID.Trademark] = value;
+        }
+
+        public string? Manufacturer
+        {
+            get => GetName(OpenTypeNameID.Manufacturer);
+            set => overrides[OpenTypeNameID.Manufacturer] = value;
+        }
+
+        public string? Designer
+        {
+            get => GetName(OpenTypeNameID.Designer);
+            set => overrides[OpenTypeNameID.Designer] = value;
+        }
+
+        public string? Description
+        {
+            get => GetName(OpenTypeNameID.Description);
+            set => overrides[OpenTypeNameID.Description] = value;
+        }
+
+        public string? VendorUrl
+        {
+            get => GetName(OpenTypeNameID.VendorUrl);
+            set => overrides[OpenTypeNameID.VendorUrl] = value;
+        }
+
+        public string? DesignerUrl
+        {
+            get => GetName(OpenTypeNameID.DesignerUrl);
+            set => overrides[OpenTypeNameID.DesignerUrl] = value;
+        }
+
+        public string? License
+        {
+            get => GetName(OpenTypeNameID.License);
+            set => overrides[OpenTypeNameID.License] = value;
+        }
+
+        public string? LicenseUrl
+        {
+            get => GetName(OpenTypeNameID.LicenseUrl);
+            set => overrides[OpenTypeNameID.LicenseUrl] = value;
+        }
+
+        public IEnumerator<KeyValuePair<OpenTypeNameID, string>> GetEnumerator() => EnumerateNames().GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        private IEnumerable<KeyValuePair<OpenTypeNameID, string>> Enumerate(Func<NameRecord, bool> predicate)
+        private IEnumerable<KeyValuePair<OpenTypeNameID, string>> EnumerateNames()
+        {
+            return overrides!
+                .Concat(EnumerateFontNames())
+                .DistinctBy(x => x.Key)
+                .Where(x => x.Value != null);
+        }
+
+        private IEnumerable<KeyValuePair<OpenTypeNameID, string>> EnumerateFontNames(OpenTypeNameID? filterId = null)
         {
             return tables
                 .OfType<NameTable>()
+                .Take(1)
                 .SelectMany(name => name.NameRecords)
-                .Where(predicate)
+                .Where(rec => filterId == null || filterId == rec.NameID)
 
-                .GroupBy(rec => rec.NameID)
-                .Select(group => group
-
-                    // Prefer Windows and English
-                    .OrderBy(name => name.PlatformID == OpenTypePlatformID.Windows ? 0 : 1)
-                    .ThenBy(name => name.LanguageID == 1033 ? 0 : 1)
-                    .First())
+                // Prefer Windows and English
+                .OrderBy(rec => rec.PlatformID == OpenTypePlatformID.Windows ? 0 : 1)
+                .ThenBy(rec => rec.LanguageID == 1033 ? 0 : 1)
+                .DistinctBy(rec => rec.NameID)
 
                 .Select(rec =>
                 {
                     var isWindows = rec.PlatformID == OpenTypePlatformID.Windows;
                     var encoding = isWindows ? Encoding.BigEndianUnicode : Encoding.ASCII;
 
-                    return new KeyValuePair<OpenTypeNameID, string>(
+                    return KeyValuePair.Create(
                         rec.NameID,
                         encoding.GetString(rec.Content));
                 });
@@ -72,9 +151,16 @@ namespace PdfToSvg.Fonts.OpenType
 
         private string? GetName(OpenTypeNameID id)
         {
-            return Enumerate(name => name.NameID == id)
-                .Select(x => x.Value)
-                .FirstOrDefault();
+            if (overrides.TryGetValue(id, out var value))
+            {
+                return value;
+            }
+            else
+            {
+                return EnumerateFontNames(id)
+                    .Select(x => x.Value)
+                    .FirstOrDefault();
+            }
         }
     }
 }

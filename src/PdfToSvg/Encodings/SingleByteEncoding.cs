@@ -26,12 +26,16 @@ namespace PdfToSvg.Encodings
         private static SingleByteEncoding? winAnsi;
         private static SingleByteEncoding? macExpert;
         private static SingleByteEncoding? macRoman;
+        private static SingleByteEncoding? zapfDingbats;
+        private static SingleByteEncoding? symbol;
 
         public static SingleByteEncoding Standard => standard ??= new StandardEncoding();
         public static SingleByteEncoding PdfDoc => pdfDoc ??= new PdfDocEncoding();
         public static SingleByteEncoding WinAnsi => winAnsi ??= new WinAnsiEncoding();
         public static SingleByteEncoding MacExpert => macExpert ??= new MacExpertEncoding();
         public static SingleByteEncoding MacRoman => macRoman ??= new MacRomanEncoding();
+        public static SingleByteEncoding ZapfDingbats => zapfDingbats ??= new ZapfDingbatsEncoding();
+        public static SingleByteEncoding Symbol => symbol ??= new SymbolEncoding();
 
         internal SingleByteEncoding(string?[] toUnicode, string?[] toGlyphName)
         {

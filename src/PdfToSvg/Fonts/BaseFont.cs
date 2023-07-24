@@ -25,7 +25,7 @@ namespace PdfToSvg.Fonts
 {
     internal abstract class BaseFont : SourceFont
     {
-        private static readonly Font fallbackSubstituteFont = new LocalFont("'Times New Roman',serif");
+        private static readonly Font fallbackSubstituteFont = new LocalFont("Arial,sans-serif");
         private static readonly PdfDictionary emptyDict = new();
 
         private string? name;
@@ -48,7 +48,7 @@ namespace PdfToSvg.Fonts
         public static BaseFont Fallback { get; } = Create(
             new PdfDictionary {
                 { Names.Subtype, Names.Type1 },
-                { Names.BaseFont, StandardFonts.TimesRoman },
+                { Names.BaseFont, StandardFonts.Helvetica },
                 { InternalNames.FallbackFont, true },
             },
             FontResolver.LocalFonts,

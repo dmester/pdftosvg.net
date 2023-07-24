@@ -49,6 +49,7 @@ namespace PdfToSvg.Fonts
             new PdfDictionary {
                 { Names.Subtype, Names.Type1 },
                 { Names.BaseFont, StandardFonts.TimesRoman },
+                { InternalNames.FallbackFont, true },
             },
             FontResolver.LocalFonts,
             CancellationToken.None);
@@ -223,7 +224,7 @@ namespace PdfToSvg.Fonts
             }
 
             // Standard font
-            if (fontDict.TryGetName(Names.BaseFont, out var name))
+            if (fontDict.TryGetName(Names.BaseFont, out var name) && !fontDict.ContainsKey(InternalNames.FallbackFont))
             {
                 var standardFont = StandardFonts.GetFont(name);
                 if (standardFont != null)

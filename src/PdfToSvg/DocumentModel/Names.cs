@@ -15,6 +15,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName SecurityHandler { get; } = new PdfName("$$SecurityHandler");
         public static PdfName ObjectId { get; } = new PdfName("$$ObjectId");
         public static PdfName Implicit { get; } = new PdfName("$$Implicit");
+        public static PdfName FallbackFont { get; } = new PdfName("$$FallbackFont");
     }
 
     internal static class Names

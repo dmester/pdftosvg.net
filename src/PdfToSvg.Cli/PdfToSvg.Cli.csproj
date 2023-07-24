@@ -4,12 +4,13 @@
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net45</TargetFrameworks>
     <AssemblyName>pdftosvg</AssemblyName>
+    <RootNamespace>PdfToSvg</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\PdfToSvg\**\*.cs" Visible="false"/>
-    <Compile Remove="..\PdfToSvg\bin\**\*.cs" Visible="false"/>
-    <Compile Remove="..\PdfToSvg\obj\**\*.cs" Visible="false"/>
+    <Compile Include="..\PdfToSvg\**\*.cs" Visible="false" />
+    <Compile Remove="..\PdfToSvg\bin\**\*.cs" Visible="false" />
+    <Compile Remove="..\PdfToSvg\obj\**\*.cs" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>

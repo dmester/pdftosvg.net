@@ -152,8 +152,7 @@ namespace PdfToSvg.Drawing
                 )),
                 new XComment(" Generator: PdfToSvg.NET "),
                 style,
-                defs,
-                rootGraphics);
+                defs);
 
             // PDF coordinate system has its origin in the bottom left corner in opposite to SVG, 
             // which has its origin in the upper left corner.
@@ -167,8 +166,6 @@ namespace PdfToSvg.Drawing
 
         private void AfterDispatch()
         {
-            SvgAttributeOptimizer.Optimize(rootGraphics);
-
             AddClipPaths(clipPaths.Values);
 
             if (options.IncludeLinks)
@@ -185,6 +182,9 @@ namespace PdfToSvg.Drawing
             {
                 style.Remove();
             }
+
+            var optimizedRootGraphics = SvgAttributeOptimizer.Optimize(rootGraphics);
+            svg.Add(optimizedRootGraphics);
         }
 
         private void AddStyle(string defintion)

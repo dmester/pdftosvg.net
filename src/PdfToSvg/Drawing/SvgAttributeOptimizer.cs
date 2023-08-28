@@ -123,37 +123,6 @@ namespace PdfToSvg.Drawing
             }
         }
 
-        internal static IEnumerable<XElement> GetOptimizableElements(XElement root)
-        {
-            XNode cursor = root ?? throw new ArgumentNullException(nameof(root));
-
-            while (true)
-            {
-                if (cursor is XElement el && optimizableContainers.Contains(el.Name))
-                {
-                    yield return el;
-
-                    if (el.FirstNode != null)
-                    {
-                        cursor = el.FirstNode;
-                        continue;
-                    }
-                }
-
-                while (cursor.NextNode == null)
-                {
-                    cursor = cursor.Parent;
-
-                    if (cursor == root || cursor == null)
-                    {
-                        yield break;
-                    }
-                }
-
-                cursor = cursor.NextNode;
-            }
-        }
-
         private static Dictionary<string, string>? GetInheritableAttributes(XNode node)
         {
             if (node is XElement el)
@@ -180,11 +149,11 @@ namespace PdfToSvg.Drawing
             return null;
         }
 
-        public static void Optimize(XElement root)
+        private static IEnumerable<object> GetOptimizedContent(XElement root)
         {
-            foreach (var optimizeRoot in GetOptimizableElements(root))
+            if (optimizableContainers.Contains(root.Name))
             {
-                var partitions = optimizeRoot
+                var partitions = root
                     .Nodes()
                     .PartitionBy(GetInheritableAttributes, new DictionaryComparer<string, string>());
 
@@ -192,43 +161,60 @@ namespace PdfToSvg.Drawing
                 {
                     if (partition.Key != null && partition.Count() > 1)
                     {
-                        var container = new XElement(ns + "g");
-                        var isFirstElement = true;
+                        var groupAttributes = partition
+                            .Cast<XElement>()
+                            .First()
+                            .Attributes()
+                            .Where(attribute => partition.Key.ContainsKey(attribute.Name.LocalName))
+                            .Select(attribute => new XAttribute(attribute.Name, attribute.Value));
 
-                        foreach (XElement el in partition)
+                        var groupContent = partition
+                            .Cast<XElement>()
+                            .Select(child =>
+                            {
+                                var childAttributes = child
+                                    .Attributes()
+                                    .Where(attribute => !partition.Key.ContainsKey(attribute.Name.LocalName));
+                                var childContent = GetOptimizedContent(child);
+
+                                return new XElement(child.Name, childAttributes, childContent);
+                            });
+
+                        yield return new XElement(ns + "g", groupAttributes, groupContent);
+                    }
+                    else
+                    {
+                        foreach (var node in partition)
                         {
-                            // Clear inheritable attributes
-                            var attribute = el.FirstAttribute;
-                            while (attribute != null)
-                            {
-                                var nextAttribute = attribute.NextAttribute;
-
-                                if (partition.Key.ContainsKey(attribute.Name.LocalName))
-                                {
-                                    attribute.Remove();
-
-                                    if (isFirstElement)
-                                    {
-                                        container.Add(attribute);
-                                    }
-                                }
-
-                                attribute = nextAttribute;
-                            }
-
-                            if (isFirstElement)
-                            {
-                                el.AddBeforeSelf(container);
-                            }
-
-                            el.Remove();
-                            container.Add(el);
-
-                            isFirstElement = false;
+                            yield return GetOptimizedNode(node);
                         }
                     }
                 }
             }
+            else
+            {
+                for (var node = root.FirstNode; node != null; node = node.NextNode)
+                {
+                    yield return node;
+                }
+            }
+        }
+
+        private static XNode GetOptimizedNode(XNode root)
+        {
+            if (root is XElement el)
+            {
+                var attributes = el.Attributes();
+                var content = GetOptimizedContent(el);
+                root = new XElement(el.Name, attributes, content);
+            }
+
+            return root;
+        }
+
+        public static XElement Optimize(XElement root)
+        {
+            return (XElement)GetOptimizedNode(root);
         }
     }
 }

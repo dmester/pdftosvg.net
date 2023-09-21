@@ -341,6 +341,33 @@ namespace PdfToSvg.Parsing
             return stream.Filters.Decode(encodedStream);
         }
 
+        private static void InlineScalarReferences(Dictionary<PdfObjectId, object?> objects, PdfDictionary dict)
+        {
+            var referencedScalars = new List<KeyValuePair<PdfName, object?>>();
+
+            foreach (var pair in dict)
+            {
+                if (pair.Value is PdfRef reference &&
+                    objects.TryGetValue(reference.Id, out object? referencedValue))
+                {
+                    if (referencedValue is PdfDictionary || referencedValue is object[])
+                    {
+                        // Skip reference objects as they might cause circular references when all indirect objects
+                        // are finally resolved.
+                    }
+                    else
+                    {
+                        referencedScalars.Add(KeyValuePair.Create(pair.Key, referencedValue));
+                    }
+                }
+            }
+
+            foreach (var referencedScalar in referencedScalars)
+            {
+                dict[referencedScalar.Key] = referencedScalar.Value;
+            }
+        }
+
         public void ReadCompressedObjects(Dictionary<PdfObjectId, object?> objects, XRefTable xrefTable, CancellationToken cancellationToken)
         {
             var compressedObjects = xrefTable
@@ -356,6 +383,8 @@ namespace PdfToSvg.Parsing
                     maybeObjStream is PdfDictionary objStream &&
                     objStream.Stream != null)
                 {
+                    InlineScalarReferences(objects, objStream);
+
                     var first = objStream.GetValueOrDefault(Names.First, 0);
                     var contentObjects = new List<object?>();
 

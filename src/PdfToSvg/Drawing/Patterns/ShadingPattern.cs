@@ -24,10 +24,5 @@ namespace PdfToSvg.Drawing.Patterns
                 Shading = Shading.Create(shadingDict, cancellationToken);
             }
         }
-
-        public override XElement? GetPatternElement(Matrix transform)
-        {
-            return Shading?.GetShadingElement(Matrix * transform, inPattern: true);
-        }
     }
 }

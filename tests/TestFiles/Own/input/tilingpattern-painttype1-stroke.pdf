@@ -1,0 +1,93 @@
+%PDF-1.7
+
+xref
+0 6
+0000000000 65535 f
+0000000182 00000 n
+0000000233 00000 n
+0000000297 00000 n
+0000000464 00000 n
+0000000617 00000 n
+trailer
+<< /Root 1 0 R  /Size 6 >>
+
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >> endobj
+
+3 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources << /Pattern << /P1 5 0 R >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj
+<<
+   /Length 90
+>>
+stream
+
+   /Pattern CS
+   /P1 SCN
+   120 w
+
+   0.9 0.9 0.9 rg
+
+   60 60 325 650 re
+   B
+
+endstream
+endobj
+
+5 0 obj
+<<
+   /Type /Pattern
+   /PatternType 1
+   /PaintType 1
+   /TilingType 1
+   /BBox [ 0 0 80 80 ]
+   /XStep 130
+   /YStep 100
+   /Resources << >>
+   /Length 384
+>>
+stream
+
+   0.31 0.69 0.81 rg
+   0 0 0 RG
+
+   38.39 77.64 m
+   6.25 60.41 l
+   19.62 7.88 l
+   7.59 7.88 l
+   7.59 3.31 l
+   74.2 3.31 l
+   74.2 7.88 l
+   44.85 7.88 l
+   74.58 23.82 l
+   61.16 77.03 l
+   41.35 66.47 l
+   h
+
+   41.26 66.30 m
+   51.95 24.41 l
+   39.71 17.87 l
+   29.03 59.76 l
+   h
+    
+   39.63 17.70 m
+   42.12 7.88 l
+   21.21 7.88 l
+   h
+
+   B
+
+endstream
+endobj
+
+startxref
+10
+%%EOF

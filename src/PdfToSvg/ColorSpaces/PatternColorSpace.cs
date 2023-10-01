@@ -13,9 +13,16 @@ namespace PdfToSvg.ColorSpaces
 {
     internal class PatternColorSpace : ColorSpace
     {
+        public PatternColorSpace(ColorSpace alternateSpace)
+        {
+            AlternateSpace = alternateSpace;
+        }
+
         public override int ComponentsPerSample => 1;
 
         public override float[] DefaultColor => new float[] { 0 };
+
+        public ColorSpace AlternateSpace { get; }
 
         public override DecodeArray GetDefaultDecodeArray(int bitsPerComponent)
         {

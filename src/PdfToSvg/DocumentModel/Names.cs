@@ -138,6 +138,9 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Extend { get; } = new PdfName("Extend");
         public static PdfName Background { get; } = new PdfName("Background");
         public static PdfName Function { get; } = new PdfName("Function");
+        public static PdfName PaintType { get; } = new PdfName("PaintType");
+        public static PdfName XStep { get; } = new PdfName("XStep");
+        public static PdfName YStep { get; } = new PdfName("YStep");
 
         public static PdfName Filter { get; } = new PdfName("Filter");
         public static PdfName Crypt { get; } = new PdfName("Crypt");

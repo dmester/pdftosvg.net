@@ -122,31 +122,43 @@ namespace PdfToSvg.Drawing
             }
         }
 
-        private static bool CastArray(ref object array, int startIndex, Type targetArrayType)
+        private static bool CastArray(ref object array, ref int cursor, Type targetArrayType, bool matchAll)
         {
             if (array is object[] sourceArray)
             {
                 var elementType = targetArrayType.GetElementType();
-                var targetArray = Array.CreateInstance(elementType, Math.Max(0, sourceArray.Length - startIndex));
+                var castedElements = Array.CreateInstance(elementType, Math.Max(0, sourceArray.Length - cursor));
                 var success = true;
+                var i = cursor;
 
-                for (var i = startIndex; i < sourceArray.Length; i++)
+                for (; i < sourceArray.Length; i++)
                 {
                     var element = sourceArray[i];
                     if (Cast(ref element, elementType))
                     {
-                        targetArray.SetValue(element, i - startIndex);
+                        castedElements.SetValue(element, i - cursor);
                     }
                     else
                     {
-                        success = false;
+                        if (matchAll)
+                        {
+                            success = false;
+                        }
+                        else
+                        {
+                            var slice = Array.CreateInstance(elementType, i - cursor);
+                            Array.Copy(castedElements, slice, slice.Length);
+                            castedElements = slice;
+                        }
+
                         break;
                     }
                 }
 
                 if (success)
                 {
-                    array = targetArray;
+                    cursor = i;
+                    array = castedElements;
                     return true;
                 }
             }
@@ -210,7 +222,9 @@ namespace PdfToSvg.Drawing
 
             else if (targetType.IsArray && targetType != typeof(object[]))
             {
-                if (CastArray(ref value, 0, targetType))
+                var index = 0;
+
+                if (CastArray(ref value, ref index, targetType, matchAll: true))
                 {
                     return true;
                 }
@@ -222,39 +236,44 @@ namespace PdfToSvg.Drawing
         private static object?[]? CastArguments(Handler handler, object?[] operands)
         {
             var castedArguments = new object?[handler.Parameters.Length];
+            var operandIndex = 0;
 
             for (var i = 0; i < handler.Parameters.Length; i++)
             {
                 var parameter = handler.Parameters[i];
 
                 // Value supplied?
-                if (i < operands.Length)
+                if (operandIndex < operands.Length)
                 {
-                    var operand = operands[i];
+                    var operand = operands[operandIndex];
 
                     if (Cast(ref operand, parameter.ParameterType))
                     {
                         castedArguments[i] = operand;
+                        operandIndex++;
                         continue;
                     }
                 }
 
                 // Is params ...[] parameter?
-                var paramArrayAttributes = parameter.GetCustomAttributes(typeof(ParamArrayAttribute), true);
+                var paramArrayAttributes = parameter
+                    .GetCustomAttributes(true)
+                    .Where(attr => attr is VariadicParamAttribute || attr is ParamArrayAttribute);
+
                 if (paramArrayAttributes.Any())
                 {
-                    object rest = operands;
+                    object matchingElements = operands;
 
-                    if (CastArray(ref rest, i, parameter.ParameterType))
+                    if (CastArray(ref matchingElements, ref operandIndex, parameter.ParameterType, matchAll: false))
                     {
-                        castedArguments[i] = rest;
+                        castedArguments[i] = matchingElements;
                     }
                     else
                     {
                         return null;
                     }
 
-                    break;
+                    continue;
                 }
 
                 // Has default value?

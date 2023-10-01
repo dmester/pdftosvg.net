@@ -109,6 +109,22 @@ namespace PdfToSvg.ColorSpaces
             return new UnsupportedColorSpace(Names.ICCBased);
         }
 
+        private static ColorSpace ParsePattern(object[] colorSpaceParams, PdfDictionary? colorSpaceResourcesDictionary, int recursionCount, CancellationToken cancellationToken)
+        {
+            ColorSpace alternateSpace;
+
+            if (colorSpaceParams.Length > 1)
+            {
+                alternateSpace = Parse(colorSpaceParams[1], colorSpaceResourcesDictionary, recursionCount + 1, cancellationToken);
+            }
+            else
+            {
+                alternateSpace = new DeviceRgbColorSpace();
+            }
+
+            return new PatternColorSpace(alternateSpace);
+        }
+
         private static ColorSpace ParseSeparation(object[] colorSpaceParams, PdfDictionary? colorSpaceResourcesDictionary, int recursionCount, CancellationToken cancellationToken)
         {
             if (colorSpaceParams.Length > 3)
@@ -211,7 +227,7 @@ namespace PdfToSvg.ColorSpaces
                         return new DeviceGrayColorSpace();
 
                     case nameof(Names.Pattern):
-                        return new PatternColorSpace();
+                        return new PatternColorSpace(new DeviceRgbColorSpace());
                 }
 
                 if (colorSpaceResourcesDictionary != null &&
@@ -265,7 +281,7 @@ namespace PdfToSvg.ColorSpaces
                         return ParseDeviceN(definitionArray, colorSpaceResourcesDictionary, recursionCount + 1, cancellationToken);
 
                     case nameof(Names.Pattern):
-                        return new PatternColorSpace();
+                        return ParsePattern(definitionArray, colorSpaceResourcesDictionary, recursionCount + 1, cancellationToken);
                 }
 
                 Log.WriteLine("Unsupported color space: {0}.", colorSpaceName);

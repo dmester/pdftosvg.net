@@ -25,8 +25,6 @@ namespace PdfToSvg.Drawing.Patterns
             Matrix = definition.GetValueOrDefault(Names.Matrix, Matrix.Identity);
         }
 
-        public abstract XElement? GetPatternElement(Matrix transform);
-
         public static Pattern? Create(PdfDictionary definition, CancellationToken cancellationToken)
         {
             var patternType = (PatternType)definition.GetValueOrDefault(Names.PatternType, 0);
@@ -35,6 +33,9 @@ namespace PdfToSvg.Drawing.Patterns
             {
                 case PatternType.Shading:
                     return new ShadingPattern(definition, cancellationToken);
+
+                case PatternType.Tiling:
+                    return new TilingPattern(definition, cancellationToken);
 
                 default:
                     Log.WriteLine("Unsupported pattern type " + patternType + ".");

@@ -8,7 +8,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace PdfToSvg.DocumentModel
 {
@@ -142,6 +141,18 @@ namespace PdfToSvg.DocumentModel
                     }
                 }
 
+                return true;
+            }
+
+            value = null;
+            return false;
+        }
+
+        public static bool TryGetMatrix(this PdfDictionary? dict, PdfNamePath path, [NotNullWhen(true)] out Matrix? value)
+        {
+            if (dict.TryGetArray<double>(path, out var array) && array.Length == 6)
+            {
+                value = new Matrix(array[0], array[1], array[2], array[3], array[4], array[5]);
                 return true;
             }
 

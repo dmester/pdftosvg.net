@@ -1,0 +1,19 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<defs>
+<image id="imL0ajf" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANJJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT3PgGa8gRwIYbLhljAgwoQYDes1iHYMDJGhAdVJmOj7bDQnHU2B82UEGRw0GOoDGOangNDkGAYffQYJfobPM2EajqagBCtQYnsxQ4U3Q4INCGU4MizPZHg/DS1YgeBIAlEeACqDxvSvz0QlDaAyROIDcvDYA5QCq0bSAE/ewDBATt5ALmryBgA34dLM/tOwHgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" />
+<pattern width="60" height="40" patternUnits="userSpaceOnUse" patternTransform="translate(0 811.92)" viewBox="0 0 60 40" id="ptTMae9">
+<g clip-path="url(#clr567g)">
+<g transform="matrix(29.4 -5.96 5.96 29.4 -5.96 0.6)">
+<use href="#imL0ajf" />
+</g>
+</g>
+</pattern>
+<clipPath id="clr567g">
+<rect width="30" height="30" />
+</clipPath>
+</defs>
+<g stroke-miterlimit="10">
+<path d="M0 841.92h500v-780h-500z" fill="url(#ptTMae9)" stroke="#000" stroke-width="1" />
+</g>
+</svg>

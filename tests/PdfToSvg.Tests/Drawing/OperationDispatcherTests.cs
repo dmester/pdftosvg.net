@@ -25,6 +25,8 @@ namespace PdfToSvg.Tests.Drawing
             public int ThreadingAsyncCalls;
             public int OptionalCalls;
             public int ParamsCalls;
+            public int VariadicCalls;
+            public int EmptyVariadicCalls;
             public int EmptyParamsCalls;
 
             [Operation("AllTypes")]
@@ -69,6 +71,22 @@ namespace PdfToSvg.Tests.Drawing
                 ParamsCalls++;
                 Assert.AreEqual("abc1", str);
                 Assert.AreEqual(new[] { 2f, 42f, 349f }, values);
+            }
+
+            [Operation("Variadic")]
+            private void Variadic([VariadicParam] float[] floats, [VariadicParam] string[] strings)
+            {
+                VariadicCalls++;
+                Assert.AreEqual(new[] { 2f, 42f, 349f }, floats);
+                Assert.AreEqual(new[] { "abc" }, strings);
+            }
+
+            [Operation("EmptyVariadic")]
+            private void EmptyVariadic([VariadicParam] float[] floats, [VariadicParam] string[] strings)
+            {
+                EmptyVariadicCalls++;
+                Assert.AreEqual(new float[] { }, floats);
+                Assert.AreEqual(new[] { "abc" }, strings);
             }
 
             [Operation("EmptyParams")]
@@ -197,6 +215,19 @@ namespace PdfToSvg.Tests.Drawing
 
             Assert.IsTrue(dispatcher.Dispatch(target, "EmptyParams", new object[0]));
             Assert.AreEqual(1, target.EmptyParamsCalls, nameof(target.EmptyParamsCalls));
+        }
+
+        [Test]
+        public void Variadic()
+        {
+            var target = new Target();
+            var dispatcher = new OperationDispatcher(typeof(Target));
+
+            Assert.IsTrue(dispatcher.Dispatch(target, "Variadic", new object[] { 2, 42.0, 349, "abc" }));
+            Assert.AreEqual(1, target.VariadicCalls, nameof(target.VariadicCalls));
+
+            Assert.IsTrue(dispatcher.Dispatch(target, "EmptyVariadic", new object[] { "abc" }));
+            Assert.AreEqual(1, target.EmptyVariadicCalls, nameof(target.EmptyVariadicCalls));
         }
 
         [Test]

@@ -72,7 +72,7 @@ Impl | Description
 ✅ | CalGray
 ✅ | Lab
 ❌ | ICCBased
-❌ | Pattern
+✅ | Pattern
 ✅ | Indexed
 ✅ | Separation
 ✅ | DeviceN
@@ -144,8 +144,8 @@ Impl | Operator | Description
 ✅ | rg | Set RGB, nonstroke
 ✅ | SC | Set color, stroke
 ✅ | sc | Set color, nonstroke
-❌ | SCN | Set ICC color, stroke
-❌ | scn | Set ICC color, nonstroke
+✅ | SCN | Set ICC color, stroke
+✅ | scn | Set ICC color, nonstroke
 
 ## Operators / Drawing
 

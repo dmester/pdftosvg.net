@@ -102,7 +102,7 @@ Impl | Key | Description
 ❌ | SM | Smoothness tolerance
 ❌ | SA | Automatic stroke adjustment
 ❌ | BM | Blend mode
-❌ | SMask | Soft mask
+✅ | SMask | Soft mask
 ✅ | CA | Stroking alpha
 ✅ | ca | Non-stroking alpha
 ❌ | AIS | Alpha source flag

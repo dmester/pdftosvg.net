@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Drawing
 {
-    // TODO merge with TextState?
     internal class GraphicsState
     {
         // Graphics state
@@ -40,6 +39,8 @@ namespace PdfToSvg.Drawing
         public int[]? StrokeDashArray;
         public int StrokeDashPhase;
         public double StrokeMiterLimit = 10d;
+
+        public string? SMaskId;
 
         // Text state
         // PDF spec 1.7, Table 104, page 251

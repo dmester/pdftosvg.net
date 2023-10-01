@@ -130,6 +130,9 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Group { get; } = new PdfName("Group");
         public static PdfName Transparency { get; } = new PdfName("Transparency");
         public static PdfName Decode { get; } = new PdfName("Decode");
+        public static PdfName G { get; } = new PdfName("G");
+        public static PdfName Alpha { get; } = new PdfName("Alpha");
+        public static PdfName Luminosity { get; } = new PdfName("Luminosity");
 
         public static PdfName PatternType { get; } = new PdfName("PatternType");
         public static PdfName Shading { get; } = new PdfName("Shading");

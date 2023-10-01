@@ -1,0 +1,231 @@
+%PDF-1.7
+
+xref
+0 6
+0000000000 65535 f
+0000000182 00000 n
+0000000233 00000 n
+0000000296 00000 n
+0000000998 00000 n
+0000001672 00000 n
+trailer
+<< /Root 1 0 R  /Size 6 >>
+
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ] /Count 1 >> endobj
+
+3 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /F1 <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /Helvetica-Bold
+         >>
+      >>
+      /ExtGState <<
+         /GSNone <<
+            /SMask /None
+         >>
+         /GSAlpha <<
+            /SMask <<
+               /Type /Mask
+               /S /Alpha
+               /G 5 0 R
+            >>
+         >>
+         /GSLuminosity <<
+            /SMask <<
+               /Type /Mask
+               /S /Luminosity
+               /G 5 0 R
+            >>
+         >>
+      >>
+   >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj
+<<
+   /Length 610
+>>
+stream
+
+   0.73 0.88 0.93 rg
+   000 000 280 842 re
+   f
+
+   0.05 0.17 0.2 rg
+
+   q
+      1 0 0 1 55 620 cm
+      /GSAlpha gs
+      0 0 1000 1000 re
+      f
+
+      /GSNone gs
+      BT
+         /F1 70 Tf
+         1 0 0 1 0 85 Tm
+         (TEXT SMASK) '
+      ET
+   Q
+
+   q
+      1 0 0 1 55 540 cm
+      /GSLuminosity gs
+      0 0 1000 1000 re
+      f
+   Q
+
+   q
+      1 0 0 1 55 460 cm
+      /GSLuminosity gs
+      BT
+         /F1 150 Tf
+         (zzzzzzz) '
+      ET
+   Q
+
+   q
+      0 -0.7 0.7 0 260 420 cm
+      /GSLuminosity gs
+      -5000 -5000 9000 9000 re
+      f
+   Q
+
+endstream
+endobj
+
+5 0 obj
+<<
+   /Type /XObject
+   /Subtype /Form
+   /BBox [ 0 0 520 100 ]
+   /S /Transparency
+   /Group <<
+      /Type /Group
+      /S /Transparency
+      /I true
+      /K false
+      /CS /DeviceRGB
+   >>
+   /Resources <<
+      /ExtGState <<
+         /GSAlpha <<
+            /ca 0.8
+         >>
+      >>
+      /Font <<
+         /F1 <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /Helvetica-Bold
+         >>
+      >>
+      /Pattern <<
+         /Sh <<
+            /PatternType 2
+            /Shading <<
+               /ShadingType 2
+               /ColorSpace /DeviceRGB
+               /Coords [ 0 0 480 0 ]
+               /Function <<
+                  /FunctionType 2
+                  /N 1
+                  /Domain [ 0.0 1.0 ]
+                  /C0 [ 0 1 1 ]
+                  /C1 [ 0 0 0 ]
+               >>
+            >>
+         >>
+      >>
+   >>
+   /Length 2928
+>>
+stream
+
+   q
+      /Pattern cs
+      /Sh scn
+      /GSAlpha gs
+
+      BT
+         /F1 70 Tf
+         1 0 0 1 0 5 Tm
+         (TEXT SMASK) '
+      ET
+   Q
+
+   30 0 0 30 465 5 cm
+   
+   BI
+      /W 16
+      /H 16
+      /BPC 8
+      /F /AHx
+      /CS /DeviceRGB
+   ID
+      ff ff ff ff ff ff ff ff ff ff ff ff ff ed cf ff
+      c7 68 ff af 28 ff a1 00 ff a1 00 ff af 28 ff c7
+      68 ff ed cf ff ff ff ff ff ff ff ff ff ff ff ff
+      ff ff ff ff ff ff ff fc f7 ff c7 68 ff a1 00 ff
+      a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1
+      00 ff a1 00 ff c7 68 ff fc f7 ff ff ff ff ff ff
+      ff ff ff ff fc f7 ff b7 3c ff a1 00 ff a1 00 ff
+      a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1
+      00 ff a1 00 ff a1 00 ff b7 3c ff fc f7 ff ff ff
+      ff ff ff ff c7 68 ff a1 00 ff a1 00 ff a1 00 ff
+      a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1
+      00 ff a1 00 ff a1 00 ff a1 00 ff c7 68 ff ff ff
+      ff ed cf ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff
+      a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1
+      00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff ed cf
+      ff c7 68 ff a1 00 ff a1 00 ff a1 00 ff a1 00 30
+      1e 00 30 1e 00 ff a1 00 ff a1 00 30 1e 00 30 1e
+      00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff c7 68
+      ff af 28 ff a1 00 ff a1 00 ff a1 00 ff a1 00 30
+      1e 00 30 1e 00 ff a1 00 ff a1 00 30 1e 00 30 1e
+      00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff af 28
+      ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff
+      a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1
+      00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00
+      ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff
+      a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1
+      00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00
+      ff af 28 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff
+      a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1
+      00 f7 9b 00 ff a1 00 ff a1 00 ff a1 00 ff af 28
+      ff c5 64 ff a1 00 ff a1 00 ff a1 00 1c 11 00 40
+      28 00 7f 50 00 9f 64 00 9f 64 00 93 5c 00 4c 2f
+      00 18 0f 00 f3 99 00 ff a1 00 ff a1 00 ff c5 64
+      ff ed cf ff a1 00 ff a1 00 ff a1 00 f3 99 00 b7
+      73 00 78 4b 00 60 3c 00 60 3c 00 68 41 00 a7 69
+      00 ef 96 00 ff a1 00 ff a1 00 ff a1 00 ff ed cf
+      ff ff ff ff c4 60 ff a1 00 ff a1 00 ff a1 00 ff
+      a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1
+      00 ff a1 00 ff a1 00 ff a1 00 ff c4 60 ff ff ff
+      ff ff ff ff fa f3 ff b7 3c ff a1 00 ff a1 00 ff
+      a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1
+      00 ff a1 00 ff a1 00 ff b7 3c ff fa f3 ff ff ff
+      ff ff ff ff ff ff ff fa f3 ff c4 60 ff a1 00 ff
+      a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1 00 ff a1
+      00 ff a1 00 ff c4 60 ff fa f3 ff ff ff ff ff ff
+      ff ff ff ff ff ff ff ff ff ff ff ff ff ed cf ff
+      c5 64 ff af 28 ff a1 00 ff a1 00 ff af 28 ff c5
+      64 ff ed cf ff ff ff ff ff ff ff ff ff ff ff ff>
+   EI
+
+
+endstream
+endobj
+
+startxref
+8
+%%EOF

@@ -544,6 +544,19 @@ namespace PdfToSvg.Drawing
             }
         }
 
+        [Operation("gs/SMask")]
+        private void gs_SMask_SoftMask(object smask)
+        {
+            // According to PDF 1.7 section 11.6.4.3, the value can be either an SMask dict or /None.
+            // We will interpret all invalid values as /None.
+            var id = smask is PdfDictionary smaskDict ? RenderSMask(smaskDict) : null;
+            if (graphicsState.SMaskId != id)
+            {
+                graphicsState.SMaskId = id;
+                textBuilder.InvalidateStyle();
+            }
+        }
+
         [Operation("gs")]
         private void gs_GraphicsStateFromDictionary(PdfName dictName)
         {
@@ -720,6 +733,59 @@ namespace PdfToSvg.Drawing
             });
 
             return patternEl;
+        }
+
+        private string? RenderSMask(PdfDictionary smask)
+        {
+            // PDF 1.7 spec Table 144
+            if (!smask.TryGetDictionary(Names.G, out var group) || group.Stream == null)
+            {
+                return null;
+            }
+
+            var transform = graphicsState.Transform;
+
+            var maskEl = new XElement(ns + "mask");
+
+            // Possible values: Alpha and Luminosity. Luminosity is the default in SVG.
+            var alphaMask = smask.GetValueOrDefault(Names.S, Names.Luminosity) == Names.Alpha;
+            if (alphaMask)
+            {
+                maskEl.Add(new XAttribute("mask-type", "alpha"));
+            }
+
+            RenderXObject(group, () =>
+            {
+                graphicsState = new GraphicsState();
+                currentTransparencyGroup = maskEl;
+
+                // Move origin to prevent unnecessary transforms in the content
+                if (group.TryGetRectangle(Names.BBox, out var bbox))
+                {
+                    var originTransform = MoveOriginToTopLeft(bbox);
+                    graphicsState.Transform = originTransform;
+                    transform = originTransform.Invert() * transform;
+                }
+
+                if (!transform.IsIdentity)
+                {
+                    var maskContentEl = new XElement(ns + "g", new XAttribute("transform", SvgConversion.Matrix(transform)));
+                    currentTransparencyGroup.Add(maskContentEl);
+                    currentTransparencyGroup = maskContentEl;
+                }
+
+                originalTransform = graphicsState.Transform;
+            });
+
+            var id = StableID.Generate("sm", maskEl);
+
+            if (defIds.Add(id))
+            {
+                maskEl.Add(new XAttribute("id", id));
+                defs.Add(maskEl);
+            }
+
+            return id;
         }
 
         private void RenderForm(PdfDictionary xobject)
@@ -1490,6 +1556,11 @@ namespace PdfToSvg.Drawing
                 visible = true;
             }
 
+            if (graphicsState.SMaskId != null)
+            {
+                attributes.Add(new XAttribute("mask", "url(#" + graphicsState.SMaskId + ")"));
+            }
+
             if (visible)
             {
                 var el = new XElement(
@@ -2208,6 +2279,12 @@ namespace PdfToSvg.Drawing
                         cssClass["stroke-dashoffset"] = style.StrokeDashPhase.ToString(CultureInfo.InvariantCulture);
                     }
                 }
+            }
+
+            // Soft mask
+            if (graphicsState.SMaskId != null)
+            {
+                cssClass["mask"] = "url(#" + graphicsState.SMaskId + ")";
             }
 
             if (cssClass.Count > 0)

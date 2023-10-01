@@ -12,6 +12,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -135,33 +136,42 @@ namespace PdfToSvg.Tests
                     var base64Png = hrefAttribute.Value.Substring(DataUrlPrefix.Length);
                     base64Png = Convert.ToBase64String(RecompressPng(Convert.FromBase64String(base64Png)));
                     hrefAttribute.Value = DataUrlPrefix + base64Png;
+                }
+            }
 
-                    var oldId = image.Attribute("id").Value;
-                    var newId = StableID.Generate("im", hrefAttribute.Value, interpolated);
+            var orderedIds = new List<string>();
+            var ids = new HashSet<string>();
 
-                    image.SetAttributeValue("id", newId);
+            foreach (var el in svg.Descendants())
+            {
+                var id = el.Attribute("id")?.Value;
+                if (id != null && ids.Add(id))
+                {
+                    orderedIds.Add(id);
+                }
 
-                    foreach (var reference in useElements["#" + oldId])
+                var classNames = el.Attribute("class")?.Value;
+                if (classNames != null)
+                {
+                    foreach (var className in Regex.Split(classNames, "\\s+"))
                     {
-                        reference.SetAttributeValue("href", "#" + newId);
-
-                        if (reference.Parent.Name.LocalName == "mask")
+                        if (!string.IsNullOrEmpty(className) && ids.Add(className))
                         {
-                            var newMaskId = StableID.Generate("m", newId);
-                            var oldMaskId = reference.Parent.Attribute("id").Value;
-
-                            reference.Parent.SetAttributeValue("id", newMaskId);
-
-                            foreach (var maskReference in maskReferences["url(#" + oldMaskId + ")"])
-                            {
-                                maskReference.SetAttributeValue("mask", "url(#" + newMaskId + ")");
-                            }
+                            orderedIds.Add(className);
                         }
                     }
                 }
             }
 
-            return svg.ToString(SaveOptions.DisableFormatting);
+            svgMarkup = svg.ToString(SaveOptions.DisableFormatting);
+
+            for (var i = 0; i < orderedIds.Count; i++)
+            {
+                var newId = "__REPLACED_ID_" + i;
+                svgMarkup = svgMarkup.Replace(orderedIds[i], newId);
+            }
+
+            return svgMarkup;
         }
 
         private class TestFontResolver : FontResolver

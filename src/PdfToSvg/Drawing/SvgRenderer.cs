@@ -2155,19 +2155,11 @@ namespace PdfToSvg.Drawing
                 throw new PdfException("Unexpected font type.");
             }
 
-            // Use shorthand font property if possible
-            if (fontSize != null && fontFamily != null)
-            {
-                var values = new[] { fontStyle, fontWeight, fontSize, fontFamily };
-                cssClass["font"] = string.Join(" ", values.Where(v => v != null));
-            }
-            else
-            {
-                cssClass["font-family"] = fontFamily;
-                cssClass["font-weight"] = fontWeight;
-                cssClass["font-style"] = fontStyle;
-                cssClass["font-size"] = fontSize;
-            }
+            // Shorthand font property not used since it does not seem to be supported by Microsoft Office apps
+            cssClass["font-family"] = fontFamily;
+            cssClass["font-weight"] = fontWeight;
+            cssClass["font-style"] = fontStyle;
+            cssClass["font-size"] = fontSize;
 
             if (style.Font.HasGlyphSubstitutions)
             {

@@ -2,7 +2,7 @@
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID1 text{white-space:pre;}
-.ID2{font:14px 'Times New Roman',serif;}
+.ID2{font-family:'Times New Roman',serif;font-size:14px;}
 </style>
 <g class="ID1">
 <text x="80" y="88.92" class="ID2">Test file with leading garbage that affects file offsets</text>

@@ -2,7 +2,7 @@
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID3 text{white-space:pre;}
-.ID4{font:25px 'Times New Roman',serif;}
+.ID4{font-family:'Times New Roman',serif;font-size:25px;}
 </style>
 <defs>
 <image id="ID1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAABGdBTUEAALGPC/xhBQAAABNJREFUeJxjYKAC+I8Bhoo0mQAAJ6FrlUovs8YAAAAASUVORK5CYII=" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />

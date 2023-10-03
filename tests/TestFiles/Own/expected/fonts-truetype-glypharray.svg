@@ -2,7 +2,7 @@
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID1 text{white-space:pre;}
-.ID2{font:200px sans-serif;}
+.ID2{font-family:sans-serif;font-size:200px;}
 </style>
 <g class="ID1">
 <text x="170" y="241.92" class="ID2">HI!</text>

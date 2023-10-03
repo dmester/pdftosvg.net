@@ -2,8 +2,8 @@
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID3 text{white-space:pre;}
-.ID4{font:bold 20px 'Times New Roman',serif;}
-.ID2{font:bold 80px 'Times New Roman',serif;}
+.ID4{font-family:'Times New Roman',serif;font-weight:bold;font-size:20px;}
+.ID2{font-family:'Times New Roman',serif;font-weight:bold;font-size:80px;}
 </style>
 <defs>
 <clipPath id="ID1">

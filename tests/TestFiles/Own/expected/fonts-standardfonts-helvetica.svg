@@ -2,10 +2,10 @@
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID1 text{white-space:pre;}
-.ID2{font:20px Helvetica,Arial,sans-serif;}
-.ID3{font:bold 20px Helvetica,Arial,sans-serif;}
-.ID4{font:oblique bold 20px Helvetica,Arial,sans-serif;}
-.ID5{font:oblique 20px Helvetica,Arial,sans-serif;}
+.ID2{font-family:Helvetica,Arial,sans-serif;font-size:20px;}
+.ID3{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:20px;}
+.ID4{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-style:oblique;font-size:20px;}
+.ID5{font-family:Helvetica,Arial,sans-serif;font-style:oblique;font-size:20px;}
 </style>
 <g class="ID1">
 <g class="ID2">

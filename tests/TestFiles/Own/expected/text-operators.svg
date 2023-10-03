@@ -2,20 +2,20 @@
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID8 text{white-space:pre;}
-.ID9{font:20.4px 'Times New Roman',serif;}
-.ID10{font:40.8px 'Times New Roman',serif;}
-.ID11{font:12px 'Times New Roman',serif;letter-spacing:10px;}
-.ID12{font:12px 'Times New Roman',serif;}
-.ID13{font:bold 15px 'Courier New',Courier,monospace;}
-.ID14{font:12px 'Times New Roman',serif;letter-spacing:5px;}
-.ID15{font:30px 'Times New Roman',serif;fill:none;stroke:#f00;}
-.ID16{font:30px 'Times New Roman',serif;stroke:#f00;}
-.ID17{font:30px 'Times New Roman',serif;}
-.ID18{font:15px 'Times New Roman',serif;}
-.ID2{font:80px 'Times New Roman',serif;}
-.ID4{font:80px 'Times New Roman',serif;fill:none;stroke:#f00;stroke-width:2;stroke-dasharray:5 3;stroke-dashoffset:6;}
-.ID6{font:80px 'Times New Roman',serif;stroke:#f00;stroke-width:2;stroke-dasharray:5 3;stroke-dashoffset:6;}
-.ID19{font:20.0024px 'Times New Roman',serif;}
+.ID9{font-family:'Times New Roman',serif;font-size:20.4px;}
+.ID10{font-family:'Times New Roman',serif;font-size:40.8px;}
+.ID11{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:10px;}
+.ID12{font-family:'Times New Roman',serif;font-size:12px;}
+.ID13{font-family:'Courier New',Courier,monospace;font-weight:bold;font-size:15px;}
+.ID14{font-family:'Times New Roman',serif;font-size:12px;letter-spacing:5px;}
+.ID15{font-family:'Times New Roman',serif;font-size:30px;fill:none;stroke:#f00;}
+.ID16{font-family:'Times New Roman',serif;font-size:30px;stroke:#f00;}
+.ID17{font-family:'Times New Roman',serif;font-size:30px;}
+.ID18{font-family:'Times New Roman',serif;font-size:15px;}
+.ID2{font-family:'Times New Roman',serif;font-size:80px;}
+.ID4{font-family:'Times New Roman',serif;font-size:80px;fill:none;stroke:#f00;stroke-width:2;stroke-dasharray:5 3;stroke-dashoffset:6;}
+.ID6{font-family:'Times New Roman',serif;font-size:80px;stroke:#f00;stroke-width:2;stroke-dasharray:5 3;stroke-dashoffset:6;}
+.ID19{font-family:'Times New Roman',serif;font-size:20.0024px;}
 </style>
 <defs>
 <clipPath id="ID1">

@@ -2,8 +2,8 @@
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID1 text{white-space:pre;}
-.ID2{font:200px sans-serif;}
-.ID3{font:60px sans-serif;letter-spacing:5px;}
+.ID2{font-family:sans-serif;font-size:200px;}
+.ID3{font-family:sans-serif;font-size:60px;letter-spacing:5px;}
 </style>
 <g class="ID1" stroke-miterlimit="10">
 <text x="200" y="241.92" class="ID2">HI!</text>

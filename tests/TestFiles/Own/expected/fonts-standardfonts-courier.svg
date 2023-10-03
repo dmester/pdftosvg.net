@@ -2,10 +2,10 @@
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID1 text{white-space:pre;}
-.ID2{font:17px 'Courier New',Courier,monospace;}
-.ID3{font:bold 17px 'Courier New',Courier,monospace;}
-.ID4{font:oblique bold 17px 'Courier New',Courier,monospace;}
-.ID5{font:oblique 17px 'Courier New',Courier,monospace;}
+.ID2{font-family:'Courier New',Courier,monospace;font-size:17px;}
+.ID3{font-family:'Courier New',Courier,monospace;font-weight:bold;font-size:17px;}
+.ID4{font-family:'Courier New',Courier,monospace;font-weight:bold;font-style:oblique;font-size:17px;}
+.ID5{font-family:'Courier New',Courier,monospace;font-style:oblique;font-size:17px;}
 </style>
 <g class="ID1">
 <g class="ID2">

@@ -2,8 +2,8 @@
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID1 text{white-space:pre;}
-.ID2{font:24px 'Times New Roman',serif;}
-.ID3{font:24px 'Times New Roman',serif;fill:#00f;}
+.ID2{font-family:'Times New Roman',serif;font-size:24px;}
+.ID3{font-family:'Times New Roman',serif;font-size:24px;fill:#00f;}
 .ID1 a:active path{fill:#ffe4002e;}
 </style>
 <g transform="matrix(0 -1 1 0 0 594.96)" class="ID1" stroke-miterlimit="10">

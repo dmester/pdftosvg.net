@@ -3,9 +3,9 @@
 <style>
 .ID1 text{white-space:pre;}
 @font-face{font-family:fK4EDpv;font-weight:bold;src:url('http://pdftosvg.net/assets/sourcesanspro-bold-webfont.woff2') format('woff2'),url('http://pdftosvg.net/assets/sourcesanspro-bold-webfont.woff') format('woff'),url('http://pdftosvg.net/assets/sourcesanspro-bold-webfont.otf') format('opentype'),url('http://pdftosvg.net/assets/sourcesanspro-bold-webfont.ttf') format('truetype');}
-.ID2{font:bold 12px fK4EDpv,'Times New Roman',sans-serif;}
+.ID2{font-family:fK4EDpv,'Times New Roman',sans-serif;font-weight:bold;font-size:12px;}
 @font-face{font-family:fzo4sFD;src:url('http://pdftosvg.net/assets/sourcesanspro-regular-webfont.woff2') format('woff2'),url('http://pdftosvg.net/assets/sourcesanspro-regular-webfont.woff') format('woff'),url('http://pdftosvg.net/assets/sourcesanspro-regular-webfont.otf') format('opentype'),url('http://pdftosvg.net/assets/sourcesanspro-regular-webfont.ttf') format('truetype');}
-.ID3{font:12px fzo4sFD,'Times New Roman',sans-serif;}
+.ID3{font-family:fzo4sFD,'Times New Roman',sans-serif;font-size:12px;}
 </style>
 <g class="ID1">
 <text x="70" y="68.92" class="ID2">WinAnsiEncoding</text>

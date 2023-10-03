@@ -2,9 +2,9 @@
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID8 text{white-space:pre;}
-.ID4{font:bold 70px Helvetica,Arial,sans-serif;fill:url(#ID1);fill-opacity:0.8;}
-.ID9{font:bold 70px Helvetica,Arial,sans-serif;fill:#0c2b33;}
-.ID10{font:bold 150px Helvetica,Arial,sans-serif;fill:#0c2b33;mask:url(#ID6);}
+.ID4{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:70px;fill:url(#ID1);fill-opacity:0.8;}
+.ID9{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:70px;fill:#0c2b33;}
+.ID10{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:150px;fill:#0c2b33;mask:url(#ID6);}
 </style>
 <defs>
 <linearGradient x1="0" y1="0" x2="480" y2="0" gradientTransform="matrix(1 0 0 -1 0 100)" gradientUnits="userSpaceOnUse" id="ID1">

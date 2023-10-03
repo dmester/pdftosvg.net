@@ -2,7 +2,7 @@
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID1 text{white-space:pre;}
-.ID2{font:12px 'Times New Roman',serif;}
+.ID2{font-family:'Times New Roman',serif;font-size:12px;}
 </style>
 <g class="ID1">
 <text x="70" y="91.92" class="ID2">Containing object stream</text>

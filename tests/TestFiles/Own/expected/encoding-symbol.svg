@@ -2,8 +2,8 @@
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID1 text{white-space:pre;}
-.ID2{font:bold 12px 'Times New Roman',serif;}
-.ID3{font:12px Symbol;}
+.ID2{font-family:'Times New Roman',serif;font-weight:bold;font-size:12px;}
+.ID3{font-family:Symbol;font-size:12px;}
 </style>
 <g class="ID1">
 <text x="70" y="68.92" class="ID2">Symbol</text>

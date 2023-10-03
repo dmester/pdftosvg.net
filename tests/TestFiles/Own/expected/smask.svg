@@ -1,58 +1,58 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <style>
-.gt4EC2H text{white-space:pre;}
-.txbd176{font:bold 70px Helvetica,Arial,sans-serif;fill:url(#ptI5H1S);fill-opacity:0.8;}
-.txrhNzD{font:bold 70px Helvetica,Arial,sans-serif;fill:#0c2b33;}
-.txkUQSK{font:bold 150px Helvetica,Arial,sans-serif;fill:#0c2b33;mask:url(#smhdeMC);}
+.ID8 text{white-space:pre;}
+.ID4{font:bold 70px Helvetica,Arial,sans-serif;fill:url(#ID1);fill-opacity:0.8;}
+.ID9{font:bold 70px Helvetica,Arial,sans-serif;fill:#0c2b33;}
+.ID10{font:bold 150px Helvetica,Arial,sans-serif;fill:#0c2b33;mask:url(#ID6);}
 </style>
 <defs>
-<linearGradient x1="0" y1="0" x2="480" y2="0" gradientTransform="matrix(1 0 0 -1 0 100)" gradientUnits="userSpaceOnUse" id="ptI5H1S">
+<linearGradient x1="0" y1="0" x2="480" y2="0" gradientTransform="matrix(1 0 0 -1 0 100)" gradientUnits="userSpaceOnUse" id="ID1">
 <stop offset="0%" stop-color="#0ff" stop-opacity="0" />
 <stop offset="0.001%" stop-color="#0ff" />
 <stop offset="99.999%" stop-color="#000" />
 <stop offset="100%" stop-color="#000" stop-opacity="0" />
 </linearGradient>
-<image id="imL0ajf" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANJJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT3PgGa8gRwIYbLhljAgwoQYDes1iHYMDJGhAdVJmOj7bDQnHU2B82UEGRw0GOoDGOangNDkGAYffQYJfobPM2EajqagBCtQYnsxQ4U3Q4INCGU4MizPZHg/DS1YgeBIAlEeACqDxvSvz0QlDaAyROIDcvDYA5QCq0bSAE/ewDBATt5ALmryBgA34dLM/tOwHgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" />
-<mask mask-type="alpha" id="smmvgWw">
+<image id="ID2" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANJJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT3PgGa8gRwIYbLhljAgwoQYDes1iHYMDJGhAdVJmOj7bDQnHU2B82UEGRw0GOoDGOangNDkGAYffQYJfobPM2EajqagBCtQYnsxQ4U3Q4INCGU4MizPZHg/DS1YgeBIAlEeACqDxvSvz0QlDaAyROIDcvDYA5QCq0bSAE/ewDBATt5ALmryBgA34dLM/tOwHgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" />
+<mask mask-type="alpha" id="ID3">
 <g transform="translate(55 121.92)">
-<text x="0" y="95" class="txbd176">TEXT SMASK</text>
+<text x="0" y="95" class="ID4">TEXT SMASK</text>
 <g transform="matrix(30 0 0 30 465 65)">
-<use href="#imL0ajf" />
+<use href="#ID2" />
 </g>
 </g>
 </mask>
-<mask id="smdCfAU">
+<mask id="ID5">
 <g transform="translate(55 201.92)">
-<text x="0" y="95" class="txbd176">TEXT SMASK</text>
+<text x="0" y="95" class="ID4">TEXT SMASK</text>
 <g transform="matrix(30 0 0 30 465 65)">
-<use href="#imL0ajf" />
+<use href="#ID2" />
 </g>
 </g>
 </mask>
-<mask id="smhdeMC">
+<mask id="ID6">
 <g transform="translate(55 281.92)">
-<text x="0" y="95" class="txbd176">TEXT SMASK</text>
+<text x="0" y="95" class="ID4">TEXT SMASK</text>
 <g transform="matrix(30 0 0 30 465 65)">
-<use href="#imL0ajf" />
+<use href="#ID2" />
 </g>
 </g>
 </mask>
-<mask id="smx0b6W">
+<mask id="ID7">
 <g transform="matrix(0 0.7 -0.7 0 330 421.92)">
-<text x="0" y="95" class="txbd176">TEXT SMASK</text>
+<text x="0" y="95" class="ID4">TEXT SMASK</text>
 <g transform="matrix(30 0 0 30 465 65)">
-<use href="#imL0ajf" />
+<use href="#ID2" />
 </g>
 </g>
 </mask>
 </defs>
-<g class="gt4EC2H">
+<g class="ID8">
 <path d="M0 841.92h280v-842h-280z" fill="#bae0ed" />
-<path d="M55 221.92h1000v-1000h-1000z" fill="#0c2b33" mask="url(#smmvgWw)" />
-<text x="55" y="136.92" class="txrhNzD">TEXT SMASK</text>
-<path d="M55 301.92h1000v-1000h-1000z" fill="#0c2b33" mask="url(#smdCfAU)" />
-<text x="55" y="381.92" class="txkUQSK">zzzzzzz</text>
-<path d="M-3240 -3078.08v6300h6300v-6300z" fill="#0c2b33" mask="url(#smx0b6W)" />
+<path d="M55 221.92h1000v-1000h-1000z" fill="#0c2b33" mask="url(#ID3)" />
+<text x="55" y="136.92" class="ID9">TEXT SMASK</text>
+<path d="M55 301.92h1000v-1000h-1000z" fill="#0c2b33" mask="url(#ID5)" />
+<text x="55" y="381.92" class="ID10">zzzzzzz</text>
+<path d="M-3240 -3078.08v6300h6300v-6300z" fill="#0c2b33" mask="url(#ID7)" />
 </g>
 </svg>

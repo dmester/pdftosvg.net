@@ -8,6 +8,7 @@ using PdfToSvg.Imaging.Png;
 using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -167,7 +168,7 @@ namespace PdfToSvg.Tests
 
             for (var i = 0; i < orderedIds.Count; i++)
             {
-                var newId = "__REPLACED_ID_" + i;
+                var newId = "ID" + (i + 1).ToString(CultureInfo.InvariantCulture);
                 svgMarkup = svgMarkup.Replace(orderedIds[i], newId);
             }
 

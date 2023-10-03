@@ -1,29 +1,29 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <style>
-.gt4EC2H text{white-space:pre;}
-.tx2pbQP{font:9.6045px Arial,sans-serif;}
-.txIwA03{font:bold 9.6045px Arial,sans-serif;}
-.txLrmjS{font:italic 9.6045px Arial,sans-serif;}
+.ID2 text{white-space:pre;}
+.ID3{font:9.6045px Arial,sans-serif;}
+.ID4{font:bold 9.6045px Arial,sans-serif;}
+.ID5{font:italic 9.6045px Arial,sans-serif;}
 </style>
 <defs>
-<clipPath id="clfN3eA">
+<clipPath id="ID1">
 <rect x="29" y="29" width="537.9999" height="784.8646" />
 </clipPath>
 </defs>
-<g class="gt4EC2H">
-<g clip-path="url(#clfN3eA)">
+<g class="ID2">
+<g clip-path="url(#ID1)">
 <path d="M29 29h538v784.8647h-538z" fill="#fff" />
 </g>
-<g class="tx2pbQP">
+<g class="ID3">
 <text x="35.0028" y="45.5077">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</text>
 <text x="35.0028" y="59.7643">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute</text>
 <text x="35.0028" y="74.0209">irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat</text>
 <text x="35.0028" y="88.2775">non proident, </text>
 </g>
-<text x="93.7293" y="88.2775" class="txIwA03">sunt in culpa</text>
-<text x="152.9482" y="88.2775" class="tx2pbQP"> qui officia deserunt </text>
-<text x="238.7224" y="88.2775" class="txLrmjS">mollit anim id est</text>
-<text x="310.24" y="88.2775" class="tx2pbQP"> laborum.</text>
+<text x="93.7293" y="88.2775" class="ID4">sunt in culpa</text>
+<text x="152.9482" y="88.2775" class="ID3"> qui officia deserunt </text>
+<text x="238.7224" y="88.2775" class="ID5">mollit anim id est</text>
+<text x="310.24" y="88.2775" class="ID3"> laborum.</text>
 </g>
 </svg>

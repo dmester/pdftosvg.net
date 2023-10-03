@@ -1,7 +1,7 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <defs>
-<clipPath id="closB9Y">
+<clipPath id="ID1">
 <path d="M180 194.92M208 194.92v40h177v-40M180 194.92v62h227v-62" clip-rule="evenodd" />
 </clipPath>
 </defs>
@@ -10,7 +10,7 @@
 <path d="M247 161.92h20v-20h-20z" />
 <path d="M324 161.92h20v-20h-20z" />
 </g>
-<g clip-path="url(#closB9Y)">
+<g clip-path="url(#ID1)">
 <path d="M0 841.92h1000v-646h-1000z" fill="#000" stroke="#000" stroke-width="1" />
 </g>
 </g>

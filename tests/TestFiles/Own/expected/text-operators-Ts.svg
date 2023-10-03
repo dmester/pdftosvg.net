@@ -1,10 +1,10 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <style>
-.gt4EC2H text{white-space:pre;}
-.txvLFwA{font:24px 'Times New Roman',serif;}
+.ID1 text{white-space:pre;}
+.ID2{font:24px 'Times New Roman',serif;}
 </style>
-<g stroke-miterlimit="10" class="gt4EC2H">
+<g stroke-miterlimit="10" class="ID1">
 <g fill="none" stroke="#f00" stroke-width="1">
 <path d="M70 151.92h380" />
 <path d="M70 211.92h380" />
@@ -12,7 +12,7 @@
 <path d="M70 331.92h380" />
 <path d="M70 391.92h380" />
 </g>
-<g class="txvLFwA">
+<g class="ID2">
 <text x="70" y="151.92"><tspan>This is </tspan><tspan dy="-5">superscripted</tspan><tspan dy="5"> and </tspan><tspan dy="5">subscripted</tspan></text>
 <text x="70" y="206.92">Only superscripted</text>
 <text x="70" y="276.92">Only subscripted</text>

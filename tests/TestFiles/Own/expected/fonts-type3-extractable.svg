@@ -1,13 +1,13 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <style>
-.gt4EC2H text{white-space:pre;}
-.txFnfw4{font:200px sans-serif;}
-.txW31bW{font:60px sans-serif;letter-spacing:5px;}
+.ID1 text{white-space:pre;}
+.ID2{font:200px sans-serif;}
+.ID3{font:60px sans-serif;letter-spacing:5px;}
 </style>
-<g class="gt4EC2H" stroke-miterlimit="10">
-<text x="200" y="241.92" class="txFnfw4">HI!</text>
-<text x="100" y="341.92" class="txW31bW" textLength="402.8px" lengthAdjust="spacingAndGlyphs">HI! HI!</text>
+<g class="ID1" stroke-miterlimit="10">
+<text x="200" y="241.92" class="ID2">HI!</text>
+<text x="100" y="341.92" class="ID3" textLength="402.8px" lengthAdjust="spacingAndGlyphs">HI! HI!</text>
 <g fill="none" stroke="#f00" stroke-width="1">
 <path d="M107 351.92v-20" />
 <path d="M157 351.92v-20" />

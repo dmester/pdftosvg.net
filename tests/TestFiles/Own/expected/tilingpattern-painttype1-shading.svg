@@ -1,17 +1,17 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <defs>
-<linearGradient x1="80" y1="0" x2="0" y2="80" gradientTransform="matrix(1 0 0 -1 0 80)" gradientUnits="userSpaceOnUse" id="ptYpEHk">
+<linearGradient x1="80" y1="0" x2="0" y2="80" gradientTransform="matrix(1 0 0 -1 0 80)" gradientUnits="userSpaceOnUse" id="ID1">
 <stop offset="0%" stop-color="#000" stop-opacity="0" />
 <stop offset="0.001%" stop-color="#000" />
 <stop offset="99.999%" stop-color="#4fafce" />
 <stop offset="100%" stop-color="#4fafce" stop-opacity="0" />
 </linearGradient>
-<pattern width="130" height="100" patternUnits="userSpaceOnUse" patternTransform="translate(0 761.92)" viewBox="0 0 130 100" id="ptR6wKs">
-<path d="M38.39 2.36l-32.14 17.23l13.37 52.53h-12.03v4.57h66.61v-4.57h-29.35l29.73 -15.94l-13.42 -53.21l-19.81 10.56zM41.26 13.7l10.69 41.89l-12.24 6.54l-10.68 -41.89zM39.63 62.3l2.49 9.82h-20.91z" fill="url(#ptYpEHk)" stroke="#000" stroke-width="1" />
+<pattern width="130" height="100" patternUnits="userSpaceOnUse" patternTransform="translate(0 761.92)" viewBox="0 0 130 100" id="ID2">
+<path d="M38.39 2.36l-32.14 17.23l13.37 52.53h-12.03v4.57h66.61v-4.57h-29.35l29.73 -15.94l-13.42 -53.21l-19.81 10.56zM41.26 13.7l10.69 41.89l-12.24 6.54l-10.68 -41.89zM39.63 62.3l2.49 9.82h-20.91z" fill="url(#ID1)" stroke="#000" stroke-width="1" />
 </pattern>
 </defs>
 <g stroke-miterlimit="10">
-<path d="M0 841.92h460v-760h-460z" fill="url(#ptR6wKs)" stroke="#000" stroke-width="1" />
+<path d="M0 841.92h460v-760h-460z" fill="url(#ID2)" stroke="#000" stroke-width="1" />
 </g>
 </svg>

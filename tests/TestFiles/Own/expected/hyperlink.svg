@@ -1,13 +1,13 @@
 ﻿<svg width="842" height="595" preserveAspectRatio="xMidYMid meet" viewBox="0 0 841.92 594.96" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <style>
-.gt4EC2H text{white-space:pre;}
-.txvLFwA{font:24px 'Times New Roman',serif;}
-.txsREGY{font:24px 'Times New Roman',serif;fill:#00f;}
-.gt4EC2H a:active path{fill:#ffe4002e;}
+.ID1 text{white-space:pre;}
+.ID2{font:24px 'Times New Roman',serif;}
+.ID3{font:24px 'Times New Roman',serif;fill:#00f;}
+.ID1 a:active path{fill:#ffe4002e;}
 </style>
-<g transform="matrix(0 -1 1 0 0 594.96)" class="gt4EC2H" stroke-miterlimit="10">
-<text x="70" y="76.92"><tspan class="txvLFwA">Visit </tspan><tspan class="txsREGY">PdfToSvg.NET</tspan><tspan class="txvLFwA"> repo</tspan></text>
+<g transform="matrix(0 -1 1 0 0 594.96)" class="ID1" stroke-miterlimit="10">
+<text x="70" y="76.92"><tspan class="ID2">Visit </tspan><tspan class="ID3">PdfToSvg.NET</tspan><tspan class="ID2"> repo</tspan></text>
 <path d="M122 79.92h150z" fill="none" stroke="#00f" stroke-width="1" />
 <path d="M111.747 705.548l-39.016 -72.73l126.522 -24.622l-7.577 83.338M262.513 681.685l-97.353 -17.804l13.637 -104.93l96.217 -15.152" fill="#00f" />
 <path d="M10 831.92h575v-822h-575z" fill="none" stroke="#000" stroke-width="1" />

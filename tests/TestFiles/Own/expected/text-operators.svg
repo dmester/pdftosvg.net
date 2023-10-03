@@ -1,78 +1,78 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <style>
-.gt4EC2H text{white-space:pre;}
-.txZeFqt{font:20.4px 'Times New Roman',serif;}
-.tx8mt1c{font:40.8px 'Times New Roman',serif;}
-.txhxQ5m{font:12px 'Times New Roman',serif;letter-spacing:10px;}
-.txgy4Tu{font:12px 'Times New Roman',serif;}
-.txGDWvV{font:bold 15px 'Courier New',Courier,monospace;}
-.txTj1UP{font:12px 'Times New Roman',serif;letter-spacing:5px;}
-.txexPDp{font:30px 'Times New Roman',serif;fill:none;stroke:#f00;}
-.txIM2CE{font:30px 'Times New Roman',serif;stroke:#f00;}
-.txfRVmD{font:30px 'Times New Roman',serif;}
-.txkbs3T{font:15px 'Times New Roman',serif;}
-.tx2rBzY{font:80px 'Times New Roman',serif;}
-.tx16d2M{font:80px 'Times New Roman',serif;fill:none;stroke:#f00;stroke-width:2;stroke-dasharray:5 3;stroke-dashoffset:6;}
-.txMO0W1{font:80px 'Times New Roman',serif;stroke:#f00;stroke-width:2;stroke-dasharray:5 3;stroke-dashoffset:6;}
-.tx7rg1s{font:20.0024px 'Times New Roman',serif;}
+.ID8 text{white-space:pre;}
+.ID9{font:20.4px 'Times New Roman',serif;}
+.ID10{font:40.8px 'Times New Roman',serif;}
+.ID11{font:12px 'Times New Roman',serif;letter-spacing:10px;}
+.ID12{font:12px 'Times New Roman',serif;}
+.ID13{font:bold 15px 'Courier New',Courier,monospace;}
+.ID14{font:12px 'Times New Roman',serif;letter-spacing:5px;}
+.ID15{font:30px 'Times New Roman',serif;fill:none;stroke:#f00;}
+.ID16{font:30px 'Times New Roman',serif;stroke:#f00;}
+.ID17{font:30px 'Times New Roman',serif;}
+.ID18{font:15px 'Times New Roman',serif;}
+.ID2{font:80px 'Times New Roman',serif;}
+.ID4{font:80px 'Times New Roman',serif;fill:none;stroke:#f00;stroke-width:2;stroke-dasharray:5 3;stroke-dashoffset:6;}
+.ID6{font:80px 'Times New Roman',serif;stroke:#f00;stroke-width:2;stroke-dasharray:5 3;stroke-dashoffset:6;}
+.ID19{font:20.0024px 'Times New Roman',serif;}
 </style>
 <defs>
-<clipPath id="clbtUwj">
-<text x="70" y="561.92" class="tx2rBzY" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<clipPath id="ID1">
+<text x="70" y="561.92" class="ID2" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
 </clipPath>
-<clipPath id="clgLO7o">
-<text x="70" y="631.92" class="tx16d2M" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<clipPath id="ID3">
+<text x="70" y="631.92" class="ID4" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
 </clipPath>
-<clipPath id="cl6Y2lP">
-<text x="70" y="701.92" class="txMO0W1" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<clipPath id="ID5">
+<text x="70" y="701.92" class="ID6" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
 </clipPath>
-<clipPath id="clEr970">
-<text x="70" y="771.92" class="tx2rBzY" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<clipPath id="ID7">
+<text x="70" y="771.92" class="ID2" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
 </clipPath>
 </defs>
-<g class="gt4EC2H" stroke-miterlimit="10">
-<g class="txZeFqt">
+<g class="ID8" stroke-miterlimit="10">
+<g class="ID9">
 <text x="30" y="91.92"><tspan>Multiple spans, same line:</tspan><tspan dx="10.2">Abc</tspan><tspan dx="20.4">def</tspan><tspan dx="-10.2">ghi jkl</tspan></text>
 <text x="407.9508" y="91.92" textLength="54.4068px" lengthAdjust="spacingAndGlyphs">mno</text>
 </g>
-<text x="462.3576" y="91.92"><tspan class="txZeFqt">x</tspan><tspan class="tx8mt1c">larger</tspan></text>
-<text transform="matrix(-1 0 0 -1 565 101.92)" class="txZeFqt"><tspan>Multiple spans, same line:</tspan><tspan dx="10.2">Abc</tspan><tspan dx="20.4">def</tspan><tspan dx="-10.2">ghi jkl</tspan></text>
-<text transform="matrix(-1 0 0 -1 187.0492 101.92)" class="txZeFqt" textLength="54.4068px" lengthAdjust="spacingAndGlyphs">mno</text>
-<text transform="matrix(-1 0 0 -1 132.6424 101.92)"><tspan class="txZeFqt">x</tspan><tspan class="tx8mt1c">larger</tspan></text>
-<text x="70" y="151.92" class="txhxQ5m">  with  extra char space</text>
-<g class="txgy4Tu">
+<text x="462.3576" y="91.92"><tspan class="ID9">x</tspan><tspan class="ID10">larger</tspan></text>
+<text transform="matrix(-1 0 0 -1 565 101.92)" class="ID9"><tspan>Multiple spans, same line:</tspan><tspan dx="10.2">Abc</tspan><tspan dx="20.4">def</tspan><tspan dx="-10.2">ghi jkl</tspan></text>
+<text transform="matrix(-1 0 0 -1 187.0492 101.92)" class="ID9" textLength="54.4068px" lengthAdjust="spacingAndGlyphs">mno</text>
+<text transform="matrix(-1 0 0 -1 132.6424 101.92)"><tspan class="ID9">x</tspan><tspan class="ID10">larger</tspan></text>
+<text x="70" y="151.92" class="ID11">  with  extra char space</text>
+<g class="ID12">
 <text x="70" y="177.92"><tspan dx="10"> </tspan><tspan dx="10"> with</tspan><tspan dx="10"> </tspan><tspan dx="10"> extra</tspan><tspan dx="10"> word</tspan><tspan dx="10"> space</tspan></text>
 <text x="70" y="203.92"><tspan>This</tspan><tspan dx="10"> is</tspan><tspan dx="10"> </tspan><tspan dy="-5">superscripted</tspan><tspan dx="10" dy="5"> and</tspan><tspan dx="10"> </tspan><tspan dy="5">subscripted</tspan></text>
 </g>
-<text x="70" y="229.92" class="txGDWvV">' operator with Courier specified in ExtGState</text>
-<text x="70" y="255.92" class="txTj1UP"><tspan>"</tspan><tspan dx="5"> operator</tspan><tspan dx="5"> with</tspan><tspan dx="5"> extra</tspan><tspan dx="5"> space</tspan></text>
-<text x="70" y="295.92" class="txexPDp">Outlined text</text>
-<text x="70" y="330.92" class="txIM2CE">Outlined and filled text</text>
-<text x="70" y="400.92" class="txfRVmD">filled again</text>
-<text x="211" y="401.92" class="txkbs3T">smaller</text>
-<g class="txfRVmD">
+<text x="70" y="229.92" class="ID13">' operator with Courier specified in ExtGState</text>
+<text x="70" y="255.92" class="ID14"><tspan>"</tspan><tspan dx="5"> operator</tspan><tspan dx="5"> with</tspan><tspan dx="5"> extra</tspan><tspan dx="5"> space</tspan></text>
+<text x="70" y="295.92" class="ID15">Outlined text</text>
+<text x="70" y="330.92" class="ID16">Outlined and filled text</text>
+<text x="70" y="400.92" class="ID17">filled again</text>
+<text x="211" y="401.92" class="ID18">smaller</text>
+<g class="ID17">
 <text x="70" y="436.92" textLength="131.64px" lengthAdjust="spacingAndGlyphs">wide </text>
 <text x="70" y="471.92" textLength="67.89px" lengthAdjust="spacingAndGlyphs">and narrow</text>
 </g>
 <path d="M70 91.92h330" fill="none" stroke="#f00" stroke-width="1" />
-<text x="70" y="561.92" class="tx2rBzY" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
-<g clip-path="url(#clbtUwj)">
+<text x="70" y="561.92" class="ID2" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<g clip-path="url(#ID1)">
 <path d="M100 556.92h400v-43h-400z" fill="#0f0" />
 </g>
-<text x="70" y="631.92" class="tx16d2M" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
-<g clip-path="url(#clgLO7o)">
+<text x="70" y="631.92" class="ID4" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<g clip-path="url(#ID3)">
 <path d="M100 626.92h400v-43h-400z" fill="#0f0" />
 </g>
-<text x="70" y="701.92" class="txMO0W1" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
-<g clip-path="url(#cl6Y2lP)">
+<text x="70" y="701.92" class="ID6" textLength="486.72px" lengthAdjust="spacingAndGlyphs">CLIPPED</text>
+<g clip-path="url(#ID5)">
 <path d="M100 696.92h400v-43h-400z" fill="#0f0" />
 </g>
-<g clip-path="url(#clEr970)">
+<g clip-path="url(#ID7)">
 <path d="M100 766.92h400v-43h-400z" fill="#0f0" />
 </g>
-<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 420 461.92)" class="tx7rg1s" textLength="74.6728px" lengthAdjust="spacingAndGlyphs">Rotated</text>
-<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 477.4 380.02)" class="tx7rg1s" textLength="24.0028px" lengthAdjust="spacingAndGlyphs">60</text>
-<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 502.1968 344.6392)" class="tx7rg1s" textLength="73.3047px" lengthAdjust="spacingAndGlyphs">degrees</text>
+<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 420 461.92)" class="ID19" textLength="74.6728px" lengthAdjust="spacingAndGlyphs">Rotated</text>
+<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 477.4 380.02)" class="ID19" textLength="24.0028px" lengthAdjust="spacingAndGlyphs">60</text>
+<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 502.1968 344.6392)" class="ID19" textLength="73.3047px" lengthAdjust="spacingAndGlyphs">degrees</text>
 </g>
 </svg>

@@ -1,63 +1,63 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <style>
-.gt4EC2H text{white-space:pre;}
-.tx9FOOQ{font:bold 80px Helvetica,Arial,sans-serif;fill:url(#pt76CE7);stroke:url(#ptCnOaV);stroke-width:5;}
-.txbn6Ti{font:bold 39.984px Helvetica,Arial,sans-serif;fill:url(#ptzGpe9);}
+.ID14 text{white-space:pre;}
+.ID15{font:bold 80px Helvetica,Arial,sans-serif;fill:url(#ID10);stroke:url(#ID11);stroke-width:5;}
+.ID16{font:bold 39.984px Helvetica,Arial,sans-serif;fill:url(#ID12);}
 </style>
 <defs>
-<linearGradient x1="20" y1="20" x2="80" y2="80" gradientTransform="matrix(1 0 0 -1 100 191.92)" gradientUnits="userSpaceOnUse" id="ptAImqc">
+<linearGradient x1="20" y1="20" x2="80" y2="80" gradientTransform="matrix(1 0 0 -1 100 191.92)" gradientUnits="userSpaceOnUse" id="ID1">
 <stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
 <stop offset="0.001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </linearGradient>
-<linearGradient x1="20" y1="20" x2="80" y2="80" gradientTransform="matrix(1 0 0 -1 250 191.92)" gradientUnits="userSpaceOnUse" id="ptaTCL1">
+<linearGradient x1="20" y1="20" x2="80" y2="80" gradientTransform="matrix(1 0 0 -1 250 191.92)" gradientUnits="userSpaceOnUse" id="ID2">
 <stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
 <stop offset="0.001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </linearGradient>
-<linearGradient x1="20" y1="20" x2="80" y2="80" gradientTransform="matrix(1 0 0 -1 400 191.92)" gradientUnits="userSpaceOnUse" id="ptJRYFh">
+<linearGradient x1="20" y1="20" x2="80" y2="80" gradientTransform="matrix(1 0 0 -1 400 191.92)" gradientUnits="userSpaceOnUse" id="ID3">
 <stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
 <stop offset="0.001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </linearGradient>
-<linearGradient x1="20" y1="20" x2="80" y2="80" gradientTransform="matrix(1 0 0 -1 100 341.92)" gradientUnits="userSpaceOnUse" id="pt51J8S">
+<linearGradient x1="20" y1="20" x2="80" y2="80" gradientTransform="matrix(1 0 0 -1 100 341.92)" gradientUnits="userSpaceOnUse" id="ID4">
 <stop offset="0.001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </linearGradient>
-<linearGradient x1="20" y1="20" x2="80" y2="80" gradientTransform="matrix(1 0 0 -1 250 341.92)" gradientUnits="userSpaceOnUse" id="ptH1X62">
+<linearGradient x1="20" y1="20" x2="80" y2="80" gradientTransform="matrix(1 0 0 -1 250 341.92)" gradientUnits="userSpaceOnUse" id="ID5">
 <stop offset="0.001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 </linearGradient>
-<linearGradient x1="20" y1="20" x2="80" y2="80" gradientTransform="matrix(1 0 0 -1 400 341.92)" gradientUnits="userSpaceOnUse" id="pttMKKk">
+<linearGradient x1="20" y1="20" x2="80" y2="80" gradientTransform="matrix(1 0 0 -1 400 341.92)" gradientUnits="userSpaceOnUse" id="ID6">
 <stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
 <stop offset="0.001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </linearGradient>
-<linearGradient x1="120" y1="370" x2="180" y2="430" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="ptAn8v0">
+<linearGradient x1="120" y1="370" x2="180" y2="430" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="ID7">
 <stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
 <stop offset="0.001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </linearGradient>
-<linearGradient x1="2" y1="2" x2="8" y2="8" gradientTransform="matrix(10 0 0 -9.901 0 99.0099)" gradientUnits="userSpaceOnUse" id="ptqVXsr">
+<linearGradient x1="2" y1="2" x2="8" y2="8" gradientTransform="matrix(10 0 0 -9.901 0 99.0099)" gradientUnits="userSpaceOnUse" id="ID8">
 <stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
 <stop offset="0.001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </linearGradient>
-<linearGradient x1="420" y1="370" x2="480" y2="430" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="ptO1kUM">
+<linearGradient x1="420" y1="370" x2="480" y2="430" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="ID9">
 <stop offset="0%" stop-color="#a82800" />
 <stop offset="0.001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="0%" stop-color="#a82800" />
 </linearGradient>
-<linearGradient x1="120" y1="0" x2="460" y2="0" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="pt76CE7">
+<linearGradient x1="120" y1="0" x2="460" y2="0" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="ID10">
 <stop offset="0%" stop-color="#000" stop-opacity="0" />
 <stop offset="0.001%" stop-color="#000" />
 <stop offset="7.1437%" stop-color="#121212" />
@@ -76,7 +76,7 @@
 <stop offset="99.999%" stop-color="#fff" />
 <stop offset="100%" stop-color="#fff" stop-opacity="0" />
 </linearGradient>
-<linearGradient x1="100" y1="0" x2="500" y2="0" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="ptCnOaV">
+<linearGradient x1="100" y1="0" x2="500" y2="0" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="ID11">
 <stop offset="0%" stop-color="#f00" stop-opacity="0" />
 <stop offset="0.001%" stop-color="#f00" />
 <stop offset="17.0007%" stop-color="#ff0" />
@@ -87,7 +87,7 @@
 <stop offset="99.999%" stop-color="#f00" />
 <stop offset="100%" stop-color="#f00" stop-opacity="0" />
 </linearGradient>
-<linearGradient x1="100" y1="0" x2="500" y2="0" gradientTransform="matrix(0.9404 -0.3401 -0.3401 -0.9404 -261.1045 307.1229)" gradientUnits="userSpaceOnUse" id="ptzGpe9">
+<linearGradient x1="100" y1="0" x2="500" y2="0" gradientTransform="matrix(0.9404 -0.3401 -0.3401 -0.9404 -261.1045 307.1229)" gradientUnits="userSpaceOnUse" id="ID12">
 <stop offset="0%" stop-color="#f00" stop-opacity="0" />
 <stop offset="0.001%" stop-color="#f00" />
 <stop offset="17.0007%" stop-color="#ff0" />
@@ -98,24 +98,24 @@
 <stop offset="99.999%" stop-color="#f00" />
 <stop offset="100%" stop-color="#f00" stop-opacity="0" />
 </linearGradient>
-<clipPath id="clZb6UV">
+<clipPath id="ID13">
 <path d="M440 191.92l-40 -100l100 40" />
 </clipPath>
 </defs>
-<g stroke-miterlimit="10" class="gt4EC2H">
-<path d="M100 191.92h100v-100h-100z" fill="url(#ptAImqc)" />
-<path d="M250 191.92h100v-100h-100z" fill="url(#ptaTCL1)" />
-<g clip-path="url(#clZb6UV)">
-<path d="M0 841.92h594.96v-841.92h-594.96z" fill="url(#ptJRYFh)" />
+<g stroke-miterlimit="10" class="ID14">
+<path d="M100 191.92h100v-100h-100z" fill="url(#ID1)" />
+<path d="M250 191.92h100v-100h-100z" fill="url(#ID2)" />
+<g clip-path="url(#ID13)">
+<path d="M0 841.92h594.96v-841.92h-594.96z" fill="url(#ID3)" />
 </g>
-<path d="M100 341.92h100v-100h-100z" fill="url(#pt51J8S)" />
-<path d="M250 341.92h100v-100h-100z" fill="url(#ptH1X62)" />
-<path d="M400 341.92h100v-100h-100z" fill="url(#pttMKKk)" />
-<path d="M100 491.92h100v-100h-100z" fill="url(#ptAn8v0)" stroke="#000" stroke-width="1" />
-<path d="M0 0h100v100h-100z" transform="matrix(1 0 0 1.01 250 391.92)" fill="url(#ptqVXsr)" stroke="#000" stroke-width="1" />
-<path d="M400 491.92h100v-100h-100z" fill="url(#ptO1kUM)" stroke="#000" stroke-width="1" />
-<path d="M110 711.92h380v-170h-380z" fill="url(#pt76CE7)" stroke="url(#ptCnOaV)" stroke-width="20" />
-<text x="145" y="651.92" class="tx9FOOQ">TEXT</text>
-<text transform="matrix(0.9404 0.3401 -0.3401 0.9404 350 641.92)" class="txbn6Ti">TEXT</text>
+<path d="M100 341.92h100v-100h-100z" fill="url(#ID4)" />
+<path d="M250 341.92h100v-100h-100z" fill="url(#ID5)" />
+<path d="M400 341.92h100v-100h-100z" fill="url(#ID6)" />
+<path d="M100 491.92h100v-100h-100z" fill="url(#ID7)" stroke="#000" stroke-width="1" />
+<path d="M0 0h100v100h-100z" transform="matrix(1 0 0 1.01 250 391.92)" fill="url(#ID8)" stroke="#000" stroke-width="1" />
+<path d="M400 491.92h100v-100h-100z" fill="url(#ID9)" stroke="#000" stroke-width="1" />
+<path d="M110 711.92h380v-170h-380z" fill="url(#ID10)" stroke="url(#ID11)" stroke-width="20" />
+<text x="145" y="651.92" class="ID15">TEXT</text>
+<text transform="matrix(0.9404 0.3401 -0.3401 0.9404 350 641.92)" class="ID16">TEXT</text>
 </g>
 </svg>

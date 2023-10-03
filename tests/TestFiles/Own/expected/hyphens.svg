@@ -1,11 +1,11 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <style>
-.gt4EC2H text{white-space:pre;}
-.txgy4Tu{font:12px 'Times New Roman',serif;}
+.ID1 text{white-space:pre;}
+.ID2{font:12px 'Times New Roman',serif;}
 </style>
-<g class="gt4EC2H">
-<g class="txgy4Tu">
+<g class="ID1">
+<g class="ID2">
 <text x="80" y="99.92">Text with hyphens in-line and between-</text>
 <text x="80" y="117.92">lines.</text>
 </g>

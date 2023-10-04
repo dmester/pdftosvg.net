@@ -23,7 +23,7 @@ namespace PdfToSvg.Fonts.Type1
 
             if (info.CharStrings == null || !info.CharStrings.TryGetValue(".notdef", out emptyCharString))
             {
-                emptyCharString = CharString.Empty;
+                emptyCharString = new CharString();
             }
 
             var cffFontSet = new CompactFontSet();

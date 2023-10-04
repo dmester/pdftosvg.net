@@ -22,7 +22,7 @@ namespace PdfToSvg.Tests.Fonts.CompactFonts
             for (var gid = 0; gid < sids.Length; gid++)
             {
                 var sid = sids[gid];
-                font.Glyphs.Add(new CompactFontGlyph(CharString.Empty, "x", gid, sid, null, 0));
+                font.Glyphs.Add(new CompactFontGlyph(new CharString(), "x", gid, sid, null, 0));
             }
 
             fontSet.Fonts.Add(font);

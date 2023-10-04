@@ -95,7 +95,7 @@ namespace PdfToSvg.Fonts
             // Handle glyphs
             var glyphs = new List<CompactFontGlyph>();
 
-            var emptyGlyph = new CompactFontGlyph(CharString.Empty, "\0", 0, 0, ".notdef", 0);
+            var emptyGlyph = new CompactFontGlyph(new CharString(), "\0", 0, 0, ".notdef", 0);
             glyphs.Add(emptyGlyph);
 
             var validFont = true;

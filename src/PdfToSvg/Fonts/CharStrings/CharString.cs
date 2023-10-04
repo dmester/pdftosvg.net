@@ -13,14 +13,12 @@ namespace PdfToSvg.Fonts.CharStrings
     {
         private readonly CharStringInfo info;
 
-        static CharString()
+        public CharString()
         {
             var endchar = CharStringLexeme.Operator(14);
 
-            var info = new CharStringInfo();
+            info = new CharStringInfo();
             info.Content.Add(endchar);
-
-            Empty = new CharString(info);
         }
 
         public CharString(CharStringInfo info)
@@ -45,7 +43,5 @@ namespace PdfToSvg.Fonts.CharStrings
         public double LastY => info.Path.LastY;
 
         public double HintCount => info.HintCount;
-
-        public static CharString Empty { get; }
     }
 }

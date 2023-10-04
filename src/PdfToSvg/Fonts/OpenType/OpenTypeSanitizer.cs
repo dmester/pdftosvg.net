@@ -85,7 +85,7 @@ namespace PdfToSvg.Fonts.OpenType
             // Add an empty character if there are no non-zero width characters to simplify logics further down
             if (result.Count == 0)
             {
-                result.Add(new CompactFontGlyph(CharString.Empty, "\ufffd", 0, 0, null, 0));
+                result.Add(new CompactFontGlyph(new CharString(), "\ufffd", 0, 0, null, 0));
             }
 
             return result;

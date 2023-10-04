@@ -423,7 +423,7 @@ namespace PdfToSvg.Fonts.CompactFonts
             catch (Exception ex)
             {
                 Log.WriteLine("Failed to parse char '" + unicode + "'. " + ex);
-                charString = CharString.Empty;
+                charString = new CharString();
             }
 
             if (charString.Width == null)

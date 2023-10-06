@@ -25,6 +25,18 @@ namespace PdfToSvg.Tests.Drawing
             Assert.AreEqual(expectedResult, SvgConversion.Matrix(new Matrix(a, b, c, d, e, f)));
         }
 
+        [TestCase(12341.234, "12341")]
+        [TestCase(1234.1234, "1234")]
+        [TestCase(123.41234, "123")]
+        [TestCase(12.341234, "12.34")]
+        [TestCase(1.2341234, "1.234")]
+        [TestCase(.12341234, "0.1234")]
+        [TestCase(.02341234, "0.0234")]
+        public void FormatFontMetric(double input, string expectedResult)
+        {
+            Assert.AreEqual(expectedResult, SvgConversion.FormatFontMetric(input));
+        }
+
         [TestCase("")]
         [TestCase(" ")]
         [TestCase("\r")]

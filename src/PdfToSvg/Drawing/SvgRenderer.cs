@@ -2108,7 +2108,7 @@ namespace PdfToSvg.Drawing
             string? fontFamily = null;
             string? fontWeight = null;
             string? fontStyle = null;
-            string? fontSize = SvgConversion.FormatCoordinate(style.FontSize) + "px";
+            string? fontSize = SvgConversion.FormatFontMetric(style.FontSize) + "px";
 
             // Font
             if (style.Font.SubstituteFont is LocalFont localFont)
@@ -2175,7 +2175,7 @@ namespace PdfToSvg.Drawing
 
             if (style.TextCharSpacingPx != 0)
             {
-                cssClass["letter-spacing"] = SvgConversion.FormatCoordinate(style.TextCharSpacingPx) + "px";
+                cssClass["letter-spacing"] = SvgConversion.FormatFontMetric(style.TextCharSpacingPx) + "px";
             }
 
             // Word spacing is precalcualted and applied by the <text> position, since PDF and CSS don't

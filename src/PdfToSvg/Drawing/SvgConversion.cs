@@ -123,9 +123,34 @@ namespace PdfToSvg.Drawing
             return numericWeight.ToString(CultureInfo.InvariantCulture);
         }
 
+        public static string FormatFontMetric(double number)
+        {
+            if (number >= 100 || number <= -100)
+            {
+                return FormatNumber(number, "0");
+            }
+
+            if (number >= 10 || number <= -10)
+            {
+                return FormatNumber(number, "0.##");
+            }
+
+            if (number >= 1 || number <= -1)
+            {
+                return FormatNumber(number, "0.###");
+            }
+
+            return FormatNumber(number, "0.####");
+        }
+
         public static string FormatCoordinate(double number)
         {
-            var result = number.ToString("0.####", CultureInfo.InvariantCulture);
+            return FormatNumber(number, "0.####");
+        }
+
+        private static string FormatNumber(double number, string formatString)
+        {
+            var result = number.ToString(formatString, CultureInfo.InvariantCulture);
 
             // .NET Core 3+ formats negative values close to 0 as "-0".
             // This adds no value to the svg.

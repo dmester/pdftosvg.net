@@ -3,7 +3,7 @@
 <style>
 .ID3 text{white-space:pre;}
 .ID4{font-family:'Times New Roman',serif;font-weight:bold;font-size:20px;}
-.ID2{font-family:'Times New Roman',serif;font-weight:bold;font-size:80px;}
+.ID2{font-family:'Times New Roman',serif;font-weight:bold;font-size:80px;fill:none;}
 </style>
 <defs>
 <clipPath id="ID1">
@@ -14,6 +14,11 @@
 </defs>
 <g class="ID3" stroke-miterlimit="10">
 <text x="210" y="241.92" class="ID4">Not part of clipping</text>
+<g class="ID2">
+<text x="210" y="201.92">A</text>
+<text x="270" y="191.92">B</text>
+<text x="325" y="211.92">C</text>
+</g>
 <g clip-path="url(#ID1)">
 <path d="M0 841.92h590v-800h-590z" fill="#f00" stroke="#000" stroke-width="1" />
 </g>

@@ -307,6 +307,16 @@ namespace PdfToSvg.Tests
             });
         }
 
+        [Test]
+        public void ExcludeHiddenText()
+        {
+            ConvertSync("text-rendering-mode.pdf", "text-rendering-mode-without-hidden-text.svg", new SvgConversionOptions
+            {
+                IncludeHiddenText = false,
+                FontResolver = FontResolver.LocalFonts,
+            });
+        }
+
         public static List<TestCaseData> TestCases
         {
             get

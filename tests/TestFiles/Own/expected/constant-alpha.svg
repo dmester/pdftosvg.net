@@ -5,6 +5,7 @@
 .ID3{font-family:'Times New Roman',serif;font-size:12px;}
 .ID4{font-family:'Times New Roman',serif;font-size:60px;stroke:#f00;stroke-width:4;}
 .ID5{font-family:'Times New Roman',serif;font-size:60px;fill-opacity:0.7;stroke:#f00;stroke-opacity:0.2;stroke-width:4;}
+.ID6{font-family:'Times New Roman',serif;font-size:60px;fill:none;}
 </style>
 <defs>
 <image id="ID1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANJJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT3PgGa8gRwIYbLhljAgwoQYDes1iHYMDJGhAdVJmOj7bDQnHU2B82UEGRw0GOoDGOangNDkGAYffQYJfobPM2EajqagBCtQYnsxQ4U3Q4INCGU4MizPZHg/DS1YgeBIAlEeACqDxvSvz0QlDaAyROIDcvDYA5QCq0bSAE/ewDBATt5ALmryBgA34dLM/tOwHgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
@@ -28,10 +29,9 @@
 <g transform="matrix(100 0 0 100 400 141.92)" opacity="0.7">
 <use href="#ID1" />
 </g>
-<g class="ID3">
-<text x="80" y="431.92">Alpha &lt; 0</text>
-<text x="240" y="431.92">Alpha &gt; 1</text>
-</g>
+<text x="80" y="431.92" class="ID3">Alpha &lt; 0</text>
+<text x="87" y="481.92" class="ID6">••••</text>
+<text x="240" y="431.92" class="ID3">Alpha &gt; 1</text>
 <text x="247" y="481.92" class="ID4">••••</text>
 <path d="M255 691.92h70v-70h-70z" fill="#000" stroke="#f00" stroke-width="10" />
 <g transform="matrix(100 0 0 100 240 491.92)">

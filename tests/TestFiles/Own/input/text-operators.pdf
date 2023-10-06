@@ -41,7 +41,7 @@ endobj
 >>
 endobj
 
-5 0 obj << /Length 2963 >>
+5 0 obj << /Length 2299 >>
 stream
 
    0 0 0 rg
@@ -159,47 +159,7 @@ stream
    150 Tz
    [5 3] 6 d
    2 w
-   
-   % Render mode 4 - Fill and clip
-   q
-      1 0 0 1 70 280 cm
-      BT 4 Tr (CLIPPED) Tj ET
-      30 5 400 43 re
-      0 1 0 rg
-      f
-   Q
-   
-   % Render mode 5 - Stroke and clip
-   q
-      1 0 0 1 70 210 cm
-      BT 5 Tr (CLIPPED) Tj ET
-      30 5 400 43 re
-      0 1 0 rg
-      f
-   Q
-   
-   % Render mode 6 - Fill, stroke and clip
-   q
-      1 0 0 1 70 140 cm
-      BT 6 Tr (CLIPPED) Tj ET
-      30 5 400 43 re
-      0 1 0 rg
-      f
-   Q
-   
-   % Render mode 7 - Clip only
-   q
-      1 0 0 1 70 70 cm
-      BT
-         7 Tr
-         (CLIPPED) Tj
-      ET
-      30 5 400 43 re
-      0 1 0 rg
-      f
-   Q
-   
-   
+
    % Rotated text
    120 Tz
    /F1 20 Tf

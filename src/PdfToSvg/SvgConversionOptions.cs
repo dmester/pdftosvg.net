@@ -133,6 +133,40 @@ namespace PdfToSvg
         /// </remarks>
         public bool IncludeLinks { get; set; } = true;
 
+        /// <summary>
+        /// Determines whether hidden text from the PDF document will be included in the generated SVG.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        ///     The default value is <c>true</c>.
+        /// </para>
+        /// <para>
+        ///     Hidden text is used for multiple purposes in PDF documents. Some examples:
+        /// </para>
+        /// <list type="bullet">
+        ///     <item>
+        ///         For making it possible to search for and select text that is otherwise presented as an image. This
+        ///         is common in scanned documents processed with OCR (optical character recognition).
+        ///     </item>
+        ///     <item>
+        ///         For embedding hidden metadata about the file, e.g., the name of the software producing the document.
+        ///     </item>
+        ///     <item>
+        ///         For clipping other graphics to the text outline.
+        ///     </item>
+        /// </list>
+        /// <para>
+        ///     By setting this property to <c>false</c>, PdfToSvg.NET will generate smaller SVG files for some PDF
+        ///     documents, but it will have no or minimal impact on most documents.
+        /// </para>
+        /// <para>
+        ///     Setting the property to <c>false</c> does not remove text used for clipping, since it is required for
+        ///     preserving the appearance of the page. It does however remove duplicated <c>&lt;text&gt;</c> nodes
+        ///     otherwise generated for making the clipping text searchable and selectable.
+        /// </para>
+        /// </remarks>
+        public bool IncludeHiddenText { get; set; } = true;
+
 #if DEBUG
         /// <summary>
         /// If <c>true</c>, the content stream operators are logged in the output SVG.

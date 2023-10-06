@@ -2038,7 +2038,7 @@ namespace PdfToSvg.Drawing
             textBuilder.UpdateLineMatrix(graphicsState);
         }
 
-        private static List<TextParagraph> PrepareSvgSpans(List<TextParagraph> paragraphs)
+        private static List<TextParagraph> PrepareSvgSpans(List<TextParagraph> paragraphs, bool includeHiddenText)
         {
             // Horizontal scaling is resalized using the textLength attribute, which ensures any stroke
             // is not affected by the scaling. However, the support for textLength is rather buggy in 
@@ -2064,10 +2064,10 @@ namespace PdfToSvg.Drawing
                         (span.Style.TextRenderingMode & TextRenderingMode.Clip) != 0;
 
                     var visible =
-                        (span.Style.TextRenderingMode & TextRenderingMode.Fill) != 0 && span.Style.FillAlpha > MinAlpha ||
-                        (span.Style.TextRenderingMode & TextRenderingMode.Stroke) != 0 && span.Style.StrokeAlpha > MinAlpha;
+                        (span.Style.TextRenderingMode & TextRenderingMode.Fill) != 0 ||
+                        (span.Style.TextRenderingMode & TextRenderingMode.Stroke) != 0;
 
-                    if (visible || appendClipping)
+                    if (includeHiddenText || visible || appendClipping)
                     {
                         if (newParagraph == null ||
 
@@ -2181,6 +2181,8 @@ namespace PdfToSvg.Drawing
             // Word spacing is precalcualted and applied by the <text> position, since PDF and CSS don't
             // interpret word spacing the same way.
 
+            var visible = false;
+
             // Fill
             if (style.TextRenderingMode.HasFlag(TextRenderingMode.Fill))
             {
@@ -2200,9 +2202,11 @@ namespace PdfToSvg.Drawing
                     {
                         cssClass["fill-opacity"] = SvgConversion.FormatCoordinate(graphicsState.FillAlpha);
                     }
+
+                    visible = true;
                 }
             }
-            else if (style.TextRenderingMode.HasFlag(TextRenderingMode.Stroke))
+            else
             {
                 cssClass["fill"] = "none";
             }
@@ -2276,10 +2280,12 @@ namespace PdfToSvg.Drawing
                         cssClass["stroke-dashoffset"] = style.StrokeDashPhase.ToString(CultureInfo.InvariantCulture);
                     }
                 }
+
+                visible = true;
             }
 
             // Soft mask
-            if (graphicsState.SMaskId != null)
+            if (visible && graphicsState.SMaskId != null)
             {
                 cssClass["mask"] = "url(#" + graphicsState.SMaskId + ")";
             }
@@ -2305,7 +2311,7 @@ namespace PdfToSvg.Drawing
                 hasTextStyle = true;
             }
 
-            foreach (var paragraph in PrepareSvgSpans(textBuilder.paragraphs))
+            foreach (var paragraph in PrepareSvgSpans(textBuilder.paragraphs, options.IncludeHiddenText))
             {
                 if (paragraph.Type3Content != null)
                 {
@@ -2471,7 +2477,7 @@ namespace PdfToSvg.Drawing
                 }
             }
 
-            if (paragraph.Visible)
+            if (paragraph.Visible || options.IncludeHiddenText)
             {
                 // TODO test simplification of clip path
                 if (paragraph.Matrix.IsIdentity &&

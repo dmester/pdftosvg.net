@@ -1,0 +1,224 @@
+%PDF-1.7
+
+xref
+0 5
+0000000000 65535 f
+0000000162 00000 n
+0000000217 00000 n
+0000000283 00000 n
+0000000598 00000 n
+trailer
+<< /Root 1 0 R  /Size 5 >>
+
+1 0 obj
+<< /Type /Catalog  /Pages 2 0 R >>
+endobj
+
+2 0 obj
+<< /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >>
+endobj
+
+3 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /FR << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+         /FB << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+      >>
+   >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj
+<< /Length 3243 >>
+stream
+
+   0.73 0.88 0.93 rg
+   0.05 0.17 0.2 RG
+   
+   % Render mode 0 - Fill
+   q
+      1 0 0 1 70 730 cm
+      
+      BT 
+         0 0 0 rg
+         1 0 0 1 4 46 Tm
+         /FR 10 Tf
+         (Render mode 0 - Fill) Tj
+         
+         0.73 0.88 0.93 rg
+         1 0 0 1 0 0 Tm
+         /FB 50 Tf
+         0 Tr
+         (TEXT TEXT) Tj
+      ET
+      
+      0.05 0.17 0.2 rg
+      -6 14 282 8 re
+      f
+   Q
+   
+   % Render mode 1 - Stroke
+   q
+      1 0 0 1 70 640 cm
+      
+      BT 
+         0 0 0 rg
+         1 0 0 1 4 46 Tm
+         /FR 10 Tf
+         (Render mode 1 - Stroke) Tj
+         
+         0.73 0.88 0.93 rg
+         1 0 0 1 0 0 Tm
+         /FB 50 Tf
+         1 Tr
+         (TEXT TEXT) Tj
+      ET
+      
+      0.05 0.17 0.2 rg
+      -6 14 282 8 re
+      f
+   Q
+   
+   % Render mode 2 - Fill and stroke
+   q
+      1 0 0 1 70 550 cm
+      
+      BT 
+         0 0 0 rg
+         1 0 0 1 4 46 Tm
+         /FR 10 Tf
+         (Render mode 2 - Fill and stroke) Tj
+         
+         0.73 0.88 0.93 rg
+         1 0 0 1 0 0 Tm
+         /FB 50 Tf
+         2 Tr
+         (TEXT TEXT) Tj
+      ET
+      
+      0.05 0.17 0.2 rg
+      -6 14 282 8 re
+      f
+   Q
+   
+   % Render mode 3 - Invisible
+   q
+      1 0 0 1 70 460 cm
+      
+      BT 
+         0 0 0 rg
+         1 0 0 1 4 46 Tm
+         /FR 10 Tf
+         (Render mode 3 - Invisible) Tj
+         
+         0.73 0.88 0.93 rg
+         1 0 0 1 0 0 Tm
+         /FB 50 Tf
+         3 Tr
+         (TEXT TEXT) Tj
+      ET
+      
+      0.05 0.17 0.2 rg
+      -6 14 282 8 re
+      f
+   Q
+   
+   % Render mode 4 - Fill and clip
+   q
+      1 0 0 1 70 370 cm
+      
+      BT 
+         0 0 0 rg
+         1 0 0 1 4 46 Tm
+         /FR 10 Tf
+         (Render mode 4 - Fill and clip) Tj
+         
+         0.73 0.88 0.93 rg
+         1 0 0 1 0 0 Tm
+         /FB 50 Tf
+         4 Tr
+         (TEXT TEXT) Tj
+      ET
+      
+      0.05 0.17 0.2 rg
+      -6 14 282 8 re
+      f
+   Q
+   
+   % Render mode 5 - Stroke and clip
+   q
+      1 0 0 1 70 280 cm
+      
+      BT 
+         0 0 0 rg
+         1 0 0 1 4 46 Tm
+         /FR 10 Tf
+         (Render mode 5 - Stroke and clip) Tj
+         
+         0.73 0.88 0.93 rg
+         1 0 0 1 0 0 Tm
+         /FB 50 Tf
+         5 Tr
+         (TEXT TEXT) Tj
+      ET
+      
+      0.05 0.17 0.2 rg
+      -6 14 282 8 re
+      f
+   Q
+   
+   % Render mode 6 - Fill, stroke and clip
+   q
+      1 0 0 1 70 190 cm
+      
+      BT 
+         0 0 0 rg
+         1 0 0 1 4 46 Tm
+         /FR 10 Tf
+         (Render mode 6 - Fill, stroke and clip) Tj
+         
+         0.73 0.88 0.93 rg
+         1 0 0 1 0 0 Tm
+         /FB 50 Tf
+         6 Tr
+         (TEXT TEXT) Tj
+      ET
+      
+      0.05 0.17 0.2 rg
+      -6 14 282 8 re
+      f
+   Q
+   
+   % Render mode 7 - Clip
+   q
+      1 0 0 1 70 100 cm
+      
+      BT 
+         0 0 0 rg
+         1 0 0 1 4 46 Tm
+         /FR 10 Tf
+         (Render mode 7 - Clip) Tj
+         
+         0.73 0.88 0.93 rg
+         1 0 0 1 0 0 Tm
+         /FB 50 Tf
+         7 Tr
+         (TEXT TEXT) Tj
+      ET
+      
+      0.05 0.17 0.2 rg
+      -6 14 282 8 re
+      f
+   Q
+
+endstream
+endobj
+
+startxref
+8
+%%EOF

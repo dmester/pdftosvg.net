@@ -6,8 +6,8 @@ xref
 0000000182 00000 n
 0000000233 00000 n
 0000000296 00000 n
-0000000998 00000 n
-0000001672 00000 n
+0000001304 00000 n
+0000002124 00000 n
 trailer
 << /Root 1 0 R  /Size 6 >>
 
@@ -24,6 +24,15 @@ trailer
             /Type /Font
             /Subtype /Type1
             /BaseFont /Helvetica-Bold
+         >>
+      >>
+      /Shading <<
+         /Sh1 <<
+            /ShadingType 2
+            /ColorSpace /DeviceRGB
+            /Coords [ 0 15 0 40 ]
+            /Extend [ true true ]
+            /Function << /FunctionType 2 /N 1 /Domain [ 0.0 1.0 ] /C0 [ 0.66 0.16 0 ] /C1 [ 0.05 0.17 0.2 ] >>
          >>
       >>
       /ExtGState <<
@@ -53,7 +62,7 @@ endobj
 
 4 0 obj
 <<
-   /Length 610
+   /Length 756
 >>
 stream
 
@@ -64,11 +73,13 @@ stream
    0.05 0.17 0.2 rg
 
    q
+      % Alpha soft mask
       1 0 0 1 55 620 cm
       /GSAlpha gs
       0 0 1000 1000 re
       f
-
+      
+      % Unset soft mask
       /GSNone gs
       BT
          /F1 70 Tf
@@ -77,13 +88,14 @@ stream
       ET
    Q
 
+   % Luminosity soft mask on path + shading
    q
       1 0 0 1 55 540 cm
       /GSLuminosity gs
-      0 0 1000 1000 re
-      f
+      /Sh1 sh
    Q
 
+   % Luminosity soft mask on text
    q
       1 0 0 1 55 460 cm
       /GSLuminosity gs
@@ -93,6 +105,7 @@ stream
       ET
    Q
 
+   % Transformed soft mask
    q
       0 -0.7 0.7 0 260 420 cm
       /GSLuminosity gs

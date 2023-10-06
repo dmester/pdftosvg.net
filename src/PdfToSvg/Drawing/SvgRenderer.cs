@@ -1120,6 +1120,11 @@ namespace PdfToSvg.Drawing
             el.SetAttributeValue("d", SvgConversion.PathData(path));
             el.SetAttributeValue("fill", "url(#" + gradientId + ")");
 
+            if (graphicsState.SMaskId != null)
+            {
+                el.SetAttributeValue("mask", "url(#" + graphicsState.SMaskId + ")");
+            }
+
             if (bboxClipped)
             {
                 clipWrapper = null;

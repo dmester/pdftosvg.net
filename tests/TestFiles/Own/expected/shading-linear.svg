@@ -3,7 +3,7 @@
 <style>
 .ID14 text{white-space:pre;}
 .ID15{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:80px;fill:url(#ID10);stroke:url(#ID11);stroke-width:5;}
-.ID16{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:39.984px;fill:url(#ID12);}
+.ID16{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:39.98px;fill:url(#ID12);}
 </style>
 <defs>
 <linearGradient x1="20" y1="20" x2="80" y2="80" gradientTransform="matrix(1 0 0 -1 100 191.92)" gradientUnits="userSpaceOnUse" id="ID1">

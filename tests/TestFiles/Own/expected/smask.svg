@@ -1,62 +1,62 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <style>
-.ID9 text{white-space:pre;}
-.ID4{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:70px;fill:url(#ID1);fill-opacity:0.8;}
+.ID1 text{white-space:pre;}
+.ID5{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:70px;fill:url(#ID2);fill-opacity:0.8;}
 .ID10{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:70px;fill:#0c2b33;}
-.ID11{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:150px;fill:#0c2b33;mask:url(#ID7);}
+.ID11{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:150px;fill:#0c2b33;mask:url(#ID8);}
 </style>
-<defs>
-<linearGradient x1="0" y1="0" x2="480" y2="0" gradientTransform="matrix(1 0 0 -1 0 100)" gradientUnits="userSpaceOnUse" id="ID1">
+<defs class="ID1">
+<linearGradient x1="0" y1="0" x2="480" y2="0" gradientTransform="matrix(1 0 0 -1 0 100)" gradientUnits="userSpaceOnUse" id="ID2">
 <stop offset="0%" stop-color="#0ff" stop-opacity="0" />
 <stop offset="0.001%" stop-color="#0ff" />
 <stop offset="99.999%" stop-color="#000" />
 <stop offset="100%" stop-color="#000" stop-opacity="0" />
 </linearGradient>
-<image id="ID2" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANJJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT3PgGa8gRwIYbLhljAgwoQYDes1iHYMDJGhAdVJmOj7bDQnHU2B82UEGRw0GOoDGOangNDkGAYffQYJfobPM2EajqagBCtQYnsxQ4U3Q4INCGU4MizPZHg/DS1YgeBIAlEeACqDxvSvz0QlDaAyROIDcvDYA5QCq0bSAE/ewDBATt5ALmryBgA34dLM/tOwHgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" />
-<mask mask-type="alpha" id="ID3">
+<image id="ID3" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANJJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT3PgGa8gRwIYbLhljAgwoQYDes1iHYMDJGhAdVJmOj7bDQnHU2B82UEGRw0GOoDGOangNDkGAYffQYJfobPM2EajqagBCtQYnsxQ4U3Q4INCGU4MizPZHg/DS1YgeBIAlEeACqDxvSvz0QlDaAyROIDcvDYA5QCq0bSAE/ewDBATt5ALmryBgA34dLM/tOwHgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" />
+<mask mask-type="alpha" id="ID4">
 <g transform="translate(55 121.92)">
-<text x="0" y="95" class="ID4">TEXT SMASK</text>
+<text x="0" y="95" class="ID5">TEXT SMASK</text>
 <g transform="matrix(30 0 0 30 465 65)">
-<use href="#ID2" />
+<use href="#ID3" />
 </g>
 </g>
 </mask>
-<mask id="ID5">
+<mask id="ID6">
 <g transform="translate(55 201.92)">
-<text x="0" y="95" class="ID4">TEXT SMASK</text>
+<text x="0" y="95" class="ID5">TEXT SMASK</text>
 <g transform="matrix(30 0 0 30 465 65)">
-<use href="#ID2" />
+<use href="#ID3" />
 </g>
 </g>
 </mask>
-<linearGradient x1="0" y1="15" x2="0" y2="40" gradientTransform="matrix(1 0 0 -1 55 301.92)" gradientUnits="userSpaceOnUse" id="ID6">
+<linearGradient x1="0" y1="15" x2="0" y2="40" gradientTransform="matrix(1 0 0 -1 55 301.92)" gradientUnits="userSpaceOnUse" id="ID7">
 <stop offset="0.001%" stop-color="#a82800" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 </linearGradient>
-<mask id="ID7">
+<mask id="ID8">
 <g transform="translate(55 281.92)">
-<text x="0" y="95" class="ID4">TEXT SMASK</text>
+<text x="0" y="95" class="ID5">TEXT SMASK</text>
 <g transform="matrix(30 0 0 30 465 65)">
-<use href="#ID2" />
+<use href="#ID3" />
 </g>
 </g>
 </mask>
-<mask id="ID8">
+<mask id="ID9">
 <g transform="matrix(0 0.7 -0.7 0 330 421.92)">
-<text x="0" y="95" class="ID4">TEXT SMASK</text>
+<text x="0" y="95" class="ID5">TEXT SMASK</text>
 <g transform="matrix(30 0 0 30 465 65)">
-<use href="#ID2" />
+<use href="#ID3" />
 </g>
 </g>
 </mask>
 </defs>
-<g class="ID9">
+<g class="ID1">
 <path d="M0 841.92h280v-842h-280z" fill="#bae0ed" />
-<path d="M55 221.92h1000v-1000h-1000z" fill="#0c2b33" mask="url(#ID3)" />
+<path d="M55 221.92h1000v-1000h-1000z" fill="#0c2b33" mask="url(#ID4)" />
 <text x="55" y="136.92" class="ID10">TEXT SMASK</text>
-<path d="M0 841.92h594.96v-841.92h-594.96z" fill="url(#ID6)" mask="url(#ID5)" />
+<path d="M0 841.92h594.96v-841.92h-594.96z" fill="url(#ID7)" mask="url(#ID6)" />
 <text x="55" y="381.92" class="ID11">zzzzzzz</text>
-<path d="M-3240 -3078.08v6300h6300v-6300z" fill="#0c2b33" mask="url(#ID8)" />
+<path d="M-3240 -3078.08v6300h6300v-6300z" fill="#0c2b33" mask="url(#ID9)" />
 </g>
 </svg>

@@ -1,25 +1,25 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <style>
-.ID3 text{white-space:pre;}
+.ID1 text{white-space:pre;}
 .ID4{font-family:'Times New Roman',serif;font-weight:bold;font-size:20px;}
-.ID2{font-family:'Times New Roman',serif;font-weight:bold;font-size:80px;fill:none;}
+.ID3{font-family:'Times New Roman',serif;font-weight:bold;font-size:80px;fill:none;}
 </style>
-<defs>
-<clipPath id="ID1">
-<text x="210" y="201.92" class="ID2">A</text>
-<text x="270" y="191.92" class="ID2">B</text>
-<text x="325" y="211.92" class="ID2">C</text>
+<defs class="ID1">
+<clipPath id="ID2">
+<text x="210" y="201.92" class="ID3">A</text>
+<text x="270" y="191.92" class="ID3">B</text>
+<text x="325" y="211.92" class="ID3">C</text>
 </clipPath>
 </defs>
-<g class="ID3" stroke-miterlimit="10">
+<g class="ID1" stroke-miterlimit="10">
 <text x="210" y="241.92" class="ID4">Not part of clipping</text>
-<g class="ID2">
+<g class="ID3">
 <text x="210" y="201.92">A</text>
 <text x="270" y="191.92">B</text>
 <text x="325" y="211.92">C</text>
 </g>
-<g clip-path="url(#ID1)">
+<g clip-path="url(#ID2)">
 <path d="M0 841.92h590v-800h-590z" fill="#f00" stroke="#000" stroke-width="1" />
 </g>
 </g>

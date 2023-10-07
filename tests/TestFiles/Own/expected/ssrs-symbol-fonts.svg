@@ -1,19 +1,19 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 595.276 841.89" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <style>
-.ID2 text{white-space:pre;}
+.ID1 text{white-space:pre;}
 .ID3{font-family:'Microsoft Sans Serif',sans-serif;font-size:18px;font-variant:none;}
 .ID4{font-family:Symbol;font-size:28px;}
 .ID5{font-family:Webdings;font-size:28px;}
 .ID6{font-family:Wingdings;font-size:28px;}
 </style>
-<defs>
-<clipPath id="ID1">
+<defs class="ID1">
+<clipPath id="ID2">
 <rect x="82.453" y="94.453" width="289.4" height="239" />
 </clipPath>
 </defs>
-<g class="ID2">
-<g clip-path="url(#ID1)">
+<g class="ID1">
+<g clip-path="url(#ID2)">
 <text x="82.469" y="110.981" class="ID3">Symbol</text>
 </g>
 <text x="82.469" y="142.877" class="ID4"></text>

@@ -1,0 +1,21 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID4{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:25px;fill:#0c2b33;}
+.ID3{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:25px;fill:none;}
+</style>
+<defs class="ID1">
+<clipPath id="ID2">
+<text x="283.65" y="91.92" class="ID3">   multiple</text>
+</clipPath>
+</defs>
+<g class="ID1">
+<text x="85" y="91.92" class="ID4">Text   containing</text>
+<text x="283.65" y="91.92" class="ID3">   multiple</text>
+<g clip-path="url(#ID2)">
+<path d="M0 841.92h1000v-1000h-1000z" fill="#a82800" />
+</g>
+<text x="400.5" y="91.92" class="ID4">   spaces</text>
+</g>
+</svg>

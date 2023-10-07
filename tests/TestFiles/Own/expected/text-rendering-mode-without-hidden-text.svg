@@ -8,49 +8,52 @@
 .ID8{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:50px;fill:#bae0ed;stroke:#0c2b33;}
 .ID10{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:50px;fill:none;}
 </style>
-<defs>
-<clipPath id="ID1">
-<text x="70" y="471.92" class="ID2">TEXT TEXT</text>
+<defs class="ID1">
+<clipPath id="ID2">
+<rect x="-30" y="-428.08" width="1000" height="1000" />
 </clipPath>
-<clipPath id="ID3">
-<text x="70" y="561.92" class="ID4">TEXT TEXT</text>
+<clipPath id="ID3" clip-path="url(#ID2)">
+<text x="70" y="471.92" class="ID4">TEXT TEXT</text>
 </clipPath>
 <clipPath id="ID5">
-<text x="70" y="651.92" class="ID6">TEXT TEXT</text>
+<text x="70" y="561.92" class="ID6">TEXT TEXT</text>
 </clipPath>
 <clipPath id="ID7">
-<text x="70" y="741.92" class="ID8">TEXT TEXT</text>
+<text x="70" y="651.92" class="ID8">TEXT TEXT</text>
+</clipPath>
+<clipPath id="ID9">
+<text x="70" y="741.92" class="ID10">TEXT TEXT</text>
 </clipPath>
 </defs>
-<g class="ID9" stroke-miterlimit="10">
-<text x="74" y="65.92" class="ID10">Render mode 0 - Fill</text>
-<text x="70" y="111.92" class="ID2">TEXT TEXT</text>
+<g class="ID1" stroke-miterlimit="10">
+<text x="74" y="65.92" class="ID11">Render mode 0 - Fill</text>
+<text x="70" y="111.92" class="ID4">TEXT TEXT</text>
 <path d="M64 97.92h282v-8h-282z" fill="#0c2b33" />
-<text x="74" y="155.92" class="ID10">Render mode 1 - Stroke</text>
-<text x="70" y="201.92" class="ID4">TEXT TEXT</text>
+<text x="74" y="155.92" class="ID11">Render mode 1 - Stroke</text>
+<text x="70" y="201.92" class="ID6">TEXT TEXT</text>
 <path d="M64 187.92h282v-8h-282z" fill="#0c2b33" />
-<text x="74" y="245.92" class="ID10">Render mode 2 - Fill and stroke</text>
-<text x="70" y="291.92" class="ID6">TEXT TEXT</text>
+<text x="74" y="245.92" class="ID11">Render mode 2 - Fill and stroke</text>
+<text x="70" y="291.92" class="ID8">TEXT TEXT</text>
 <path d="M64 277.92h282v-8h-282z" fill="#0c2b33" />
-<text x="74" y="335.92" class="ID10">Render mode 3 - Invisible</text>
+<text x="74" y="335.92" class="ID11">Render mode 3 - Invisible</text>
 <path d="M64 367.92h282v-8h-282z" fill="#0c2b33" />
-<text x="74" y="425.92" class="ID10">Render mode 4 - Fill and clip</text>
-<text x="70" y="471.92" class="ID2">TEXT TEXT</text>
-<g clip-path="url(#ID1)">
+<text x="74" y="425.92" class="ID11">Render mode 4 - Fill and clip</text>
+<text x="70" y="471.92" class="ID4">TEXT TEXT</text>
+<g clip-path="url(#ID3)">
 <path d="M64 457.92h282v-8h-282z" fill="#0c2b33" />
 </g>
-<text x="74" y="515.92" class="ID10">Render mode 5 - Stroke and clip</text>
-<text x="70" y="561.92" class="ID4">TEXT TEXT</text>
-<g clip-path="url(#ID3)">
+<text x="74" y="515.92" class="ID11">Render mode 5 - Stroke and clip</text>
+<text x="70" y="561.92" class="ID6">TEXT TEXT</text>
+<g clip-path="url(#ID5)">
 <path d="M64 547.92h282v-8h-282z" fill="#0c2b33" />
 </g>
-<text x="74" y="605.92" class="ID10">Render mode 6 - Fill, stroke and clip</text>
-<text x="70" y="651.92" class="ID6">TEXT TEXT</text>
-<g clip-path="url(#ID5)">
+<text x="74" y="605.92" class="ID11">Render mode 6 - Fill, stroke and clip</text>
+<text x="70" y="651.92" class="ID8">TEXT TEXT</text>
+<g clip-path="url(#ID7)">
 <path d="M64 637.92h282v-8h-282z" fill="#0c2b33" />
 </g>
-<text x="74" y="695.92" class="ID10">Render mode 7 - Clip</text>
-<g clip-path="url(#ID7)">
+<text x="74" y="695.92" class="ID11">Render mode 7 - Clip</text>
+<g clip-path="url(#ID9)">
 <path d="M64 727.92h282v-8h-282z" fill="#0c2b33" />
 </g>
 </g>

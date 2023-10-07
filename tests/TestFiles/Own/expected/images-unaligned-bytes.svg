@@ -1,21 +1,21 @@
 ﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
 <!-- Generator: PdfToSvg.NET -->
 <style>
-.ID3 text{white-space:pre;}
+.ID1 text{white-space:pre;}
 .ID4{font-family:'Times New Roman',serif;font-size:25px;}
 </style>
-<defs>
-<image id="ID1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAABGdBTUEAALGPC/xhBQAAABNJREFUeJxjYKAC+I8Bhoo0mQAAJ6FrlUovs8YAAAAASUVORK5CYII=" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
-<image id="ID2" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGPC/xhBQAAABhJREFUeJxjYGBg+E8kJl0hLjC8FVInHAGxqD/Bf+xpPgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
+<defs class="ID1">
+<image id="ID2" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAABGdBTUEAALGPC/xhBQAAABNJREFUeJxjYKAC+I8Bhoo0mQAAJ6FrlUovs8YAAAAASUVORK5CYII=" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
+<image id="ID3" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGPC/xhBQAAABhJREFUeJxjYGBg+E8kJl0hLjC8FVInHAGxqD/Bf+xpPgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
 </defs>
-<g class="ID3">
+<g class="ID1">
 <text x="80" y="121.92" class="ID4">1-bit 10x10 image</text>
 <g transform="matrix(150 0 0 150 80 161.92)">
-<use href="#ID1" />
+<use href="#ID2" />
 </g>
 <text x="80" y="461.92" class="ID4">2-bit 10x10 image with color key mask</text>
 <g transform="matrix(150 0 0 150 80 501.92)">
-<use href="#ID2" />
+<use href="#ID3" />
 </g>
 </g>
 </svg>

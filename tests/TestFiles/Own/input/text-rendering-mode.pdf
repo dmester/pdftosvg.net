@@ -34,7 +34,7 @@ endobj
 endobj
 
 4 0 obj
-<< /Length 3243 >>
+<< /Length 3378 >>
 stream
 
    0.73 0.88 0.93 rg
@@ -131,6 +131,9 @@ stream
    % Render mode 4 - Fill and clip
    q
       1 0 0 1 70 370 cm
+      
+      % Clipping rects that entirely contain its content are not included in the output SVG
+      -100 -100 1000 1000 re W n
       
       BT 
          0 0 0 rg

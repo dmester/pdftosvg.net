@@ -2479,6 +2479,8 @@ namespace PdfToSvg.Drawing
 
             if (paragraph.Visible || options.IncludeHiddenText)
             {
+                var ignoreClipRect = false;
+
                 // TODO test simplification of clip path
                 if (paragraph.Matrix.IsIdentity &&
                     graphicsState.ClipPath != null &&
@@ -2501,14 +2503,20 @@ namespace PdfToSvg.Drawing
                         // We can be reasonably sure the text is entiely contained within the clip rectangle.
                         // Skip clipping. This significally increases the print quality in Internet Explorer, 
                         // which seems to rasterize all clipped graphics before printing.
-                        clipWrapper = null;
-                        clipWrapperId = null;
-                        currentTransparencyGroup.Add(textEl);
-                        return;
+                        ignoreClipRect = true;
                     }
                 }
 
-                AppendClipped(textEl);
+                if (ignoreClipRect)
+                {
+                    clipWrapper = null;
+                    clipWrapperId = null;
+                    currentTransparencyGroup.Add(textEl);
+                }
+                else
+                {
+                    AppendClipped(textEl);
+                }
             }
 
             if (paragraph.AppendClipping)

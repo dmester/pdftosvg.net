@@ -2308,6 +2308,7 @@ namespace PdfToSvg.Drawing
             {
                 AddStyle(TextStyle);
                 rootGraphics.SetAttributeValue("class", RootClassName);
+                defs.SetAttributeValue("class", RootClassName);
                 hasTextStyle = true;
             }
 

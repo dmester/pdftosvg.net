@@ -2178,7 +2178,7 @@ namespace PdfToSvg.Drawing
                 cssClass["letter-spacing"] = SvgConversion.FormatFontMetric(style.TextCharSpacingPx) + "px";
             }
 
-            // Word spacing is precalcualted and applied by the <text> position, since PDF and CSS don't
+            // Word spacing is precalculated and applied by the <text> position, since PDF and CSS don't
             // interpret word spacing the same way.
 
             var visible = false;
@@ -2482,7 +2482,6 @@ namespace PdfToSvg.Drawing
             {
                 var ignoreClipRect = false;
 
-                // TODO test simplification of clip path
                 if (paragraph.Matrix.IsIdentity &&
                     graphicsState.ClipPath != null &&
                     graphicsState.ClipPath.Parent == null &&
@@ -2501,7 +2500,7 @@ namespace PdfToSvg.Drawing
 
                     if (graphicsState.ClipPath.Rectangle.Contains(textBoundingRect))
                     {
-                        // We can be reasonably sure the text is entiely contained within the clip rectangle.
+                        // We can be reasonably sure the text is entirely contained within the clip rectangle.
                         // Skip clipping. This significally increases the print quality in Internet Explorer, 
                         // which seems to rasterize all clipped graphics before printing.
                         ignoreClipRect = true;

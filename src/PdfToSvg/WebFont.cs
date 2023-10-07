@@ -14,6 +14,11 @@ namespace PdfToSvg
     /// <summary>
     /// Uses a web font in the resulting SVG markup.
     /// </summary>
+    /// <remarks>
+    /// Note that standalone SVGs must not reference external resources. If you intend to create standalone SVG files,
+    /// ensure the font URLs are
+    /// <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs">data URLs</see>.
+    /// </remarks>
     public class WebFont : Font
     {
         /// <summary>
@@ -25,9 +30,11 @@ namespace PdfToSvg
         /// <param name="trueTypeUrl">URL to a TypeType font file to be included as a @font-face.</param>
         /// <param name="openTypeUrl">URL to a OpenType font file to be included as a @font-face.</param>
         /// <remarks>
-        /// Note that standalone SVGs must not have external resources. If you intend to create standalone SVG files,
-        /// ensure the font URLs are data URLs.
+        /// Note that standalone SVGs must not reference external resources. If you intend to create standalone SVG
+        /// files, ensure the font URLs are
+        /// <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs">data URLs</see>.
         /// </remarks>
+        /// <exception cref="ArgumentException">None of the url parameters were specified.</exception>
         public WebFont(LocalFont? fallbackFont = null,
             string? woffUrl = null, string? woff2Url = null, string? trueTypeUrl = null, string? openTypeUrl = null)
         {

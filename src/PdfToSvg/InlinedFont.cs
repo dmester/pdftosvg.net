@@ -10,16 +10,22 @@ using System.Text;
 namespace PdfToSvg
 {
     /// <summary>
-    /// <para>
-    ///     Inlines the glyphs from the font as paths and other elements within the SVG. This differs from web fonts,
-    ///     which are embedded as font files in the SVG. The inlined glyphs cannot be selected as text in the SVG.
-    ///     Currently only Type 3 fonts can be inlined, but more font types might be supported in the future.
-    /// </para>
-    /// <para>
-    ///     This font type is mainly intended for Type 3 fonts that cannot be represented as OpenType fonts, e.g.
-    ///     bitmap fonts.
-    /// </para>
+    /// Represents a font whose glyphs are inlined as paths and other elements within the SVG markup.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    ///     <see cref="InlinedFont"/> differs from <see cref="WebFont"/>, where the latter embeds fonts as OpenType or
+    ///     WOFF font files in the generated SVG. Side effects from inlining glyphs are that exported text will not be
+    ///     selectable, and that the generated SVG will typically be larger than if the font is embedded as a font file.
+    /// </para>
+    /// <para>
+    ///     Currently only PDF fonts of type 3 can be inlined, but more font types might be supported in the future.
+    /// </para>
+    /// <para>
+    ///     PdfToSvg.NET is able to convert most type 3 fonts to OpenType or WOFF, but a subset of type 3 fonts
+    ///     cannot be converted, e.g., bitmap fonts. <see cref="InlinedFont"/> is mainly intended for this subset.
+    /// </para>
+    /// </remarks>
     public class InlinedFont : Font
     {
         /// <summary>

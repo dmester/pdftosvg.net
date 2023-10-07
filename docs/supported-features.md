@@ -77,6 +77,20 @@ Impl | Description
 ✅ | Separation
 ✅ | DeviceN
 
+## Pattern types
+
+Impl | Description
+:--: | :----------
+✅ | Colored tiling pattern
+✅ | Uncolored tiling pattern
+❌ | Function-based shading
+✅ | Axial shading
+✅ | Radial shading
+❌ | Free-form Gouraud-shaded triangle mesh
+❌ | Lattice-form Gouraud-shaded triangle mesh
+❌ | Coons patch mesh
+❌ | Tensor-product patch mesh
+
 ## Graphics state parameter dictionary
 
 Impl | Key | Description

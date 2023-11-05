@@ -142,9 +142,15 @@ namespace PdfToSvg.Drawing
                 }
             }
 
+            var userUnit = pageDict.GetValueOrDefault(Names.UserUnit, 1.0);
+            if (userUnit <= 0)
+            {
+                userUnit = 1.0;
+            }
+
             svg = new XElement(ns + "svg",
-                new XAttribute("width", pageWidth.ToString("0", CultureInfo.InvariantCulture)),
-                new XAttribute("height", pageHeight.ToString("0", CultureInfo.InvariantCulture)),
+                new XAttribute("width", (pageWidth * userUnit).ToString("0", CultureInfo.InvariantCulture)),
+                new XAttribute("height", (pageHeight * userUnit).ToString("0", CultureInfo.InvariantCulture)),
                 new XAttribute("preserveAspectRatio", "xMidYMid meet"),
                 new XAttribute("viewBox",
                     string.Format(CultureInfo.InvariantCulture, "0 0 {0:0.####} {1:0.####}",

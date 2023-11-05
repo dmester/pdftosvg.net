@@ -68,6 +68,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName MediaBox { get; } = new PdfName("MediaBox");
         public static PdfName CropBox { get; } = new PdfName("CropBox");
 
+        public static PdfName UserUnit { get; } = new PdfName("UserUnit");
         public static PdfName Rotate { get; } = new PdfName("Rotate");
 
         public static PdfName Matrix { get; } = new PdfName("Matrix");

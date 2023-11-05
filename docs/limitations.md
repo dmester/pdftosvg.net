@@ -26,7 +26,6 @@ Non-supported color spaces:
 
 The following features are not supported:
 
-* Blending modes
 * PDF forms
 * Embedded JavaScript
 * Annotations

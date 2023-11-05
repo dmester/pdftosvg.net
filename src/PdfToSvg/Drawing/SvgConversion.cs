@@ -148,6 +148,33 @@ namespace PdfToSvg.Drawing
             return FormatNumber(number, "0.####");
         }
 
+        public static string FormatBlendMode(BlendMode mode)
+        {
+            return mode switch
+            {
+                BlendMode.Normal => "normal",
+
+                BlendMode.Multiply => "multiply",
+                BlendMode.Screen => "screen",
+                BlendMode.Overlay => "overlay",
+                BlendMode.Darken => "darken",
+                BlendMode.Lighten => "lighten",
+                BlendMode.ColorDodge => "color-dodge",
+                BlendMode.ColorBurn => "color-burn",
+                BlendMode.HardLight => "hard-light",
+                BlendMode.SoftLight => "soft-light",
+                BlendMode.Difference => "difference",
+                BlendMode.Exclusion => "exclusion",
+
+                BlendMode.Hue => "hue",
+                BlendMode.Saturation => "saturation",
+                BlendMode.Color => "color",
+                BlendMode.Luminosity => "luminosity",
+
+                _ => "normal",
+            };
+        }
+
         private static string FormatNumber(double number, string formatString)
         {
             var result = number.ToString(formatString, CultureInfo.InvariantCulture);

@@ -115,7 +115,8 @@ Impl | Key | Description
 ❌ | FL | Flatness tolerance
 ❌ | SM | Smoothness tolerance
 ❌ | SA | Automatic stroke adjustment
-❌ | BM | Blend mode
+✅ | BM | Blend mode (RGB)
+❌ | BM | Blend mode (CMYK)
 ✅ | SMask | Soft mask
 ✅ | CA | Stroking alpha
 ✅ | ca | Non-stroking alpha

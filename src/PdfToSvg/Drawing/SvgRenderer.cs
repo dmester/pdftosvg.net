@@ -550,6 +550,45 @@ namespace PdfToSvg.Drawing
             }
         }
 
+        [Operation("gs/BM")]
+        private void gs_BM_BlendMode(PdfName mode)
+        {
+            if (!Enum.TryParse(mode.Value, ignoreCase: true, out BlendMode modeValue))
+            {
+                modeValue = BlendMode.Normal;
+            }
+
+            if (graphicsState.BlendMode != modeValue)
+            {
+                graphicsState.BlendMode = modeValue;
+                textBuilder.InvalidateStyle();
+            }
+        }
+
+        [Operation("gs/BM")]
+        private void gs_BM_BlendMode(PdfName[] modes)
+        {
+            var modeValue = BlendMode.Normal;
+
+            foreach (var mode in modes)
+            {
+                if (Enum.TryParse(mode.Value, ignoreCase: true, out modeValue))
+                {
+                    break;
+                }
+                else
+                {
+                    modeValue = BlendMode.Normal;
+                }
+            }
+
+            if (graphicsState.BlendMode != modeValue)
+            {
+                graphicsState.BlendMode = modeValue;
+                textBuilder.InvalidateStyle();
+            }
+        }
+
         [Operation("gs/SMask")]
         private void gs_SMask_SoftMask(object smask)
         {
@@ -801,10 +840,21 @@ namespace PdfToSvg.Drawing
                 var isTransparencyGroup = xobject.GetNameOrNull(Names.Group / Names.S) == Names.Transparency;
                 if (isTransparencyGroup)
                 {
+                    var attributes = new List<XAttribute>();
+
                     if (graphicsState.FillAlpha < MaxAlpha)
                     {
-                        var newGroup = new XElement(ns + "g");
-                        newGroup.SetAttributeValue("opacity", SvgConversion.FormatCoordinate(graphicsState.FillAlpha));
+                        attributes.Add(new XAttribute("opacity", SvgConversion.FormatCoordinate(graphicsState.FillAlpha)));
+                    }
+
+                    if (graphicsState.BlendMode != BlendMode.Normal)
+                    {
+                        attributes.Add(new XAttribute("style", "mix-blend-mode:" + SvgConversion.FormatBlendMode(graphicsState.BlendMode)));
+                    }
+
+                    if (attributes.Count > 0)
+                    {
+                        var newGroup = new XElement(ns + "g", attributes);
 
                         currentTransparencyGroup.Add(newGroup);
                         currentTransparencyGroup = newGroup;
@@ -815,6 +865,7 @@ namespace PdfToSvg.Drawing
 
                     graphicsState.FillAlpha = 1d;
                     graphicsState.StrokeAlpha = 1d;
+                    graphicsState.BlendMode = BlendMode.Normal;
 
                     // Isolated groups and knockout groups are currently not supported
                 }
@@ -899,6 +950,12 @@ namespace PdfToSvg.Drawing
             else if (graphicsState.FillAlpha < MaxAlpha)
             {
                 imageAttributes.Add(new XAttribute("opacity", SvgConversion.FormatCoordinate(graphicsState.FillAlpha)));
+            }
+
+            // Blend mode
+            if (graphicsState.BlendMode != BlendMode.Normal)
+            {
+                imageAttributes.Add(new XAttribute("style", "mix-blend-mode:" + SvgConversion.FormatBlendMode(graphicsState.BlendMode)));
             }
 
             var imageId = GetSvgImageId(xobject);
@@ -1129,6 +1186,11 @@ namespace PdfToSvg.Drawing
             if (graphicsState.SMaskId != null)
             {
                 el.SetAttributeValue("mask", "url(#" + graphicsState.SMaskId + ")");
+            }
+
+            if (graphicsState.BlendMode != BlendMode.Normal)
+            {
+                el.Add(new XAttribute("style", "mix-blend-mode:" + SvgConversion.FormatBlendMode(graphicsState.BlendMode)));
             }
 
             if (bboxClipped)
@@ -1570,6 +1632,11 @@ namespace PdfToSvg.Drawing
             if (graphicsState.SMaskId != null)
             {
                 attributes.Add(new XAttribute("mask", "url(#" + graphicsState.SMaskId + ")"));
+            }
+
+            if (graphicsState.BlendMode != BlendMode.Normal)
+            {
+                attributes.Add(new XAttribute("style", "mix-blend-mode:" + SvgConversion.FormatBlendMode(graphicsState.BlendMode)));
             }
 
             if (visible)
@@ -2294,6 +2361,12 @@ namespace PdfToSvg.Drawing
             if (visible && graphicsState.SMaskId != null)
             {
                 cssClass["mask"] = "url(#" + graphicsState.SMaskId + ")";
+            }
+
+            // Blend mode
+            if (graphicsState.BlendMode != BlendMode.Normal)
+            {
+                cssClass["mix-blend-mode"] = SvgConversion.FormatBlendMode(graphicsState.BlendMode);
             }
 
             if (cssClass.Count > 0)

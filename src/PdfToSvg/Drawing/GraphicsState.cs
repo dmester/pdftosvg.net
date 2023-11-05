@@ -19,6 +19,8 @@ namespace PdfToSvg.Drawing
         // PDF spec 1.7, Table 52, page 129
         public Matrix Transform = Matrix.Identity;
 
+        public BlendMode BlendMode = BlendMode.Normal;
+
         public double Flatness;
         public int Intent;
         public ClipPath? ClipPath;

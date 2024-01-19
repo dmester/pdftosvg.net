@@ -190,8 +190,14 @@ namespace PdfToSvg.DocumentModel
 
         public override string ToString()
         {
-            // PDF spec 1.7, Table 35, page 93
-            if (data.Length >= 2 && data[0] == 0xfe && data[1] == 0xff)
+            // PDF spec 2.0, 7.9.2.2 Text string type
+
+            if (data.Length >= 3 && data[0] == 239 && data[1] == 187 && data[2] == 191)
+            {
+                return Encoding.UTF8.GetString(data, 3, data.Length - 3);
+            }
+
+            if (data.Length >= 2 && data[0] == 254 && data[1] == 255)
             {
                 return Encoding.BigEndianUnicode.GetString(data, 2, data.Length - 2);
             }

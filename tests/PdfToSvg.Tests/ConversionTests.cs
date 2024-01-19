@@ -317,6 +317,19 @@ namespace PdfToSvg.Tests
             });
         }
 
+        [Test]
+        public void DocumentInfo()
+        {
+            var pdfPath = GetInputFilePath("document-info-pdfdoc-utf16-utf8.pdf");
+
+            using (var doc = PdfDocument.Open(pdfPath))
+            {
+                Assert.AreEqual("Title åäö", doc.Info.Title);
+                Assert.AreEqual("Subject åäö", doc.Info.Subject);
+                Assert.AreEqual("Author åäö", doc.Info.Author);
+            }
+        }
+
         public static List<TestCaseData> TestCases
         {
             get

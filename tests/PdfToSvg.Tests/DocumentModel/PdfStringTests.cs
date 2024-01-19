@@ -27,5 +27,12 @@ namespace PdfToSvg.Tests.DocumentModel
             var str = new PdfString(new byte[] { 0xfe, 0xff, 0x12, 0x34, 0x41, 0x23, 0x02, 0x04 });
             Assert.AreEqual("\u1234\u4123\u0204", str.ToString());
         }
+
+        [Test]
+        public void Utf8String()
+        {
+            var str = new PdfString(new byte[] { 239, 187, 191, 0x61, 0xc3, 0xa5, 0xc3, 0xa4, 0xc3, 0xb6 });
+            Assert.AreEqual("aåäö", str.ToString());
+        }
     }
 }

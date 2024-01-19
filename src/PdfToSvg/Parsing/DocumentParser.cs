@@ -51,7 +51,7 @@ namespace PdfToSvg.Parsing
         {
             var str = Encoding.ASCII.GetString(buffer, offset, count);
 
-            var version = Regex.Match(str, "%PDF-1.\\d");
+            var version = Regex.Match(str, "%PDF-[12].\\d");
             if (!version.Success)
             {
                 throw ParserExceptions.HeaderNotFound();

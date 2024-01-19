@@ -1,15 +1,16 @@
 %PDF-1.7
 
 xref
-0 6
+0 7
 0000000000 65535 f
-0000000182 00000 n
-0000000233 00000 n
-0000000296 00000 n
-0000001304 00000 n
-0000002124 00000 n
+0000000202 00000 n
+0000000253 00000 n
+0000000316 00000 n
+0000001374 00000 n
+0000002314 00000 n
+0000006221 00000 n
 trailer
-<< /Root 1 0 R  /Size 6 >>
+<< /Root 1 0 R  /Size 7 >>
 
 1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
 2 0 obj << /Type /Pages  /Kids [ 3 0 R ] /Count 1 >> endobj
@@ -34,6 +35,9 @@ trailer
             /Extend [ true true ]
             /Function << /FunctionType 2 /N 1 /Domain [ 0.0 1.0 ] /C0 [ 0.66 0.16 0 ] /C1 [ 0.05 0.17 0.2 ] >>
          >>
+      >>
+      /XObject <<
+         /Fm1 6 0 R
       >>
       /ExtGState <<
          /GSNone <<
@@ -62,7 +66,7 @@ endobj
 
 4 0 obj
 <<
-   /Length 756
+   /Length 876
 >>
 stream
 
@@ -74,7 +78,7 @@ stream
 
    q
       % Alpha soft mask
-      1 0 0 1 55 620 cm
+      1 0 0 1 90 640 cm
       /GSAlpha gs
       0 0 1000 1000 re
       f
@@ -82,22 +86,29 @@ stream
       % Unset soft mask
       /GSNone gs
       BT
-         /F1 70 Tf
-         1 0 0 1 0 85 Tm
+         /F1 60 Tf
+         1 0 0 1 0 65 Tm
          (TEXT SMASK) '
       ET
+   Q
+   
+   % Alpha soft mask on transparency group
+   q
+      1 0 0 1 90 580 cm
+      /GSAlpha gs
+      /Fm1 Do
    Q
 
    % Luminosity soft mask on path + shading
    q
-      1 0 0 1 55 540 cm
+      1 0 0 1 90 520 cm
       /GSLuminosity gs
       /Sh1 sh
    Q
 
    % Luminosity soft mask on text
    q
-      1 0 0 1 55 460 cm
+      1 0 0 1 90 460 cm
       /GSLuminosity gs
       BT
          /F1 150 Tf
@@ -170,13 +181,13 @@ stream
       /GSAlpha gs
 
       BT
-         /F1 70 Tf
+         /F1 60 Tf
          1 0 0 1 0 5 Tm
          (TEXT SMASK) '
       ET
    Q
 
-   30 0 0 30 465 5 cm
+   30 0 0 30 405 5 cm
    
    BI
       /W 16
@@ -235,6 +246,39 @@ stream
       64 ff ed cf ff ff ff ff ff ff ff ff ff ff ff ff>
    EI
 
+
+endstream
+endobj
+
+6 0 obj
+<<
+   /Type /XObject
+   /Subtype /Form
+   /BBox [ 0 0 1000 1000 ]
+   /S /Transparency
+   /Group <<
+      /Type /Group
+      /S /Transparency
+      /I true
+      /K false
+      /CS /DeviceRGB
+   >>
+   /Resources <<
+      /ExtGState <<
+         /GSNone <<
+            /SMask /None
+         >>
+      >>
+   >>
+   /Length 67
+>>
+stream
+
+   /GSNone gs
+
+   0.05 0.17 0.2 rg
+   0 0 1000 1000 re
+   f
 
 endstream
 endobj

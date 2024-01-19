@@ -847,6 +847,11 @@ namespace PdfToSvg.Drawing
                         attributes.Add(new XAttribute("opacity", SvgConversion.FormatCoordinate(graphicsState.FillAlpha)));
                     }
 
+                    if (graphicsState.SMaskId != null)
+                    {
+                        attributes.Add(new XAttribute("mask", "url(#" + graphicsState.SMaskId + ")"));
+                    }
+
                     if (graphicsState.BlendMode != BlendMode.Normal)
                     {
                         attributes.Add(new XAttribute("style", "mix-blend-mode:" + SvgConversion.FormatBlendMode(graphicsState.BlendMode)));
@@ -865,6 +870,7 @@ namespace PdfToSvg.Drawing
 
                     graphicsState.FillAlpha = 1d;
                     graphicsState.StrokeAlpha = 1d;
+                    graphicsState.SMaskId = null;
                     graphicsState.BlendMode = BlendMode.Normal;
 
                     // Isolated groups and knockout groups are currently not supported

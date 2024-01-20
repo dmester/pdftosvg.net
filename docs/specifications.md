@@ -7,24 +7,29 @@ This library handles many formats. This file contains links to the specification
 ### PDF 1.7
 Document management - Portable document format - Part 1: PDF 1.7
 
-https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf
+https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf
 
 ### PDF 1.7 extension 3
 Adobe Supplement to the ISO 32000
 
-https://www.adobe.com/content/dam/acom/en/devnet/pdf/adobe_supplement_iso32000.pdf
+https://web.archive.org/web/20200621050243/https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/adobe_supplement_iso32000.pdf
 
 ### PDF 2.0 - ISO 32000-2
 Document management - Portable document format - Part 2: PDF 2.0
 
-Unfortunately behind ISO paywall. By buying an earlier revision, you can get a good discount from some resellers.
+The specification is behind the ISO paywall.
 
 https://www.iso.org/standard/75839.html
+
+Adobe, Apryse and Foxit are currently sponsoring no-cost access to the documents.
+
+https://www.pdfa.org/sponsored-standards
+
 
 ### PDF 1.3
 The *Compatibility and Implementation Notes* chapter contains still useful information not available in newer specs.
 
-https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDFReference13.pdf
+https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.3.pdf
 
 
 ## Imaging

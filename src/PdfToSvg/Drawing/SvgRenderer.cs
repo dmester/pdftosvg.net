@@ -1189,6 +1189,11 @@ namespace PdfToSvg.Drawing
             el.SetAttributeValue("d", SvgConversion.PathData(path));
             el.SetAttributeValue("fill", "url(#" + gradientId + ")");
 
+            if (graphicsState.FillAlpha < MaxAlpha)
+            {
+                el.SetAttributeValue("opacity", SvgConversion.FormatCoordinate(graphicsState.FillAlpha));
+            }
+
             if (graphicsState.SMaskId != null)
             {
                 el.SetAttributeValue("mask", "url(#" + graphicsState.SMaskId + ")");
@@ -1196,7 +1201,7 @@ namespace PdfToSvg.Drawing
 
             if (graphicsState.BlendMode != BlendMode.Normal)
             {
-                el.Add(new XAttribute("style", "mix-blend-mode:" + SvgConversion.FormatBlendMode(graphicsState.BlendMode)));
+                el.SetAttributeValue("style", "mix-blend-mode:" + SvgConversion.FormatBlendMode(graphicsState.BlendMode));
             }
 
             if (bboxClipped)

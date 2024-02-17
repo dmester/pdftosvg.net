@@ -201,6 +201,8 @@ namespace PdfToSvg.Fonts.OpenType.Tables
                 tableRecords.Add(table);
             }
 
+            OptimalTableOrder.ReadSort(tableRecords, x => x.TableTag);
+
             var tables = new List<IBaseTable>(tableRecords.Count);
 
             for (var i = 0; i < tableRecords.Count; i++)

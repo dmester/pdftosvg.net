@@ -49,6 +49,13 @@ namespace PdfToSvg.Fonts.OpenType.Utils
             { "CFF ", 7 },
         };
 
+        private static readonly Dictionary<string, int> readOrder = new()
+        {
+            { "head", 0 },
+            { "hhea", 1 },
+            { "hmtx", 2 }, // Has dependencies to hhea
+        };
+
         private class StorageComparerImpl<T> : IComparer<T>
         {
             private readonly Func<T, string?> tagSelector;
@@ -121,6 +128,11 @@ namespace PdfToSvg.Fonts.OpenType.Utils
             return new DirectoryComparerImpl<T>(tagSelector);
         }
 
+        public static IComparer<T> ReadComparer<T>(Func<T, string?> tagSelector)
+        {
+            return new StorageComparerImpl<T>(tagSelector, readOrder);
+        }
+
         public static void StorageSort<T>(T[] array, Func<T, string?> tagSelector, bool isCff)
         {
             Array.Sort(array, StorageComparer(tagSelector, isCff));
@@ -131,6 +143,11 @@ namespace PdfToSvg.Fonts.OpenType.Utils
             Array.Sort(array, DirectoryComparer(tagSelector));
         }
 
+        public static void ReadSort<T>(T[] array, Func<T, string?> tagSelector)
+        {
+            Array.Sort(array, ReadComparer(tagSelector));
+        }
+
         public static void StorageSort<T>(List<T> list, Func<T, string?> tagSelector, bool isCff)
         {
             list.Sort(StorageComparer(tagSelector, isCff));
@@ -139,6 +156,11 @@ namespace PdfToSvg.Fonts.OpenType.Utils
         public static void DirectorySort<T>(List<T> list, Func<T, string?> tagSelector)
         {
             list.Sort(DirectoryComparer(tagSelector));
+        }
+
+        public static void ReadSort<T>(List<T> list, Func<T, string?> tagSelector)
+        {
+            list.Sort(ReadComparer(tagSelector));
         }
 
     }

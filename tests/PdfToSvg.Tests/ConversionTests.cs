@@ -318,6 +318,16 @@ namespace PdfToSvg.Tests
         }
 
         [Test]
+        public void ExcludeAnnotations()
+        {
+            ConvertSync("annotation-markup.pdf", "annotation-markup-notexported.svg", new SvgConversionOptions
+            {
+                IncludeAnnotations = false,
+                FontResolver = FontResolver.LocalFonts,
+            });
+        }
+
+        [Test]
         public void DocumentInfo()
         {
             var pdfPath = GetInputFilePath("document-info-pdfdoc-utf16-utf8.pdf");

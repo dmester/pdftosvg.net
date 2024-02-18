@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,6 +69,13 @@ namespace PdfToSvg.Drawing
             }
 
             return new Rectangle(x1, y1, x2, y2);
+        }
+
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.InvariantCulture,
+                "{0:0.###}, {1:0.###}; {2:0.###}, {3:0.###}",
+                X1, Y1, X2, Y2);
         }
     }
 }

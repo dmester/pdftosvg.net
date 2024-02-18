@@ -160,6 +160,72 @@ namespace PdfToSvg
         public bool IncludeLinks { get; set; } = true;
 
         /// <summary>
+        /// Determines whether annotations drawn in the PDF document should be included in the generated SVG.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        ///     The default value is <c>true</c>.
+        /// </para>
+        /// <para>
+        ///     Interactive annotations are not supported. Links are technically also annotations, but are configured
+        ///     by the <see cref="IncludeLinks"/> property.
+        /// </para>
+        /// <para>
+        ///     Annotations are inserted as <c>&lt;g&gt;</c> elements, decorated with metadata attributes
+        ///     in the namespace <c>https://pdftosvg.net/xmlns/annotations</c>. Note that some annotations are only
+        ///     visible either in print or on screen.
+        /// </para>
+        /// <code language="xml" title="Annotation in exported SVG">
+        /// &lt;svg xmlns="http://www.w3.org/2000/svg"
+        ///      xmlns:annot="https://pdftosvg.net/xmlns/annotations"&gt;
+        ///   &lt;g annot:type="Text"
+        ///      annot:created="2024-02-18T12:37:31+01:00"
+        ///      annot:popup-title="John Smith"
+        ///      annot:popup-contents="Typo, should be 'than', not 'then'."&gt;
+        ///     &lt;path d="M100 100v2h2v-2z" fill="#000" /&gt;
+        ///   &lt;/g&gt;
+        /// &lt;/svg&gt;
+        /// </code>
+        /// <para>
+        ///     PdfToSvg.NET may use the following attributes:
+        /// </para>
+        /// <list type="table">
+        ///     <listheader>
+        ///         <term>Attribute</term>
+        ///         <description>Description</description>
+        ///     </listheader>
+        ///     <item>
+        ///         <term><c>annot:type</c></term>
+        ///         <description>
+        ///             Specifies the type of annotation. A list of possible types can be found in Table 169 in the
+        ///             <see href="https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf">PDF 1.7 spec</see>.
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <term><c>annot:popup-title</c></term>
+        ///         <description>
+        ///             Some annotations have information that will appear in a popup when the document is opened in a
+        ///             PDF viewer. This attribute contains the text that would appear as title of this popup.
+        ///             The author of the annotation is usually specified as title.
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <term><c>annot:popup-contents</c></term>
+        ///         <description>
+        ///             Text comment that would appear as content of the popup.
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <term><c>annot:created</c></term>
+        ///         <description>
+        ///             Time when the annotation was added to the PDF document.
+        ///         </description>
+        ///     </item>
+        /// </list>
+        /// </remarks>
+        public bool IncludeAnnotations { get; set; } = true;
+
+        /// <summary>
         /// Determines whether hidden text from the PDF document will be included in the generated SVG.
         /// </summary>
         /// <remarks>

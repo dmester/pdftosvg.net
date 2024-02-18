@@ -30,15 +30,20 @@ namespace PdfToSvg.Drawing
     internal class SvgRenderer
     {
         private static readonly XNamespace ns = "http://www.w3.org/2000/svg";
+        private static readonly XNamespace annotNs = "https://pdftosvg.net/xmlns/annotations";
 
         private const double MaxAlpha = 0.999;
         private const double MinAlpha = 0.001;
 
         private static readonly string BrokenImageSymbolId = StableID.Generate("im", "brokenimg");
         private static readonly string RootClassName = StableID.Generate("g", "PdfToSvg_Root");
+        private static readonly string NoPrintClassName = StableID.Generate("g", "PdfToSvg_NoPrint");
+        private static readonly string NoScreenClassName = StableID.Generate("g", "PdfToSvg_NoScreen");
 
-        private static readonly string LinkStyle = $"." + RootClassName + " a:active path{fill:#ffe4002e;}";
-        private static readonly string TextStyle = $"." + RootClassName + " text{white-space:pre;}";
+        private static readonly string LinkStyle = "." + RootClassName + " a:active path{fill:#ffe4002e;}";
+        private static readonly string TextStyle = "." + RootClassName + " text{white-space:pre;}";
+        private static readonly string NoPrintStyle = "@media print{."+ NoPrintClassName + "{display:none;}}";
+        private static readonly string NoScreenStyle = "@media screen{."+ NoScreenClassName + "{display:none;}}";
 
         private GraphicsState graphicsState = new GraphicsState();
         private Stack<GraphicsState> graphicsStateStack = new Stack<GraphicsState>();
@@ -46,6 +51,8 @@ namespace PdfToSvg.Drawing
         private XElement svg;
         private XElement rootGraphics;
         private XElement currentTransparencyGroup;
+
+        private bool annotNamespaceAdded;
 
         private bool svgHasDefaultMiterLimit;
 
@@ -179,12 +186,22 @@ namespace PdfToSvg.Drawing
 
         private void AfterDispatch()
         {
-            AddClipPaths(clipPaths.Values);
+            graphicsState = new GraphicsState();
+            graphicsState.Transform = originalTransform;
+            graphicsStateStack.Clear();
+            currentTransparencyGroup = rootGraphics;
+
+            if (options.IncludeAnnotations)
+            {
+                AddAnnotations();
+            }
 
             if (options.IncludeLinks)
             {
                 AddHyperlinks();
             }
+
+            AddClipPaths(clipPaths.Values);
 
             if (!defs.HasElements)
             {
@@ -214,6 +231,19 @@ namespace PdfToSvg.Drawing
             if (styleClassNames.Add(className))
             {
                 style.Add("\n." + className + "{" + styleString + "}");
+            }
+        }
+
+        private void AddAnnotations()
+        {
+            if (!pageDict.TryGetArray<PdfDictionary>(Names.Annots, out var annots))
+            {
+                return;
+            }
+
+            foreach (var annot in annots)
+            {
+                RenderAnnotationAppearance(annot);
             }
         }
 
@@ -833,39 +863,28 @@ namespace PdfToSvg.Drawing
             return id;
         }
 
-        private void RenderForm(PdfDictionary xobject)
+        private void RenderForm(PdfDictionary xobject, IList<object>? additionalGroupContent = null)
         {
             RenderXObject(xobject, () =>
             {
+                var groupAttributes = new List<XAttribute>();
+
                 var isTransparencyGroup = xobject.GetNameOrNull(Names.Group / Names.S) == Names.Transparency;
                 if (isTransparencyGroup)
                 {
-                    var attributes = new List<XAttribute>();
-
                     if (graphicsState.FillAlpha < MaxAlpha)
                     {
-                        attributes.Add(new XAttribute("opacity", SvgConversion.FormatCoordinate(graphicsState.FillAlpha)));
+                        groupAttributes.Add(new XAttribute("opacity", SvgConversion.FormatCoordinate(graphicsState.FillAlpha)));
                     }
 
                     if (graphicsState.SMaskId != null)
                     {
-                        attributes.Add(new XAttribute("mask", "url(#" + graphicsState.SMaskId + ")"));
+                        groupAttributes.Add(new XAttribute("mask", "url(#" + graphicsState.SMaskId + ")"));
                     }
 
                     if (graphicsState.BlendMode != BlendMode.Normal)
                     {
-                        attributes.Add(new XAttribute("style", "mix-blend-mode:" + SvgConversion.FormatBlendMode(graphicsState.BlendMode)));
-                    }
-
-                    if (attributes.Count > 0)
-                    {
-                        var newGroup = new XElement(ns + "g", attributes);
-
-                        currentTransparencyGroup.Add(newGroup);
-                        currentTransparencyGroup = newGroup;
-
-                        clipWrapper = null;
-                        clipWrapperId = null;
+                        groupAttributes.Add(new XAttribute("style", "mix-blend-mode:" + SvgConversion.FormatBlendMode(graphicsState.BlendMode)));
                     }
 
                     graphicsState.FillAlpha = 1d;
@@ -874,6 +893,18 @@ namespace PdfToSvg.Drawing
                     graphicsState.BlendMode = BlendMode.Normal;
 
                     // Isolated groups and knockout groups are currently not supported
+                }
+
+                if (groupAttributes.Count > 0 ||
+                    additionalGroupContent != null && additionalGroupContent.Count > 0)
+                {
+                    var newGroup = new XElement(ns + "g", groupAttributes, additionalGroupContent);
+
+                    currentTransparencyGroup.Add(newGroup);
+                    currentTransparencyGroup = newGroup;
+
+                    clipWrapper = null;
+                    clipWrapperId = null;
                 }
 
                 if (xobject.TryGetMatrix(Names.Matrix, out var matrix))
@@ -886,6 +917,125 @@ namespace PdfToSvg.Drawing
                     AppendClipping(bbox, rectIsTransformed: false);
                 }
             });
+        }
+
+        private void RenderAnnotationAppearance(PdfDictionary annot)
+        {
+            if (!annot.TryGetDictionary(Names.AP / Names.N, out var normalAppearance) ||
+                !annot.TryGetRectangle(Names.Rect, out var rect))
+            {
+                return;
+            }
+
+            if (!normalAppearance.TryGetMatrix(Names.Matrix, out var matrix))
+            {
+                matrix = Matrix.Identity;
+            }
+
+            if (normalAppearance.TryGetRectangle(Names.BBox, out var bbox))
+            {
+                var additionalGroupContent = new List<object>();
+
+                // METADATA
+                {
+                    if (!annotNamespaceAdded)
+                    {
+                        svg.Add(new XAttribute(XNamespace.Xmlns + "annot", annotNs));
+                        annotNamespaceAdded = true;
+                    }
+
+                    var subtype = annot.GetValueOrDefault<PdfName?>(Names.Subtype)?.Value;
+                    if (subtype != null)
+                    {
+                        additionalGroupContent.Add(new XAttribute(annotNs + "type", subtype));
+                    }
+
+                    var creationDate = annot.GetValueOrDefault<DateTimeOffset?>(Names.CreationDate);
+                    if (creationDate != null)
+                    {
+                        additionalGroupContent.Add(new XAttribute(annotNs + "created", creationDate));
+                    }
+
+                    if (annot.ContainsKey(Names.Popup))
+                    {
+                        var title = annot.GetValueOrDefault(Names.T, PdfString.Empty).ToString();
+                        if (!string.IsNullOrWhiteSpace(title))
+                        {
+                            additionalGroupContent.Add(new XAttribute(annotNs + "popup-title", title));
+                        }
+
+                        var contents = annot.GetValueOrDefault(Names.Contents, PdfString.Empty).ToString();
+                        if (!string.IsNullOrWhiteSpace(contents))
+                        {
+                            additionalGroupContent.Add(new XAttribute(annotNs + "popup-contents", contents));
+                        }
+                    }
+                }
+
+                // VISIBILITY
+                if (annot.TryGetValue<int>(Names.F, out var intFlags))
+                {
+                    var flags = (AnnotationFlags)intFlags;
+
+                    if (flags.HasFlag(AnnotationFlags.Hidden) ||
+                        flags.HasFlag(AnnotationFlags.Invisible))
+                    {
+                        return;
+                    }
+
+                    var printVisible = flags.HasFlag(AnnotationFlags.Print);
+                    var screenVisible = !flags.HasFlag(AnnotationFlags.NoView);
+
+                    if (!printVisible && !screenVisible)
+                    {
+                        return;
+                    }
+
+                    if (printVisible != screenVisible)
+                    {
+                        var cssStyle = printVisible ? NoScreenStyle : NoPrintStyle;
+                        var cssStyleClassName = printVisible ? NoScreenClassName : NoPrintClassName;
+
+                        if (styleClassNames.Add(cssStyleClassName))
+                        {
+                            AddStyle(cssStyle);
+                        }
+
+                        additionalGroupContent.Add(new XAttribute("class", cssStyleClassName));
+                    }
+                }
+
+                // TRANSFORM
+                {
+                    // Transform is described in PDF spec 2.0 section 12.5.5 Appearance streams
+                    var bboxCorners = new[]
+                    {
+                        bbox.BottomLeft,
+                        bbox.TopLeft,
+                        bbox.TopRight,
+                        bbox.BottomRight,
+                    };
+
+                    var quadrilateral = bboxCorners
+                        .Select(p => matrix * p)
+                        .ToList();
+
+                    var transformedAppearanceBox = new Rectangle(
+                        quadrilateral.Min(p => p.X),
+                        quadrilateral.Min(p => p.Y),
+                        quadrilateral.Max(p => p.X),
+                        quadrilateral.Max(p => p.Y)
+                    );
+
+                    graphicsState.Transform =
+                        Matrix.Translate(-transformedAppearanceBox.X1, -transformedAppearanceBox.Y1) *
+                        Matrix.Scale(rect.Width / transformedAppearanceBox.Width, rect.Height / transformedAppearanceBox.Height) *
+                        Matrix.Translate(rect.X1, rect.Y1) *
+                        originalTransform;
+                }
+
+                RenderForm(normalAppearance, additionalGroupContent);
+            }
         }
 
         private void RenderXObject(PdfDictionary xobject, Action preparations)

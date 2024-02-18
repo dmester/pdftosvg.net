@@ -113,7 +113,7 @@ namespace PdfToSvg.Parsing
 
         public IndirectObject? ReadIndirectObject(Dictionary<PdfObjectId, object?>? objectTable = null)
         {
-            if (!TryReadInteger(out var objectIdNum) ||
+            if (!TryReadInteger(out var objectNumber) ||
                 !TryReadInteger(out var generation) ||
                 !TryReadToken(Token.Obj))
             {
@@ -123,7 +123,7 @@ namespace PdfToSvg.Parsing
 
             var end = false;
 
-            var objectId = new PdfObjectId(objectIdNum, generation);
+            var objectId = new PdfObjectId(objectNumber, generation);
             object? objectValue = null;
             PdfStream? objectStream = null;
 
@@ -404,7 +404,31 @@ namespace PdfToSvg.Parsing
                     foreach (var compressedObjectRef in compressedObject)
                     {
                         var objectId = new PdfObjectId(compressedObjectRef.ObjectNumber, 0);
-                        objects[objectId] = contentObjects[compressedObjectRef.CompressedObjectElementIndex];
+                        var obj = contentObjects[compressedObjectRef.CompressedObjectElementIndex];
+
+                        if (objects.ContainsKey(objectId))
+                        {
+                            continue;
+                        }
+                        
+                        if (obj is PdfDictionary dic)
+                        {
+                            if (dic.Id.IsEmpty)
+                            {
+                                dic.MakeIndirectObject(objectId, null);
+                            }
+                            else
+                            {
+                                Log.WriteLine(
+                                    "Element at index {0} in object stream {1} was referred to as {2} but was " +
+                                    "previously referred to as {3}. The duplicate reference was skipped.",
+                                    compressedObjectRef.CompressedObjectElementIndex, compressedObject.Key,
+                                    objectId, dic.Id);
+                                continue;
+                            }
+                        }
+
+                        objects[objectId] = obj;
                     }
                 }
             }
@@ -422,12 +446,27 @@ namespace PdfToSvg.Parsing
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
+                if (objects.ContainsKey(uncompressedObjectRef.ObjectId))
+                {
+                    continue;
+                }
+
                 lexer.Seek(uncompressedObjectRef.ByteOffset, SeekOrigin.Begin);
 
                 var obj = ReadIndirectObject(objects);
                 if (obj != null)
                 {
-                    objects[obj.ID] = obj.Value;
+                    if (uncompressedObjectRef.ObjectId == obj.ID)
+                    {
+                        objects[uncompressedObjectRef.ObjectId] = obj.Value;
+                    }
+                    else
+                    { 
+                        Log.WriteLine(
+                            "Object at offset {0} was referred to as {1} but called itself {2}. " +
+                            "The incorrect reference was ignored.",
+                            uncompressedObjectRef.ByteOffset, uncompressedObjectRef.ObjectId, obj.ID);
+                    }
                 }
             }
         }

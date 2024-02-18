@@ -9,11 +9,7 @@ using PdfToSvg.Security;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -258,58 +254,69 @@ namespace PdfToSvg.Parsing
         {
             foreach (var pair in objects)
             {
-                InlineReferences(objects, pair.Value, true);
+                InlineReferences(objects, pair.Value, recurse: true);
             }
         }
 
         private static void InlineReferences(Dictionary<PdfObjectId, object?> objects, object? value, bool recurse)
         {
-            if (value is PdfDictionary dict)
-            {
-                var refs = new List<KeyValuePair<PdfName, PdfObjectId>>();
+            Recurse(objects, value, recurse, isTopLevel: true);
 
-                foreach (var pair in dict)
-                {
-                    if (pair.Value is PdfRef reference)
-                    {
-                        refs.Add(KeyValuePair.Create(pair.Key, reference.Id));
-                    }
-                    else if (recurse)
-                    {
-                        InlineReferences(objects, pair.Value, recurse);
-                    }
-                }
-
-                foreach (var reference in refs)
-                {
-                    if (objects.TryGetValue(reference.Value, out var referencedValue))
-                    {
-                        dict[reference.Key] = referencedValue;
-                    }
-                    else
-                    {
-                        Log.WriteLine($"Reference to missing object {reference.Value}.");
-                    }
-                }
-            }
-            else if (value is object?[] arr)
+            static void Recurse(Dictionary<PdfObjectId, object?> objects, object? value, bool recurse, bool isTopLevel)
             {
-                for (var i = 0; i < arr.Length; i++)
+                if (value is PdfDictionary dict)
                 {
-                    if (arr[i] is PdfRef reference)
+                    if (!isTopLevel && !dict.Id.IsEmpty)
                     {
-                        if (objects.TryGetValue(reference.Id, out var referencedValue))
+                        // Inlined by InlineReferences(objects)
+                        return;
+                    }
+
+                    var refs = new List<KeyValuePair<PdfName, PdfObjectId>>();
+
+                    foreach (var pair in dict)
+                    {
+                        if (pair.Value is PdfRef reference)
                         {
-                            arr[i] = referencedValue;
+                            refs.Add(KeyValuePair.Create(pair.Key, reference.Id));
+                        }
+                        else if (recurse)
+                        {
+                            Recurse(objects, pair.Value, recurse, isTopLevel: false);
+                        }
+                    }
+
+                    foreach (var reference in refs)
+                    {
+                        if (objects.TryGetValue(reference.Value, out var referencedValue))
+                        {
+                            dict[reference.Key] = referencedValue;
                         }
                         else
                         {
-                            Log.WriteLine($"Reference to missing object ({reference.Id}).");
+                            Log.WriteLine($"Reference to missing object {reference.Value}.");
                         }
                     }
-                    else if (recurse)
+                }
+                else if (value is object?[] arr)
+                {
+                    for (var i = 0; i < arr.Length; i++)
                     {
-                        InlineReferences(objects, arr[i], recurse);
+                        if (arr[i] is PdfRef reference)
+                        {
+                            if (objects.TryGetValue(reference.Id, out var referencedValue))
+                            {
+                                arr[i] = referencedValue;
+                            }
+                            else
+                            {
+                                Log.WriteLine($"Reference to missing object ({reference.Id}).");
+                            }
+                        }
+                        else if (recurse)
+                        {
+                            Recurse(objects, arr[i], recurse, isTopLevel: false);
+                        }
                     }
                 }
             }

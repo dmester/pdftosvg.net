@@ -31,6 +31,9 @@ namespace PdfToSvg.DocumentModel
 
         public override int GetHashCode() => ObjectNumber;
 
+        public static bool operator ==(PdfObjectId left, PdfObjectId right) => left.Equals(right);
+        public static bool operator !=(PdfObjectId left, PdfObjectId right) => !left.Equals(right);
+
         public bool Equals(PdfObjectId other)
         {
             return

@@ -44,17 +44,19 @@ namespace PdfToSvg.DocumentModel
         {
             get
             {
+                var id = Id.IsEmpty ? "" : (Id + " ");
+
                 if (Count == 0)
                 {
-                    return "<< empty >>";
+                    return id + "<< empty >>";
                 }
 
                 if (this.TryGetName(Names.Type, out var name))
                 {
-                    return $"<< /Type: {name} ... >>";
+                    return $"{id}<< /Type: {name} ... >>";
                 }
 
-                return $"<< Count: {Count} >>";
+                return $"{id}<< Count: {Count} >>";
             }
         }
 

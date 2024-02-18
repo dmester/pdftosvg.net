@@ -22,7 +22,7 @@ namespace PdfToSvg
     /// <para>
     ///     The following example opens a PDF file and saves each page as an SVG file.
     /// </para>
-    /// <code lang="cs" title="Convert PDF to SVG">
+    /// <code language="cs" title="Convert PDF to SVG">
     /// using (var doc = PdfDocument.Open("input.pdf"))
     /// {
     ///     var pageIndex = 0;
@@ -37,7 +37,7 @@ namespace PdfToSvg
     ///     If the document is password protected, the password must be specified in <see cref="OpenOptions"/> when the
     ///     document is opened to allow conversion.
     /// </para>
-    /// <code lang="cs" title="Converting a password protected document">
+    /// <code language="cs" title="Converting a password protected document">
     /// var openOptions = new OpenOptions
     /// {
     ///     Password = "document password"

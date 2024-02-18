@@ -22,7 +22,7 @@ namespace PdfToSvg
     ///     If <see cref="AllowExtractContent"/> is <c>false</c>, the document can only be converted by specifying the
     ///     owner password in <see cref="OpenOptions"/> when the document is opened.
     /// </para>
-    /// <code lang="cs" title="Converting a protected document">
+    /// <code language="cs" title="Converting a protected document">
     /// var openOptions = new OpenOptions
     /// {
     ///     Password = "my owner password"

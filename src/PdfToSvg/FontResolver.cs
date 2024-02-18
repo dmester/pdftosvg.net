@@ -21,7 +21,7 @@ namespace PdfToSvg
     ///     embedding fonts into the extracted SVG. Instead local fonts assumed to be installed on the client machine
     ///     are used.
     /// </para>
-    /// <code lang="cs" title="Using local fonts instead of embedding fonts">
+    /// <code language="cs" title="Using local fonts instead of embedding fonts">
     /// var conversionOptions = new SvgConversionOptions
     /// {
     ///     FontResolver = FontResolver.LocalFonts,
@@ -42,7 +42,7 @@ namespace PdfToSvg
     ///     <see cref="ResolveFont(SourceFont, CancellationToken)"/> method. Here is a custom implementation using a
     ///     locally installed Open Sans font.
     /// </para>
-    /// <code lang="cs" title="Custom font resolver">
+    /// <code language="cs" title="Custom font resolver">
     /// class OpenSansFontResolver : FontResolver
     /// {
     ///     public override Font ResolveFont(SourceFont sourceFont, CancellationToken cancellationToken)

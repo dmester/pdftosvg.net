@@ -35,7 +35,7 @@ namespace PdfToSvg
         ///     In the following example, local fonts will be used instead of the standard fonts provided by
         ///     PdfToSvg.NET.
         /// </para>
-        /// <code lang="cs" title="Use local standard fonts">
+        /// <code language="cs" title="Use local standard fonts">
         /// public class LocalStandardFontsFontResolver : FontResolver
         /// {
         ///     public override Font ResolveFont(SourceFont sourceFont, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ namespace PdfToSvg
         ///     }
         /// }
         /// </code>
-        /// <code lang="cs" title="Using font resolver">
+        /// <code language="cs" title="Using font resolver">
         /// using (var doc = PdfDocument.Open("input.pdf"))
         /// {
         ///     var pageIndex = 0;

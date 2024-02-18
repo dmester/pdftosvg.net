@@ -17,7 +17,7 @@ namespace PdfToSvg
     ///     <see cref="PdfPage.ToSvgString(SvgConversionOptions?, System.Threading.CancellationToken)"/>
     ///     to save each page as SVG.
     /// </para>
-    /// <code lang="cs" title="Convert PDF to SVG">
+    /// <code language="cs" title="Convert PDF to SVG">
     /// using (var doc = PdfDocument.Open("input.pdf"))
     /// {
     ///     var pageIndex = 0;

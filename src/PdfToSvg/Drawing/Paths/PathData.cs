@@ -43,6 +43,29 @@ namespace PdfToSvg.Drawing.Paths
             commands.Add(new CurveToCommand(x1, y1, x2, y2, x3, y3));
         }
 
+        public void Polygon(IEnumerable<Point> points)
+        {
+            using var enumerator = points.GetEnumerator();
+
+            if (enumerator.MoveNext())
+            {
+                var multiplePoints = false;
+
+                MoveTo(enumerator.Current.X, enumerator.Current.Y);
+
+                while (enumerator.MoveNext())
+                {
+                    LineTo(enumerator.Current.X, enumerator.Current.Y);
+                    multiplePoints = true;
+                }
+
+                if (multiplePoints)
+                {
+                    ClosePath();
+                }
+            }
+        }
+
         public PathData Transform(Matrix matrix)
         {
             var result = new PathData();

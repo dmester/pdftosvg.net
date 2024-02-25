@@ -83,13 +83,13 @@ Impl | Description
 :--: | :----------
 ✅ | Colored tiling pattern
 ✅ | Uncolored tiling pattern
-❌ | Function-based shading
+✅ | Function-based shading
 ✅ | Axial shading
 ✅ | Radial shading
-❌ | Free-form Gouraud-shaded triangle mesh
-❌ | Lattice-form Gouraud-shaded triangle mesh
-❌ | Coons patch mesh
-❌ | Tensor-product patch mesh
+✅ | Free-form Gouraud-shaded triangle mesh
+✅ | Lattice-form Gouraud-shaded triangle mesh
+✅ | Coons patch mesh
+✅ | Tensor-product patch mesh
 
 ## Graphics state parameter dictionary
 

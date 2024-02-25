@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PdfToSvg.Imaging.Fax
+namespace PdfToSvg.IO
 {
-    internal struct FaxReaderCursor
+    internal struct VariableBitReaderCursor
     {
         public int Cursor;
         public int BitCursor;

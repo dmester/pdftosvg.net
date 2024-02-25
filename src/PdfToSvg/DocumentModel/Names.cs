@@ -149,6 +149,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName PaintType { get; } = new PdfName("PaintType");
         public static PdfName XStep { get; } = new PdfName("XStep");
         public static PdfName YStep { get; } = new PdfName("YStep");
+        public static PdfName VerticesPerRow { get; } = new PdfName("VerticesPerRow");
 
         public static PdfName Filter { get; } = new PdfName("Filter");
         public static PdfName Crypt { get; } = new PdfName("Crypt");
@@ -169,6 +170,8 @@ namespace PdfToSvg.DocumentModel
         public static PdfName BlackIs1 { get; } = new PdfName("BlackIs1");
         public static PdfName K { get; } = new PdfName("K");
         public static PdfName BitsPerComponent { get; } = new PdfName("BitsPerComponent");
+        public static PdfName BitsPerCoordinate { get; } = new PdfName("BitsPerCoordinate");
+        public static PdfName BitsPerFlag { get; } = new PdfName("BitsPerFlag");
         public static PdfName Colors { get; } = new PdfName("Colors");
         public static PdfName Interpolate { get; } = new PdfName("Interpolate");
 

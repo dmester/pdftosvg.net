@@ -1,0 +1,81 @@
+%PDF-1.7
+
+xref
+0 6
+0000000000 65535 f
+0000000182 00000 n
+0000000232 00000 n
+0000000293 00000 n
+0000000596 00000 n
+0000000742 00000 n
+trailer
+<< /Root 1 0 R  /Size 6 >>
+
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Kids [ 3 0 R ]/Count 1 >> endobj
+
+3 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Pattern <<
+         /ShP <<
+            /PatternType 2
+            /Matrix [ 0.7 0 0 0.5 130 620 ]
+            /Shading 5 0 R
+         >>
+      >>
+   >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj
+<<
+   /Length 83
+>>
+stream
+
+   1 0 0 1 100 100 cm
+   /Pattern cs
+   /ShP scn
+   0 0 500 700 re
+   f
+
+endstream
+endobj
+
+5 0 obj
+<<
+   /ShadingType 4
+   /ColorSpace /DeviceRGB
+   /BitsPerFlag 4
+   /BitsPerCoordinate 32
+   /BitsPerComponent 8
+   /Background [0.2 0.2 0.2]
+   /BBox [50 -160 420 420]
+   /Decode [
+      0 500
+      0 500
+      0 1
+      0 1
+      0 1
+   ]
+   /Filter /ASCIIHexDecode
+   /Length 151
+>>
+stream
+0 3C000000 6A000000 FF0000 0
+0 00000000 00000000 00FF00 0
+0 78000000 00000000 0000FF 0
+2 B4000000 6A000000 00FFFF 0
+1 F0000000 00000000 FF0000 0
+>
+endstream
+endobj
+
+startxref
+12
+%%EOF

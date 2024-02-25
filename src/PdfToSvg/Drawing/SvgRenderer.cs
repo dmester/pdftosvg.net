@@ -42,8 +42,8 @@ namespace PdfToSvg.Drawing
 
         private static readonly string LinkStyle = "." + RootClassName + " a:active path{fill:#ffe4002e;}";
         private static readonly string TextStyle = "." + RootClassName + " text{white-space:pre;}";
-        private static readonly string NoPrintStyle = "@media print{."+ NoPrintClassName + "{display:none;}}";
-        private static readonly string NoScreenStyle = "@media screen{."+ NoScreenClassName + "{display:none;}}";
+        private static readonly string NoPrintStyle = "@media print{." + NoPrintClassName + "{display:none;}}";
+        private static readonly string NoScreenStyle = "@media screen{." + NoScreenClassName + "{display:none;}}";
 
         private GraphicsState graphicsState = new GraphicsState();
         private Stack<GraphicsState> graphicsStateStack = new Stack<GraphicsState>();
@@ -1223,6 +1223,24 @@ namespace PdfToSvg.Drawing
             }
         }
 
+        private Rectangle GetShadingClipRectangle()
+        {
+            var result = cropBox;
+            var clipPath = graphicsState.ClipPath;
+
+            while (clipPath != null)
+            {
+                if (clipPath.IsRectangle)
+                {
+                    result = Rectangle.Intersection(result, clipPath.Rectangle);
+                    break;
+                }
+                clipPath = clipPath.Parent;
+            }
+
+            return result;
+        }
+
         private string? GetSvgPatternId(Pattern pattern, RgbColor color, Matrix transform)
         {
             var key = Tuple.Create(new ReferenceEquatableBox(pattern), color, transform);
@@ -1246,7 +1264,7 @@ namespace PdfToSvg.Drawing
                     break;
 
                 case ShadingPattern shadingPattern:
-                    patternEl = shadingPattern.Shading?.GetShadingElement(shadingPattern.Matrix * transform, inPattern: true);
+                    patternEl = shadingPattern.Shading?.GetShadingElement(shadingPattern.Matrix * transform, GetShadingClipRectangle(), inPattern: true);
                     break;
             }
 
@@ -1275,7 +1293,7 @@ namespace PdfToSvg.Drawing
                 return;
             }
 
-            var gradientEl = shading.GetShadingElement(graphicsState.Transform, inPattern: false);
+            var gradientEl = shading.GetShadingElement(graphicsState.Transform, GetShadingClipRectangle(), inPattern: false);
             if (gradientEl == null)
             {
                 return;

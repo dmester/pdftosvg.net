@@ -2,7 +2,6 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
-using PdfToSvg.ColorSpaces;
 using PdfToSvg.DocumentModel;
 using System;
 using System.Collections.Generic;
@@ -38,7 +37,7 @@ namespace PdfToSvg.Drawing.Shadings
             }
         }
 
-        public override XElement? GetShadingElement(Matrix transform, bool inPattern)
+        public override XElement? GetShadingElement(Matrix transform, Rectangle clipRectangle, bool inPattern)
         {
             var radialGradient = new XElement(ns + "radialGradient");
 

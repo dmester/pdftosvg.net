@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -96,7 +97,7 @@ namespace PdfToSvg.Imaging.Fax
 
         public IEnumerable<bool[]> ReadRows(byte[] data, int offset, int count)
         {
-            var reader = new FaxReader(data, offset, count);
+            var reader = new VariableBitReader(data, offset, count);
 
             var referenceLine = new bool[Width];
             var codeLine = new bool[Width];

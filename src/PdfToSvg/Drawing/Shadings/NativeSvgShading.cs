@@ -4,7 +4,6 @@
 
 using PdfToSvg.ColorSpaces;
 using PdfToSvg.DocumentModel;
-using PdfToSvg.Drawing.Patterns;
 using PdfToSvg.Functions;
 using System;
 using System.Collections.Generic;
@@ -33,8 +32,6 @@ namespace PdfToSvg.Drawing.Shadings
 
         public ShadingStop[] Stops { get; }
 
-        public RgbColor? Background { get; }
-
         public NativeSvgShading(PdfDictionary definition, CancellationToken cancellationToken) : base(definition, cancellationToken)
         {
             // Extend
@@ -51,13 +48,6 @@ namespace PdfToSvg.Drawing.Shadings
             {
                 DomainStart = domain[0];
                 DomainEnd = domain[1];
-            }
-
-            // Background
-            var background = definition.GetArrayOrNull<float>(Names.Background);
-            if (background != null && background.Length > 0)
-            {
-                Background = new RgbColor(ColorSpace, background);
             }
 
             // Function
@@ -96,7 +86,7 @@ namespace PdfToSvg.Drawing.Shadings
         {
             if (!ExtendStart)
             {
-                // Background is not appliable when using the sh operator according to the spec
+                // Background is not applicable when using the sh operator according to the spec
                 if (Background != null && inPattern)
                 {
                     gradientEl.Add(CreateStop(offset: 0, Background.Value, transparent: false));

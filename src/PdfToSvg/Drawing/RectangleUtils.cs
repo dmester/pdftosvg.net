@@ -17,6 +17,53 @@ namespace PdfToSvg.Drawing
             return new Rectangle(0, 0, 594.96, 841.92);
         }
 
+        public static Rectangle GetBoundingRectangle(this Point[] points)
+        {
+            var minX = double.MaxValue;
+            var maxX = double.MinValue;
+            var minY = double.MaxValue;
+            var maxY = double.MinValue;
+
+            for (var i = 0; i < points.Length; i++)
+            {
+                var point = points[i];
+                if (minX > point.X) minX = point.X;
+                if (maxX < point.X) maxX = point.X;
+                if (minY > point.Y) minY = point.Y;
+                if (maxY < point.Y) maxY = point.Y;
+            }
+
+            if (minX == double.MaxValue)
+            {
+                return new Rectangle();
+            }
+
+            return new Rectangle(minX, minY, maxX, maxY);
+        }
+
+        public static Rectangle GetBoundingRectangle(this IEnumerable<Point> points)
+        {
+            var minX = double.MaxValue;
+            var maxX = double.MinValue;
+            var minY = double.MaxValue;
+            var maxY = double.MinValue;
+
+            foreach (var point in points)
+            {
+                if (minX > point.X) minX = point.X;
+                if (maxX < point.X) maxX = point.X;
+                if (minY > point.Y) minY = point.Y;
+                if (maxY < point.Y) maxY = point.Y;
+            }
+
+            if (minX == double.MaxValue)
+            {
+                return new Rectangle();
+            }
+
+            return new Rectangle(minX, minY, maxX, maxY);
+        }
+
         public static Rectangle GetBoundingRectangleAfterTransform(Rectangle rect, Matrix transform)
         {
             if (transform.IsIdentity)
@@ -24,38 +71,7 @@ namespace PdfToSvg.Drawing
                 return rect;
             }
 
-            var topLeft = transform * rect.TopLeft;
-            var topRight = transform * rect.TopRight;
-            var bottomLeft = transform * rect.BottomLeft;
-            var bottomRight = transform * rect.BottomRight;
-
-            var x1 = double.MaxValue;
-            var x2 = double.MinValue;
-
-            var y1 = double.MaxValue;
-            var y2 = double.MinValue;
-
-            if (x1 > topLeft.X) x1 = topLeft.X;
-            if (x1 > topRight.X) x1 = topRight.X;
-            if (x1 > bottomLeft.X) x1 = bottomLeft.X;
-            if (x1 > bottomRight.X) x1 = bottomRight.X;
-
-            if (x2 < topLeft.X) x2 = topLeft.X;
-            if (x2 < topRight.X) x2 = topRight.X;
-            if (x2 < bottomLeft.X) x2 = bottomLeft.X;
-            if (x2 < bottomRight.X) x2 = bottomRight.X;
-
-            if (y1 > topLeft.Y) y1 = topLeft.Y;
-            if (y1 > topRight.Y) y1 = topRight.Y;
-            if (y1 > bottomLeft.Y) y1 = bottomLeft.Y;
-            if (y1 > bottomRight.Y) y1 = bottomRight.Y;
-
-            if (y2 < topLeft.Y) y2 = topLeft.Y;
-            if (y2 < topRight.Y) y2 = topRight.Y;
-            if (y2 < bottomLeft.Y) y2 = bottomLeft.Y;
-            if (y2 < bottomRight.Y) y2 = bottomRight.Y;
-
-            return new Rectangle(x1, y1, x2, y2);
+            return (transform * rect).GetBoundingRectangle();
         }
     }
 }

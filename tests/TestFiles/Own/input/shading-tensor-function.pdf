@@ -1,0 +1,88 @@
+%PDF-1.7
+
+xref
+0 7
+0000000000 65535 f
+0000000202 00000 n
+0000000252 00000 n
+0000000313 00000 n
+0000000508 00000 n
+0000000689 00000 n
+0000000912 00000 n
+trailer
+<< /Root 1 0 R  /Size 7 >>
+
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Kids [ 3 0 R ]/Count 1 >> endobj
+
+3 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Shading <<
+         /Sh 6 0 R
+      >>
+   >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj
+<<
+   /Length 112
+>>
+stream
+
+   % Shading without BBox
+   q
+      1.2 0 0 1.2 80 400 cm
+      0 0 594 841 re
+      W n
+      /Sh sh
+   Q
+
+endstream
+endobj
+
+5 0 obj
+<<
+   /Type /Function
+   /FunctionType 0
+   /Size [2]
+   /Domain [0 1]
+   /Range [0 1 0 1 0 1]
+   /BitsPerSample 8
+   /Filter /ASCIIHexDecode
+   /Length 14
+>>
+stream
+bae0ec 0e2b34>
+endstream
+endobj
+
+6 0 obj
+<<
+   /ShadingType 7
+   /ColorSpace /DeviceRGB
+   /BitsPerFlag 8
+   /BitsPerCoordinate 16
+   /BitsPerComponent 8
+   /Decode [
+      0 65536
+      0 65536
+      0 1
+   ]
+   /Function 5 0 R
+   /Filter /ASCIIHexDecode
+   /Length 139
+>>
+stream
+0000430024007a0078001e00d90045010d008e013e00d900ec0119010d014700db00dd004e0134002400d7000300a20055008b0085008b00be00c700be00c70084ff00ff00>
+endstream
+endobj
+
+startxref
+12
+%%EOF

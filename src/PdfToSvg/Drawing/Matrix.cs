@@ -51,12 +51,23 @@ namespace PdfToSvg.Drawing
 
         public static bool operator !=(Matrix a, Matrix b) => !(a == b);
 
-        public static Point operator *(Matrix a, Point b)
+        public static Point operator *(Matrix matrix, Point point)
         {
             return new Point(
-                a.A * b.X + a.C * b.Y + a.E,
-                a.B * b.X + a.D * b.Y + a.F
+                matrix.A * point.X + matrix.C * point.Y + matrix.E,
+                matrix.B * point.X + matrix.D * point.Y + matrix.F
                 );
+        }
+
+        public static Point[] operator *(Matrix matrix, Rectangle rect)
+        {
+            return new[]
+            {
+                matrix * rect.BottomLeft,
+                matrix * rect.TopLeft,
+                matrix * rect.TopRight,
+                matrix * rect.BottomRight,
+            };
         }
 
         public static Matrix Multiply(Matrix a, Matrix b)

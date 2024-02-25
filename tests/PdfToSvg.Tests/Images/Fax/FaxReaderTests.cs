@@ -4,6 +4,7 @@
 
 using NUnit.Framework;
 using PdfToSvg.Imaging.Fax;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,28 +14,6 @@ namespace PdfToSvg.Tests.Images.Fax
 {
     internal class FaxReaderTests
     {
-        [Test]
-        public void Cursor()
-        {
-            var buffer = new byte[]
-            {
-                0b00110101,
-                0b01110100,
-                0b01001101,
-                0b10011100,
-            };
-            var reader = new FaxReader(buffer, 0, buffer.Length);
-
-            Assert.AreEqual(0b00, reader.ReadBits(2));
-
-            var cursor = reader.Cursor;
-            Assert.AreEqual(0b11010101, reader.ReadBits(8));
-            Assert.AreEqual(0b11010001, reader.ReadBits(8));
-
-            reader.Cursor = cursor;
-            Assert.AreEqual(0b11010101, reader.ReadBits(8));
-        }
-
         [Test]
         public void TryReadRunLength_White()
         {
@@ -48,7 +27,7 @@ namespace PdfToSvg.Tests.Images.Fax
 
                 0b00000111, 0b11000000, 0b01111100, 0b11010100 // Makeup 2560 + 2560 + White 0
             };
-            var reader = new FaxReader(buffer, 0, buffer.Length);
+            var reader = new VariableBitReader(buffer, 0, buffer.Length);
 
             int actual;
             Assert.IsTrue(reader.TryReadRunLength(FaxCodes.WhiteRunLengthCodes, out actual));
@@ -79,7 +58,7 @@ namespace PdfToSvg.Tests.Images.Fax
                 0b01100110,
                 0b00010000, // Black 10
             };
-            var reader = new FaxReader(buffer, 0, buffer.Length);
+            var reader = new VariableBitReader(buffer, 0, buffer.Length);
 
             int actual;
             Assert.IsTrue(reader.TryReadRunLength(FaxCodes.BlackRunLengthCodes, out actual));

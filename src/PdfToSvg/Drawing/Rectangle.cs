@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Drawing
 {
-    internal struct Rectangle
+    internal struct Rectangle : IEquatable<Rectangle>
     {
         public Rectangle(double x1, double y1, double x2, double y2)
         {
@@ -70,6 +70,12 @@ namespace PdfToSvg.Drawing
 
             return new Rectangle(x1, y1, x2, y2);
         }
+
+        public bool Equals(Rectangle other) => other.X1 == X1 && other.Y1 == Y1 && other.X2 == X2 && other.Y2 == Y2;
+
+        public override bool Equals(object obj) => obj is Rectangle rect && Equals(rect);
+
+        public override int GetHashCode() => (int)X1;
 
         public override string ToString()
         {

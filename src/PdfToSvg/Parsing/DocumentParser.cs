@@ -410,7 +410,7 @@ namespace PdfToSvg.Parsing
                         {
                             continue;
                         }
-                        
+
                         if (obj is PdfDictionary dic)
                         {
                             if (dic.Id.IsEmpty)
@@ -461,7 +461,7 @@ namespace PdfToSvg.Parsing
                         objects[uncompressedObjectRef.ObjectId] = obj.Value;
                     }
                     else
-                    { 
+                    {
                         Log.WriteLine(
                             "Object at offset {0} was referred to as {1} but called itself {2}. " +
                             "The incorrect reference was ignored.",

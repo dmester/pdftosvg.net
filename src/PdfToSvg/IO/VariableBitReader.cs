@@ -9,19 +9,19 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace PdfToSvg.Imaging.Fax
+namespace PdfToSvg.IO
 {
     [DebuggerDisplay("{DebugView,nq}")]
-    internal class FaxReader
+    internal class VariableBitReader
     {
         private readonly byte[] buffer;
         private readonly int offset;
         private readonly int count;
 
         private int byteValue;
-        private FaxReaderCursor cursor;
+        private VariableBitReaderCursor cursor;
 
-        public FaxReader(byte[] buffer, int offset, int count)
+        public VariableBitReader(byte[] buffer, int offset, int count)
         {
             if (buffer == null)
             {
@@ -41,7 +41,7 @@ namespace PdfToSvg.Imaging.Fax
             this.count = count;
         }
 
-        public FaxReaderCursor Cursor
+        public VariableBitReaderCursor Cursor
         {
             get => cursor;
             set
@@ -55,7 +55,52 @@ namespace PdfToSvg.Imaging.Fax
             }
         }
 
+        public bool EndOfInput => cursor.Cursor >= count;
+
         public int ReadBit() => ReadBits(1);
+
+        public long ReadLongBits(int bitCount)
+        {
+            if (cursor.Cursor < count)
+            {
+                var result = 0L;
+
+                while (bitCount > 0)
+                {
+                    if (cursor.BitCursor == 0)
+                    {
+                        if (cursor.Cursor >= count)
+                        {
+                            byteValue = -1;
+                            return -1;
+                        }
+
+                        byteValue = buffer[offset + cursor.Cursor];
+                    }
+
+                    var iterationBitCount = Math.Min(8 - cursor.BitCursor, bitCount);
+                    var iterationBitMask = (1L << iterationBitCount) - 1;
+
+                    result <<= iterationBitCount;
+                    result |= (byteValue >> (8 - cursor.BitCursor - iterationBitCount)) & iterationBitMask;
+
+                    cursor.BitCursor += iterationBitCount;
+                    bitCount -= iterationBitCount;
+
+                    if (cursor.BitCursor >= 8)
+                    {
+                        cursor.BitCursor = 0;
+                        cursor.Cursor++;
+                    }
+                }
+
+                return result;
+            }
+            else
+            {
+                return -1;
+            }
+        }
 
         public int ReadBits(int bitCount)
         {
@@ -97,52 +142,6 @@ namespace PdfToSvg.Imaging.Fax
             else
             {
                 return -1;
-            }
-        }
-
-        public bool TryReadCode(FaxCodeTable codeTable, out int result)
-        {
-            var code = 0b1;
-
-            for (var codeLength = 1; codeLength <= codeTable.MaxCodeLength; codeLength++)
-            {
-                var bit = ReadBit();
-                if (bit < 0)
-                {
-                    break;
-                }
-
-                code = (code << 1) | bit;
-
-                if (codeTable.TryGetValue(code, out result))
-                {
-                    return true;
-                }
-            }
-
-            result = default!;
-            return false;
-        }
-
-        public bool TryReadRunLength(FaxCodeTable codeTable, out int runLength)
-        {
-            runLength = 0;
-
-            while (true)
-            {
-                if (TryReadCode(codeTable, out var iterationRunLength))
-                {
-                    runLength += iterationRunLength;
-
-                    if (iterationRunLength <= FaxCodes.MaxTerminatingRunLength)
-                    {
-                        return true;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
             }
         }
 

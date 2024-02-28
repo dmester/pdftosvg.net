@@ -10,13 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using CompressionMode = System.IO.Compression.CompressionMode;
 
 namespace PdfToSvg.Tests
 {
@@ -34,6 +34,12 @@ namespace PdfToSvg.Tests
         private const string TargetFramework = "netstandard16";
 #elif NET5_0
         private const string TargetFramework = "netstandard21";
+#elif NET6_0
+        private const string TargetFramework = "net60";
+#elif NET7_0
+        private const string TargetFramework = "net70";
+#elif NET8_0
+        private const string TargetFramework = "net80";
 #endif
 
         private static byte[] RecompressPng(byte[] pngData)
@@ -66,12 +72,17 @@ namespace PdfToSvg.Tests
 
                         using (var deflateStream = new ZLibStream(resultStream, CompressionMode.Compress, true))
                         {
-                            using (var originalDataStream = new MemoryStream(pngData, cursor, chunkLength, false))
+                            using var originalDataStream = new MemoryStream(pngData, cursor, chunkLength, false);
+                            using var inflateStream = new ZLibStream(originalDataStream, CompressionMode.Decompress);
+
+                            // CopyTo is not used, since it seems to use different chunk sizes in ZLibStream, which
+                            // causes non-equal compressed output.
+                            var buffer = new byte[64 << 10]; // 64 kB
+                            int count;
+
+                            while ((count = inflateStream.ReadAll(buffer, 0, buffer.Length)) != 0)
                             {
-                                using (var inflateStream = new ZLibStream(originalDataStream, CompressionMode.Decompress))
-                                {
-                                    inflateStream.CopyTo(deflateStream);
-                                }
+                                deflateStream.Write(buffer, 0, count);
                             }
                         }
 

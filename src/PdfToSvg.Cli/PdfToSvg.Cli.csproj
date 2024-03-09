@@ -5,12 +5,17 @@
     <TargetFrameworks>net45</TargetFrameworks>
     <AssemblyName>pdftosvg</AssemblyName>
     <RootNamespace>PdfToSvg</RootNamespace>
+    <ApplicationIcon>Resources\pdftosvg-cli.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="..\PdfToSvg\**\*.cs" Visible="false" />
     <Compile Remove="..\PdfToSvg\bin\**\*.cs" Visible="false" />
     <Compile Remove="..\PdfToSvg\obj\**\*.cs" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\pdftosvg-cli.ico" />
   </ItemGroup>
 
   <ItemGroup>

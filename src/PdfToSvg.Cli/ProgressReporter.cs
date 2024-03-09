@@ -40,8 +40,8 @@ namespace PdfToSvg.Cli
 
         private class CliProgressBar : ProgressReporter
         {
-            private readonly int cursorLeft;
-            private readonly int cursorTop;
+            private const int LineOffset = 2;
+            private readonly int offsetLeft;
 
             private readonly int width;
 
@@ -56,18 +56,22 @@ namespace PdfToSvg.Cli
 
                 Console.Write("{0,-24}", label);
 
-                cursorTop = Console.CursorTop;
-                cursorLeft = Console.CursorLeft;
+                offsetLeft = Console.CursorLeft;
 
-                Update(restoreCursor: false);
+                for (var i = 0; i < LineOffset; i++)
+                {
+                    Console.WriteLine();
+                }
+
+                Update();
             }
 
             protected override void OnProgressPercentChanged()
             {
-                Update(restoreCursor: true);
+                Update();
             }
 
-            private void Update(bool restoreCursor)
+            private void Update()
             {
                 if (Console.IsOutputRedirected)
                 {
@@ -78,8 +82,13 @@ namespace PdfToSvg.Cli
                 var originalTop = Console.CursorTop;
                 var cursorWasVisible = Console.CursorVisible;
 
+                if (originalTop < LineOffset)
+                {
+                    return;
+                }
+
                 Console.CursorVisible = false;
-                Console.SetCursorPosition(cursorLeft, cursorTop);
+                Console.SetCursorPosition(offsetLeft, originalTop - LineOffset);
 
                 Console.Write("[");
 
@@ -96,11 +105,7 @@ namespace PdfToSvg.Cli
 
                 Console.Write("]   {0,3}%  ", progressPercent);
 
-                if (restoreCursor)
-                {
-                    Console.SetCursorPosition(originalLeft, originalTop);
-                }
-
+                Console.SetCursorPosition(originalLeft, originalTop);
                 Console.CursorVisible = cursorWasVisible;
             }
         }

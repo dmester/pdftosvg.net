@@ -192,9 +192,6 @@ namespace PdfToSvg.Cli
                     else
                     {
                         progress = ProgressReporter.CreateCliProgressBar("Converting PDF...");
-
-                        Console.WriteLine();
-                        Console.WriteLine();
                     }
 
                     await ParallelUtils.ForEachAsync(pageNumbers, async (pageNumber, _) =>

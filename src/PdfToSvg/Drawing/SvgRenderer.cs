@@ -113,12 +113,7 @@ namespace PdfToSvg.Drawing
 
             resources = new ResourceCache(pageDict.GetDictionaryOrEmpty(Names.Resources));
 
-            if (!pageDict.TryGetRectangle(Names.CropBox, out cropBox) &&
-                !pageDict.TryGetRectangle(Names.MediaBox, out cropBox))
-            {
-                // Default to A4
-                cropBox = RectangleUtils.GetA4();
-            }
+            cropBox = GetCropBox(pageDict);
 
             var pageWidth = cropBox.Width;
             var pageHeight = cropBox.Height;
@@ -171,6 +166,32 @@ namespace PdfToSvg.Drawing
             // which has its origin in the upper left corner.
             graphicsState.Transform = MoveOriginToTopLeft(cropBox);
             originalTransform = graphicsState.Transform;
+        }
+
+        private static Rectangle GetCropBox(PdfDictionary pageDict)
+        {
+            var hasCropBox = pageDict.TryGetRectangle(Names.CropBox, out var cropBox);
+            var hasMediaBox = pageDict.TryGetRectangle(Names.MediaBox, out var mediaBox);
+
+            if (hasCropBox && hasMediaBox)
+            {
+                // The spec says the CropBox should be considered to be the intersection
+                // if the CropBox extends outside the MediaBox.
+                return Rectangle.Intersection(cropBox, mediaBox);
+            }
+
+            if (hasCropBox)
+            {
+                return cropBox;
+            }
+
+            if (hasMediaBox)
+            {
+                return mediaBox;
+            }
+
+            // Default
+            return RectangleUtils.GetA4();
         }
 
         private static Matrix MoveOriginToTopLeft(Rectangle bbox)

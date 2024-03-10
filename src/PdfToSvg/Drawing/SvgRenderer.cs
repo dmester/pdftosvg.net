@@ -262,9 +262,19 @@ namespace PdfToSvg.Drawing
                 return;
             }
 
+            var numFiles = 0;
+
             foreach (var annot in annots)
             {
-                RenderAnnotationAppearance(annot);
+                var fileIndex = (int?)null;
+
+                var attachment = FileAttachment.Create(annot);
+                if (attachment != null)
+                {
+                    fileIndex = numFiles++;
+                }
+
+                RenderAnnotationAppearance(annot, fileIndex);
             }
         }
 
@@ -940,7 +950,7 @@ namespace PdfToSvg.Drawing
             });
         }
 
-        private void RenderAnnotationAppearance(PdfDictionary annot)
+        private void RenderAnnotationAppearance(PdfDictionary annot, int? fileIndex)
         {
             if (!annot.TryGetDictionary(Names.AP / Names.N, out var normalAppearance) ||
                 !annot.TryGetRectangle(Names.Rect, out var rect))
@@ -990,6 +1000,11 @@ namespace PdfToSvg.Drawing
                         {
                             additionalGroupContent.Add(new XAttribute(annotNs + "popup-contents", contents));
                         }
+                    }
+
+                    if (fileIndex != null)
+                    {
+                        additionalGroupContent.Add(new XAttribute(annotNs + "file-index", fileIndex));
                     }
                 }
 

@@ -88,7 +88,11 @@ namespace PdfToSvg.DocumentModel
         public static PdfName URI { get; } = new PdfName("URI");
         public static PdfName Popup { get; } = new PdfName("Popup");
         public static PdfName F { get; } = new PdfName("F");
+        public static PdfName EF { get; } = new PdfName("EF");
+        public static PdfName UF { get; } = new PdfName("UF");
         public static PdfName T { get; } = new PdfName("T");
+        public static PdfName FileAttachment { get; } = new PdfName("FileAttachment");
+        public static PdfName FS { get; } = new PdfName("FS");
 
         public static PdfName Encoding { get; } = new PdfName("Encoding");
         public static PdfName BaseEncoding { get; } = new PdfName("BaseEncoding");

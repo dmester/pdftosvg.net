@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Drawing;
 using PdfToSvg.IO;
@@ -24,6 +25,7 @@ namespace PdfToSvg
     {
         private readonly PdfDocument owner;
         private readonly PdfDictionary page;
+        private FileAttachmentCollection? fileAttachments;
 
         internal PdfPage(PdfDocument owner, PdfDictionary page)
         {
@@ -35,6 +37,32 @@ namespace PdfToSvg
         /// Gets the owner <see cref="PdfDocument"/> that this page is part of.
         /// </summary>
         public PdfDocument Document => owner;
+
+        /// <summary>
+        /// Gets a collection of files attached to this page. The generated SVG might refer to an attachment with the
+        /// <see cref="SvgConversionOptions.IncludeAnnotations">annot:file-index</see> attribute.
+        /// </summary>
+        public FileAttachmentCollection FileAttachments
+        {
+            get
+            {
+                if (fileAttachments == null)
+                {
+                    var annots = 
+                        page.GetArrayOrNull<PdfDictionary>(Names.Annots) ??
+                        ArrayUtils.Empty<PdfDictionary>();
+
+                    var files = annots
+                        .Select(annot => FileAttachment.Create(annot))
+                        .WhereNotNull()
+                        .ToList();
+
+                    Interlocked.CompareExchange(ref fileAttachments, new FileAttachmentCollection(files), null);
+                }
+
+                return fileAttachments;
+            }
+        }
 
         /// <summary>
         /// Converts this page to an SVG string. The string can for example be saved to a file, or inlined in HTML.

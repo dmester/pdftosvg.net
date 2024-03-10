@@ -339,6 +339,64 @@ namespace PdfToSvg.Tests
         }
 
         [Test]
+        public void ExposeFileAttachments()
+        {
+            var pdfPath = GetInputFilePath("annotation-files.pdf");
+            using var doc = PdfDocument.Open(pdfPath);
+            var page = doc.Pages[0];
+            var svg = page.ToSvgString();
+
+            Assert.AreEqual(2, page.FileAttachments.Count, "File attachment count");
+
+            Assert.AreEqual("Test file 1.txt", page.FileAttachments[1].Name);
+            Assert.AreEqual("file 2.txt", page.FileAttachments[0].Name);
+
+            using (var stream1 = page.FileAttachments[1].GetContent())
+            {
+                Assert.AreEqual(0, stream1.Position);
+                Assert.AreEqual("Test file 1 content", Encoding.ASCII.GetString(stream1.ToArray()));
+            }
+            using (var stream2 = page.FileAttachments[0].GetContent())
+            {
+                Assert.AreEqual(0, stream2.Position);
+                Assert.AreEqual("Test file 2 content", Encoding.ASCII.GetString(stream2.ToArray()));
+            }
+
+            Assert.That(svg.Contains("annot:file-index=\"0\""));
+            Assert.That(svg.Contains("annot:file-index=\"1\""));
+        }
+
+#if !NET40
+        [Test]
+        public async Task ExposeFileAttachmentsAsync()
+        {
+            var pdfPath = GetInputFilePath("annotation-files.pdf");
+            using var doc = await PdfDocument.OpenAsync(pdfPath);
+            var page = doc.Pages[0];
+            var svg = page.ToSvgString();
+
+            Assert.AreEqual(2, page.FileAttachments.Count, "File attachment count");
+
+            Assert.AreEqual("Test file 1.txt", page.FileAttachments[1].Name);
+            Assert.AreEqual("file 2.txt", page.FileAttachments[0].Name);
+
+            using (var stream1 = await page.FileAttachments[1].GetContentAsync())
+            {
+                Assert.AreEqual(0, stream1.Position);
+                Assert.AreEqual("Test file 1 content", Encoding.ASCII.GetString(stream1.ToArray()));
+            }
+            using (var stream2 = await page.FileAttachments[0].GetContentAsync())
+            {
+                Assert.AreEqual(0, stream2.Position);
+                Assert.AreEqual("Test file 2 content", Encoding.ASCII.GetString(stream2.ToArray()));
+            }
+
+            Assert.That(svg.Contains("annot:file-index=\"0\""));
+            Assert.That(svg.Contains("annot:file-index=\"1\""));
+        }
+#endif
+
+        [Test]
         public void DocumentInfo()
         {
             var pdfPath = GetInputFilePath("document-info-pdfdoc-utf16-utf8.pdf");

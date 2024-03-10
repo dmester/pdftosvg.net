@@ -1,0 +1,557 @@
+%PDF-1.7
+%¿÷¢þ
+%QDF-1.0
+
+%% Original object ID: 16 0
+1 0 obj
+<<
+  /AcroForm 3 0 R
+  /Metadata 4 0 R
+  /Names 6 0 R
+  /Pages 7 0 R
+  /Type /Catalog
+>>
+endobj
+
+%% Original object ID: 14 0
+2 0 obj
+<<
+  /CreationDate (D:20240310094344+01'00')
+  /ModDate (D:20240310094344+01'00')
+>>
+endobj
+
+%% Original object ID: 22 0
+3 0 obj
+<<
+  /DA (/Helv 0 Tf 0 g )
+  /DR <<
+    /Encoding <<
+      /PDFDocEncoding 8 0 R
+    >>
+    /Font <<
+      /Helv 9 0 R
+      /ZaDb 10 0 R
+    >>
+  >>
+  /Fields 11 0 R
+>>
+endobj
+
+%% Original object ID: 4 0
+4 0 obj
+<<
+  /Subtype /XML
+  /Type /Metadata
+  /Length 5 0 R
+>>
+stream
+<?xpacket begin="ï»¿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 9.1-c001 79.675d0f7, 2023/06/11-19:21:16        ">
+   <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about=""
+            xmlns:xmp="http://ns.adobe.com/xap/1.0/"
+            xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
+            xmlns:dc="http://purl.org/dc/elements/1.1/">
+         <xmp:ModifyDate>2024-03-10T09:43:44+01:00</xmp:ModifyDate>
+         <xmp:CreateDate>2024-03-10T09:43:44+01:00</xmp:CreateDate>
+         <xmp:MetadataDate>2024-03-10T09:43:44+01:00</xmp:MetadataDate>
+         <xmpMM:DocumentID>uuid:6e9daf0e-3a12-4f2c-bb0c-19a91d0895b6</xmpMM:DocumentID>
+         <xmpMM:InstanceID>uuid:0eded7ea-d06d-43a5-a94d-37235791e61e</xmpMM:InstanceID>
+         <dc:format>application/pdf</dc:format>
+      </rdf:Description>
+   </rdf:RDF>
+</x:xmpmeta>
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                           
+<?xpacket end="w"?>
+endstream
+endobj
+
+%QDF: ignore_newline
+5 0 obj
+2989
+endobj
+
+%% Original object ID: 23 0
+6 0 obj
+<<
+  /AP 12 0 R
+>>
+endobj
+
+%% Original object ID: 12 0
+7 0 obj
+<<
+  /Count 1
+  /Kids [
+    13 0 R
+  ]
+  /Type /Pages
+>>
+endobj
+
+%% Original object ID: 11 0
+8 0 obj
+<<
+  /Differences [
+    24
+    /breve
+    /caron
+    /circumflex
+    /dotaccent
+    /hungarumlaut
+    /ogonek
+    /ring
+    /tilde
+    39
+    /quotesingle
+    96
+    /grave
+    128
+    /bullet
+    /dagger
+    /daggerdbl
+    /ellipsis
+    /emdash
+    /endash
+    /florin
+    /fraction
+    /guilsinglleft
+    /guilsinglright
+    /minus
+    /perthousand
+    /quotedblbase
+    /quotedblleft
+    /quotedblright
+    /quoteleft
+    /quoteright
+    /quotesinglbase
+    /trademark
+    /fi
+    /fl
+    /Lslash
+    /OE
+    /Scaron
+    /Ydieresis
+    /Zcaron
+    /dotlessi
+    /lslash
+    /oe
+    /scaron
+    /zcaron
+    160
+    /Euro
+    164
+    /currency
+    166
+    /brokenbar
+    168
+    /dieresis
+    /copyright
+    /ordfeminine
+    172
+    /logicalnot
+    /.notdef
+    /registered
+    /macron
+    /degree
+    /plusminus
+    /twosuperior
+    /threesuperior
+    /acute
+    /mu
+    183
+    /periodcentered
+    /cedilla
+    /onesuperior
+    /ordmasculine
+    188
+    /onequarter
+    /onehalf
+    /threequarters
+    192
+    /Agrave
+    /Aacute
+    /Acircumflex
+    /Atilde
+    /Adieresis
+    /Aring
+    /AE
+    /Ccedilla
+    /Egrave
+    /Eacute
+    /Ecircumflex
+    /Edieresis
+    /Igrave
+    /Iacute
+    /Icircumflex
+    /Idieresis
+    /Eth
+    /Ntilde
+    /Ograve
+    /Oacute
+    /Ocircumflex
+    /Otilde
+    /Odieresis
+    /multiply
+    /Oslash
+    /Ugrave
+    /Uacute
+    /Ucircumflex
+    /Udieresis
+    /Yacute
+    /Thorn
+    /germandbls
+    /agrave
+    /aacute
+    /acircumflex
+    /atilde
+    /adieresis
+    /aring
+    /ae
+    /ccedilla
+    /egrave
+    /eacute
+    /ecircumflex
+    /edieresis
+    /igrave
+    /iacute
+    /icircumflex
+    /idieresis
+    /eth
+    /ntilde
+    /ograve
+    /oacute
+    /ocircumflex
+    /otilde
+    /odieresis
+    /divide
+    /oslash
+    /ugrave
+    /uacute
+    /ucircumflex
+    /udieresis
+    /yacute
+    /thorn
+    /ydieresis
+  ]
+  /Type /Encoding
+>>
+endobj
+
+%% Original object ID: 9 0
+9 0 obj
+<<
+  /BaseFont /Helvetica
+  /Encoding 8 0 R
+  /Name /Helv
+  /Subtype /Type1
+  /Type /Font
+>>
+endobj
+
+%% Original object ID: 10 0
+10 0 obj
+<<
+  /BaseFont /ZapfDingbats
+  /Name /ZaDb
+  /Subtype /Type1
+  /Type /Font
+>>
+endobj
+
+%% Original object ID: 8 0
+11 0 obj
+[
+]
+endobj
+
+%% Original object ID: 13 0
+12 0 obj
+<<
+  /Names [
+    <feff007e00690063006f006e002b005000610070006500720063006c00690070002b00360034003a00380035003a003200350035002d005300560045002d0030>
+    14 0 R
+  ]
+>>
+endobj
+
+%% Page 1
+%% Original object ID: 17 0
+13 0 obj
+<<
+  /Annots 16 0 R
+  /Contents [
+    17 0 R
+  ]
+  /CropBox [
+    0
+    0
+    594.96
+    841.92
+  ]
+  /MediaBox [
+    0
+    0
+    594.96
+    841.92
+  ]
+  /Parent 7 0 R
+  /Resources <<
+    /Font <<
+      /FAnsi <<
+        /BaseFont /Times-Roman
+        /Encoding /WinAnsiEncoding
+        /Subtype /Type1
+        /Type /Font
+      >>
+    >>
+  >>
+  /Rotate 0
+  /Type /Page
+>>
+endobj
+
+%% Original object ID: 18 0
+14 0 obj
+<<
+  /BBox [
+    0.0
+    0.0
+    7.0
+    17.0
+  ]
+  /Resources <<
+  >>
+  /Subtype /Form
+  /Type /XObject
+  /Length 15 0 R
+>>
+stream
+0 G 0.25 0.333328 1 rg 0 i 0.59 w 4 M 1 j 0 J []0 d  0.51 13.63 m 0.51 13.25 0.48 4.38 0.48 3.74 c 0.48 3.29 0.49 1.93 1.38 1.05 c 1.89 0.55 2.59 0.31 3.45 0.32 c 5.46 0.36 6.60 1.61 6.57 3.76 c 6.56 4.66 6.57 10.39 6.57 10.45 c 6.57 10.70 6.36 10.90 6.11 10.90 c 5.86 10.90 5.65 10.70 5.65 10.44 c 5.65 10.21 5.64 4.66 5.65 3.75 c 5.67 2.09 4.95 1.27 3.44 1.24 c 2.83 1.23 2.35 1.39 2.03 1.71 c 1.40 2.32 1.40 3.39 1.40 3.75 c 1.40 4.37 1.43 13.24 1.43 13.63 c 1.43 13.97 1.52 15.65 3.03 15.65 c 3.91 15.65 4.29 15.09 4.29 13.77 c 4.29 13.63 l 4.30 13.30 4.28 9.30 4.27 7.24 c 4.27 7.23 4.27 7.22 4.27 7.21 c 4.28 7.00 4.25 6.32 3.96 6.03 c 3.87 5.94 3.76 5.89 3.60 5.90 c 2.85 5.91 2.86 7.23 2.86 7.24 c 2.84 10.81 l 2.83 11.07 2.63 11.27 2.37 11.27 c 2.12 11.27 1.92 11.06 1.92 10.81 c 1.94 7.24 l 1.93 6.47 2.26 5.00 3.59 4.98 c 3.99 4.97 4.35 5.12 4.62 5.40 c 5.21 6.01 5.20 7.06 5.19 7.24 c 5.19 7.50 5.22 13.24 5.20 13.66 c 5.20 13.77 l 5.21 14.92 4.92 15.61 4.51 16.03 c 4.08 16.45 3.53 16.57 3.03 16.57 c 1.05 16.57 0.52 14.72 0.51 13.63 c h B 
+endstream
+endobj
+
+%QDF: ignore_newline
+15 0 obj
+1053
+endobj
+
+%% Original object ID: 24 0
+16 0 obj
+[
+  19 0 R
+  20 0 R
+]
+endobj
+
+%% Contents for page 1
+%% Original object ID: 19 0
+17 0 obj
+<<
+  /Length 18 0 R
+>>
+stream
+
+endstream
+endobj
+
+18 0 obj
+1
+endobj
+
+%% Original object ID: 25 0
+19 0 obj
+<<
+  /AP <<
+    /N 14 0 R
+  >>
+  /C [
+    0.25
+    0.333328
+    1.0
+  ]
+  /Contents (Test file 2.txt)
+  /CreationDate (D:20240310094258+01'00')
+  /F 28
+  /FS 21 0 R
+  /M (D:20240310094316+01'00')
+  /NM (89267666-8831-45ce-bce3-1b336c5aa8cb)
+  /Name /Paperclip
+  /P 13 0 R
+  /RC (<?xml version="1.0"?><body xmlns="http://www.w3.org/1999/xhtml" xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" xfa:APIVersion="Acrobat:23.8.0" xfa:spec="2.0.2" ><p>Test file 2.txt</p></body>)
+  /Rect [
+    325.88
+    709.817
+    332.88
+    726.817
+  ]
+  /Subj (Bifogad fil)
+  /Subtype /FileAttachment
+  /T (Daniel)
+  /Type /Annot
+>>
+endobj
+
+%% Original object ID: 26 0
+20 0 obj
+<<
+  /AP <<
+    /N 14 0 R
+  >>
+  /C [
+    0.25
+    0.333328
+    1.0
+  ]
+  /Contents (Test file 1.txt)
+  /CreationDate (D:20240310094323+01'00')
+  /F 28
+  /FS 22 0 R
+  /M (D:20240310094330+01'00')
+  /NM (c6245729-ca39-4a93-b3ac-547973d3d09e)
+  /Name /Paperclip
+  /P 13 0 R
+  /RC (<?xml version="1.0"?><body xmlns="http://www.w3.org/1999/xhtml" xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" xfa:APIVersion="Acrobat:23.8.0" xfa:spec="2.0.2" ><p>Test file 1.txt</p></body>)
+  /Rect [
+    208.317
+    709.571
+    215.317
+    726.571
+  ]
+  /Subj (Bifogad fil)
+  /Subtype /FileAttachment
+  /T (Daniel)
+  /Type /Annot
+>>
+endobj
+
+%% Original object ID: 27 0
+21 0 obj
+<<
+  /EF <<
+    /F 23 0 R
+  >>
+  /F (Test\\/file 2.txt)
+  /Type /Filespec
+  /UF (Test\\/file 2.txt)
+>>
+endobj
+
+%% Original object ID: 28 0
+22 0 obj
+<<
+  /EF <<
+    /F 23 0 R
+    /UF 25 0 R
+  >>
+  /F (Test file 1.txt)
+  /Type /Filespec
+  /UF (Test file 1.txt)
+>>
+endobj
+
+%% Original object ID: 2 0
+23 0 obj
+<<
+  /DL 19
+  /Params <<
+    /CheckSum <090601419f9d48d9d9cc101f5709854e>
+    /CreationDate (D:20240310094255+01'00')
+    /ModDate (D:20240310094255+01'00')
+    /Size 19
+  >>
+  /Subtype /text#2fplain
+  /Length 24 0 R
+>>
+stream
+Test file 2 content
+endstream
+endobj
+
+%QDF: ignore_newline
+24 0 obj
+19
+endobj
+
+%% Original object ID: 3 0
+25 0 obj
+<<
+  /DL 19
+  /Params <<
+    /CheckSum <d0abcb7f43806dd60aabfde7a5242ad9>
+    /CreationDate (D:20240310094249+01'00')
+    /ModDate (D:20240310094249+01'00')
+    /Size 19
+  >>
+  /Subtype /text#2fplain
+  /Length 26 0 R
+>>
+stream
+Test file 1 content
+endstream
+endobj
+
+%QDF: ignore_newline
+26 0 obj
+19
+endobj
+
+xref
+0 27
+0000000000 65535 f 
+0000000053 00000 n 
+0000000186 00000 n 
+0000000315 00000 n 
+0000000528 00000 n 
+0000003628 00000 n 
+0000003677 00000 n 
+0000003740 00000 n 
+0000003841 00000 n 
+0000005761 00000 n 
+0000005898 00000 n 
+0000006020 00000 n 
+0000006069 00000 n 
+0000006291 00000 n 
+0000006709 00000 n 
+0000007943 00000 n 
+0000007993 00000 n 
+0000008083 00000 n 
+0000008141 00000 n 
+0000008188 00000 n 
+0000008850 00000 n 
+0000009514 00000 n 
+0000009662 00000 n 
+0000009820 00000 n 
+0000010115 00000 n 
+0000010162 00000 n 
+0000010457 00000 n 
+trailer <<
+  /Info 2 0 R
+  /Root 1 0 R
+  /Size 27
+  /ID [<316ef08ce3127f41b698bee10e36b014><59d5ec1a3223b36d3f9ac164e3f16004>]
+>>
+startxref
+10458
+%%EOF

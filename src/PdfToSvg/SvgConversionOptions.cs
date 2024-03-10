@@ -221,6 +221,15 @@ namespace PdfToSvg
         ///             Time when the annotation was added to the PDF document.
         ///         </description>
         ///     </item>
+        ///     <item>
+        ///         <term><c>annot:file-index</c></term>
+        ///         <description>
+        ///             If the annotation refers to a file, this attribute specifies the file index in the
+        ///             <see cref="PdfPage.FileAttachments"/> collection on the owner page. The data is not included in
+        ///             the generated SVG but must be extracted and handled separately using
+        ///             <see cref="FileAttachment.GetContent"/>.
+        ///         </description>
+        ///     </item>
         /// </list>
         /// </remarks>
         public bool IncludeAnnotations { get; set; } = true;

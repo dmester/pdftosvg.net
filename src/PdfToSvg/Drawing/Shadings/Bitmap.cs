@@ -2,10 +2,10 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Imaging.Png;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PdfToSvg.Drawing.Shadings
 {
@@ -21,6 +21,10 @@ namespace PdfToSvg.Drawing.Shadings
         private readonly int height;
         private readonly byte[] buffer;
 
+        private const int AlphaRed = 0;
+        private const int AlphaGreen = 0;
+        private bool[] usedBlueComponents = new bool[256];
+
         public Bitmap(int width, int height)
         {
             if (width < 1) throw new ArgumentOutOfRangeException(nameof(width));
@@ -29,7 +33,7 @@ namespace PdfToSvg.Drawing.Shadings
             this.width = width;
             this.height = height;
 
-            buffer = new byte[height * (1 + width * BytesPerSample)];
+            buffer = new byte[height * width * BytesPerSample];
         }
 
         private struct Edge
@@ -137,30 +141,55 @@ namespace PdfToSvg.Drawing.Shadings
 
             ConvertToRgb24(color, out var red, out var green, out var blue);
 
+            if (red == AlphaRed && green == AlphaGreen)
+            {
+                usedBlueComponents[blue] = true;
+            }
+
             for (var y = miny; y < maxy; y++)
             {
-                var rowOffset = y * (1 + width * BytesPerSample);
-
+                var rowOffset = y * width * BytesPerSample;
+                
                 PopulateIntersections(intersections, edges, y, width);
 
                 for (var i = 0; i < intersections.Count; i += 2)
                 {
                     var from = intersections[i];
                     var to = i + 1 < intersections.Count ? intersections[i + 1] : width;
+                    var pixelOffset = rowOffset + from * BytesPerSample;
 
                     for (var x = from; x < to; x++)
                     {
-                        var pixelOffset = rowOffset + 1 + x * BytesPerSample;
-
                         buffer[pixelOffset + RedOffset] = red;
                         buffer[pixelOffset + GreenOffset] = green;
                         buffer[pixelOffset + BlueOffset] = blue;
                         buffer[pixelOffset + AlphaOffset] = 255;
+                        pixelOffset += BytesPerSample;
                     }
                 }
             }
         }
 
-        public byte[] GetPngData() => buffer;
+        public byte[] ToPng(PngFilter filter)
+        {
+            var alphaBlue = -1;
+            for (var i = 0; i < usedBlueComponents.Length; i++)
+            {
+                if (usedBlueComponents[i] == false)
+                {
+                    alphaBlue = i;
+                    break;
+                }
+            }
+
+            if (alphaBlue < 0)
+            {
+                return PngEncoder.TruecolourWithAlpha(buffer, width, height, filter);
+            }
+            else
+            {
+                return PngEncoder.Truecolour(buffer, width, height, filter, AlphaRed, AlphaGreen, alphaBlue);
+            }
+        }
     }
 }

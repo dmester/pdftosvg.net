@@ -243,22 +243,8 @@ namespace PdfToSvg.Drawing.Shadings
                 }
             }
 
-            using (var pngStream = new MemoryStream())
-            {
-                var pngWriter = new PngEncoder(pngStream);
-
-                pngWriter.WriteSignature();
-                pngWriter.WriteImageHeader(width, height, PngColorType.TruecolourWithAlpha, bitDepth: 8);
-
-                using (var pngDataStream = pngWriter.GetImageDataStream())
-                {
-                    pngDataStream.Write(bitmap.GetPngData());
-                }
-
-                pngWriter.WriteImageEnd();
-
-                return pngStream.ToArray();
-            }
+            // Sub and Up seems to perform best on shadings
+            return bitmap.ToPng(PngFilter.Up);
         }
 
         private string RenderDataUrl(int width, int height, Matrix transform)

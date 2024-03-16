@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.Common;
+using PdfToSvg.Imaging.Png;
 using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
@@ -117,40 +118,18 @@ namespace PdfToSvg.Filters
                 case PngFilter.Paeth:
                     for (var i = 1; i < 1 + sampleSizeBytes; i++)
                     {
-                        buffer[i] = unchecked((byte)(buffer[i] + PaethPredictor(0, previousBuffer[i], 0)));
+                        buffer[i] = unchecked((byte)(buffer[i] + PngUtils.PaethPredictor(0, previousBuffer[i], 0)));
                     }
 
                     for (var i = 1 + sampleSizeBytes; i < buffer.Length; i++)
                     {
-                        buffer[i] = unchecked((byte)(buffer[i] + PaethPredictor(
+                        buffer[i] = unchecked((byte)(buffer[i] + PngUtils.PaethPredictor(
                             buffer[i - sampleSizeBytes],
                             previousBuffer[i],
                             previousBuffer[i - sampleSizeBytes]
                             )));
                     }
                     break;
-            }
-        }
-
-        private static byte PaethPredictor(byte a, byte b, byte c)
-        {
-            var p = a + b - c;
-
-            var pa = Math.Abs(p - a);
-            var pb = Math.Abs(p - b);
-            var pc = Math.Abs(p - c);
-
-            if (pa <= pb && pa <= pc)
-            {
-                return a;
-            }
-            else if (pb <= pc)
-            {
-                return b;
-            }
-            else
-            {
-                return c;
             }
         }
     }

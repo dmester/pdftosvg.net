@@ -87,7 +87,7 @@ namespace PdfToSvg.Drawing
                 other.Blue == Blue;
         }
 
-        public override bool Equals(object obj) => obj is RgbColor color && Equals(color);
+        public override bool Equals(object? obj) => obj is RgbColor color && Equals(color);
 
         public override string ToString()
         {

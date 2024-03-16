@@ -6,7 +6,7 @@ using PdfToSvg.DocumentModel;
 using PdfToSvg.IO;
 using System;
 using System.IO;
-using System.IO.Compression;
+using CompressionMode = System.IO.Compression.CompressionMode;
 
 namespace PdfToSvg.Filters
 {

@@ -58,6 +58,11 @@ namespace PdfToSvg.Imaging.Jpeg
 
         public void WriteBytes(ArraySegment<byte> bytes)
         {
+            if (bytes.Array == null)
+            {
+                throw new ArgumentException("Array must not be null.", nameof(bytes));
+            }
+
             stream.Write(bytes.Array, bytes.Offset, bytes.Count);
         }
 

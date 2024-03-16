@@ -19,7 +19,7 @@ namespace PdfToSvg.Cli
 {
     internal static class Program
     {
-        private static string version = typeof(Program)
+        private static string? version = typeof(Program)
             .Assembly
             .GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), true)
             .OfType<AssemblyInformationalVersionAttribute>()
@@ -197,8 +197,12 @@ namespace PdfToSvg.Cli
                     await ParallelUtils.ForEachAsync(pageNumbers, async (pageNumber, _) =>
                     {
                         var page = doc.Pages[pageNumber - 1];
-                        var pageOutputPath = Path.Combine(outputDir, outputFileName + "-" + pageNumber.ToString(CultureInfo.InvariantCulture) + ".svg");
+                        var pageOutputPath = outputFileName + "-" + pageNumber.ToString(CultureInfo.InvariantCulture) + ".svg";
 
+                        if (!string.IsNullOrEmpty(outputDir))
+                        {
+                            pageOutputPath = Path.Combine(outputDir, pageOutputPath);
+                        }
                         await page.SaveAsSvgAsync(pageOutputPath);
 
                         lock (progress)
@@ -213,7 +217,7 @@ namespace PdfToSvg.Cli
             {
                 if (ex is AggregateException aex)
                 {
-                    ex = aex.InnerException;
+                    ex = aex.InnerException ?? ex;
                 }
 
                 if (ex is InvalidCredentialException)

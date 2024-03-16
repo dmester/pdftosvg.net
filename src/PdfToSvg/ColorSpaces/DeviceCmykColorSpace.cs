@@ -116,8 +116,8 @@ namespace PdfToSvg.ColorSpaces
         public override float[] DefaultColor => new[] { 0f, 0f, 0f, 1f };
 
         public override int GetHashCode() => 559395;
-        public bool Equals(DeviceCmykColorSpace other) => other != null;
-        public override bool Equals(object obj) => obj is DeviceCmykColorSpace;
+        public bool Equals(DeviceCmykColorSpace? other) => other != null;
+        public override bool Equals(object? obj) => obj is DeviceCmykColorSpace;
 
         public override string ToString() => "CMYK";
     }

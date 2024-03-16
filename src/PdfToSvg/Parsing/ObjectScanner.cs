@@ -60,9 +60,9 @@ namespace PdfToSvg.Parsing
 
         private class PositionComparer : IEqualityComparer<ScanLexeme>
         {
-            public bool Equals(ScanLexeme x, ScanLexeme y)
+            public bool Equals(ScanLexeme? x, ScanLexeme? y)
             {
-                return x.Position == y.Position;
+                return x?.Position == y?.Position;
             }
 
             public int GetHashCode(ScanLexeme obj)

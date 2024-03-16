@@ -71,7 +71,7 @@ namespace PdfToSvg.Parsing
             }
         }
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is Lexeme lexeme && Equals(lexeme);
 
         public bool Equals(Lexeme other) =>

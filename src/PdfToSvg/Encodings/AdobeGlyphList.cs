@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using System;
 using System.Collections.Generic;
@@ -41,13 +42,13 @@ namespace PdfToSvg.Encodings
         {
             var type = typeof(AdobeGlyphList).GetTypeInfo();
 
-            using var stream = type.Assembly.GetManifestResourceStream(type.FullName + "." + filename);
+            using var stream = type.Assembly.GetManifestResourceStreamOrThrow(type.FullName + "." + filename);
             using var reader = new StreamReader(stream);
 
             var partSeparators = new char[] { ';' };
             var charSeparators = new char[] { ' ' };
 
-            string line;
+            string? line;
             while ((line = reader.ReadLine()) != null)
             {
                 if (line.StartsWith("#"))

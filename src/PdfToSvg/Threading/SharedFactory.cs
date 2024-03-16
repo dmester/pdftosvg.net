@@ -166,7 +166,7 @@ namespace PdfToSvg.Threading
             {
                 if (ex is AggregateException aex)
                 {
-                    ex = aex.InnerException;
+                    ex = aex.InnerException ?? ex;
                 }
 
                 if (cancellationToken.IsCancellationRequested)

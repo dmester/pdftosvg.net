@@ -79,6 +79,7 @@ namespace PdfToSvg.Common
             }
         }
 
+#if !NET8_0
         public static IEnumerable<T> DistinctBy<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector)
         {
             return DistinctBy(source, selector, EqualityComparer<TKey>.Default);
@@ -97,6 +98,7 @@ namespace PdfToSvg.Common
                 }
             }
         }
+#endif
 
         /// <summary>
         /// Selects only elements that are not null.

@@ -23,7 +23,7 @@ namespace PdfToSvg.Drawing
         public string Value { get; }
 
         public bool Equals(CssProperty other) => other.Name == Name && other.Value == Value;
-        public override bool Equals(object obj) => obj is CssProperty prop && Equals(prop);
+        public override bool Equals(object? obj) => obj is CssProperty prop && Equals(prop);
 
         public override int GetHashCode()
         {

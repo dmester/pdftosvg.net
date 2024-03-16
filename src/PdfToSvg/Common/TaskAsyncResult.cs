@@ -20,13 +20,13 @@ namespace PdfToSvg.Common
     {
         private readonly Task<TValue> task;
 
-        public TaskAsyncResult(Task<TValue> task, object state)
+        public TaskAsyncResult(Task<TValue> task, object? state)
         {
             this.task = task;
             this.AsyncState = state;
         }
 
-        public object AsyncState { get; }
+        public object? AsyncState { get; }
 
         public WaitHandle AsyncWaitHandle => ((IAsyncResult)task).AsyncWaitHandle;
 
@@ -34,7 +34,7 @@ namespace PdfToSvg.Common
 
         public bool IsCompleted => task.IsCompleted;
 
-        public static IAsyncResult Begin(Task<TValue> task, AsyncCallback callback, object state)
+        public static IAsyncResult Begin(Task<TValue> task, AsyncCallback? callback, object? state)
         {
             var wrapper = new TaskAsyncResult<TOwner, TValue>(task, state);
 

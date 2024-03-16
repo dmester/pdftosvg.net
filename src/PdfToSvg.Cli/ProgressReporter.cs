@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -87,7 +88,11 @@ namespace PdfToSvg.Cli
                     return;
                 }
 
-                Console.CursorVisible = false;
+                if (cursorWasVisible)
+                {
+                    Console.CursorVisible = false;
+                }
+
                 Console.SetCursorPosition(offsetLeft, originalTop - LineOffset);
 
                 Console.Write("[");
@@ -106,7 +111,11 @@ namespace PdfToSvg.Cli
                 Console.Write("]   {0,3}%  ", progressPercent);
 
                 Console.SetCursorPosition(originalLeft, originalTop);
-                Console.CursorVisible = cursorWasVisible;
+
+                if (cursorWasVisible)
+                {
+                    Console.CursorVisible = true;
+                }
             }
         }
     }

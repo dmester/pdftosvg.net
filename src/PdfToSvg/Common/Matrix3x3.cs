@@ -115,7 +115,7 @@ namespace PdfToSvg.Common
             return this == other;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Matrix3x3 matrix && this == matrix;
         }

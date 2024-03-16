@@ -25,7 +25,7 @@ namespace PdfToSvg.Fonts.OpenType
             return table;
         }
 
-        public static T Get<T>(this ICollection<IBaseTable> tables) where T : IBaseTable
+        public static T? Get<T>(this ICollection<IBaseTable> tables) where T : IBaseTable
         {
             return tables.OfType<T>().FirstOrDefault();
         }

@@ -137,7 +137,7 @@ namespace PdfToSvg.Imaging.Jpeg
                 var valueCount = 0;
                 for (var i = 0; i < 16; i++)
                 {
-                    valueCount += bits.Array[bits.Offset + i];
+                    valueCount += bits.Array![bits.Offset + i];
                 }
 
                 var huffval = reader.ReadBytes(valueCount);
@@ -284,7 +284,7 @@ namespace PdfToSvg.Imaging.Jpeg
         {
             // E.2.3 Control procedure for decoding a scan
 
-            var reader = new JpegImageDataReader(scanData.Array, scanData.Offset, scanData.Count);
+            var reader = new JpegImageDataReader(scanData.Array!, scanData.Offset, scanData.Count);
 
             var mcusV = (lineCount - 1) / mcuHeight / BlockSize + 1;
             var mcusH = (samplesPerLine - 1) / mcuWidth / BlockSize + 1;

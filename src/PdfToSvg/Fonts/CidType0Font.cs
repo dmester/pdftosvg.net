@@ -43,16 +43,19 @@ namespace PdfToSvg.Fonts
                     charSet = cff.Fonts[0].CharSet;
                 }
 
-                foreach (var ch in cmap.Chars)
+                if (cmap != null)
                 {
-                    var cid = ch.GlyphIndex < charSet.Count ? (uint)charSet[(int)ch.GlyphIndex] : ch.GlyphIndex;
-
-                    yield return new CidChar
+                    foreach (var ch in cmap.Chars)
                     {
-                        Cid = cid,
-                        GlyphIndex = ch.GlyphIndex,
-                        Unicode = Utf16Encoding.EncodeCodePoint(ch.Unicode),
-                    };
+                        var cid = ch.GlyphIndex < charSet.Count ? (uint)charSet[(int)ch.GlyphIndex] : ch.GlyphIndex;
+
+                        yield return new CidChar
+                        {
+                            Cid = cid,
+                            GlyphIndex = ch.GlyphIndex,
+                            Unicode = Utf16Encoding.EncodeCodePoint(ch.Unicode),
+                        };
+                    }
                 }
 
                 for (var glyphIndex = 0u; glyphIndex < numGlyphs; glyphIndex++)

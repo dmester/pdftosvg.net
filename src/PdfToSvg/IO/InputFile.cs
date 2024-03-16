@@ -47,7 +47,9 @@ namespace PdfToSvg.IO
             // If the base stream is a MemoryStream, read synchronization is not needed, since we can construct as many
             // streams we need around the same buffer.
 #if !NETFRAMEWORK
-            if (baseStream is MemoryStream baseMemoryStream && baseMemoryStream.TryGetBuffer(out var buffer))
+            if (baseStream is MemoryStream baseMemoryStream &&
+                baseMemoryStream.TryGetBuffer(out var buffer) &&
+                buffer.Array != null)
             {
                 return new BufferedMemoryReader(buffer.Array, buffer.Offset + StartOffset, buffer.Count - StartOffset);
             }
@@ -91,7 +93,9 @@ namespace PdfToSvg.IO
             // If the base stream is a MemoryStream, read synchronization is not needed, since we can construct as many
             // streams we need around the same buffer.
 #if !NETFRAMEWORK
-            if (baseStream is MemoryStream baseMemoryStream && baseMemoryStream.TryGetBuffer(out var buffer))
+            if (baseStream is MemoryStream baseMemoryStream &&
+                baseMemoryStream.TryGetBuffer(out var buffer) &&
+                buffer.Array != null)
             {
                 return new BufferedMemoryReader(buffer.Array, buffer.Offset + StartOffset, buffer.Count - StartOffset);
             }
@@ -135,7 +139,9 @@ namespace PdfToSvg.IO
             // If the base stream is a MemoryStream, read synchronization is not needed, since we can construct as many
             // streams we need around the same buffer.
 #if !NETFRAMEWORK
-            if (baseStream is MemoryStream baseMemoryStream && baseMemoryStream.TryGetBuffer(out var buffer))
+            if (baseStream is MemoryStream baseMemoryStream &&
+                baseMemoryStream.TryGetBuffer(out var buffer) &&
+                buffer.Array != null)
             {
                 return new BufferedMemoryReader(buffer.Array, buffer.Offset + StartOffset + (int)offset, (int)length);
             }
@@ -179,7 +185,9 @@ namespace PdfToSvg.IO
             // If the base stream is a MemoryStream, read synchronization is not needed, since we can construct as many
             // streams we need around the same buffer.
 #if !NETFRAMEWORK
-            if (baseStream is MemoryStream baseMemoryStream && baseMemoryStream.TryGetBuffer(out var buffer))
+            if (baseStream is MemoryStream baseMemoryStream &&
+                baseMemoryStream.TryGetBuffer(out var buffer) &&
+                buffer.Array != null)
             {
                 return new BufferedMemoryReader(buffer.Array, buffer.Offset + StartOffset + (int)offset, (int)length);
             }

@@ -47,7 +47,7 @@ namespace PdfToSvg.Imaging
             return Math.Abs(a - b) <= EqualityTolerance;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is DecodeRange range && Equals(range);
         }

@@ -41,7 +41,7 @@ namespace PdfToSvg.DocumentModel
                 other.Generation == Generation;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is PdfObjectId id &&
                 id.ObjectNumber == ObjectNumber &&

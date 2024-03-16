@@ -36,7 +36,7 @@ namespace PdfToSvg.Imaging.Jpeg
             }
         }
 
-        public override bool Equals(object obj) => obj is JpegHuffmanCode code && code.value == value;
+        public override bool Equals(object? obj) => obj is JpegHuffmanCode code && code.value == value;
         public bool Equals(JpegHuffmanCode other) => other.value == value;
         public override int GetHashCode() => value;
     }

@@ -67,10 +67,10 @@ namespace PdfToSvg.Fonts.OpenType.Utils
                 this.tagSelector = tagSelector;
             }
 
-            public int Compare(T x, T y)
+            public int Compare(T? x, T? y)
             {
-                var tagx = tagSelector(x);
-                var tagy = tagSelector(y);
+                var tagx = x is null ? null : tagSelector(x);
+                var tagy = y is null ? null : tagSelector(y);
 
                 if (tagx == null)
                 {
@@ -110,10 +110,10 @@ namespace PdfToSvg.Fonts.OpenType.Utils
                 this.tagSelector = tagSelector;
             }
 
-            public int Compare(T x, T y)
+            public int Compare(T? x, T? y)
             {
-                var tagx = tagSelector(x);
-                var tagy = tagSelector(y);
+                var tagx = x is null ? null : tagSelector(x);
+                var tagy = y is null ? null : tagSelector(y);
                 return StringComparer.Ordinal.Compare(tagx, tagy);
             }
         }

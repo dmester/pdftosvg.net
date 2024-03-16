@@ -119,7 +119,7 @@ namespace PdfToSvg.CMaps
                     var assembly = typeof(PredefinedCMaps).GetTypeInfo().Assembly;
                     var resourceName = typeof(PredefinedCMaps).Namespace + ".PredefinedCMaps.bin";
 
-                    using (var stream = assembly.GetManifestResourceStream(resourceName))
+                    using (var stream = assembly.GetManifestResourceStreamOrThrow(resourceName))
                     {
                         pack = new CMapPack(stream);
                     }

@@ -6,6 +6,7 @@ using PdfToSvg.Common;
 using PdfToSvg.Drawing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Parser = PdfToSvg.Fonts.CharStrings.CharStringParser;
@@ -46,7 +47,7 @@ namespace PdfToSvg.Fonts.CharStrings
                 {
                     Method = method,
                     Parameters = method.GetParameters(),
-                    Operator = method.GetCustomAttributes(typeof(OperatorAttribute), false).Cast<OperatorAttribute>().FirstOrDefault(),
+                    Operator = method.GetCustomAttributes(typeof(OperatorAttribute), false).Cast<OperatorAttribute>().FirstOrDefault()!,
                 })
                 .Where(method =>
                     method.Operator != null &&
@@ -59,7 +60,7 @@ namespace PdfToSvg.Fonts.CharStrings
                         method.Operator.ClearStack));
         }
 
-        public static bool TryGetOperator(CharStringOpCode code, out CharStringOperator result)
+        public static bool TryGetOperator(CharStringOpCode code, [MaybeNullWhen(false)] out CharStringOperator result)
         {
             return operators.TryGetValue(code, out result);
         }

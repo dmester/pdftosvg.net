@@ -85,7 +85,7 @@ namespace PdfToSvg
         /// Determines whether the specified font is equal to the current one.
         /// </summary>
         /// <param name="obj">The object to be compared with this object.</param>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return
                 obj is WebFont font &&

@@ -63,8 +63,12 @@ namespace PdfToSvg.Fonts.CompactFonts
 
             for (var i = 0; i < indexData.Count; i++)
             {
-                Buffer.BlockCopy(indexData[i].Array, indexData[i].Offset, buffer, cursor, indexData[i].Count);
-                cursor += indexData[i].Count;
+                var item = indexData[i];
+                if (item.Array != null)
+                {
+                    Buffer.BlockCopy(item.Array, item.Offset, buffer, cursor, item.Count);
+                    cursor += indexData[i].Count;
+                }
             }
 
             if (cursor > length)
@@ -270,15 +274,18 @@ namespace PdfToSvg.Fonts.CompactFonts
 
         public void WriteBytes(ArraySegment<byte> data)
         {
-            EnsureCapacity(cursor + data.Count);
-
-            Buffer.BlockCopy(data.Array, data.Offset, buffer, cursor, data.Count);
-
-            cursor += data.Count;
-
-            if (cursor > length)
+            if (data.Array != null)
             {
-                length = cursor;
+                EnsureCapacity(cursor + data.Count);
+
+                Buffer.BlockCopy(data.Array, data.Offset, buffer, cursor, data.Count);
+
+                cursor += data.Count;
+
+                if (cursor > length)
+                {
+                    length = cursor;
+                }
             }
         }
 

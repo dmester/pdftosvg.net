@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -37,7 +38,7 @@ namespace PdfToSvg.Functions.PostScript
                     );
         }
 
-        public static bool TryGetOperator(string operatorName, out PostScriptInstruction result)
+        public static bool TryGetOperator(string operatorName, [MaybeNullWhen(false)] out PostScriptInstruction result)
         {
             return operators.TryGetValue(operatorName, out result);
         }

@@ -6,15 +6,15 @@ using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Text;
+using CompressionMode = System.IO.Compression.CompressionMode;
 
 namespace PdfToSvg.Imaging.Png
 {
     internal class PngEncoder
     {
         private readonly Stream output;
-        
+
         private const int BytesPerSample24 = 3;
         private const int BytesPerSample32 = 4;
 
@@ -245,7 +245,7 @@ namespace PdfToSvg.Imaging.Png
 
                         buffer[cursor--] = (byte)PngFilter.Paeth;
                     }
-                    
+
                     // First row
                     for (var x = scanlineBytes - 1; x >= bytesPerSample; x--)
                     {

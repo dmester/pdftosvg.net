@@ -54,13 +54,13 @@ namespace PdfToSvg.IO
             => baseStream.Write(buffer, offset, count);
 
 #if HAVE_STREAM_BEGINEND
-        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
             => baseStream.BeginRead(buffer, offset, count, callback, state);
 
         public override int EndRead(IAsyncResult asyncResult)
             => baseStream.EndRead(asyncResult);
 
-        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
             => baseStream.BeginWrite(buffer, offset, count, callback, state);
 
         public override void EndWrite(IAsyncResult asyncResult)

@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Encodings;
 using PdfToSvg.IO;
@@ -147,20 +148,8 @@ namespace PdfToSvg.Fonts
                 var fontResourceName = type.FullName + "." + baseResourceName;
                 var licenseResourceName = type.FullName + ".LICENSE";
 
-                byte[] data;
-                string license;
-
-                using (var fontStream = assembly.GetManifestResourceStream(fontResourceName))
-                {
-                    data = new byte[fontStream.Length];
-                    fontStream.ReadAll(data, 0, data.Length);
-                }
-
-                using (var licenseStream = assembly.GetManifestResourceStream(licenseResourceName))
-                {
-                    using var licenseReader = new StreamReader(licenseStream);
-                    license = licenseReader.ReadToEnd();
-                }
+                var data = assembly.GetManifestResourceBytesOrThrow(fontResourceName);
+                var license = assembly.GetManifestResourceTextOrThrow(licenseResourceName);
 
                 var encoding =
                     normalizedName == Symbol ? SingleByteEncoding.Symbol :

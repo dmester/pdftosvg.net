@@ -7,6 +7,7 @@ using PdfToSvg.Encodings;
 using PdfToSvg.Fonts.WidthMaps;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -19,7 +20,7 @@ namespace PdfToSvg.Fonts
         private readonly Dictionary<uint, CharInfo> chars = new();
         private bool charsPopulated;
 
-        public bool TryGetChar(uint charCode, out CharInfo foundChar) => chars.TryGetValue(charCode, out foundChar);
+        public bool TryGetChar(uint charCode, [MaybeNullWhen(false)] out CharInfo foundChar) => chars.TryGetValue(charCode, out foundChar);
 
         private string ResolveUnicode(CharInfo ch, UnicodeMap toUnicode, SingleByteEncoding? explicitEncoding, bool preferSingleChar)
         {

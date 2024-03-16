@@ -20,7 +20,7 @@ namespace PdfToSvg.Fonts.CharStrings
         public CharStringLexer(CharStringType type, ArraySegment<byte> data)
         {
             this.type = type;
-            this.data = data.Array;
+            this.data = data.Array ?? throw new ArgumentException(nameof(data.Array) + " must not be null.", nameof(data));
             this.cursor = data.Offset;
             this.endIndex = data.Offset + data.Count;
         }

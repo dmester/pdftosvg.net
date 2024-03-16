@@ -27,7 +27,7 @@ namespace PdfToSvg.Common
 
         public static string TypeOf(object? value)
         {
-            return value == null ? "(null)" : value.GetType().FullName;
+            return value == null ? "(null)" : value.GetType().FullName ?? "unknown";
         }
     }
 }

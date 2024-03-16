@@ -115,7 +115,7 @@ namespace PdfToSvg.IO
         }
 
 #if HAVE_STREAM_BEGINEND
-        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
         {
             if (baseStream == null) throw new ObjectDisposedException(nameof(DisposeStream));
 
@@ -129,7 +129,7 @@ namespace PdfToSvg.IO
             return baseStream.EndRead(asyncResult);
         }
 
-        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
         {
             if (baseStream == null) throw new ObjectDisposedException(nameof(DisposeStream));
 

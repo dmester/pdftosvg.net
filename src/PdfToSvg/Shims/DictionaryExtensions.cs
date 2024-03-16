@@ -11,7 +11,7 @@ namespace System.Collections.Generic
 {
     internal static class DictionaryExtensions
     {
-        public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue value)
+        public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue value) where TKey : notnull
         {
             if (dic.ContainsKey(key))
             {
@@ -24,12 +24,12 @@ namespace System.Collections.Generic
             }
         }
 
-        public static TValue? GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key)
+        public static TValue? GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key) where TKey : notnull
         {
             return dic.TryGetValue(key, out var value) ? value : default;
         }
 
-        public static TValue GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue defaultValue)
+        public static TValue GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue defaultValue) where TKey : notnull
         {
             return dic.TryGetValue(key, out var value) ? value : defaultValue;
         }

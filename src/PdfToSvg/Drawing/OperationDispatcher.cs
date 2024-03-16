@@ -88,6 +88,11 @@ namespace PdfToSvg.Drawing
                         ));
                 }
 
+                if (method.DeclaringType == null)
+                {
+                    yield break;
+                }
+
                 var body = Expression.Call(Expression.Convert(instance, method.DeclaringType), method, callArguments);
 
                 Action<object, object?[]>? invoke;

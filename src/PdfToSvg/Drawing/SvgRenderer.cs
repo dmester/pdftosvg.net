@@ -2626,6 +2626,11 @@ namespace PdfToSvg.Drawing
 
         private void RenderType3Paragraph(TextParagraph paragraph)
         {
+            if (paragraph.Type3Content == null)
+            {
+                throw new ArgumentException("There must be Type 3 content specified for the paragraph.", nameof(paragraph));
+            }
+
             var originalGraphicsStateStack = graphicsStateStack;
             var originalGraphicsState = graphicsState;
             var originalIgnoreColorChange = ignoreColorChange;

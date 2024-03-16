@@ -96,7 +96,7 @@ namespace PdfToSvg.Imaging
             {
                 string GetFormattedValue(int index)
                 {
-                    return ((IFormattable)values.GetValue(index)).ToString("0.###", CultureInfo.InvariantCulture);
+                    return ((IFormattable)values.GetValue(index)!).ToString("0.###", CultureInfo.InvariantCulture);
                 }
 
                 var formattedRanges = Enumerable

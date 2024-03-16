@@ -34,7 +34,7 @@ namespace PdfToSvg.DocumentModel
                 other.Generation == Generation;
         }
 
-        public override bool Equals(object obj) => Equals(obj as XRef);
+        public override bool Equals(object? obj) => Equals(obj as XRef);
 
         public override int GetHashCode() => (ObjectNumber << 10) ^ Generation;
 

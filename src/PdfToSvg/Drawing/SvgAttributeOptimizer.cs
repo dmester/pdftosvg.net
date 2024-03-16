@@ -76,7 +76,7 @@ namespace PdfToSvg.Drawing
             "transform",
         };
 
-        private class DictionaryComparer<TKey, TValue> : IEqualityComparer<Dictionary<TKey, TValue>?>
+        private class DictionaryComparer<TKey, TValue> : IEqualityComparer<Dictionary<TKey, TValue>?> where TKey : notnull
         {
             private static readonly IEqualityComparer<TValue> valueComparer = EqualityComparer<TValue>.Default;
 

@@ -43,7 +43,7 @@ namespace PdfToSvg.Common
                     Update(cryptoStream, inputs, buffer);
                 }
 
-                var hashBytes = sha1.Hash;
+                var hashBytes = sha1.Hash!;
 #endif
 
                 var result = new char[IdLength];

@@ -70,7 +70,7 @@ namespace PdfToSvg.DocumentModel
             }
             else
             {
-                valueString = value.ToString();
+                valueString = value.ToString() ?? "";
             }
 
             var result = key.ToString();

@@ -105,7 +105,7 @@ namespace PdfToSvg.Drawing
                         documentCache.Fonts.Add(fontResolver, factories);
                     }
 
-                    if (!factories.TryGetValue(fontDict, out factory))
+                    if (!factories.TryGetValue(fontDict, out factory!))
                     {
                         factory = SharedFactory.Create(
                             cancellationToken => BaseFont.Create(fontDict, fontResolver, cancellationToken),

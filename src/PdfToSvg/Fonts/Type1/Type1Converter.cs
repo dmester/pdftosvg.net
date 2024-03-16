@@ -21,7 +21,7 @@ namespace PdfToSvg.Fonts.Type1
         {
             CharString emptyCharString;
 
-            if (info.CharStrings == null || !info.CharStrings.TryGetValue(".notdef", out emptyCharString))
+            if (info.CharStrings == null || !info.CharStrings.TryGetValue(".notdef", out emptyCharString!))
             {
                 emptyCharString = new CharString();
             }

@@ -73,7 +73,7 @@ namespace PdfToSvg.Drawing
 
         public bool Equals(Rectangle other) => other.X1 == X1 && other.Y1 == Y1 && other.X2 == X2 && other.Y2 == Y2;
 
-        public override bool Equals(object obj) => obj is Rectangle rect && Equals(rect);
+        public override bool Equals(object? obj) => obj is Rectangle rect && Equals(rect);
 
         public override int GetHashCode() => (int)X1;
 

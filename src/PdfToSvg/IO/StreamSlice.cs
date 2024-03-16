@@ -82,7 +82,7 @@ namespace PdfToSvg.IO
         }
 
 #if HAVE_STREAM_BEGINEND
-        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
         {
             if (stream == null) throw new ObjectDisposedException(nameof(StreamSlice));
 

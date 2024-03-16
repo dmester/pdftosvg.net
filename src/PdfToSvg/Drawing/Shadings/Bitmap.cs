@@ -149,7 +149,7 @@ namespace PdfToSvg.Drawing.Shadings
             for (var y = miny; y < maxy; y++)
             {
                 var rowOffset = y * width * BytesPerSample;
-                
+
                 PopulateIntersections(intersections, edges, y, width);
 
                 for (var i = 0; i < intersections.Count; i += 2)

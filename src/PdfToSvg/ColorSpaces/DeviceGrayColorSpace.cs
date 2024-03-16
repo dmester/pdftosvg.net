@@ -31,8 +31,8 @@ namespace PdfToSvg.ColorSpaces
         public override float[] DefaultColor => new[] { 0f };
 
         public override int GetHashCode() => 975312;
-        public bool Equals(DeviceGrayColorSpace other) => other != null;
-        public override bool Equals(object obj) => obj is DeviceGrayColorSpace;
+        public bool Equals(DeviceGrayColorSpace? other) => other != null;
+        public override bool Equals(object? obj) => obj is DeviceGrayColorSpace;
 
         public override string ToString() => "Gray";
     }

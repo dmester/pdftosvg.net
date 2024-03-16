@@ -48,7 +48,7 @@ namespace PdfToSvg
             {
                 if (fileAttachments == null)
                 {
-                    var annots = 
+                    var annots =
                         page.GetArrayOrNull<PdfDictionary>(Names.Annots) ??
                         ArrayUtils.Empty<PdfDictionary>();
 

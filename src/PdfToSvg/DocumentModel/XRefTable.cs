@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace PdfToSvg.DocumentModel
 
         public void Clear() => items.Clear();
 
-        public bool TryGetValue(PdfObjectId id, out XRef result) => items.TryGetValue(id, out result);
+        public bool TryGetValue(PdfObjectId id, [MaybeNullWhen(false)] out XRef result) => items.TryGetValue(id, out result);
 
         public bool Contains(XRef item) => items.ContainsKey(item.ObjectId);
 

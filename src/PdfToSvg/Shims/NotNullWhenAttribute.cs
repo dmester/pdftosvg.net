@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-#if !HAVE_NULLABLE
+#if !NETSTANDARD2_1_OR_GREATER && !NET5_0_OR_GREATER
 namespace System.Diagnostics.CodeAnalysis
 {
     /// <exclude/>
@@ -16,6 +16,13 @@ namespace System.Diagnostics.CodeAnalysis
     internal class NotNullWhenAttribute : Attribute
     {
         public NotNullWhenAttribute(bool returnValue) { }
+    }
+
+    /// <exclude/>
+    [AttributeUsage(AttributeTargets.Parameter)]
+    internal class MaybeNullWhenAttribute : Attribute
+    {
+        public MaybeNullWhenAttribute(bool returnValue) { }
     }
 }
 #endif

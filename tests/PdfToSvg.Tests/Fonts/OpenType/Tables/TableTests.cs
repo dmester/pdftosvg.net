@@ -7,9 +7,7 @@ using NUnit.Framework;
 using PdfToSvg.Fonts.OpenType;
 using PdfToSvg.Fonts.OpenType.Enums;
 using PdfToSvg.Fonts.OpenType.Tables;
-using PdfToSvg.Fonts.OpenType.Utils;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -48,15 +46,16 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
             }
         }
 
-        private static T RoundTrip<T>(T table, Func<OpenTypeReader, IBaseTable> readCallback)
+        private static IBaseTable RoundTrip(IBaseTable table, TableFactory factory, IBaseTable[] readTables = null)
         {
             var writer = new OpenTypeWriter();
-            ((IBaseTable)table).Write(writer);
+            table.Write(writer);
 
             var buffer = writer.ToArray();
             var reader = new OpenTypeReader(buffer, 0, buffer.Length);
+            var context = new OpenTypeReaderContext(table.Tag, readTables ?? new IBaseTable[0]);
 
-            return (T)readCallback(reader);
+            return factory.Create(reader, context);
         }
 
         [Test]
@@ -68,7 +67,7 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
             sourceTable.Created = new DateTime(2014, 1, 2, 3, 4, 5, DateTimeKind.Utc);
             sourceTable.Modified = new DateTime(2014, 5, 4, 3, 2, 1, DateTimeKind.Utc);
 
-            var resultTable = RoundTrip(sourceTable, HeadTable.Read);
+            var resultTable = RoundTrip(sourceTable, HeadTable.Factory);
 
             Assert.AreEqual(
                 JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
@@ -82,7 +81,7 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
 
             FillData(sourceTable);
 
-            var resultTable = RoundTrip(sourceTable, HheaTable.Read);
+            var resultTable = RoundTrip(sourceTable, HheaTable.Factory);
 
             Assert.AreEqual(
                 JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
@@ -103,11 +102,10 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
 
             sourceTable.LeftSideBearings = new short[] { short.MaxValue, short.MinValue, 9 };
 
-            var context = new OpenTypeReaderContext("hmtx", new IBaseTable[]
+            var resultTable = RoundTrip(sourceTable, HmtxTable.Factory, new IBaseTable[]
             {
                 new HheaTable { NumberOfHMetrics = 3 },
             });
-            var resultTable = RoundTrip(sourceTable, reader => HmtxTable.Read(reader, context));
 
             Assert.AreEqual(
                 JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
@@ -121,7 +119,7 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
 
             sourceTable.NumGlyphs = ushort.MaxValue;
 
-            var resultTable = RoundTrip(sourceTable, MaxpTableV05.Read);
+            var resultTable = RoundTrip(sourceTable, MaxpTableV05.Factory);
 
             Assert.AreEqual(
                 JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
@@ -166,7 +164,7 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
                 },
             };
 
-            var resultTable = RoundTrip(sourceTable, NameTable.Read);
+            var resultTable = RoundTrip(sourceTable, NameTable.Factory);
 
             sourceTable.LangTagRecords = new LangTagRecord[0];
 
@@ -220,7 +218,7 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
                 },
             };
 
-            var resultTable = RoundTrip(sourceTable, NameTable.Read);
+            var resultTable = RoundTrip(sourceTable, NameTable.Factory);
 
             Assert.AreEqual(
                 JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
@@ -234,7 +232,7 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
 
             FillData(sourceTable);
 
-            var resultTable = RoundTrip(sourceTable, PostTableV1.Read);
+            var resultTable = RoundTrip(sourceTable, PostTableV1.Factory);
 
             Assert.AreEqual(
                 JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
@@ -248,7 +246,7 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
 
             FillData(sourceTable);
 
-            var resultTable = RoundTrip(sourceTable, PostTableV2.Read);
+            var resultTable = RoundTrip(sourceTable, PostTableV2.Factory);
 
             Assert.AreEqual(
                 JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
@@ -262,14 +260,8 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
 
             FillData(sourceTable);
 
-            var writer = new OpenTypeWriter();
-            ((IBaseTable)sourceTable).Write(writer);
-
-            var buffer = writer.ToArray();
-            var reader = new OpenTypeReader(buffer, 0, buffer.Length);
-
             // Converted OTF to v2
-            var resultTable = (PostTableV2)PostTableV2.Read(reader);
+            var resultTable = RoundTrip(sourceTable, PostTableV2.Factory);
 
             Assert.AreEqual(
                 JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
@@ -283,7 +275,7 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
 
             FillData(sourceTable);
 
-            var resultTable = RoundTrip(sourceTable, PostTableV3.Read);
+            var resultTable = RoundTrip(sourceTable, PostTableV3.Factory);
 
             Assert.AreEqual(
                 JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
@@ -383,7 +375,7 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
                 },
             };
 
-            var resultTable = RoundTrip(sourceTable, CMapTable.Read);
+            var resultTable = RoundTrip(sourceTable, CMapTable.Factory);
 
             Assert.AreEqual(
                 JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
@@ -400,7 +392,7 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
             sourceTable.Panose = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             sourceTable.AchVendID = "abcd";
 
-            var resultTable = RoundTrip(sourceTable, OS2Table.Read);
+            var resultTable = RoundTrip(sourceTable, OS2Table.Factory);
 
             Assert.AreEqual(
                 JsonConvert.SerializeObject(sourceTable, Formatting.Indented),

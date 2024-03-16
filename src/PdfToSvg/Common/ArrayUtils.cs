@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.DocumentModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,49 @@ namespace PdfToSvg.Common
 {
     internal static class ArrayUtils
     {
+        /// <summary>
+        /// Alternative to <see cref="Array.CreateInstance(Type, int)"/> that can be used with Native AOT.
+        /// </summary>
+        public static Array CreateInstance(Type elementType, int length)
+        {
+            if (elementType == typeof(float))
+            {
+                return new float[length];
+            }
+
+            if (elementType == typeof(double))
+            {
+                return new double[length];
+            }
+
+            if (elementType == typeof(int))
+            {
+                return new int[length];
+            }
+
+            if (elementType == typeof(bool))
+            {
+                return new bool[length];
+            }
+
+            if (elementType == typeof(string))
+            {
+                return new string[length];
+            }
+
+            if (elementType == typeof(PdfName))
+            {
+                return new PdfName[length];
+            }
+
+            if (elementType == typeof(PdfString))
+            {
+                return new PdfString[length];
+            }
+
+            throw new ArgumentException("Unknown array element type " + elementType.FullName + ".", nameof(elementType));
+        }
+
         public static T[] Concat<T>(params T[]?[] arrays)
         {
             var totalLength = 0;

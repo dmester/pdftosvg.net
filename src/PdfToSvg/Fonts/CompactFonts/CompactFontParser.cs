@@ -7,6 +7,7 @@ using PdfToSvg.Encodings;
 using PdfToSvg.Fonts.CharStrings;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
@@ -25,7 +26,10 @@ namespace PdfToSvg.Fonts.CompactFonts
             this.data = data;
         }
 
-        private void ReadDict<T>(T dict, int position, int length)
+        private void ReadDict
+            <[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TDict>
+            (TDict dict, int position, int length)
+            where TDict : notnull
         {
             reader.Position = position;
 

@@ -14,6 +14,8 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     [DebuggerDisplay("post")]
     internal class PostTableV3 : PostTable
     {
+        public static TableFactory Factory => new("post", Read);
+
         private const uint Version = 0x00030000;
 
         protected override void Write(OpenTypeWriter writer)
@@ -22,8 +24,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             WriteHeader(writer);
         }
 
-        [OpenTypeTableReader("post")]
-        public static IBaseTable? Read(OpenTypeReader reader)
+        private static IBaseTable? Read(OpenTypeReader reader)
         {
             var version = reader.ReadUInt32();
             if (version != Version)

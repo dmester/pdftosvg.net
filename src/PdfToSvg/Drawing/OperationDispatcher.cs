@@ -2,13 +2,13 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
-using PdfToSvg;
+using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Drawing
@@ -44,7 +44,10 @@ namespace PdfToSvg.Drawing
             }
         }
 
-        public OperationDispatcher(Type instanceType)
+        public OperationDispatcher(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.NonPublicMethods | DynamicallyAccessedMemberTypes.PublicMethods)]
+            Type instanceType
+        )
         {
             handlers = instanceType
                 .GetTypeInfo()
@@ -127,7 +130,12 @@ namespace PdfToSvg.Drawing
             if (array is object[] sourceArray)
             {
                 var elementType = targetArrayType.GetElementType();
-                var castedElements = Array.CreateInstance(elementType, Math.Max(0, sourceArray.Length - cursor));
+                if (elementType == null)
+                {
+                    return false;
+                }
+
+                var castedElements = ArrayUtils.CreateInstance(elementType, Math.Max(0, sourceArray.Length - cursor));
                 var success = true;
                 var i = cursor;
 
@@ -146,7 +154,7 @@ namespace PdfToSvg.Drawing
                         }
                         else
                         {
-                            var slice = Array.CreateInstance(elementType, i - cursor);
+                            var slice = ArrayUtils.CreateInstance(elementType, i - cursor);
                             Array.Copy(castedElements, slice, slice.Length);
                             castedElements = slice;
                         }

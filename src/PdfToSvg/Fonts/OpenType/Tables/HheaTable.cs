@@ -14,6 +14,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     [DebuggerDisplay("hhea")]
     internal class HheaTable : IBaseTable
     {
+        public static TableFactory Factory => new("hhea", Read);
         public string Tag => "hhea";
 
         public short Ascender;
@@ -51,8 +52,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             writer.WriteUInt16(NumberOfHMetrics);
         }
 
-        [OpenTypeTableReader("hhea")]
-        public static IBaseTable? Read(OpenTypeReader reader)
+        private static IBaseTable? Read(OpenTypeReader reader)
         {
             var table = new HheaTable();
 

@@ -14,6 +14,8 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     [DebuggerDisplay("post")]
     internal class PostTableV2 : PostTable
     {
+        public static TableFactory Factory => new("post", Read);
+
         private const int NameMaxLength = 63;
         private const uint Version = 0x00020000;
 
@@ -67,8 +69,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             }
         }
 
-        [OpenTypeTableReader("post")]
-        public static IBaseTable? Read(OpenTypeReader reader)
+        private static IBaseTable? Read(OpenTypeReader reader)
         {
             var version = reader.ReadUInt32();
             if (version != Version)

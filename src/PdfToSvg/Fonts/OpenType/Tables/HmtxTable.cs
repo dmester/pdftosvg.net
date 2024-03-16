@@ -15,6 +15,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     [DebuggerDisplay("hmtx")]
     internal class HmtxTable : IBaseTable
     {
+        public static TableFactory Factory => new("hmtx", Read);
         public string Tag => "hmtx";
 
         public LongHorMetricRecord[] HorMetrics = ArrayUtils.Empty<LongHorMetricRecord>();
@@ -34,8 +35,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             }
         }
 
-        [OpenTypeTableReader("hmtx")]
-        public static IBaseTable? Read(OpenTypeReader reader, OpenTypeReaderContext context)
+        private static IBaseTable? Read(OpenTypeReader reader, OpenTypeReaderContext context)
         {
             var numberOfHMetrics = context.ReadTables
                 .OfType<HheaTable>()

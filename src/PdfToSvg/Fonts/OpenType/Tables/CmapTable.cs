@@ -17,12 +17,12 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     [DebuggerDisplay("cmap")]
     internal class CMapTable : IBaseTable
     {
+        public static TableFactory Factory => new("cmap", Read);
         public string Tag => "cmap";
 
         public CMapEncodingRecord[] EncodingRecords = ArrayUtils.Empty<CMapEncodingRecord>();
 
-        [OpenTypeTableReader("cmap")]
-        public static IBaseTable? Read(OpenTypeReader reader)
+        private static IBaseTable? Read(OpenTypeReader reader)
         {
             var table = new CMapTable();
 

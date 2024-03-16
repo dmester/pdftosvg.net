@@ -6,6 +6,7 @@ using PdfToSvg.Encodings;
 using PdfToSvg.Fonts.CharStrings;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
@@ -440,27 +441,23 @@ namespace PdfToSvg.Fonts.CompactFonts
             writer.WriteIndex(charStringIndex);
         }
 
-        private ArraySegment<byte> SerializeDict<T>(T dict) where T : new()
+        private ArraySegment<byte> SerializeDict
+            <[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TDict>
+            (TDict dict)
+            where TDict : notnull, new()
         {
             var dictWriter = new CompactFontWriter();
             WriteDict(dictWriter, dict);
             return dictWriter.GetBuffer();
         }
 
-        private int EstimateDictSize<T>(T dict) where T : new()
+        private void WriteDict
+            <[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TDict>
+            (CompactFontWriter dictWriter, TDict dict)
+            where TDict : notnull, new()
         {
             var dictData = new List<KeyValuePair<int, double[]>>();
-            CompactFontDictSerializer.Serialize(dictData, dict, new T(), fontSet.Strings, readOnlyStrings);
-
-            var dictWriter = new CompactFontWriter();
-            dictWriter.WriteDict(dictData);
-            return dictWriter.Length;
-        }
-
-        private void WriteDict<T>(CompactFontWriter dictWriter, T dict) where T : new()
-        {
-            var dictData = new List<KeyValuePair<int, double[]>>();
-            CompactFontDictSerializer.Serialize(dictData, dict, new T(), fontSet.Strings, readOnlyStrings);
+            CompactFontDictSerializer.Serialize(dictData, dict, new TDict(), fontSet.Strings, readOnlyStrings);
             dictWriter.WriteDict(dictData);
         }
 

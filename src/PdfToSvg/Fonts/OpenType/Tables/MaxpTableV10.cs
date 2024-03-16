@@ -14,6 +14,8 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     [DebuggerDisplay("maxp")]
     internal class MaxpTableV10 : MaxpTable
     {
+        public static TableFactory Factory => new("maxp", Read);
+
         private const uint Version = 0x00010000;
 
         public ushort MaxPoints;
@@ -49,8 +51,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             writer.WriteUInt16(MaxComponentDepth);
         }
 
-        [OpenTypeTableReader("maxp")]
-        public static IBaseTable? Read(OpenTypeReader reader)
+        private static IBaseTable? Read(OpenTypeReader reader)
         {
             var version = reader.ReadUInt32();
             if (version != Version)

@@ -17,6 +17,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     [DebuggerDisplay("name")]
     internal class NameTable : IBaseTable
     {
+        public static TableFactory Factory => new("name", Read);
         public string Tag => "name";
 
         public ushort Version;
@@ -84,8 +85,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             }
         }
 
-        [OpenTypeTableReader("name")]
-        public static IBaseTable? Read(OpenTypeReader reader)
+        private static IBaseTable? Read(OpenTypeReader reader)
         {
             var table = new NameTable();
 

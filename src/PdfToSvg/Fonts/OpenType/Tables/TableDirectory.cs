@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,65 +18,29 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     {
         public SfntVersion SfntVersion;
 
-        private static readonly ILookup<string?, Func<OpenTypeReader, OpenTypeReaderContext, IBaseTable?>> tableReaders;
+        private static readonly ILookup<string?, TableFactory> tableFactories;
 
         static TableDirectory()
         {
-            var baseTable = typeof(IBaseTable).GetTypeInfo();
-
-            var readers = new List<Tuple<string?, Func<OpenTypeReader, OpenTypeReaderContext, IBaseTable?>>>();
-
-            foreach (var assemblyType in baseTable.Assembly.GetTypes())
+            var factories = new[]
             {
-                if (!baseTable.IsAssignableFrom(assemblyType))
-                {
-                    continue;
-                }
+                CMapTable.Factory,
+                CMapTable.Factory,
+                HeadTable.Factory,
+                HheaTable.Factory,
+                HmtxTable.Factory,
+                MaxpTableV05.Factory,
+                MaxpTableV10.Factory,
+                NameTable.Factory,
+                OS2Table.Factory,
+                PostTableV1.Factory,
+                PostTableV2.Factory,
+                PostTableV25.Factory,
+                PostTableV3.Factory,
+                RawTable.Factory,
+            };
 
-                foreach (var method in assemblyType.GetTypeInfo().GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public))
-                {
-                    if (method.ReturnType != typeof(IBaseTable))
-                    {
-                        continue;
-                    }
-
-                    var table = method.GetCustomAttributes(typeof(OpenTypeTableReaderAttribute), false).Cast<OpenTypeTableReaderAttribute>().FirstOrDefault();
-                    if (table == null)
-                    {
-                        continue;
-                    }
-
-                    var parameters = method.GetParameters();
-
-                    if (parameters.Length == 1)
-                    {
-                        if (parameters[0].ParameterType == typeof(OpenTypeReader))
-                        {
-                            var methodDelegate = method.CreateDelegate<Func<OpenTypeReader, IBaseTable?>>();
-
-                            readers.Add(new Tuple<string?, Func<OpenTypeReader, OpenTypeReaderContext, IBaseTable?>>(
-                                table.Tag,
-                                (reader, context) => methodDelegate(reader)
-                                ));
-                            continue;
-                        }
-                    }
-                    else if (parameters.Length == 2)
-                    {
-                        if (parameters[0].ParameterType == typeof(OpenTypeReader) &&
-                            parameters[1].ParameterType == typeof(OpenTypeReaderContext))
-                        {
-                            var methodDelegate = method.CreateDelegate<Func<OpenTypeReader, OpenTypeReaderContext, IBaseTable?>>();
-                            readers.Add(Tuple.Create(table.Tag, methodDelegate));
-                            continue;
-                        }
-                    }
-
-                    throw new OpenTypeException("Invalid table reader: " + method.DeclaringType.FullName + "." + method.Name + ".");
-                }
-            }
-
-            tableReaders = readers.ToLookup(x => x.Item1, x => x.Item2);
+            tableFactories = factories.ToLookup(x => x.Tag);
         }
 
         public IBaseTable[] Tables = ArrayUtils.Empty<IBaseTable>();
@@ -214,11 +177,11 @@ namespace PdfToSvg.Fonts.OpenType.Tables
                 var tagCandidates = new[] { record.TableTag, null };
 
                 var table = tagCandidates
-                    .SelectMany(tag => tableReaders[tag])
-                    .Select(tableReader =>
+                    .SelectMany(tag => tableFactories[tag])
+                    .Select(tableFactory =>
                     {
                         localReader.Position = 0;
-                        return tableReader(localReader, context);
+                        return tableFactory.Create(localReader, context);
                     })
                     .FirstOrDefault(t => t != null);
 

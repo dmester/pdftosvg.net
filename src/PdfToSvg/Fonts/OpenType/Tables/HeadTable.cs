@@ -16,6 +16,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     [DebuggerDisplay("head")]
     internal class HeadTable : IBaseTable
     {
+        public static TableFactory Factory => new("head", Read);
         public string Tag => "head";
 
         public ushort MajorVersion = 1;
@@ -57,8 +58,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             writer.WriteInt16(GlyphDataFormat);
         }
 
-        [OpenTypeTableReader("head")]
-        public static IBaseTable? Read(OpenTypeReader reader)
+        private static IBaseTable? Read(OpenTypeReader reader)
         {
             var table = new HeadTable();
 

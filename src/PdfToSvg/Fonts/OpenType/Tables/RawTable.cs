@@ -13,6 +13,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     [DebuggerDisplay("{Tag,nq}")]
     internal class RawTable : IBaseTable
     {
+        public static TableFactory Factory => new(null, Read);
         private string tag = "    ";
 
         public string Tag
@@ -31,8 +32,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             }
         }
 
-        [OpenTypeTableReader]
-        public static IBaseTable? Read(OpenTypeReader reader, OpenTypeReaderContext context)
+        private static IBaseTable? Read(OpenTypeReader reader, OpenTypeReaderContext context)
         {
             var table = new RawTable();
 

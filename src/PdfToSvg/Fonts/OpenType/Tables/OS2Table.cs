@@ -15,6 +15,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     [DebuggerDisplay("OS/2")]
     internal class OS2Table : IBaseTable
     {
+        public static TableFactory Factory => new("OS/2", Read);
         public string Tag => "OS/2";
 
         public ushort Version = 5;
@@ -128,8 +129,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             writer.WriteUInt16(UpperOpticalPointSize);
         }
 
-        [OpenTypeTableReader("OS/2")]
-        public static IBaseTable? Read(OpenTypeReader reader)
+        private static IBaseTable? Read(OpenTypeReader reader)
         {
             var table = new OS2Table();
 

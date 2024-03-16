@@ -2,12 +2,12 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using InputDictData = System.Collections.Generic.Dictionary<int, double[]>;
 using OutputDictData = System.Collections.Generic.IList<System.Collections.Generic.KeyValuePair<int, double[]>>;
 
@@ -15,148 +15,107 @@ namespace PdfToSvg.Fonts.CompactFonts
 {
     internal static class CompactFontDictSerializer
     {
-        private static object lockObject = new object();
-
-        private static MethodInfo objectEqualsMethod = typeof(object)
-            .GetTypeInfo()
-            .GetMethod(nameof(Equals), new[] { typeof(object), typeof(object) });
-
-        private static MethodInfo arrayEqualsMethod = typeof(CompactFontDictSerializer)
-            .GetTypeInfo()
-            .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
-            .FirstOrDefault(method => method.Name == nameof(EqualArrays));
-
-        private static bool EqualArrays<T>(T[]? a, T[]? b)
+        private static class Serializer
+            <[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TDict>
+            where TDict : notnull
         {
-            if (a == null) return b == null;
-            if (b == null) return false;
-
-            if (a.Length != b.Length) return false;
-
-            for (var i = 0; i < a.Length; i++)
+            private class SerializedProperty
             {
-                if (!Equals(a[i], b[i]))
+                public readonly int Value;
+
+                private readonly PropertyInfo propertyInfo;
+
+                public SerializedProperty(int value, PropertyInfo propertyInfo)
                 {
-                    return false;
+                    Value = value;
+                    this.propertyInfo = propertyInfo;
                 }
+
+                public Type Type => propertyInfo.PropertyType;
+                public object? GetValue(object obj) => propertyInfo.GetValue(obj);
+                public void SetValue(object obj, object? value) => propertyInfo.SetValue(obj, value);
             }
 
-            return true;
-        }
+            private static SerializedProperty[] properties = typeof(TDict).GetTypeInfo()
+                .GetProperties()
 
-        private static class Deserializer<TDict>
-        {
-            private static Action<TDict, InputDictData, CompactFontStringTable>? deserializer;
+                .Select(p => new
+                {
+                    Property = p,
+                    Attribute = (CompactFontDictOperatorAttribute)p
+                        .GetCustomAttributes(typeof(CompactFontDictOperatorAttribute), false)
+                        .FirstOrDefault()!
+                })
+                .Where(p => p.Attribute != null)
+
+                .OrderBy(p => p.Attribute.Order)
+                .ThenBy(p => p.Attribute.Value)
+
+                .Select(p => new SerializedProperty(p.Attribute.Value, p.Property))
+                .ToArray();
+
 
             public static void Deserialize(TDict target, InputDictData dictData, CompactFontStringTable strings)
             {
-                if (deserializer == null)
+                foreach (var property in properties)
                 {
-                    lock (lockObject)
+                    if (dictData.TryGetValue(property.Value, out var sourceValue))
                     {
-                        if (deserializer == null)
-                        {
-                            deserializer = Compile();
-                        }
+                        var convertedValue = ConvertValue(sourceValue, strings, property.Type);
+                        property.SetValue(target, convertedValue);
                     }
                 }
-
-                deserializer(target, dictData, strings);
             }
 
-            private static Action<TDict, InputDictData, CompactFontStringTable> Compile()
-            {
-                var targetParam = Expression.Parameter(typeof(TDict), "target");
-                var sourceParam = Expression.Parameter(typeof(InputDictData), "source");
-                var stringsParam = Expression.Parameter(typeof(CompactFontStringTable), "strings");
-
-                var tryGetValue = typeof(InputDictData).GetTypeInfo().GetMethod(nameof(InputDictData.TryGetValue));
-
-                var sourceElementValue = Expression.Variable(typeof(double[]));
-                var body = new List<Expression>();
-
-                foreach (var property in typeof(TDict).GetTypeInfo().GetProperties())
-                {
-                    var attribute = (CompactFontDictOperatorAttribute?)property
-                        .GetCustomAttributes(typeof(CompactFontDictOperatorAttribute), false)
-                        .FirstOrDefault();
-
-                    if (attribute == null)
-                    {
-                        continue;
-                    }
-
-                    body.Add(Expression.IfThen(
-                        Expression.Call(sourceParam, tryGetValue, Expression.Constant(attribute.Value), sourceElementValue),
-                        Expression.Call(targetParam, property.GetSetMethod(true), ConvertValue(sourceElementValue, stringsParam, property.PropertyType))
-                        ));
-                }
-
-                var lambda = Expression
-                    .Lambda<Action<TDict, InputDictData, CompactFontStringTable>>(
-                        Expression.Block(new[] { sourceElementValue }, body),
-                        targetParam, sourceParam, stringsParam);
-
-                return lambda.Compile();
-            }
-
-            private static Expression ConvertValue(Expression sourceValue, Expression strings, Type targetType)
+            private static object? ConvertValue(double[] sourceValue, CompactFontStringTable strings, Type targetType)
             {
                 if (targetType.IsArray)
                 {
-                    return ConvertArrayValue(sourceValue, strings, targetType.GetElementType());
+                    var elementType = targetType.GetElementType();
+                    if (elementType != null)
+                    {
+                        return ConvertArrayValue(sourceValue, strings, elementType);
+                    }
                 }
-                else
-                {
-                    var firstOrDefault = Expression.Condition(
-                        Expression.GreaterThan(Expression.Property(sourceValue, nameof(Array.Length)), Expression.Constant(0)),
-                        ConvertSingleValue(
-                            Expression.ArrayAccess(sourceValue, Expression.Constant(0)),
-                            strings, targetType),
-                        GetDefaultValue(targetType));
 
-                    return firstOrDefault;
+                if (sourceValue.Length > 0)
+                {
+                    return ConvertSingleValue(sourceValue[0], strings, targetType);
                 }
+
+                return GetDefaultValue(targetType);
             }
 
-            private static Expression GetDefaultValue(Type targetType)
+            private static object? GetDefaultValue(Type targetType)
             {
                 if (targetType == typeof(bool))
                 {
-                    return Expression.Constant(false, targetType);
+                    return false;
                 }
 
                 if (targetType == typeof(int))
                 {
-                    return Expression.Constant(0, targetType);
+                    return 0;
                 }
 
                 if (targetType == typeof(double))
                 {
-                    return Expression.Constant(double.NaN, targetType);
+                    return double.NaN;
                 }
 
                 if (!targetType.GetTypeInfo().IsValueType || Nullable.GetUnderlyingType(targetType) != null)
                 {
-                    return Expression.Constant(null, targetType);
+                    return null;
                 }
 
                 throw new CompactFontException("Unsupported DICT property data type " + targetType.FullName + ".");
             }
 
-            private static Expression ConvertSingleValue(Expression sourceValue, Expression strings, Type targetType)
+            private static object? ConvertSingleValue(double sourceValue, CompactFontStringTable strings, Type targetType)
             {
-                if (sourceValue.Type != typeof(double))
-                {
-                    throw new ArgumentException("Expected " + nameof(sourceValue) + " of type double.", nameof(sourceValue));
-                }
-
                 if (targetType == typeof(string))
                 {
-                    return Expression.Call(strings,
-                        methodName: nameof(CompactFontStringTable.Lookup),
-                        typeArguments: null,
-                        arguments: Expression.Convert(sourceValue, typeof(int)));
+                    return strings.Lookup((int)sourceValue);
                 }
 
                 if (targetType == typeof(double))
@@ -166,282 +125,151 @@ namespace PdfToSvg.Fonts.CompactFonts
 
                 if (targetType == typeof(bool))
                 {
-                    return Expression.NotEqual(sourceValue, Expression.Constant(0d));
+                    return sourceValue != 0;
                 }
 
                 if (targetType == typeof(int))
                 {
-                    return Expression.Convert(sourceValue, typeof(int));
+                    return (int)sourceValue;
                 }
 
                 var nonNullableTargetType = Nullable.GetUnderlyingType(targetType);
                 if (nonNullableTargetType != null)
                 {
-                    return Expression.Convert(ConvertSingleValue(sourceValue, strings, nonNullableTargetType), targetType);
+                    return ConvertSingleValue(sourceValue, strings, nonNullableTargetType);
                 }
 
                 throw new CompactFontException("Unsupported DICT property data type " + targetType.FullName + ".");
             }
 
-            private static Expression ConvertArrayValue(Expression inputArray, Expression strings, Type targetElementType)
+            private static Array ConvertArrayValue(double[] inputArray, CompactFontStringTable strings, Type targetElementType)
             {
-                var breakLabel = Expression.Label("LoopBreak");
+                var outputArray = ArrayUtils.CreateInstance(targetElementType, inputArray.Length);
 
-                var outputArray = Expression.Variable(targetElementType.MakeArrayType(), "output");
-                var i = Expression.Variable(typeof(int), "i");
-                var length = Expression.Variable(typeof(int), "length");
+                for (var i = 0; i < inputArray.Length; i++)
+                {
+                    var convertedValue = ConvertSingleValue(inputArray[i], strings, targetElementType);
+                    outputArray.SetValue(convertedValue, i);
+                }
 
-                return Expression.Block(new[] { outputArray, i, length },
-
-                    Expression.Assign(i, Expression.Constant(-1)),
-                    Expression.Assign(length, Expression.Property(inputArray, nameof(Array.Length))),
-                    Expression.Assign(outputArray, Expression.NewArrayBounds(targetElementType, length)),
-
-                    Expression.Loop(
-                        Expression.IfThenElse(
-                            Expression.LessThan(Expression.PreIncrementAssign(i), length),
-                            Expression.Assign(
-                                Expression.ArrayAccess(outputArray, i),
-                                ConvertSingleValue(Expression.ArrayAccess(inputArray, i), strings, targetElementType)
-                                ),
-                            Expression.Break(breakLabel)
-                            ),
-                        breakLabel
-                    ),
-
-                    outputArray
-                    );
+                return outputArray;
             }
-        }
-
-        private static class Serializer<TDict>
-        {
-            private static Action<OutputDictData, TDict, TDict, CompactFontStringTable, bool>? serializer;
-
+        
             public static void Serialize(OutputDictData target,
                 TDict dict, TDict defaultValues,
                 CompactFontStringTable strings, bool readOnlyStrings)
             {
-                if (serializer == null)
+                foreach (var property in properties)
                 {
-                    lock (lockObject)
+                    var sourceValue = property.GetValue(dict);
+                    var defaultValue = property.GetValue(defaultValues);
+
+                    if (sourceValue != null && !ValueEquals(sourceValue, defaultValue))
                     {
-                        if (serializer == null)
+                        var convertedValue = ConvertValue(sourceValue, strings, readOnlyStrings);
+                        target.Add(new KeyValuePair<int, double[]>(property.Value, convertedValue));
+                    }
+                }
+            }
+
+            private static bool ValueEquals(object? a, object? b)
+            {
+                if (Equals(a, b))
+                {
+                    return true;
+                }
+
+                if (a is Array arrA && b is Array arrB && arrA.Length == arrB.Length)
+                {
+                    for (var i = 0; i < arrA.Length; i++)
+                    {
+                        if (!ValueEquals(arrA.GetValue(i), arrB.GetValue(i)))
                         {
-                            serializer = Compile();
+                            return false;
                         }
                     }
+
+                    return true;
                 }
 
-                serializer(target, dict, defaultValues, strings, readOnlyStrings);
+                return false;
             }
 
-            private static Expression Equals(Expression a, Expression b)
+            private static double[] ConvertValue(object? value, CompactFontStringTable strings, bool readOnlyStrings)
             {
-                if (a.Type != b.Type)
+                if (value is Array arr)
                 {
-                    throw new ArgumentException("Expected expressions of the same type.");
-                }
-
-                var type = a.Type;
-
-                MethodInfo comparer;
-
-                if (type.IsArray)
-                {
-                    comparer = arrayEqualsMethod.MakeGenericMethod(type.GetElementType());
+                    return ConvertArrayValue(arr, strings, readOnlyStrings);
                 }
                 else
                 {
-                    comparer = objectEqualsMethod;
-                    a = Expression.Convert(a, typeof(object));
-                    b = Expression.Convert(b, typeof(object));
-                }
-
-                return Expression.Call(comparer, a, b);
-            }
-
-            private static Expression ConvertValue(Expression value, Expression strings, Expression readOnlyStrings)
-            {
-                if (value.Type.IsArray)
-                {
-                    return ConvertArrayValue(value, strings, readOnlyStrings);
-                }
-                else
-                {
-                    return Expression.NewArrayInit(typeof(double), ConvertSingleValue(value, strings, readOnlyStrings));
+                    var convertedValue = ConvertSingleValue(value, strings, readOnlyStrings);
+                    return new[] { convertedValue };
                 }
             }
 
-            private static Expression ConvertArrayValue(Expression inputArray, Expression strings, Expression readOnlyStrings)
+            private static double[] ConvertArrayValue(Array inputArray, CompactFontStringTable strings, bool readOnlyStrings)
             {
-                var breakLabel = Expression.Label("LoopBreak");
+                var outputArray = new double[inputArray.Length];
 
-                var outputArray = Expression.Variable(typeof(double[]), "output");
-                var i = Expression.Variable(typeof(int), "i");
-                var length = Expression.Variable(typeof(int), "length");
+                for (var i = 0; i < outputArray.Length; i++)
+                {
+                    var item = inputArray.GetValue(i);
+                    outputArray[i] = ConvertSingleValue(item, strings, readOnlyStrings);
+                }
 
-                return Expression.Block(new[] { outputArray, i, length },
-
-                    Expression.Assign(i, Expression.Constant(-1)),
-                    Expression.Assign(length, Expression.Property(inputArray, nameof(Array.Length))),
-                    Expression.Assign(outputArray, Expression.NewArrayBounds(typeof(double), length)),
-
-                    Expression.Loop(
-                        Expression.IfThenElse(
-                            Expression.LessThan(Expression.PreIncrementAssign(i), length),
-                            Expression.Assign(
-                                Expression.ArrayAccess(outputArray, i),
-                                ConvertSingleValue(Expression.ArrayAccess(inputArray, i), strings, readOnlyStrings)
-                                ),
-                            Expression.Break(breakLabel)
-                            ),
-                        breakLabel
-                    ),
-
-                    outputArray
-                    );
+                return outputArray;
             }
 
-            private static Expression ConvertSingleValue(Expression value, Expression strings, Expression readOnlyStrings)
+            private static double ConvertSingleValue(object? value, CompactFontStringTable strings, bool readOnlyStrings)
             {
-                if (value.Type == typeof(string))
+                if (value is string strValue)
                 {
-                    var readOnlyStringIndex = Expression.Call(strings,
-                        methodName: nameof(CompactFontStringTable.Lookup),
-                        typeArguments: null,
-                        arguments: Expression.Convert(value, typeof(string)));
-
-                    var mutableStringIndex = Expression.Call(strings,
-                        methodName: nameof(CompactFontStringTable.AddOrLookup),
-                        typeArguments: null,
-                        arguments: Expression.Convert(value, typeof(string)));
-
-                    var stringIndex = Expression.Condition(
-                        readOnlyStrings,
-                        readOnlyStringIndex,
-                        mutableStringIndex);
-
-                    return Expression.Convert(stringIndex, typeof(double));
+                    return readOnlyStrings
+                        ? strings.Lookup(strValue)
+                        : strings.AddOrLookup(strValue);
                 }
 
-                var nullableType = Nullable.GetUnderlyingType(value.Type);
-                if (nullableType != null)
+                if (value is bool boolValue)
                 {
-                    value = Expression.Property(value, nameof(Nullable<int>.Value));
+                    return boolValue ? 1 : 0;
                 }
 
-                if (value.Type == typeof(bool))
+                if (value is int intValue)
                 {
-                    return Expression.Condition(value, Expression.Constant(1d), Expression.Constant(0d));
+                    return intValue;
                 }
 
-                if (value.Type == typeof(int))
+                if (value is double dblValue)
                 {
-                    return Expression.Convert(value, typeof(double));
+                    return dblValue;
                 }
 
-                if (value.Type == typeof(double))
-                {
-                    return value;
-                }
-
-                throw new CompactFontException("Unsupported DICT property data type " + value.Type + ".");
-            }
-
-            private static Expression ShouldSerialize(PropertyInfo property, Expression sourceInstance, Expression defaultInstance)
-            {
-                Expression notEqual = Expression.Not(Equals(
-                    Expression.Property(sourceInstance, property),
-                    Expression.Property(defaultInstance, property)));
-
-                if (property.PropertyType.GetTypeInfo().IsValueType)
-                {
-                    var nullableType = Nullable.GetUnderlyingType(property.PropertyType);
-                    if (nullableType == null)
-                    {
-                        return notEqual;
-                    }
-                    else
-                    {
-                        return Expression.AndAlso(
-                            Expression.Property(Expression.Property(sourceInstance, property), nameof(Nullable<int>.HasValue)),
-                            notEqual
-                            );
-                    }
-                }
-                else
-                {
-                    return Expression.AndAlso(
-                        Expression.ReferenceNotEqual(
-                            Expression.Property(sourceInstance, property),
-                            Expression.Constant(null, property.PropertyType)),
-                        notEqual
-                        );
-                }
-            }
-
-            private static Action<OutputDictData, TDict, TDict, CompactFontStringTable, bool> Compile()
-            {
-                var targetParam = Expression.Parameter(typeof(OutputDictData), "target");
-                var sourceParam = Expression.Parameter(typeof(TDict), "source");
-                var defaultParam = Expression.Parameter(typeof(TDict), "defaultValues");
-                var stringsParam = Expression.Parameter(typeof(CompactFontStringTable), "strings");
-                var readOnlyStringsParam = Expression.Parameter(typeof(bool), "readOnlyStrings");
-
-                var addMethod = typeof(ICollection<KeyValuePair<int, double[]>>)
-                    .GetTypeInfo()
-                    .GetMethod(nameof(OutputDictData.Add), new[] { typeof(KeyValuePair<int, double[]>) });
-
-                var keyValuePairConstructor = typeof(KeyValuePair<int, double[]>)
-                    .GetTypeInfo()
-                    .GetConstructor(new[] { typeof(int), typeof(double[]) });
-
-                var sourceElementValue = Expression.Variable(typeof(double[]));
-
-                var body = typeof(TDict).GetTypeInfo()
-                    .GetProperties()
-
-                    .Select(p => new
-                    {
-                        Property = p,
-                        Attribute = (CompactFontDictOperatorAttribute)p
-                            .GetCustomAttributes(typeof(CompactFontDictOperatorAttribute), false)
-                            .FirstOrDefault()
-                    })
-                    .Where(p => p.Attribute != null)
-
-                    .OrderBy(p => p.Attribute.Order)
-                    .ThenBy(p => p.Attribute.Value)
-
-                    .Select(p => Expression.IfThen(
-                        ShouldSerialize(p.Property, sourceParam, defaultParam),
-                        Expression.Call(targetParam, addMethod,
-                            Expression.New(keyValuePairConstructor,
-                                Expression.Constant(p.Attribute.Value),
-                                ConvertValue(
-                                    Expression.Property(sourceParam, p.Property),
-                                    stringsParam, readOnlyStringsParam)))
-                        ));
-
-                var lambda = Expression
-                    .Lambda<Action<OutputDictData, TDict, TDict, CompactFontStringTable, bool>>(
-                        Expression.Block(new[] { sourceElementValue }, body),
-                        targetParam, sourceParam, defaultParam, stringsParam, readOnlyStringsParam);
-
-                return lambda.Compile();
+                throw new CompactFontException("Unsupported DICT property data type " + value?.GetType().FullName + ".");
             }
 
         }
 
-        public static void Deserialize<TDict>(TDict target, InputDictData dictData, CompactFontStringTable strings)
+        public static void Deserialize
+            <[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TDict>
+            (
+                TDict target,
+                InputDictData dictData,
+                CompactFontStringTable strings
+            )
+            where TDict : notnull
         {
-            Deserializer<TDict>.Deserialize(target, dictData, strings);
+            Serializer<TDict>.Deserialize(target, dictData, strings);
         }
 
-        public static void Serialize<TDict>(OutputDictData target,
-            TDict dict, TDict defaultValues,
-            CompactFontStringTable strings, bool readOnlyStrings)
+        public static void Serialize
+            <[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TDict>
+            (
+                OutputDictData target,
+                TDict dict, TDict defaultValues,
+                CompactFontStringTable strings, bool readOnlyStrings
+            )
+            where TDict : notnull
         {
             Serializer<TDict>.Serialize(target, dict, defaultValues, strings, readOnlyStrings);
         }

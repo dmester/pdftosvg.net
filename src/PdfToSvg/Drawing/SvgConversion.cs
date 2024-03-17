@@ -339,15 +339,29 @@ namespace PdfToSvg.Drawing
             var e = FormatCoordinate(matrix.E);
             var f = FormatCoordinate(matrix.F);
 
-            if (a == "1" && b == "0" && c == "0" && d == "1")
+            if (b == "0" && c == "0")
             {
-                if (e == "0" && f == "0")
+                if (a == "1" && d == "1")
                 {
-                    return "none";
+                    if (e == "0" && f == "0")
+                    {
+                        return "none";
+                    }
+                    else
+                    {
+                        return "translate(" + e + " " + f + ")";
+                    }
                 }
-                else
+                else if (e == "0" && f == "0")
                 {
-                    return "translate(" + e + " " + f + ")";
+                    if (a == d)
+                    {
+                        return "scale(" + a + ")";
+                    }
+                    else
+                    {
+                        return "scale(" + a + " " + d + ")";
+                    }
                 }
             }
 

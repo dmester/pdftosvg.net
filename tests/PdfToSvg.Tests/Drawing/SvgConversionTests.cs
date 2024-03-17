@@ -18,7 +18,8 @@ namespace PdfToSvg.Tests.Drawing
         [TestCase(1, 0, 0, 1, 0, 0, "none")]
         [TestCase(1.000001, 0.000005, 0, 1, 0, 0, "none")]
         [TestCase(1, 0, 0, 1.000001, 1.100001, 1.111111111, "translate(1.1 1.1111)")]
-        [TestCase(1, 0, 0, 2, 0, 0, "matrix(1 0 0 2 0 0)")]
+        [TestCase(1, 0, 0, 2, 0, 0, "scale(1 2)")]
+        [TestCase(2, 0, 0, 2, 0, 0, "scale(2)")]
         [TestCase(1, 2, 3, 4, 5, 6, "matrix(1 2 3 4 5 6)")]
         public void FormatMatrix(double a, double b, double c, double d, double e, double f, string expectedResult)
         {
@@ -78,7 +79,7 @@ namespace PdfToSvg.Tests.Drawing
         public void PathData_MoveTo(double x, double y, string expectedResult)
         {
             var path = new PathData();
-            
+
             path.MoveTo(x, y);
 
             Assert.AreEqual(expectedResult, SvgConversion.PathData(path));

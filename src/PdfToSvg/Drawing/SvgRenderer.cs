@@ -2381,7 +2381,7 @@ namespace PdfToSvg.Drawing
                         newParagraph.Content.Add(span);
                     }
 
-                    x += span.Width + span.SpaceBefore;
+                    x += span.Width;
                 }
             }
 
@@ -2680,7 +2680,7 @@ namespace PdfToSvg.Drawing
 
             if (singleSpan != null)
             {
-                x += singleSpan.SpaceBefore;
+                x += singleSpan.SpaceBefore.FirstOrDefault();
                 y -= singleSpan.Style.TextRisePx;
             }
 
@@ -2710,11 +2710,20 @@ namespace PdfToSvg.Drawing
 
                 if (singleSpan.Style.TextScaling != 100)
                 {
-                    textEl.SetAttributeValue("textLength", SvgConversion.FormatCoordinate(singleSpan.Width) + "px");
+                    var textWidth = singleSpan.Width - singleSpan.SpaceBefore.FirstOrDefault();
+                    textEl.SetAttributeValue("textLength", SvgConversion.FormatCoordinate(textWidth) + "px");
                     textEl.SetAttributeValue("lengthAdjust", "spacingAndGlyphs");
                 }
 
-                textEl.Value = singleSpan.Value;
+                if (singleSpan.SpaceBefore.Count > 1)
+                {
+                    // The spacing will also be scaled when rendered, so we need to reverse the scaling
+                    var dxMultiplier = 100 / singleSpan.Style.TextScaling;
+                    var dx = "0 " + string.Join(" ", singleSpan.SpaceBefore.Skip(1).Select(x => SvgConversion.FormatTextOffset(x * dxMultiplier)));
+                    textEl.SetAttributeValue("dx", dx);
+                }
+
+                textEl.Value = singleSpan.Value.ToString();
 
                 paragraphWidth = singleSpan.Width;
             }
@@ -2724,10 +2733,12 @@ namespace PdfToSvg.Drawing
 
                 var classNames = new string?[paragraph.Content.Count];
                 var multipleClasses = false;
+                var totalLength = 0;
 
                 for (var i = 0; i < classNames.Length; i++)
                 {
-                    var style = paragraph.Content[i].Style;
+                    var span = paragraph.Content[i];
+                    var style = span.Style;
 
                     if (!styleToClassNameLookup.TryGetValue(style, out var className))
                     {
@@ -2740,6 +2751,9 @@ namespace PdfToSvg.Drawing
                     {
                         multipleClasses = true;
                     }
+
+                    totalLength += span.Value.Length;
+                    paragraphWidth += span.Width;
                 }
 
                 if (!multipleClasses)
@@ -2757,23 +2771,21 @@ namespace PdfToSvg.Drawing
                         tspan.SetAttributeValue("class", classNames[i]);
                     }
 
-                    var dx = SvgConversion.FormatCoordinate(span.SpaceBefore);
-                    if (dx != "0")
+                    if (span.SpaceBefore.Count > 0)
                     {
+                        var dx = string.Join(" ", span.SpaceBefore.Select(x => SvgConversion.FormatTextOffset(x)));
                         tspan.SetAttributeValue("dx", dx);
                     }
-
-                    var dy = SvgConversion.FormatCoordinate(currentYOffset - span.Style.TextRisePx);
+                    
+                    var dy = SvgConversion.FormatTextOffset(currentYOffset - span.Style.TextRisePx);
                     if (dy != "0")
                     {
                         tspan.SetAttributeValue("dy", dy);
                         currentYOffset = span.Style.TextRisePx;
                     }
 
-                    tspan.Value = span.Value;
+                    tspan.Value = span.Value.ToString();
                     textEl.Add(tspan);
-
-                    paragraphWidth += span.Width + span.SpaceBefore;
                 }
             }
 

@@ -273,39 +273,61 @@ namespace PdfToSvg.Drawing
             var svgText = SvgConversion.ReplaceInvalidChars(text);
 
             var isLocalFont = style.Font.SubstituteFont is LocalFont;
-            var collapseSpaceEm = isLocalFont
-                ? collapseSpaceLocalFont
-                : collapseSpaceEmbeddedFont;
-
-            var absolutePendingSpace = Math.Abs(pendingSpace);
-
-            var mergeWithPrevious =
-                // Too small offsets will be rounded to 0, so they should not cause an extra <tspan>
-                absolutePendingSpace < minSpacePx ||
-
-                // When the threshold is low, it is most important to produce an as accurate result as possible, so in
-                // this case, we will look at the total aggregate offset from the real line matrix. If the threshold is
-                // high, it is probably most important that the text runs are looking good, even if, e.g., the font has
-                // not been exported.
-                (
-                    collapseSpaceEm < 0.1
-                    ? Math.Abs(aggregateOffset) < collapseSpaceEm * normalizedFontSize
-                    : absolutePendingSpace < collapseSpaceEm * normalizedFontSize
-                );
-
-            if (mergeWithPrevious && currentParagraph.Content.Count > 0)
+            
+            var lastSpan = currentParagraph.Content.LastOrDefault();
+            if (lastSpan != null && lastSpan.Style == style)
             {
-                var span = currentParagraph.Content.Last();
-                if (span.Style == style)
+                var collapseSpaceEm = isLocalFont
+                    ? collapseSpaceLocalFont
+                    : collapseSpaceEmbeddedFont;
+
+                var absolutePendingSpace = Math.Abs(pendingSpace);
+
+                var mergeWithPrevious =
+                    // Too small offsets will be rounded to 0, so they should not cause an extra <tspan>
+                    absolutePendingSpace < minSpacePx ||
+
+                    // When the threshold is low, it is most important to produce an as accurate result as possible, so in
+                    // this case, we will look at the total aggregate offset from the real line matrix. If the threshold is
+                    // high, it is probably most important that the text runs are looking good, even if, e.g., the font has
+                    // not been exported.
+                    (
+                        collapseSpaceEm < 0.1
+                        ? Math.Abs(aggregateOffset) < collapseSpaceEm * normalizedFontSize
+                        : absolutePendingSpace < collapseSpaceEm * normalizedFontSize
+                    );
+
+                if (mergeWithPrevious)
                 {
-                    span.Value += svgText;
-                    span.Width += pendingSpace + width;
+                    lastSpan.AddText(0, svgText, pendingSpace + width);
                     pendingSpace = 0;
+                    return;
+                }
+
+                //
+                // Which way is approximated to be most efficient?
+                //
+                // * <tspan dx=""></span>  =>  20 characters overhead per span
+                // * dx="0 0 0 0"          =>  unnecessary length "0 " on each character
+                //
+                // Calculation can be made more accurate, but let's not overengineer
+                //
+                const int TSpanOverhead = 20;
+                const int DxOverhead = 2;
+
+                var trailingZeroDxChars = lastSpan.Value.Length - lastSpan.SpaceBefore.Count;
+                if (TSpanOverhead > DxOverhead * trailingZeroDxChars)
+                {
+                    lastSpan.AddText(isLocalFont ? pendingSpace : aggregateOffset, svgText, width);
+                    pendingSpace = 0;
+                    aggregateOffset = 0;
                     return;
                 }
             }
 
-            currentParagraph.Content.Add(new TextSpan(isLocalFont ? pendingSpace : aggregateOffset, style, svgText, width));
+            var newSpan = new TextSpan(style);
+            newSpan.AddText(isLocalFont ? pendingSpace : aggregateOffset, svgText, width);
+            currentParagraph.Content.Add(newSpan);
             pendingSpace = 0;
             aggregateOffset = 0;
         }

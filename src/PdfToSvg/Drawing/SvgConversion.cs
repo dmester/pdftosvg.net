@@ -148,6 +148,11 @@ namespace PdfToSvg.Drawing
             return FormatNumber(number, "0.####");
         }
 
+        public static string FormatTextOffset(double number)
+        {
+            return FormatNumber(number, "0.##");
+        }
+
         public static string FormatBlendMode(BlendMode mode)
         {
             return mode switch

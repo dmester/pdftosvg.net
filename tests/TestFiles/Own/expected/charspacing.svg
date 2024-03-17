@@ -7,8 +7,8 @@
 .ID4{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:12px;}
 </style>
 <g class="ID1" stroke-miterlimit="10">
-<text x="70.86" y="188.1997" class="ID2"><tspan>1S</tspan><tspan dx="-21.672">c</tspan><tspan dx="-21.66">o</tspan><tspan dx="-21.66">p</tspan><tspan dx="-21.6">e</tspan><tspan dx="-21.6976">s</tspan></text>
-<text x="70.86" y="206.6997" class="ID3"><tspan>2</tspan><tspan dx="21.648">Conformance</tspan></text>
+<text x="70.86" y="188.1997" class="ID2" dx="0 0 -21.67 -21.66 -21.66 -21.6 -21.7">1Scopes</text>
+<text x="70.86" y="206.6997" class="ID3" dx="0 21.65">2Conformance</text>
 <g class="ID4">
 <text x="70.86" y="281.1997">Note:</text>
 <text x="70.86" y="298.1997">Verify that the first line consists of a single &lt;text&gt; element</text>

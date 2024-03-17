@@ -12,17 +12,36 @@ namespace PdfToSvg.Drawing
 {
     internal class TextSpan
     {
-        public string Value;
+        public StringBuilder Value = new();
         public double Width;
-        public double SpaceBefore;
+        public List<double> SpaceBefore = new();
         public GraphicsState Style;
 
-        public TextSpan(double spaceBefore, GraphicsState style, string value, double width)
+        public TextSpan(GraphicsState style)
         {
-            SpaceBefore = spaceBefore;
             Style = style;
-            Value = value;
-            Width = width;
+        }
+
+        public void AddText(double spaceBefore, string text, double width)
+        {
+            AddSpace(spaceBefore);
+            Value.Append(text);
+            Width += spaceBefore + width;
+        }
+
+        private void AddSpace(double space)
+        {
+            if (space < 0.01 && space > -0.01)
+            {
+                return;
+            }
+
+            while (SpaceBefore.Count < Value.Length)
+            {
+                SpaceBefore.Add(0);
+            }
+
+            SpaceBefore.Add(space);
         }
     }
 }

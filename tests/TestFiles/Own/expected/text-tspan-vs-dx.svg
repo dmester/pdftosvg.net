@@ -1,0 +1,18 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID2{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:12px;}
+.ID3{font-family:Helvetica,Arial,sans-serif;font-size:12px;}
+</style>
+<g class="ID1">
+<text x="70" y="91.92" class="ID2">Single &lt;text&gt; with dx:</text>
+<text x="70" y="116.92" class="ID3" dx="0 0 0 0 12 0 0 0 0 0 6 0 0 0 0 6 0 0 0 0 0 0 0 0 4.8 0 0 0 0 2.4 0 0 0 6 0 0 0 2.4">The quick brownfox jumps over thelazydog</text>
+<text x="70" y="166.92" class="ID2">Single &lt;text&gt; with merged substrings:</text>
+<text x="70" y="191.92" class="ID3">The quick brown fox jumps over the  lazy dog</text>
+<text x="70" y="241.92" class="ID2">Divided into &lt;tspan&gt;s:</text>
+<text x="70" y="266.92" class="ID3"><tspan>The quick brown fox jumps over the lazy </tspan><tspan dx="12">dog</tspan></text>
+<text x="70" y="316.92" class="ID2">Expanded &lt;text&gt; with dx:</text>
+<text x="70.12" y="341.92" class="ID3" textLength="399.456px" lengthAdjust="spacingAndGlyphs" dx="0 0 0 0 12 0 0 0 0 0 6 0 0 0 0 6 0 0 0 0 0 0 0 0 4.8 0 0 0 0 0 0 0 0 6 0 0 0 2.4">The quick brownfox jumps over thelazydog</text>
+</g>
+</svg>

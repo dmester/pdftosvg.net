@@ -234,14 +234,14 @@
 </g>
 <text x="238.61" y="588.79" class="ID38"> </text>
 <text x="35.4" y="636.46" class="ID40">The </text>
-<text x="79.464" y="636.46" class="ID41"><tspan>quic</tspan><tspan dx=".4392">k brow</tspan><tspan dx=".527">n</tspan></text>
+<text x="79.464" y="636.46" class="ID41" dx="0 0 0 0 .44 0 0 0 0 0 .53">quick brown</text>
 <text x="201.41" y="636.46" class="ID42"> </text>
 <g clip-path="url(#ID2)">
 <text transform="matrix(1 0 -.3333 1 212.45 636.46)" class="ID42">fox</text>
 </g>
 <text x="245.33" y="636.46" class="ID42"> </text>
 <text x="35.4" y="678.1" class="ID43">The </text>
-<text x="83.064" y="678.1" class="ID44"><tspan>quick bro</tspan><tspan dx=".4831">wn</tspan></text>
+<text x="83.064" y="678.1" class="ID44" dx="0 0 0 0 0 0 0 0 0 .48">quick brown</text>
 <text x="204.65" y="678.1" class="ID43"> </text>
 <g clip-path="url(#ID2)">
 <text transform="matrix(1 0 -.3333 1 215.33 678.1)" class="ID43">fox</text>
@@ -274,7 +274,7 @@
 </g>
 <text x="562.78" y="185.3" class="ID53"> </text>
 <text x="311.93" y="229.1" class="ID55">The </text>
-<text x="355.99" y="229.1" class="ID56"><tspan>quic</tspan><tspan dx=".4392">k brow</tspan><tspan dx=".527">n</tspan></text>
+<text x="355.99" y="229.1" class="ID56" dx="0 0 0 0 .44 0 0 0 0 0 .53">quick brown</text>
 <text x="477.94" y="229.1" class="ID57"> </text>
 <g clip-path="url(#ID2)">
 <text transform="matrix(1 0 -.3333 1 488.98 229.1)" class="ID57">fox</text>

@@ -3,7 +3,7 @@
 <style>
 .ID1 text{white-space:pre;}
 .ID2{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:12px;letter-spacing:21.65px;}
-.ID3{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:12px;letter-spacing:-0.0024px;}
+.ID3{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:12px;letter-spacing:-.0024px;}
 .ID4{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:12px;}
 </style>
 <g class="ID1" stroke-miterlimit="10">

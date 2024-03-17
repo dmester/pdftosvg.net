@@ -4,7 +4,7 @@
 .ID1 text{white-space:pre;}
 .ID3{font-family:'Times New Roman',serif;font-size:12px;}
 .ID4{font-family:'Times New Roman',serif;font-size:60px;stroke:#f00;stroke-width:4;}
-.ID5{font-family:'Times New Roman',serif;font-size:60px;fill-opacity:0.7;stroke:#f00;stroke-opacity:0.2;stroke-width:4;}
+.ID5{font-family:'Times New Roman',serif;font-size:60px;fill-opacity:.7;stroke:#f00;stroke-opacity:.2;stroke-width:4;}
 .ID6{font-family:'Times New Roman',serif;font-size:60px;fill:none;}
 </style>
 <defs class="ID1">
@@ -19,14 +19,14 @@
 </g>
 <text x="240" y="81.92" class="ID3">Shape alpha</text>
 <text x="247" y="131.92" class="ID5">••••</text>
-<path d="M255 341.92h70v-70h-70z" fill="#000" fill-opacity="0.7" stroke="#f00" stroke-width="10" stroke-opacity="0.2" />
-<g transform="matrix(100 0 0 100 240 141.92)" opacity="0.7">
+<path d="M255 341.92h70v-70h-70z" fill="#000" fill-opacity=".7" stroke="#f00" stroke-width="10" stroke-opacity=".2" />
+<g transform="matrix(100 0 0 100 240 141.92)" opacity=".7">
 <use href="#ID2" />
 </g>
 <text x="400" y="81.92" class="ID3">Opacity alpha</text>
 <text x="407" y="131.92" class="ID5">••••</text>
-<path d="M415 341.92h70v-70h-70z" fill="#000" fill-opacity="0.7" stroke="#f00" stroke-width="10" stroke-opacity="0.2" />
-<g transform="matrix(100 0 0 100 400 141.92)" opacity="0.7">
+<path d="M415 341.92h70v-70h-70z" fill="#000" fill-opacity=".7" stroke="#f00" stroke-width="10" stroke-opacity=".2" />
+<g transform="matrix(100 0 0 100 400 141.92)" opacity=".7">
 <use href="#ID2" />
 </g>
 <text x="80" y="431.92" class="ID3">Alpha &lt; 0</text>

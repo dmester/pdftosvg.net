@@ -30,8 +30,8 @@ namespace PdfToSvg.Tests.Drawing
         [TestCase(123.41234, "123")]
         [TestCase(12.341234, "12.34")]
         [TestCase(1.2341234, "1.234")]
-        [TestCase(.12341234, "0.1234")]
-        [TestCase(.02341234, "0.0234")]
+        [TestCase(.12341234, ".1234")]
+        [TestCase(.02341234, ".0234")]
         public void FormatFontMetric(double input, string expectedResult)
         {
             Assert.AreEqual(expectedResult, SvgConversion.FormatFontMetric(input));
@@ -74,7 +74,7 @@ namespace PdfToSvg.Tests.Drawing
             Assert.AreEqual(expectedResult, actualResult);
         }
 
-        [TestCase(123.45612321, 0.0123456, "M123.4561 0.0123")]
+        [TestCase(123.45612321, 0.0123456, "M123.4561 .0123")]
         public void PathData_MoveTo(double x, double y, string expectedResult)
         {
             var path = new PathData();
@@ -84,8 +84,8 @@ namespace PdfToSvg.Tests.Drawing
             Assert.AreEqual(expectedResult, SvgConversion.PathData(path));
         }
 
-        [TestCase(123.45612321, 10.123456, "M0 10l123.4561 0.1235")]
-        [TestCase(123.45612321, 10.000123456, "M0 10l123.4561 0.0001")]
+        [TestCase(123.45612321, 10.123456, "M0 10l123.4561 .1235")]
+        [TestCase(123.45612321, 10.000123456, "M0 10l123.4561 .0001")]
         [TestCase(123.45612321, 10.0000123456, "M0 10h123.4561")]
         [TestCase(0, 12, "M0 10v2")]
         public void PathData_LineTo(double x, double y, string expectedResult)
@@ -99,7 +99,7 @@ namespace PdfToSvg.Tests.Drawing
         }
 
         [TestCase(0, 1, "L0 1")]
-        [TestCase(123.45612321, 0.00123456, "L123.4561 0.0012")]
+        [TestCase(123.45612321, 0.00123456, "L123.4561 .0012")]
         [TestCase(123.45612321, 10.00123456, "L123.4561 10.0012")]
         public void PathData_LineTo_Init(double x, double y, string expectedResult)
         {

@@ -41,8 +41,8 @@
 <text x="70" y="471.92" textLength="67.89px" lengthAdjust="spacingAndGlyphs">and narrow</text>
 </g>
 <path d="M70 91.92h330" fill="none" stroke="#f00" stroke-width="1" />
-<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 420 461.92)" class="ID13" textLength="74.6728px" lengthAdjust="spacingAndGlyphs">Rotated</text>
-<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 477.4 380.02)" class="ID13" textLength="24.0028px" lengthAdjust="spacingAndGlyphs">60</text>
-<text transform="matrix(0.5739 -0.8189 0.8189 0.5739 502.1968 344.6392)" class="ID13" textLength="73.3047px" lengthAdjust="spacingAndGlyphs">degrees</text>
+<text transform="matrix(.5739 -.8189 .8189 .5739 420 461.92)" class="ID13" textLength="74.6728px" lengthAdjust="spacingAndGlyphs">Rotated</text>
+<text transform="matrix(.5739 -.8189 .8189 .5739 477.4 380.02)" class="ID13" textLength="24.0028px" lengthAdjust="spacingAndGlyphs">60</text>
+<text transform="matrix(.5739 -.8189 .8189 .5739 502.1968 344.6392)" class="ID13" textLength="73.3047px" lengthAdjust="spacingAndGlyphs">degrees</text>
 </g>
 </svg>

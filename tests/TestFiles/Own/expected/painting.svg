@@ -63,9 +63,9 @@
 <path d="M390 561.92l10 -20l10 20" fill="none" stroke="#000" stroke-width="8" stroke-miterlimit="2.2" />
 <path d="M435 561.92l10 -20l10 20" fill="none" stroke="#000" stroke-width="8" stroke-miterlimit="2.1" />
 <text x="300" y="621.92" class="ID2">Scaled stroke</text>
-<path d="M0.5 -6.6h3v4h-3z" transform="matrix(15 0 0 -5 300 621.92)" fill="none" stroke="#000" stroke-width="1" />
+<path d="M.5 -6.6h3v4h-3z" transform="matrix(15 0 0 -5 300 621.92)" fill="none" stroke="#000" stroke-width="1" />
 <path d="M370 654.92h20v-20h-20z" fill="none" stroke="#000" stroke-width="5" />
-<path d="M7 -6.6h3v4h-3z" transform="matrix(15 0 0 -5 300 621.92)" fill="none" stroke="#000" stroke-width="0.1" />
-<path d="M460 654.92h20v-20h-20z" fill="none" stroke="#000" stroke-width="0.5" />
+<path d="M7 -6.6h3v4h-3z" transform="matrix(15 0 0 -5 300 621.92)" fill="none" stroke="#000" stroke-width=".1" />
+<path d="M460 654.92h20v-20h-20z" fill="none" stroke="#000" stroke-width=".5" />
 </g>
 </svg>

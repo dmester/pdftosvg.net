@@ -2,14 +2,14 @@
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID1 text{white-space:pre;}
-.ID5{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:60px;fill:url(#ID2);fill-opacity:0.8;}
+.ID5{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:60px;fill:url(#ID2);fill-opacity:.8;}
 .ID11{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:60px;fill:#0c2b33;}
 .ID12{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:150px;fill:#0c2b33;mask:url(#ID9);}
 </style>
 <defs class="ID1">
 <linearGradient x1="0" y1="0" x2="480" y2="0" gradientTransform="matrix(1 0 0 -1 0 100)" gradientUnits="userSpaceOnUse" id="ID2">
 <stop offset="0%" stop-color="#0ff" stop-opacity="0" />
-<stop offset="0.001%" stop-color="#0ff" />
+<stop offset=".001%" stop-color="#0ff" />
 <stop offset="99.999%" stop-color="#000" />
 <stop offset="100%" stop-color="#000" stop-opacity="0" />
 </linearGradient>
@@ -39,7 +39,7 @@
 </g>
 </mask>
 <linearGradient x1="0" y1="15" x2="0" y2="40" gradientTransform="matrix(1 0 0 -1 90 321.92)" gradientUnits="userSpaceOnUse" id="ID8">
-<stop offset="0.001%" stop-color="#a82800" />
+<stop offset=".001%" stop-color="#a82800" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 </linearGradient>
 <mask id="ID9">
@@ -51,7 +51,7 @@
 </g>
 </mask>
 <mask id="ID10">
-<g transform="matrix(0 0.7 -0.7 0 330 421.92)">
+<g transform="matrix(0 .7 -.7 0 330 421.92)">
 <text x="0" y="95" class="ID5">TEXT SMASK</text>
 <g transform="matrix(30 0 0 30 405 65)">
 <use href="#ID3" />

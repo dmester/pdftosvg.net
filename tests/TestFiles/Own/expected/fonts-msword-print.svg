@@ -16,25 +16,25 @@
 .ID13{font-family:Gadugi,sans-serif;font-size:21.96px;font-variant:none;}
 .ID14{font-family:Gadugi,sans-serif;font-weight:bold;font-size:21.96px;font-variant:none;}
 .ID15{font-family:'Ink Free',cursive;font-size:21.96px;}
-.ID16{font-family:'Ink Free',cursive;font-size:21.96px;stroke:#000;stroke-width:0.293;}
+.ID16{font-family:'Ink Free',cursive;font-size:21.96px;stroke:#000;stroke-width:.293;}
 .ID17{font-family:'Franklin Gothic',sans-serif;font-size:21.96px;font-variant:none;}
-.ID18{font-family:'Franklin Gothic',sans-serif;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:0.293;}
+.ID18{font-family:'Franklin Gothic',sans-serif;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:.293;}
 .ID19{font-family:'Franklin Gothic',sans-serif;font-style:italic;font-size:21.96px;}
 .ID20{font-family:Gabriola,cursive;font-size:27.96px;font-variant:none;}
-.ID21{font-family:Gabriola,cursive;font-size:27.96px;font-variant:none;stroke:#000;stroke-width:0.373;}
+.ID21{font-family:Gabriola,cursive;font-size:27.96px;font-variant:none;stroke:#000;stroke-width:.373;}
 .ID22{font-family:Ebrima,sans-serif;font-size:21.96px;font-variant:none;}
 .ID23{font-family:Ebrima,sans-serif;font-weight:bold;font-size:21.96px;font-variant:none;}
 .ID24{font-family:'Lucida Console',monospace;font-size:21.96px;font-variant:none;}
-.ID25{font-family:'Lucida Console',monospace;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:0.293;}
+.ID25{font-family:'Lucida Console',monospace;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:.293;}
 .ID26{font-family:'Lucida Sans Unicode','Lucida Sans',sans-serif;font-size:21.96px;font-variant:none;}
-.ID27{font-family:'Lucida Sans Unicode','Lucida Sans',sans-serif;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:0.293;}
+.ID27{font-family:'Lucida Sans Unicode','Lucida Sans',sans-serif;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:.293;}
 .ID28{font-family:Marlett;font-size:15.96px;}
 .ID29{font-family:'Microsoft Himalaya',sans-serif;font-size:36px;font-variant:none;}
-.ID30{font-family:'Microsoft Himalaya',sans-serif;font-size:36px;font-variant:none;stroke:#000;stroke-width:0.48;}
+.ID30{font-family:'Microsoft Himalaya',sans-serif;font-size:36px;font-variant:none;stroke:#000;stroke-width:.48;}
 .ID31{font-family:'MS Gothic',sans-serif;font-size:21.96px;font-variant:none;}
-.ID32{font-family:'MS Gothic',sans-serif;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:0.293;}
+.ID32{font-family:'MS Gothic',sans-serif;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:.293;}
 .ID33{font-family:'MV Boli',cursive;font-size:21.96px;font-variant:none;}
-.ID34{font-family:'MV Boli',cursive;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:0.293;}
+.ID34{font-family:'MV Boli',cursive;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:.293;}
 .ID35{font-family:'Myanmar Text','Myanmar Unicode',sans-serif;font-size:21.96px;font-variant:none;}
 .ID36{font-family:'Myanmar Text','Myanmar Unicode',sans-serif;font-weight:bold;font-size:21.96px;font-variant:none;}
 .ID37{font-family:'Palatino Linotype',Palatino,serif;font-size:21.96px;font-variant:none;}
@@ -45,12 +45,12 @@
 .ID42{font-family:'Segoe Script',cursive;font-size:21.96px;font-variant:none;}
 .ID43{font-family:'Segoe Script',cursive;font-weight:bold;font-size:21.96px;font-variant:none;}
 .ID44{font-family:SimSun,serif;font-size:21.96px;font-variant:none;}
-.ID45{font-family:SimSun,serif;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:0.293;}
+.ID45{font-family:SimSun,serif;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:.293;}
 .ID46{font-family:Sitka,serif;font-size:21.96px;font-variant:none;}
 .ID47{font-family:Sitka,serif;font-weight:bold;font-size:21.96px;font-variant:none;}
 .ID48{font-family:Sitka,serif;font-style:italic;font-size:21.96px;font-variant:none;}
 .ID49{font-family:Sylfaen,serif;font-size:21.96px;font-variant:none;}
-.ID50{font-family:Sylfaen,serif;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:0.293;}
+.ID50{font-family:Sylfaen,serif;font-size:21.96px;font-variant:none;stroke:#000;stroke-width:.293;}
 .ID51{font-family:Tahoma,sans-serif;font-size:21.96px;font-variant:none;}
 .ID52{font-family:Tahoma,sans-serif;font-weight:bold;font-size:21.96px;font-variant:none;}
 .ID53{font-family:'Trebuchet MS',sans-serif;font-size:21.96px;font-variant:none;}
@@ -70,7 +70,7 @@
 <text x="215.04" y="91.44" class="ID4">fox</text>
 <text x="244.44" y="91.44" class="ID2"> </text>
 <text x="35.4" y="130.44" class="ID5">The quick brown </text>
-<text transform="matrix(1 0 -0.342 1 243.12 130.44)" class="ID5">fox</text>
+<text transform="matrix(1 0 -.342 1 243.12 130.44)" class="ID5">fox</text>
 <text x="281.04" y="130.44" class="ID5"> </text>
 <text x="35.4" y="165.96" class="ID6">The </text>
 <text x="88.2" y="165.96" class="ID7">quick brown</text>
@@ -87,17 +87,17 @@
 <text x="75.84" y="239.64">quick brown</text>
 <text x="196.8" y="239.64"> </text>
 </g>
-<text transform="matrix(1 0 -0.342 1 202.68 239.64)" class="ID12">fox</text>
+<text transform="matrix(1 0 -.342 1 202.68 239.64)" class="ID12">fox</text>
 <text x="233.04" y="239.64" class="ID12"> </text>
 <text x="35.4" y="278.04" class="ID13">The </text>
 <text x="76.92" y="278.04" class="ID14">quick brown</text>
 <text x="205.68" y="278.04" class="ID13"> </text>
-<text transform="matrix(1 0 -0.342 1 211.68 278.04)" class="ID13">fox</text>
+<text transform="matrix(1 0 -.342 1 211.68 278.04)" class="ID13">fox</text>
 <text x="241.56" y="278.04" class="ID13"> </text>
 <text x="35.4" y="313.92" class="ID15">The </text>
 <text x="79.68" y="313.92" class="ID16">quick brown</text>
 <text x="186.96" y="313.92" class="ID15"> </text>
-<text transform="matrix(1 0 -0.342 1 193.32 313.92)" class="ID15">fox </text>
+<text transform="matrix(1 0 -.342 1 193.32 313.92)" class="ID15">fox </text>
 <text x="35.4" y="351.48" class="ID17">The </text>
 <text x="75" y="351.48" class="ID18">quick brown</text>
 <text x="189.84" y="351.48" class="ID17"> </text>
@@ -106,43 +106,43 @@
 <text x="35.4" y="405" class="ID20">The </text>
 <text x="72" y="405" class="ID21">quick brown</text>
 <text x="179.64" y="405" class="ID20"> </text>
-<text transform="matrix(1 0 -0.342 1 184.56 405)" class="ID20">fox</text>
+<text transform="matrix(1 0 -.342 1 184.56 405)" class="ID20">fox</text>
 <text x="211.68" y="405" class="ID20"> </text>
 <text x="35.4" y="449.88" class="ID22">The </text>
 <text x="76.92" y="449.88" class="ID23">quick brown</text>
 <text x="205.68" y="449.88" class="ID22"> </text>
-<text transform="matrix(1 0 -0.342 1 211.68 449.88)" class="ID22">fox</text>
+<text transform="matrix(1 0 -.342 1 211.68 449.88)" class="ID22">fox</text>
 <text x="241.56" y="449.88" class="ID22"> </text>
 <text x="35.4" y="483.24" class="ID24">The </text>
 <text x="88.32" y="483.24" class="ID25">quick brown</text>
 <text x="234.48" y="483.24" class="ID24"> </text>
-<text transform="matrix(1 0 -0.342 1 247.68 483.24)" class="ID24">fox</text>
+<text transform="matrix(1 0 -.342 1 247.68 483.24)" class="ID24">fox</text>
 <text x="287.4" y="483.24" class="ID24"> </text>
 <text x="35.4" y="521.64" class="ID26">The </text>
 <text x="82.2" y="521.64" class="ID27">quick brown</text>
 <text x="214.44" y="521.64" class="ID26"> </text>
-<text transform="matrix(1 0 -0.342 1 221.4 521.64)" class="ID26">fox</text>
+<text transform="matrix(1 0 -.342 1 221.4 521.64)" class="ID26">fox</text>
 <text x="256.32" y="521.64" class="ID26"> </text>
 <text x="35.4" y="558.12" class="ID28"></text>
 <text x="35.4" y="588.72" class="ID29">The </text>
 <text x="78.84" y="588.72" class="ID30">quick brown</text>
 <text x="200.52" y="588.72" class="ID29"> </text>
-<text transform="matrix(1 0 -0.342 1 206.52 588.72)" class="ID29">fox</text>
+<text transform="matrix(1 0 -.342 1 206.52 588.72)" class="ID29">fox</text>
 <text x="238.56" y="588.72" class="ID29"> </text>
 <text x="35.4" y="636.36" class="ID31">The </text>
 <text x="79.44" y="636.36" class="ID32">quick brown</text>
 <text x="201.36" y="636.36" class="ID31"> </text>
-<text transform="matrix(1 0 -0.342 1 212.4 636.36)" class="ID31">fox</text>
+<text transform="matrix(1 0 -.342 1 212.4 636.36)" class="ID31">fox</text>
 <text x="245.28" y="636.36" class="ID31"> </text>
 <text x="35.4" y="678" class="ID33">The </text>
 <text x="83.04" y="678" class="ID34">quick brown</text>
 <text x="204.6" y="678" class="ID33"> </text>
-<text transform="matrix(1 0 -0.342 1 215.28 678)" class="ID33">fox</text>
+<text transform="matrix(1 0 -.342 1 215.28 678)" class="ID33">fox</text>
 <text x="246.24" y="678" class="ID33"> </text>
 <text x="35.4" y="723" class="ID35">The </text>
 <text x="76.92" y="723" class="ID36">quick brown</text>
 <text x="205.68" y="723" class="ID35"> </text>
-<text transform="matrix(1 0 -0.342 1 211.68 723)" class="ID35">fox</text>
+<text transform="matrix(1 0 -.342 1 211.68 723)" class="ID35">fox</text>
 <text x="241.56" y="723" class="ID35"> </text>
 <text x="311.88" y="93.96" class="ID37">The </text>
 <text x="354.24" y="93.96" class="ID38">quick brown</text>
@@ -152,17 +152,17 @@
 <text x="311.88" y="138.84" class="ID40">The </text>
 <text x="360.6" y="138.84" class="ID41">quick brown</text>
 <text x="495.84" y="138.84" class="ID40"> </text>
-<text transform="matrix(1 0 -0.342 1 504.72 138.84)" class="ID40">fox</text>
+<text transform="matrix(1 0 -.342 1 504.72 138.84)" class="ID40">fox</text>
 <text x="537.24" y="138.84" class="ID40"> </text>
 <text x="311.88" y="185.28" class="ID42">The </text>
 <text x="365.16" y="185.28" class="ID43">quick brown</text>
 <text x="517.44" y="185.28" class="ID42"> </text>
-<text transform="matrix(1 0 -0.342 1 526.2 185.28)" class="ID42">fox</text>
+<text transform="matrix(1 0 -.342 1 526.2 185.28)" class="ID42">fox</text>
 <text x="562.68" y="185.28" class="ID42"> </text>
 <text x="311.88" y="229.08" class="ID44">The </text>
 <text x="355.92" y="229.08" class="ID45">quick brown</text>
 <text x="477.84" y="229.08" class="ID44"> </text>
-<text transform="matrix(1 0 -0.342 1 488.88 229.08)" class="ID44">fox</text>
+<text transform="matrix(1 0 -.342 1 488.88 229.08)" class="ID44">fox</text>
 <text x="521.76" y="229.08" class="ID44"> </text>
 <text x="311.88" y="267.96" class="ID46">The </text>
 <text x="348.96" y="267.96" class="ID47">quick brown</text>
@@ -172,12 +172,12 @@
 <text x="311.88" y="305.64" class="ID49">The </text>
 <text x="353.16" y="305.64" class="ID50">quick brown</text>
 <text x="470.52" y="305.64" class="ID49"> </text>
-<text transform="matrix(1 0 -0.342 1 476.04 305.64)" class="ID49">fox</text>
+<text transform="matrix(1 0 -.342 1 476.04 305.64)" class="ID49">fox</text>
 <text x="504.84" y="305.64" class="ID49"> </text>
 <text x="311.88" y="344.64" class="ID51">The </text>
 <text x="355.44" y="344.64" class="ID52">quick brown</text>
 <text x="491.88" y="344.64" class="ID51"> </text>
-<text transform="matrix(1 0 -0.342 1 498.84 344.64)" class="ID51">fox</text>
+<text transform="matrix(1 0 -.342 1 498.84 344.64)" class="ID51">fox</text>
 <text x="528.72" y="344.64" class="ID51"> </text>
 <text x="311.88" y="379.92" class="ID53">The </text>
 <text x="355.2" y="379.92" class="ID54">quick brown</text>

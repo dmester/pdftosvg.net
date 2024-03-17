@@ -3,52 +3,52 @@
 <defs>
 <radialGradient fx="50" fy="60" fr="15" cx="50" cy="50" r="50" gradientTransform="matrix(1 0 0 -1 100 191.92)" gradientUnits="userSpaceOnUse" id="ID1">
 <stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
-<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset=".001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </radialGradient>
 <radialGradient fx="50" fy="60" fr="15" cx="50" cy="50" r="50" gradientTransform="matrix(1 0 0 -1 250 191.92)" gradientUnits="userSpaceOnUse" id="ID2">
 <stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
-<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset=".001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </radialGradient>
 <radialGradient fx="50" fy="60" fr="15" cx="50" cy="50" r="50" gradientTransform="matrix(1 0 0 -1 400 191.92)" gradientUnits="userSpaceOnUse" id="ID3">
 <stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
-<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset=".001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </radialGradient>
 <radialGradient fx="50" fy="60" fr="15" cx="50" cy="50" r="50" gradientTransform="matrix(1 0 0 -1 100 341.92)" gradientUnits="userSpaceOnUse" id="ID4">
-<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset=".001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </radialGradient>
 <radialGradient fx="50" fy="60" fr="15" cx="50" cy="50" r="50" gradientTransform="matrix(1 0 0 -1 250 341.92)" gradientUnits="userSpaceOnUse" id="ID5">
-<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset=".001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 </radialGradient>
 <radialGradient fx="50" fy="60" fr="15" cx="50" cy="50" r="50" gradientTransform="matrix(1 0 0 -1 400 341.92)" gradientUnits="userSpaceOnUse" id="ID6">
 <stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
-<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset=".001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </radialGradient>
 <radialGradient fx="150" fy="410" fr="15" cx="150" cy="400" r="50" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="ID7">
 <stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
-<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset=".001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </radialGradient>
 <radialGradient fx="5" fy="6" fr="1.5" cx="5" cy="5" r="5" gradientTransform="matrix(10 0 0 -9.901 0 99.0099)" gradientUnits="userSpaceOnUse" id="ID8">
 <stop offset="0%" stop-color="#bae0ed" stop-opacity="0" />
-<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset=".001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="100%" stop-color="#0c2b33" stop-opacity="0" />
 </radialGradient>
 <radialGradient fx="450" fy="410" fr="15" cx="450" cy="400" r="50" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="ID9">
 <stop offset="0%" stop-color="#a82800" />
-<stop offset="0.001%" stop-color="#bae0ed" />
+<stop offset=".001%" stop-color="#bae0ed" />
 <stop offset="99.999%" stop-color="#0c2b33" />
 <stop offset="0%" stop-color="#a82800" />
 </radialGradient>

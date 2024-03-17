@@ -4,7 +4,7 @@
 .ID1 text{white-space:pre;}
 .ID2{font-family:'Times New Roman',serif;font-size:22px;fill:#0f0f0f;}
 .ID3{font-family:'Times New Roman',serif;font-size:18px;letter-spacing:82.8px;fill:#0f0f0f;}
-.ID4{font-family:'Times New Roman',serif;font-size:22px;letter-spacing:-0.55px;fill:#0f0f0f;}
+.ID4{font-family:'Times New Roman',serif;font-size:22px;letter-spacing:-.55px;fill:#0f0f0f;}
 </style>
 <g class="ID1">
 <g class="ID2">

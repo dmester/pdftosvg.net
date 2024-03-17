@@ -186,6 +186,16 @@ namespace PdfToSvg.Drawing
                 result = "0";
             }
 
+            // Remove leading 0 in fractional numbers in the range (-1, 1)
+            else if (result.StartsWith("0."))
+            {
+                result = result.Substring(1);
+            }
+            else if (result.StartsWith("-0."))
+            {
+                result = result.Remove(1, 1);
+            }
+
             return result;
         }
 

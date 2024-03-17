@@ -33,9 +33,9 @@
 </g>
 <path d="M405 211.92v35h-35v-25h20v10h-10v-20z" fill-rule="evenodd" fill="#000" stroke="#f00" stroke-width="1" />
 <text x="70" y="311.92" class="ID2">Curve</text>
-<path d="M70 361.92v-25C90 311.92,110 361.92,130 336.92C130 336.92,100 361.92,130 386.92C100 361.92,70 386.92,70 386.92" fill="none" stroke="#000" stroke-width="1" />
+<path d="M70 361.92v-25c20 -25,40 25,60 0c0 0,-30 25,0 50c-30 -25,-60 0,-60 0" fill="none" stroke="#000" stroke-width="1" />
 <text x="240" y="311.92" class="ID2">Closed curve</text>
-<path d="M240 361.92v-25C260 311.92,280 361.92,300 336.92C300 336.92,270 361.92,300 386.92C270 361.92,240 386.92,240 386.92z" fill="none" stroke="#000" stroke-width="1" />
+<path d="M240 361.92v-25c20 -25,40 25,60 0c0 0,-30 25,0 50c-30 -25,-60 0,-60 0z" fill="none" stroke="#000" stroke-width="1" />
 <text x="420" y="311.92" class="ID2">Rectangle</text>
 <path d="M420 381.92h50v-50h-50z" fill="none" stroke="#000" stroke-width="1" />
 <text x="70" y="441.92" class="ID2">w Line width</text>

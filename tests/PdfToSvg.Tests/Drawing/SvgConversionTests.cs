@@ -4,9 +4,9 @@
 
 using NUnit.Framework;
 using PdfToSvg.Drawing;
+using PdfToSvg.Drawing.Paths;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -72,6 +72,95 @@ namespace PdfToSvg.Tests.Drawing
             var decodedInput = Encoding.ASCII.GetString(Hex.Decode(input));
             var actualResult = SvgConversion.ReplaceInvalidChars(decodedInput, '#');
             Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [TestCase(123.45612321, 0.0123456, "M123.4561 0.0123")]
+        public void PathData_MoveTo(double x, double y, string expectedResult)
+        {
+            var path = new PathData();
+            
+            path.MoveTo(x, y);
+
+            Assert.AreEqual(expectedResult, SvgConversion.PathData(path));
+        }
+
+        [TestCase(123.45612321, 10.123456, "M0 10l123.4561 0.1235")]
+        [TestCase(123.45612321, 10.000123456, "M0 10l123.4561 0.0001")]
+        [TestCase(123.45612321, 10.0000123456, "M0 10h123.4561")]
+        [TestCase(0, 12, "M0 10v2")]
+        public void PathData_LineTo(double x, double y, string expectedResult)
+        {
+            var path = new PathData();
+
+            path.MoveTo(0, 10);
+            path.LineTo(x, y);
+
+            Assert.AreEqual(expectedResult, SvgConversion.PathData(path));
+        }
+
+        [TestCase(0, 1, "L0 1")]
+        [TestCase(123.45612321, 0.00123456, "L123.4561 0.0012")]
+        [TestCase(123.45612321, 10.00123456, "L123.4561 10.0012")]
+        public void PathData_LineTo_Init(double x, double y, string expectedResult)
+        {
+            var path = new PathData();
+
+            path.LineTo(x, y);
+
+            Assert.AreEqual(expectedResult, SvgConversion.PathData(path));
+        }
+
+        [Test]
+        public void PathData_CurveTo()
+        {
+            var path = new PathData();
+
+            path.MoveTo(10, 10);
+            path.CurveTo(11, 12, 11, 13, 13.5, 14.5);
+
+            Assert.AreEqual("M10 10c1 2,1 3,3.5 4.5", SvgConversion.PathData(path));
+        }
+
+        [Test]
+        public void PathData_CurveTo_Init()
+        {
+            var path = new PathData();
+
+            path.CurveTo(11, 12, 11, 13, 13.5, 14.5);
+
+            Assert.AreEqual("C11 12,11 13,13.5 14.5", SvgConversion.PathData(path));
+        }
+
+        [Test]
+        public void PathData_Rectangle()
+        {
+            var path = new PathData();
+
+            path.MoveTo(0, 0);
+            path.LineTo(1200.42312, 0);
+            path.LineTo(1200.42312, 1300.9456789);
+            path.LineTo(0, 1300.9456789);
+            path.ClosePath();
+
+            Assert.AreEqual("M0 0h1200.4231v1300.9457h-1200.4231z", SvgConversion.PathData(path));
+        }
+
+        [Test]
+        public void PathData_ClosePath()
+        {
+            var path = new PathData();
+
+            path.MoveTo(10, 10);
+            path.LineTo(10, 15);
+            path.LineTo(15, 10);
+            path.ClosePath();
+
+            path.MoveTo(15, 15);
+            path.LineTo(20, 15);
+            path.LineTo(15, 20);
+            path.ClosePath();
+
+            Assert.AreEqual("M10 10v5l5 -5zm5 5h5l-5 5z", SvgConversion.PathData(path));
         }
     }
 }

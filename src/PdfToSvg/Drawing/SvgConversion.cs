@@ -189,56 +189,127 @@ namespace PdfToSvg.Drawing
             return result;
         }
 
+        private class PathPoint
+        {
+            private const int FractionalDigits = 4;
+
+            public readonly Point Original;
+            public readonly Point Rounded;
+            public readonly Point Diff;
+
+            public PathPoint(PathPoint? previous, double x, double y)
+            {
+                Original = new Point(x, y);
+                
+                if (previous == null)
+                {
+                    Rounded = new Point(
+                        Math.Round(x, FractionalDigits),
+                        Math.Round(y, FractionalDigits));
+
+                    Diff = Rounded;
+                }
+                else
+                {
+                    Diff = new Point(
+                        RoundDiff(previous.Rounded.X, previous.Original.X, x),
+                        RoundDiff(previous.Rounded.Y, previous.Original.Y, y));
+
+                    Rounded = new Point(
+                        previous.Rounded.X + Diff.X,
+                        previous.Rounded.Y + Diff.Y);
+                }
+            }
+
+            private static double RoundDiff(
+                double previousRoundedValue, double previousOriginalValue, double newOriginalValue)
+            {
+                return newOriginalValue == previousOriginalValue
+                    ? 0 // If the unrounded values don't differ, don't move the coordinate
+                    : Math.Round(newOriginalValue - previousRoundedValue, FractionalDigits);
+            }
+        }
+
         public static string PathData(PathData path)
         {
             var result = new StringBuilder();
-            var lastPosition = (IMovingCommand?)null;
+
+            PathPoint? previous = null;
+            PathPoint? start = null;
 
             foreach (var command in path)
             {
-                switch (command)
+                var movingCommand = command as IMovingCommand;
+                if (movingCommand != null)
                 {
-                    case MoveToCommand moveTo:
-                        result.Append("M" + FormatCoordinate(moveTo.X) + " " + FormatCoordinate(moveTo.Y));
-                        break;
+                    var dest = new PathPoint(previous, movingCommand.X, movingCommand.Y);
 
-                    case LineToCommand lineTo:
-                        if (lastPosition == null)
-                        {
-                            result.Append("L" + FormatCoordinate(lineTo.X) + " " + FormatCoordinate(lineTo.Y));
-                        }
-                        else if (lastPosition.X == lineTo.X)
-                        {
-                            result.Append("v" + FormatCoordinate(lineTo.Y - lastPosition.Y));
-                        }
-                        else if (lastPosition.Y == lineTo.Y)
-                        {
-                            result.Append("h" + FormatCoordinate(lineTo.X - lastPosition.X));
-                        }
-                        else
-                        {
-                            result.Append("l" +
-                                FormatCoordinate(lineTo.X - lastPosition.X) + " " +
-                                FormatCoordinate(lineTo.Y - lastPosition.Y));
-                        }
-                        break;
+                    switch (command)
+                    {
+                        case MoveToCommand moveTo:
+                            if (previous == null)
+                            {
+                                result.Append("M" + FormatCoordinate(dest.Diff.X) + " " + FormatCoordinate(dest.Diff.Y));
+                            }
+                            else if (dest.Diff.X == 0 && dest.Diff.Y == 0)
+                            {
+                                // Skip noop command
+                            }
+                            else
+                            {
+                                result.Append("m" + FormatCoordinate(dest.Diff.X) + " " + FormatCoordinate(dest.Diff.Y));
+                            }
+                            start = dest;
+                            break;
 
-                    case CurveToCommand curveTo:
-                        result.Append("C" +
-                            FormatCoordinate(curveTo.X1) + " " + FormatCoordinate(curveTo.Y1) + "," +
-                            FormatCoordinate(curveTo.X2) + " " + FormatCoordinate(curveTo.Y2) + "," +
-                            FormatCoordinate(curveTo.X3) + " " + FormatCoordinate(curveTo.Y3));
-                        break;
+                        case LineToCommand lineTo:
+                            if (previous == null)
+                            {
+                                result.Append("L" + FormatCoordinate(dest.Diff.X) + " " + FormatCoordinate(dest.Diff.Y));
+                            }
+                            else if (dest.Diff.X == 0)
+                            {
+                                result.Append("v" + FormatCoordinate(dest.Diff.Y));
+                            }
+                            else if (dest.Diff.Y == 0)
+                            {
+                                result.Append("h" + FormatCoordinate(dest.Diff.X));
+                            }
+                            else
+                            {
+                                result.Append("l" + FormatCoordinate(dest.Diff.X) + " " + FormatCoordinate(dest.Diff.Y));
+                            }
+                            break;
 
-                    case ClosePathCommand _:
-                        result.Append("z");
-                        break;
+                        case CurveToCommand curveTo:
+                            var diffP1 = new PathPoint(previous, curveTo.X1, curveTo.Y1);
+                            var diffP2 = new PathPoint(previous, curveTo.X2, curveTo.Y2);
 
-                    default:
-                        throw new Exception("Unknown command");
+                            result.Append((previous == null ? "C" : "c") +
+                                FormatCoordinate(diffP1.Diff.X) + " " + FormatCoordinate(diffP1.Diff.Y) + "," +
+                                FormatCoordinate(diffP2.Diff.X) + " " + FormatCoordinate(diffP2.Diff.Y) + "," +
+                                FormatCoordinate(dest.Diff.X) + " " + FormatCoordinate(dest.Diff.Y));
+                            break;
+
+                        default:
+                            throw new Exception("Unknown path command");
+                    }
+
+                    previous = dest;
                 }
+                else
+                {
+                    switch (command)
+                    {
+                        case ClosePathCommand _:
+                            result.Append("z");
+                            previous = start;
+                            break;
 
-                lastPosition = command as IMovingCommand;
+                        default:
+                            throw new Exception("Unknown path command");
+                    }
+                }
             }
 
             return result.ToString();

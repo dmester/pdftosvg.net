@@ -50,4 +50,4 @@ You can also download the [CLI version](https://github.com/dmester/pdftosvg.net/
 pdftosvg.exe input.pdf output.svg
 ```
 
-[Command line reference](https://github.com/dmester/pdftosvg.net/blob/master/docs/command-line-usage.md)
+[Command line reference](https://pdftosvg.net/cli)

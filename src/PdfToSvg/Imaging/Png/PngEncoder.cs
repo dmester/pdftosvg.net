@@ -23,6 +23,8 @@ namespace PdfToSvg.Imaging.Png
         private const int BlueOffset = 2;
         private const int AlphaOffset = 3;
 
+        private int estimatedSize;
+
         public PngEncoder(Stream output)
         {
             this.output = output;
@@ -36,6 +38,16 @@ namespace PdfToSvg.Imaging.Png
 
         public void WriteImageHeader(int width, int height, PngColorType colorType, int bitDepth)
         {
+            var componentsPerSample = colorType switch
+            {
+                PngColorType.TruecolourWithAlpha => 4,
+                PngColorType.Truecolour => 3,
+                PngColorType.GreyscaleWithAlpha => 2,
+                _ => 1,
+            };
+
+            estimatedSize = width * height * componentsPerSample * bitDepth / 50;
+
             using (var chunk = new PngChunkStream(output, PngChunkIdentifier.ImageHeader))
             {
                 chunk.WriteBigEndian(width);
@@ -79,7 +91,7 @@ namespace PdfToSvg.Imaging.Png
 
         public Stream GetImageDataStream()
         {
-            var chunk = new PngChunkStream(output, PngChunkIdentifier.ImageData);
+            var chunk = new PngChunkStream(output, PngChunkIdentifier.ImageData, estimatedSize);
             var deflate = new ZLibStream(chunk, CompressionMode.Compress);
             return deflate;
         }

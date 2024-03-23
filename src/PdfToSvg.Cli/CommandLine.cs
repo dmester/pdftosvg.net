@@ -41,6 +41,16 @@ namespace PdfToSvg.Cli
                     }
                 }
 
+                bool BooleanArgument(string key, string value)
+                {
+                    return value.ToLowerInvariant() switch
+                    {
+                        "true" => true,
+                        "false" => false,
+                        _ => throw new ArgumentException("Invalid value \"" + value + "\" for option " + key + ".")
+                    };
+                }
+
                 var optionWithValue = Regex.Match(key, "^(--?[a-z-]+)=(.+)");
                 if (optionWithValue.Success)
                 {
@@ -86,6 +96,38 @@ namespace PdfToSvg.Cli
                     }
                 }
 
+                if (key == "--include-fonts" && TryReadValue(out value))
+                {
+                    ConversionOptions.FontResolver = value.ToLowerInvariant() switch
+                    {
+                        "true" => FontResolver.EmbedWoff,
+                        "false" => FontResolver.LocalFonts,
+                        "embed-woff" => FontResolver.EmbedWoff,
+                        "embed-opentype" => FontResolver.EmbedOpenType,
+                        "none" => FontResolver.LocalFonts,
+                        _ => throw new ArgumentException("Invalid value \"" + value + "\" for option --include-fonts.")
+                    };
+                    continue;
+                }
+
+                if (key == "--include-links" && TryReadValue(out value))
+                {
+                    ConversionOptions.IncludeLinks = BooleanArgument(key, value);
+                    continue;
+                }
+
+                if (key == "--include-annotations" && TryReadValue(out value))
+                {
+                    ConversionOptions.IncludeAnnotations = BooleanArgument(key, value);
+                    continue;
+                }
+
+                if (key == "--include-hidden-text" && TryReadValue(out value))
+                {
+                    ConversionOptions.IncludeHiddenText = BooleanArgument(key, value);
+                    continue;
+                }
+
                 if (InputPath == null)
                 {
                     InputPath = key;
@@ -114,6 +156,8 @@ namespace PdfToSvg.Cli
 
         public string? Password { get; }
 
+        public SvgConversionOptions ConversionOptions { get; } = new();
+
         public List<PageRange> PageRanges { get; } = new List<PageRange>();
 
         public static void WriteHelp()
@@ -121,14 +165,15 @@ namespace PdfToSvg.Cli
             // ------------------------------------------------------------------------------------------------|
             Console.WriteLine("Converts an input PDF file to one or multiple SVG files.");
             Console.WriteLine();
-            Console.WriteLine("Usage:");
-            Console.WriteLine("  pdftosvg.exe [OPTIONS...] <input> [<output>]");
+            Console.WriteLine("USAGE");
+            Console.WriteLine("  pdftosvg [OPTIONS...] <input> [<output>]");
             Console.WriteLine();
-            Console.WriteLine("Options:");
+            Console.WriteLine("OPTIONS");
             Console.WriteLine("  <input>     Path to the input PDF file.");
             Console.WriteLine();
             Console.WriteLine("  <output>    Path to the output SVG file(s). A page number will be appended to");
             Console.WriteLine("              the filename.");
+            Console.WriteLine();
             Console.WriteLine("              Default: Same as <input>, but with \".svg\" as extension.");
             Console.WriteLine();
             Console.WriteLine("  --pages <pages>");
@@ -150,7 +195,37 @@ namespace PdfToSvg.Cli
             Console.WriteLine("  --non-interactive");
             Console.WriteLine("              Disables any interactive prompts and progress reports.");
             Console.WriteLine();
-            Console.WriteLine("Example:");
+            Console.WriteLine("CONVERSION OPTIONS");
+            Console.WriteLine("  --include-fonts <value>");
+            Console.WriteLine("              Specifies how fonts from the PDF should be embedded in SVG:");
+            Console.WriteLine();
+            Console.WriteLine("                none             Only local fonts will be used");
+            Console.WriteLine("                embed-woff       Fonts will be embedded as WOFF fonts");
+            Console.WriteLine("                embed-opentype   Fonts will be embedded as OpenType fonts");
+            Console.WriteLine();
+            Console.WriteLine("              Default: embed-woff");
+            Console.WriteLine();
+            Console.WriteLine("  --include-links <true|false>");
+            Console.WriteLine("              Determines whether web links from the PDF document will be");
+            Console.WriteLine("              included in the generated SVG. Note that this property only");
+            Console.WriteLine("              affects links to websites. Other types of links, including links");
+            Console.WriteLine("              within the document, are currently not supported.");
+            Console.WriteLine();
+            Console.WriteLine("              Default: true");
+            Console.WriteLine();
+            Console.WriteLine("  --include-annotations <true|false>");
+            Console.WriteLine("              Determines whether annotations drawn in the PDF document should be");
+            Console.WriteLine("              included in the generated SVG.");
+            Console.WriteLine();
+            Console.WriteLine("              Default: true");
+            Console.WriteLine();
+            Console.WriteLine("  --include-hidden-text <true|false>");
+            Console.WriteLine("              Determines whether hidden text from the PDF document will be ");
+            Console.WriteLine("              included in the generated SVG.");
+            Console.WriteLine();
+            Console.WriteLine("              Default: true");
+            Console.WriteLine();
+            Console.WriteLine("EXAMPLE");
             Console.WriteLine("  pdftosvg.exe input.pdf output.svg --pages 1..2,9");
         }
     }

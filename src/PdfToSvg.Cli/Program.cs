@@ -205,7 +205,7 @@ namespace PdfToSvg.Cli
                         }
 
                         await Task.Yield();
-                        await page.SaveAsSvgAsync(pageOutputPath);
+                        await page.SaveAsSvgAsync(pageOutputPath, commandLine.ConversionOptions);
 
                         lock (progress)
                         {

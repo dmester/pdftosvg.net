@@ -75,6 +75,10 @@ namespace PdfToSvg.Cli
 
         private static async Task<int> Main(string[] args)
         {
+            // Error reporting is easier when all exceptions are in English
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+
             CommandLine commandLine;
             try
             {

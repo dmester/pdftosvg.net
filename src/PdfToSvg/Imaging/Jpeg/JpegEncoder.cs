@@ -388,7 +388,6 @@ namespace PdfToSvg.Imaging.Jpeg
         private void WriteMcuRow(JpegImageDataWriter imageDataWriter)
         {
             var inputBlock = new short[BlockSize * BlockSize];
-            var dctBlock = new short[BlockSize * BlockSize];
             var zzBlock = new short[BlockSize * BlockSize];
 
             for (var mcuX = 0; mcuX < mcuPerLine; mcuX++)

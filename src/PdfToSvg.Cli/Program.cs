@@ -143,7 +143,7 @@ namespace PdfToSvg.Cli
 
             try
             {
-                using (var doc = PdfDocument.Open(commandLine.InputPath!, openOptions))
+                using (var doc = await PdfDocument.OpenAsync(commandLine.InputPath!, openOptions))
                 {
                     if (!doc.Permissions.HasOwnerPermission &&
                         !doc.Permissions.AllowExtractContent)
@@ -203,6 +203,8 @@ namespace PdfToSvg.Cli
                         {
                             pageOutputPath = Path.Combine(outputDir, pageOutputPath);
                         }
+
+                        await Task.Yield();
                         await page.SaveAsSvgAsync(pageOutputPath);
 
                         lock (progress)

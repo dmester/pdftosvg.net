@@ -25,11 +25,11 @@ namespace PdfToSvg
     /// <code language="cs" title="Convert PDF to SVG">
     /// using (var doc = PdfDocument.Open("input.pdf"))
     /// {
-    ///     var pageIndex = 0;
+    ///     var pageNo = 1;
     /// 
     ///     foreach (var page in doc.Pages)
     ///     {
-    ///         page.SaveAsSvg($"output-{pageIndex++}.svg");
+    ///         page.SaveAsSvg($"output-{pageNo++}.svg");
     ///     }
     /// }
     /// </code>
@@ -45,11 +45,11 @@ namespace PdfToSvg
     /// 
     /// using (var doc = PdfDocument.Open("input.pdf", openOptions))
     /// {
-    ///     var pageIndex = 0;
+    ///     var pageNo = 1;
     ///
     ///     foreach (var page in doc.Pages)
     ///     {
-    ///         page.SaveAsSvg($"output-{pageIndex++}.svg");
+    ///         page.SaveAsSvg($"output-{pageNo++}.svg");
     ///     }
     /// }
     /// </code>
@@ -100,6 +100,7 @@ namespace PdfToSvg
         /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidCredentialException">The input PDF is encrypted, but an incorrect password was specified, or not specified at all.</exception>
         /// <exception cref="PdfException">The input PDF could not be parsed.</exception>
+        /// <exception cref="OperationCanceledException">The operation was cancelled because the cancellation token was triggered.</exception>
         public static PdfDocument Open(Stream stream, bool leaveOpen = false, OpenOptions? options = null, CancellationToken cancellationToken = default)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
@@ -121,6 +122,7 @@ namespace PdfToSvg
         /// <exception cref="FileNotFoundException">No file was found at <paramref name="path"/>.</exception>
         /// <exception cref="InvalidCredentialException">The input PDF is encrypted, but an incorrect password was specified, or not specified at all.</exception>
         /// <exception cref="PdfException">The input PDF could not be parsed.</exception>
+        /// <exception cref="OperationCanceledException">The operation was cancelled because the cancellation token was triggered.</exception>
         public static PdfDocument Open(string path, OpenOptions? options = null, CancellationToken cancellationToken = default)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));

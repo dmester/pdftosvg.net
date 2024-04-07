@@ -30,11 +30,11 @@ namespace PdfToSvg
     /// 
     /// using (var doc = PdfDocument.Open("input.pdf", openOptions))
     /// {
-    ///     var pageIndex = 0;
+    ///     var pageNo = 1;
     ///
     ///     foreach (var page in doc.Pages)
     ///     {
-    ///         page.SaveAsSvg($"output-{pageIndex++}.svg");
+    ///         page.SaveAsSvg($"output-{pageNo++}.svg");
     ///     }
     /// }
     /// </code>

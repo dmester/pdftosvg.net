@@ -29,11 +29,11 @@ namespace PdfToSvg
     /// 
     /// using (var doc = PdfDocument.Open("input.pdf"))
     /// {
-    ///     var pageIndex = 0;
+    ///     var pageNo = 1;
     ///
     ///     foreach (var page in doc.Pages)
     ///     {
-    ///         page.SaveAsSvg($"output-{pageIndex++}.svg", conversionOptions);
+    ///         page.SaveAsSvg($"output-{pageNo++}.svg", conversionOptions);
     ///     }
     /// }
     /// </code>
@@ -60,7 +60,11 @@ namespace PdfToSvg
     ///     }
     /// }
     /// </code>
+    /// </example>
+    /// <remarks>
+    /// <h2>Font types</h2>
     /// <para>
+    ///     The font resolver will for each font from the PDF provide a substitute font to be used in the generated SVG.
     ///     Types of substitute fonts that can be returned:
     /// </para>
     /// <list type="table">
@@ -91,13 +95,76 @@ namespace PdfToSvg
     ///         </description>
     ///     </item>
     /// </list>
-    /// </example>
+    /// <h2>Text representation</h2>
+    /// <para>
+    ///     PDF documents store text encoded as character codes, and provide mappings from character codes to font
+    ///     glyphs and Unicode characters. Some documents map multiple character codes to the same Unicode
+    ///     character, giving PdfToSvg.NET a choice. Exporting both character codes as the same Unicode character
+    ///     results in good text representation but potentially visually inaccurate SVG’s. Remapping one of
+    ///     the character codes to another Unicode character ensures visually accurate SVG’s at the cost of inaccurate
+    ///     text representation if text is exported from the SVG.
+    /// </para>
+    /// <para>
+    ///     When exporting text using a <see cref="LocalFont"/>, the library will use the Unicode mapping specified by
+    ///     the document, providing more accurate text representation.
+    /// </para>
+    /// <para>
+    ///     When exporting text using a <see cref="WebFont"/>, the library will remap duplicate character codes to 
+    ///     characters in the 
+    ///     <see href="https://en.wikipedia.org/wiki/Private_Use_Areas">Private Use Areas</see>, making sure the
+    ///     exported SVG’s are visually accurate, but text might appear as a series of question marks, <c>������</c>,
+    ///     in the SVG markup. If you intend to extract text from the SVG, consider exporting the SVG using 
+    ///     <see cref="FontResolver.LocalFonts">local fonts</see> instead.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="SvgConversionOptions.FontResolver"/>
     public abstract class FontResolver
     {
         /// <summary>
         /// Font resolver substituting fonts in the PDF with commonly available fonts. No fonts are embedded or inlined
         /// in the resulting SVG. The resolved fonts need to be available on the viewing machine.
         /// </summary>
+        /// <example>
+        /// <para>
+        ///     The following example will produce SVG using locally installed fonts on the user machine. All fonts in
+        ///     the PDF are remapped to commonly installed fonts.
+        /// </para>
+        /// <code language="cs" title="Using local fonts">
+        /// var conversionOptions = new SvgConversionOptions
+        /// {
+        ///     FontResolver = FontResolver.LocalFonts,
+        /// };
+        /// 
+        /// using (var doc = PdfDocument.Open("input.pdf"))
+        /// {
+        ///     var pageNo = 1;
+        ///
+        ///     foreach (var page in doc.Pages)
+        ///     {
+        ///         page.SaveAsSvg($"output-{pageNo++}.svg", conversionOptions);
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// <para>
+        ///     Note that only using locally installed fonts will produce an SVG with a look deviating from the
+        ///     original PDF document.
+        /// </para>
+        /// <h2>Text representation</h2>
+        /// <para>
+        ///     PDF documents store text encoded as character codes, and provide mappings from character codes to font
+        ///     glyphs and Unicode characters. Some documents map multiple character codes to the same Unicode
+        ///     character, giving PdfToSvg.NET a choice. Exporting both character codes as the same Unicode character
+        ///     results in good text representation but potentially visually inaccurate SVG’s. Remapping one of
+        ///     the character codes to another Unicode character ensures visually accurate SVG’s at the cost of inaccurate
+        ///     text representation if text is exported from the SVG.
+        /// </para>
+        /// <para>
+        ///     When exporting text using a <see cref="LocalFont"/>, the library will use the Unicode mapping specified by
+        ///     the document, providing more accurate text representation.
+        /// </para>
+        /// </remarks>
         public static FontResolver LocalFonts { get; } = new LocalFontResolver();
 
         /// <summary>
@@ -105,6 +172,45 @@ namespace PdfToSvg
         /// If the font cannot be converted, the resolver in first hand tries to inline the glyphs. If this is not
         /// possible, the resolver falls back to the <see cref="LocalFonts"/> resolver.
         /// </summary>
+        /// <example>
+        /// <para>
+        ///     The following example will embed fonts in the exported SVG as WOFF fonts. Note that this is 
+        ///     currently the default behavior, so it is not necessary specifying a font resolver.
+        /// </para>
+        /// <code language="cs" title="Export fonts as WOFF fonts">
+        /// var conversionOptions = new SvgConversionOptions
+        /// {
+        ///     FontResolver = FontResolver.EmbedWoff,
+        /// };
+        /// 
+        /// using (var doc = PdfDocument.Open("input.pdf"))
+        /// {
+        ///     var pageNo = 1;
+        ///
+        ///     foreach (var page in doc.Pages)
+        ///     {
+        ///         page.SaveAsSvg($"output-{pageNo++}.svg", conversionOptions);
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// <para>
+        ///     PDF documents store text encoded as character codes, and provide mappings from character codes to font
+        ///     glyphs and Unicode characters. Some documents map multiple character codes to the same Unicode
+        ///     character, giving PdfToSvg.NET a choice. Exporting both character codes as the same Unicode character
+        ///     results in good text representation but potentially visually inaccurate SVG’s. Remapping one of
+        ///     the character codes to another Unicode character ensures visually accurate SVG’s at the cost of inaccurate
+        ///     text representation if text is exported from the SVG.
+        /// </para>
+        /// <para>
+        ///     When exporting text using a WOFF font, the library will remap duplicate character codes to characters in the 
+        ///     <see href="https://en.wikipedia.org/wiki/Private_Use_Areas">Private Use Areas</see>, making sure the
+        ///     exported SVG’s are visually accurate, but text might appear as a series of question marks, <c>������</c>,
+        ///     in the SVG markup. If you intend to extract text from the SVG, consider exporting the SVG using 
+        ///     <see cref="FontResolver.LocalFonts">FontResolver.LocalFonts</see> instead.
+        /// </para>
+        /// </remarks>
         public static FontResolver EmbedWoff { get; } = new EmbedWoffFontResolver();
 
         /// <summary>
@@ -112,6 +218,45 @@ namespace PdfToSvg
         /// If the font cannot be converted, the resolver in first hand tries to inline the glyphs. If this is not
         /// possible, the resolver falls back to the <see cref="LocalFonts"/> resolver.
         /// </summary>
+        /// <example>
+        /// <para>
+        ///     The following example will embed fonts in the exported SVG as OpenType fonts.
+        /// </para>
+        /// <code language="cs" title="Export fonts as OpenType fonts">
+        /// var conversionOptions = new SvgConversionOptions
+        /// {
+        ///     FontResolver = FontResolver.EmbedOpenType,
+        /// };
+        /// 
+        /// using (var doc = PdfDocument.Open("input.pdf"))
+        /// {
+        ///     var pageNo = 1;
+        ///
+        ///     foreach (var page in doc.Pages)
+        ///     {
+        ///         page.SaveAsSvg($"output-{pageNo++}.svg", conversionOptions);
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// <para>
+        ///     PDF documents store text encoded as character codes, and provide mappings from character codes to font
+        ///     glyphs and Unicode characters. Some documents map multiple character codes to the same Unicode
+        ///     character, giving PdfToSvg.NET a choice. Exporting both character codes as the same Unicode character
+        ///     results in good text representation but potentially visually inaccurate SVG’s. Remapping one of
+        ///     the character codes to another Unicode character ensures visually accurate SVG’s at the cost of inaccurate
+        ///     text representation if text is exported from the SVG.
+        /// </para>
+        /// <para>
+        ///     When exporting text using an OpenType font, the library will remap duplicate character codes to 
+        ///     characters in the 
+        ///     <see href="https://en.wikipedia.org/wiki/Private_Use_Areas">Private Use Areas</see>, making sure the
+        ///     exported SVG’s are visually accurate, but text might appear as a series of question marks, <c>������</c>,
+        ///     in the SVG markup. If you intend to extract text from the SVG, consider exporting the SVG using 
+        ///     <see cref="FontResolver.LocalFonts">FontResolver.LocalFonts</see> instead.
+        /// </para>
+        /// </remarks>
         public static FontResolver EmbedOpenType { get; } = new EmbedOpenTypeFontResolver();
 
         /// <summary>
@@ -129,6 +274,7 @@ namespace PdfToSvg
         /// The font to be used in the resulting SVG markup.
         /// Can be a <see cref="LocalFont"/> or <see cref="WebFont"/>.
         /// </returns>
+        /// <exception cref="OperationCanceledException">The operation was cancelled because the cancellation token was triggered.</exception>
         public virtual Font ResolveFont(SourceFont sourceFont, CancellationToken cancellationToken)
         {
             throw new NotImplementedException(

@@ -14,6 +14,8 @@ namespace PdfToSvg
     /// <summary>
     /// Contains options affecting the behavior when a PDF page is converted to SVG.
     /// </summary>
+    /// <seealso cref="PdfPage.ToSvgString(SvgConversionOptions?, System.Threading.CancellationToken)"/>
+    /// <seealso cref="PdfPage.SaveAsSvg(string, SvgConversionOptions?, System.Threading.CancellationToken)"/>
     public class SvgConversionOptions
     {
         private ImageResolver imageResolver = ImageResolver.Default;
@@ -43,37 +45,56 @@ namespace PdfToSvg
         ///     fallback to detecting standard fonts and assuming the client has those installed. You can implement a
         ///     custom font resolver for e.g. using custom WOFF or WOFF2 files, or saving the embedded fonts as separate
         ///     font files.
-        /// files.
         /// </para>
-        /// <para>
-        ///     Built-in font resolvers:
-        /// </para>
+        /// <h2>Built-in font resolvers</h2>
         /// <list type="table">
         ///     <listheader>
         ///         <term>Resolver</term>
         ///         <description>Description</description>
         ///     </listheader>
         ///     <item>
-        ///         <term><see cref="FontResolver.EmbedOpenType"/></term>
+        ///         <term><see cref="FontResolver.EmbedOpenType">FontResolver.EmbedOpenType</see></term>
         ///         <description>
         ///             Extracts fonts from the PDF, converts them to OpenType format, and then embed them as data URLs
         ///             in the SVG.
         ///         </description>
         ///     </item>
         ///     <item>
-        ///         <term><see cref="FontResolver.EmbedWoff"/></term>
+        ///         <term><see cref="FontResolver.EmbedWoff">FontResolver.EmbedWoff</see></term>
         ///         <description>
         ///             Extracts fonts from the PDF, converts them to WOFF format, and then embed them as data URLs in
         ///             the SVG.
         ///         </description>
         ///     </item>
         ///     <item>
-        ///         <term><see cref="FontResolver.LocalFonts"/></term>
+        ///         <term><see cref="FontResolver.LocalFonts">FontResolver.LocalFonts</see></term>
         ///         <description>
         ///             Tries to match the PDF fonts with commonly available fonts, and references them by name.
         ///         </description>
         ///     </item>
         /// </list>
+        /// <h2>Text representation</h2>
+        /// <para>
+        ///     PDF documents store text encoded as character codes, and provide mappings from character codes to font
+        ///     glyphs and Unicode characters. Some documents map multiple character codes to the same Unicode
+        ///     character, giving PdfToSvg.NET a choice. Exporting both character codes as the same Unicode character
+        ///     results in good text representation but potentially visually inaccurate SVG’s. Remapping one of
+        ///     the character codes to another Unicode character ensures visually accurate SVG’s at the cost of inaccurate
+        ///     text representation if text is exported from the SVG.
+        /// </para>
+        /// <para>
+        ///     When exporting text using <see cref="FontResolver.LocalFonts">FontResolver.LocalFonts</see>, the library will use the Unicode
+        ///     mapping specified by the document, providing more accurate text representation.
+        /// </para>
+        /// <para>
+        ///     When exporting text using <see cref="FontResolver.EmbedOpenType">FontResolver.EmbedOpenType</see> or 
+        ///     <see cref="FontResolver.EmbedWoff">FontResolver.EmbedWoff</see>,
+        ///     the library will remap duplicate character codes to  characters in the 
+        ///     <see href="https://en.wikipedia.org/wiki/Private_Use_Areas">Private Use Areas</see>, making sure the
+        ///     exported SVG’s are visually accurate, but text might appear as a series of question marks, <c>������</c>,
+        ///     in the SVG markup. If you intend to extract text from the SVG, consider exporting the SVG using 
+        ///     <see cref="FontResolver.LocalFonts">local fonts</see> instead.
+        /// </para>
         /// </remarks>
         /// <inheritdoc cref="PdfToSvg.FontResolver" path="example"/>
         public FontResolver FontResolver
@@ -157,6 +178,28 @@ namespace PdfToSvg
         ///     document, are currently not supported.
         /// </para>
         /// </remarks>
+        /// <example>
+        /// <para>
+        ///     The following example will exclude links from the generated SVG. This might be good if you don't want
+        ///     the SVG to lead the user away from the document.
+        /// </para>
+        /// <code language="cs" title="Exclude links in generated SVG">
+        /// var conversionOptions = new SvgConversionOptions
+        /// {
+        ///     IncludeLinks = false,
+        /// };
+        /// 
+        /// using (var doc = PdfDocument.Open("input.pdf"))
+        /// {
+        ///     var pageNo = 1;
+        ///
+        ///     foreach (var page in doc.Pages)
+        ///     {
+        ///         page.SaveAsSvg($"output-{pageNo++}.svg", conversionOptions);
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
         public bool IncludeLinks { get; set; } = true;
 
         /// <summary>
@@ -170,6 +213,7 @@ namespace PdfToSvg
         ///     Interactive annotations are not supported. Links are technically also annotations, but are configured
         ///     by the <see cref="IncludeLinks"/> property.
         /// </para>
+        /// <h2>Annotation XML schema</h2>
         /// <para>
         ///     Annotations are inserted as <c>&lt;g&gt;</c> elements, decorated with metadata attributes
         ///     in the namespace <c>https://pdftosvg.net/xmlns/annotations</c>. Note that some annotations are only
@@ -232,6 +276,28 @@ namespace PdfToSvg
         ///     </item>
         /// </list>
         /// </remarks>
+        /// <example>
+        /// <para>
+        ///     The following example will exclude annotations from the generated SVG.
+        /// </para>
+        /// <code language="cs" title="Exclude annotations in generated SVG">
+        /// var conversionOptions = new SvgConversionOptions
+        /// {
+        ///     IncludeAnnotations = false,
+        /// };
+        /// 
+        /// using (var doc = PdfDocument.Open("input.pdf"))
+        /// {
+        ///     var pageNo = 1;
+        ///
+        ///     foreach (var page in doc.Pages)
+        ///     {
+        ///         page.SaveAsSvg($"output-{pageNo++}.svg", conversionOptions);
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        /// <seealso cref="PdfPage.FileAttachments"/>
         public bool IncludeAnnotations { get; set; } = true;
 
         /// <summary>
@@ -266,6 +332,28 @@ namespace PdfToSvg
         ///     otherwise generated for making the clipping text searchable and selectable.
         /// </para>
         /// </remarks>
+        /// <example>
+        /// <para>
+        ///     The following example will exclude hidden from the generated SVG markup. This will in some cases result
+        ///     in smaller SVG files.
+        /// </para>
+        /// <code language="cs" title="Exclude hidden text in generated SVG">
+        /// var conversionOptions = new SvgConversionOptions
+        /// {
+        ///     IncludeHiddenText = false,
+        /// };
+        /// 
+        /// using (var doc = PdfDocument.Open("input.pdf"))
+        /// {
+        ///     var pageNo = 1;
+        ///
+        ///     foreach (var page in doc.Pages)
+        ///     {
+        ///         page.SaveAsSvg($"output-{pageNo++}.svg", conversionOptions);
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
         public bool IncludeHiddenText { get; set; } = true;
 
 #if DEBUG

@@ -77,9 +77,14 @@ namespace PdfToSvg
         /// <exception cref="PdfException">
         ///     The conversion failed, possibly because of a malformed PDF.
         /// </exception>
+        /// <exception cref="OperationCanceledException">
+        ///     The operation was cancelled because the cancellation token was triggered.
+        /// </exception>
         /// <remarks>
-        ///     Note that if you parse the returned SVG fragment as XML, you need to preserve space and not add indentation. Text content
-        ///     will otherwise not render correctly.
+        /// <note type="note">
+        ///     If you parse the XML returned from PdfToSvg.NET, you need to preserve space and not add indentation.
+        ///     Otherwise text will not be rendered correctly in the modified markup.
+        /// </note>
         /// </remarks>
         public string ToSvgString(SvgConversionOptions? options = null, CancellationToken cancellationToken = default)
         {
@@ -118,6 +123,9 @@ namespace PdfToSvg
         /// <exception cref="PdfException">
         ///     The conversion failed, possibly because of a malformed PDF.
         /// </exception>
+        /// <exception cref="OperationCanceledException">
+        ///     The operation was cancelled because the cancellation token was triggered.
+        /// </exception>
         public void SaveAsSvg(Stream stream, SvgConversionOptions? options = null, CancellationToken cancellationToken = default)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
@@ -149,6 +157,9 @@ namespace PdfToSvg
         /// </exception>
         /// <exception cref="PdfException">
         ///     The conversion failed, possibly because of a malformed PDF.
+        /// </exception>
+        /// <exception cref="OperationCanceledException">
+        ///     The operation was cancelled because the cancellation token was triggered.
         /// </exception>
         public void SaveAsSvg(string path, SvgConversionOptions? options = null, CancellationToken cancellationToken = default)
         {

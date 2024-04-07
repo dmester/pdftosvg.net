@@ -13,6 +13,7 @@ namespace PdfToSvg
     /// <summary>
     /// Represents a substitute font to be used in the generated SVG markup.
     /// </summary>
+    /// <seealso cref="FontResolver"/>
     public abstract class Font
     {
         // Don't allow external implementations

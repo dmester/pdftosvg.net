@@ -12,6 +12,7 @@ namespace PdfToSvg
     /// <summary>
     /// Contains information about a font used in the PDF document.
     /// </summary>
+    /// <seealso cref="FontResolver"/>
     public abstract class SourceFont
     {
         /// <summary>
@@ -48,11 +49,11 @@ namespace PdfToSvg
         /// <code language="cs" title="Using font resolver">
         /// using (var doc = PdfDocument.Open("input.pdf"))
         /// {
-        ///     var pageIndex = 0;
+        ///     var pageNo = 1;
         /// 
         ///     foreach (var page in doc.Pages)
         ///     {
-        ///         page.SaveAsSvg($"output-{pageIndex++}.svg", new SvgConversionOptions
+        ///         page.SaveAsSvg($"output-{pageNo++}.svg", new SvgConversionOptions
         ///         {
         ///             FontResolver = new LocalStandardFontsFontResolver(),
         ///         });

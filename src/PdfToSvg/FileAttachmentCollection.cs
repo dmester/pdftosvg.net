@@ -13,6 +13,7 @@ namespace PdfToSvg
     /// <summary>
     /// Read only collection of files attached to a PDF page.
     /// </summary>
+    /// <seealso cref="PdfPage.FileAttachments"/>
     public class FileAttachmentCollection : ReadOnlyCollection<FileAttachment>
     {
         internal FileAttachmentCollection(IList<FileAttachment> list) : base(list)

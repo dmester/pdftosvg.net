@@ -13,6 +13,26 @@ namespace PdfToSvg
     /// <summary>
     /// Represents a font that is assumed to be installed on the machine viewing the SVG.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    ///     Objects of this type can be returned from a <see cref="FontResolver"/> to indicate how text will be rendered
+    ///     in the generated SVG.
+    /// </para>
+    /// <h2>Text representation</h2>
+    /// <para>
+    ///     PDF documents store text encoded as character codes, and provide mappings from character codes to font
+    ///     glyphs and Unicode characters. Some documents map multiple character codes to the same Unicode
+    ///     character, giving PdfToSvg.NET a choice. Exporting both character codes as the same Unicode character
+    ///     results in good text representation but potentially visually inaccurate SVG’s. Remapping one of
+    ///     the character codes to another Unicode character ensures visually accurate SVG’s at the cost of inaccurate
+    ///     text representation if text is exported from the SVG.
+    /// </para>
+    /// <para>
+    ///     When exporting text using a <see cref="LocalFont"/>, the library will use the Unicode mapping specified by
+    ///     the document, providing more accurate text representation.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="FontResolver"/>
     public class LocalFont : Font
     {
         /// <summary>

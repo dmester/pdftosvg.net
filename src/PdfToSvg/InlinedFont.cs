@@ -14,6 +14,10 @@ namespace PdfToSvg
     /// </summary>
     /// <remarks>
     /// <para>
+    ///     Objects of this type can be returned from a <see cref="FontResolver"/> to indicate how text will be rendered
+    ///     in the generated SVG.
+    /// </para>
+    /// <para>
     ///     <see cref="InlinedFont"/> differs from <see cref="WebFont"/>, where the latter embeds fonts as OpenType or
     ///     WOFF font files in the generated SVG. Side effects from inlining glyphs are that exported text will not be
     ///     selectable, and that the generated SVG will typically be larger than if the font is embedded as a font file.
@@ -26,6 +30,7 @@ namespace PdfToSvg
     ///     cannot be converted, e.g., bitmap fonts. <see cref="InlinedFont"/> is mainly intended for this subset.
     /// </para>
     /// </remarks>
+    /// <seealso cref="FontResolver"/>
     public class InlinedFont : Font
     {
         /// <summary>

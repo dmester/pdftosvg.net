@@ -14,6 +14,8 @@ namespace PdfToSvg
     /// <summary>
     /// Provides information about an image in a PDF document.
     /// </summary>
+    /// <see cref="ImageResolver"/>
+    /// <see cref="SvgConversionOptions.ImageResolver"/>
     public abstract class Image
     {
         internal Image(string contentType)
@@ -38,6 +40,7 @@ namespace PdfToSvg
         /// </summary>
         /// <param name="cancellationToken">Cancellation token that can be used to cancel the operation.</param>
         /// <returns>Binary content of the image.</returns>
+        /// <exception cref="OperationCanceledException">The operation was cancelled because the cancellation token was triggered.</exception>
         public abstract byte[] GetContent(CancellationToken cancellationToken);
 
 #if HAVE_ASYNC
@@ -46,6 +49,7 @@ namespace PdfToSvg
         /// </summary>
         /// <param name="cancellationToken">Cancellation token that can be used to cancel the operation.</param>
         /// <returns>Binary content of the image.</returns>
+        /// <exception cref="OperationCanceledException">The operation was cancelled because the cancellation token was triggered.</exception>
         public abstract Task<byte[]> GetContentAsync(CancellationToken cancellationToken);
 #endif
 
@@ -54,6 +58,7 @@ namespace PdfToSvg
         /// </summary>
         /// <param name="cancellationToken">Cancellation token that can be used to cancel the operation.</param>
         /// <returns>Data URL for this image.</returns>
+        /// <exception cref="OperationCanceledException">The operation was cancelled because the cancellation token was triggered.</exception>
         public string ToDataUrl(CancellationToken cancellationToken)
         {
             return "data:" + ContentType + ";base64," + Convert.ToBase64String(GetContent(cancellationToken));
@@ -65,6 +70,7 @@ namespace PdfToSvg
         /// </summary>
         /// <param name="cancellationToken">Cancellation token that can be used to cancel the operation.</param>
         /// <returns>Data URL for this image.</returns>
+        /// <exception cref="OperationCanceledException">The operation was cancelled because the cancellation token was triggered.</exception>
         public async Task<string> ToDataUrlAsync(CancellationToken cancellationToken)
         {
             return "data:" + ContentType + ";base64," + Convert.ToBase64String(await GetContentAsync(cancellationToken).ConfigureAwait(false));

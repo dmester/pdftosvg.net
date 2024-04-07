@@ -14,6 +14,7 @@ namespace PdfToSvg
     /// <summary>
     /// Resolves an image URL for an image encountered in a PDF document.
     /// </summary>
+    /// <see cref="SvgConversionOptions.ImageResolver"/>
     public abstract class ImageResolver
     {
         /// <summary>
@@ -33,6 +34,7 @@ namespace PdfToSvg
         /// <param name="image">Found image.</param>
         /// <param name="cancellationToken">Token for monitoring cancellation requests.</param>
         /// <returns>URL for the specified image.</returns>
+        /// <exception cref="OperationCanceledException">The operation was cancelled because the cancellation token was triggered.</exception>
         public abstract string ResolveImageUrl(Image image, CancellationToken cancellationToken);
     }
 }

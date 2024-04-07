@@ -17,6 +17,7 @@ namespace PdfToSvg
     /// <summary>
     /// Provides access to an embedded file attached to a PDF document.
     /// </summary>
+    /// <seealso cref="PdfPage.FileAttachments"/>
     public class FileAttachment
     {
         private readonly PdfStream stream;
@@ -39,6 +40,7 @@ namespace PdfToSvg
         /// <returns>
         /// A <see cref="Stream"/> containing the data of the file. The caller is responsible for disposing the stream.
         /// </returns>
+        /// <exception cref="OperationCanceledException">The operation was cancelled because the cancellation token was triggered.</exception>
         public Stream GetContent(CancellationToken cancellationToken = default)
         {
             // The data is copied to a MemoryStream to prevent callers from being able to cause deadlocks
@@ -55,6 +57,9 @@ namespace PdfToSvg
 
 #if HAVE_ASYNC
         /// <inheritdoc cref="GetContent(CancellationToken)"/>
+        /// <summary>
+        /// Gets the content of the attached file asynchronously.
+        /// </summary>
         public async Task<Stream> GetContentAsync(CancellationToken cancellationToken = default)
         {
             // The data is copied to a MemoryStream to prevent callers from being able to cause deadlocks

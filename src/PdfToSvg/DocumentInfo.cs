@@ -16,6 +16,7 @@ namespace PdfToSvg
     /// <summary>
     /// Provides information about a PDF document.
     /// </summary>
+    /// <see cref="PdfDocument.Info"/>
     public class DocumentInfo
     {
         private readonly PdfDictionary info;

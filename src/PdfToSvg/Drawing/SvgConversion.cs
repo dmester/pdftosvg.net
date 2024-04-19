@@ -192,11 +192,12 @@ namespace PdfToSvg.Drawing
             }
 
             // Remove leading 0 in fractional numbers in the range (-1, 1)
-            else if (result.StartsWith("0."))
+            // String.StartsWith() was previously reported as a hot path in the profiler, so let's do an ugly comparison
+            else if (result.Length > 2 && result[0] == '0' && result[1] == '.')
             {
                 result = result.Substring(1);
             }
-            else if (result.StartsWith("-0."))
+            else if (result.Length > 3 && result[0] == '-' && result[1] == '0' && result[2] == '.')
             {
                 result = result.Remove(1, 1);
             }

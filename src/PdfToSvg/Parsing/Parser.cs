@@ -181,28 +181,50 @@ namespace PdfToSvg.Parsing
 
         protected bool TryReadToken(Token token)
         {
-            var nextLexeme = lexer.Peek();
-            if (nextLexeme.Token == token)
+            Lexeme nextLexeme;
+
+            try
             {
-                lexer.Read();
-                return true;
+                nextLexeme = lexer.Peek();
             }
-            return false;
+            catch
+            {
+                return false;
+            }
+
+            if (nextLexeme.Token != token)
+            {
+                return false;    
+            }
+
+            lexer.Read();
+            return true;
         }
 
         protected bool TryReadInteger(out int result)
         {
-            var nextLexeme = lexer.Peek();
-            if (nextLexeme.Token == Token.Integer)
-            {
-                lexer.Read();
+            Lexeme nextLexeme;
 
-                result = nextLexeme.IntValue;
-                return true;
+            try
+            {
+                nextLexeme = lexer.Peek();
+            }
+            catch
+            {
+                result = 0;
+                return false;
             }
 
-            result = 0;
-            return false;
+            if (nextLexeme.Token != Token.Integer)
+            {
+                result = 0;
+                return false;
+            }
+
+            lexer.Read();
+
+            result = nextLexeme.IntValue;
+            return true;
         }
 
         protected object? ReadValue()

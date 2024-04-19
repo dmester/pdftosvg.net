@@ -40,6 +40,14 @@ namespace PdfToSvg.Tests.Parsing
         }
 
         [Test]
+        public void UnknownToken()
+        {
+            var lexerLF = new Lexer("  &&&&&&&&&&&& ", basicKeywords);
+            Assert.AreEqual(new Lexeme(Token.UnexpectedCharacter), lexerLF.Read());
+            Assert.AreEqual(new Lexeme(Token.EndOfInput), lexerLF.Read());
+        }
+
+        [Test]
         public void Commands()
         {
             var lexer = new Lexer("ET\nT* 0 0 1 rg /Ti Tj12 d0 d1d12 (T*)", basicKeywords);
@@ -178,7 +186,8 @@ namespace PdfToSvg.Tests.Parsing
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
 
             var lexerInvalid = new Lexer("(abc");
-            Assert.Throws<ParserException>(() => lexerInvalid.Read());
+            Assert.AreEqual(new Lexeme(Token.EndOfInput), lexerInvalid.Read());
+            Assert.AreEqual(new Lexeme(Token.EndOfInput), lexerInvalid.Read());
         }
 
         [Test]
@@ -197,10 +206,10 @@ namespace PdfToSvg.Tests.Parsing
             Assert.AreEqual(new Lexeme(Token.EndOfInput, 35), lexer.Read());
 
             var lexerInvalidChars = new Lexer("< 4XXX 14 ### \0 \na  \t \f 4A 5  >");
-            Assert.Throws<ParserException>(() => lexerInvalidChars.Read());
+            Assert.AreEqual(new Lexeme(Token.UnexpectedCharacter, 3), lexerInvalidChars.Read());
 
             var lexerUnclosed = new Lexer("<414a4A50");
-            Assert.Throws<ParserException>(() => lexerUnclosed.Read());
+            Assert.AreEqual(new Lexeme(Token.UnexpectedCharacter, 9), lexerUnclosed.Read());
         }
 
         [Test]

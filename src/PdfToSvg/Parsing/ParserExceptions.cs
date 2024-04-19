@@ -51,31 +51,5 @@ namespace PdfToSvg.Parsing
         {
             return new ParserException("The specified file is not a valid PDF file. No file header was found.", 0);
         }
-
-        public static Exception UnexpectedCharacter(BufferedReader reader, char unexpectedChar)
-        {
-            var errorPosition = reader.Position;
-            reader.Seek(-20, SeekOrigin.Current);
-            var extractPosition = reader.Position;
-
-            var extractBytes = new byte[30];
-            var extractLength = reader.Read(extractBytes, 0, extractBytes.Length);
-            var extract = Encoding.ASCII.GetString(extractBytes, 0, extractLength);
-
-            reader.Position = errorPosition;
-
-            var charName =
-                unexpectedChar == BufferedReader.EndOfStreamMarker ? "end of input" :
-                string.Format("character '{0}' (0x{0:x4})", unexpectedChar);
-
-            var errorMessage = string.Format(
-                "Unexpected {0} at position {1}.\r\nContext: \"{2}\u2192{3}\"",
-                charName, errorPosition,
-                extract.Substring(0, (int)(errorPosition - extractPosition)),
-                extract.Substring((int)(errorPosition - extractPosition))
-            );
-
-            return new ParserException(errorMessage, errorPosition);
-        }
     }
 }

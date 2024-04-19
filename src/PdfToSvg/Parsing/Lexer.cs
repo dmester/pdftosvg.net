@@ -301,7 +301,9 @@ namespace PdfToSvg.Parsing
 
                 if (nextChar == BufferedReader.EndOfStreamMarker)
                 {
-                    throw ParserExceptions.UnexpectedCharacter(Stream, BufferedReader.EndOfStreamMarker);
+                    var errorPosition = Stream.Position;
+                    Reset();
+                    return CreateLexeme(Token.EndOfInput, errorPosition);
                 }
                 else if (nextChar == '(')
                 {
@@ -474,7 +476,9 @@ namespace PdfToSvg.Parsing
                 }
                 else
                 {
-                    throw ParserExceptions.UnexpectedCharacter(Stream, nextChar);
+                    var errorPosition = Stream.Position;
+                    Seek(0, SeekOrigin.End);
+                    return CreateLexeme(Token.UnexpectedCharacter, errorPosition);
                 }
 
                 nextChar = Stream.PeekChar();
@@ -614,7 +618,10 @@ namespace PdfToSvg.Parsing
                         break;
 
                     default:
-                        throw ParserExceptions.UnexpectedCharacter(Stream, nextChar);
+                        var errorPosition = Stream.Position;
+                        Seek(0, SeekOrigin.End);
+                        result = CreateLexeme(Token.UnexpectedCharacter, errorPosition);
+                        break;
                 }
             }
             while (result.Token == Token.None);

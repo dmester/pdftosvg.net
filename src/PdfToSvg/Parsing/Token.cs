@@ -7,6 +7,7 @@ namespace PdfToSvg.Parsing
     internal enum Token
     {
         None = 0,
+        UnexpectedCharacter,
         EndOfInput,
         BeginDictionary,
         EndDictionary,

@@ -87,6 +87,6 @@ namespace PdfToSvg.Parsing
 
         public override string ToString() => position == 0
             ? $"{Token} {Value}"
-            : $"{Token} {Value} (pos {position})";
+            : $"{Token} {Value} (pos {Position})";
     }
 }

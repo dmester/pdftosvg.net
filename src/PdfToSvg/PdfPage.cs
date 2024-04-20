@@ -72,7 +72,7 @@ namespace PdfToSvg
         /// <returns>SVG fragment without XML declaration. The fragment can be saved to a file or included as inline SVG in HTML.</returns>
         /// <exception cref="PermissionException">
         ///     Content extraction from this document is forbidden by the document author. 
-        ///     Not thrown if the document is opened with the owner password.
+        ///     Not thrown if the document is opened with the owner password (see <see cref="OpenOptions.Password"/>).
         /// </exception>
         /// <exception cref="PdfException">
         ///     The conversion failed, possibly because of a malformed PDF.
@@ -118,7 +118,7 @@ namespace PdfToSvg
         /// </exception>
         /// <exception cref="PermissionException">
         ///     Content extraction from this document is forbidden by the document author. 
-        ///     Not thrown if the document is opened with the owner password.
+        ///     Not thrown if the document is opened with the owner password (see <see cref="OpenOptions.Password"/>).
         /// </exception>
         /// <exception cref="PdfException">
         ///     The conversion failed, possibly because of a malformed PDF.
@@ -153,7 +153,7 @@ namespace PdfToSvg
         /// </exception>
         /// <exception cref="PermissionException">
         ///     Content extraction from this document is forbidden by the document author. 
-        ///     Not thrown if the document is opened with the owner password.
+        ///     Not thrown if the document is opened with the owner password (see <see cref="OpenOptions.Password"/>).
         /// </exception>
         /// <exception cref="PdfException">
         ///     The conversion failed, possibly because of a malformed PDF.

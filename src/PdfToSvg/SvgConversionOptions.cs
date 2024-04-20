@@ -105,12 +105,10 @@ namespace PdfToSvg
 
         /// <summary>
         /// Gets or sets the minimum stroke width that will be used in the resulting SVG.
-        /// If the PDF use a thinner stroke width, it will be replaced with this width.
+        /// If the PDF use a thinner stroke width, it will be replaced with this width. 
+        /// The default value is 0.5.
         /// </summary>
         /// <remarks>
-        /// <para>
-        ///     The default value is 0.5.
-        /// </para>
         /// <para>
         ///     The value is expressed in transformed user space units of the converted PDF page. By default 1 user
         ///     space unit is 1/72 inch (0.35 mm), but this can be overridden by the PDF document. Transforms can affect
@@ -136,12 +134,9 @@ namespace PdfToSvg
 
         /// <summary>
         /// Explicit spacing between letters below this threshold will be removed and merged to a single text span when
-        /// using a local font.
+        /// using a local font. The default value is 0.2.
         /// </summary>
         /// <remarks>
-        /// <para>
-        ///     The default value is 0.2.
-        /// </para>
         /// <para>
         ///     The value is relative to the current font size, where 1.0 represents the font size.
         ///     This property affects text using a local font. A high value produces long text spans. This is better for
@@ -152,12 +147,9 @@ namespace PdfToSvg
 
         /// <summary>
         /// Explicit spacing between letters below this threshold will be removed and merged to a single text span when
-        /// using an embedded font.
+        /// using an embedded font. The default value is 0.02.
         /// </summary>
         /// <remarks>
-        /// <para>
-        ///     The default value is 0.02.
-        /// </para>
         /// <para>
         ///     The value is relative to the current font size, where 1.0 represents the font size.
         ///     This property affects text formatted with an embedded font. Text inlined as paths is not affected. A low
@@ -168,11 +160,9 @@ namespace PdfToSvg
 
         /// <summary>
         /// Determines whether web links from the PDF document will be included in the generated SVG.
+        /// The default value is <c>true</c>.
         /// </summary>
         /// <remarks>
-        /// <para>
-        ///     The default value is <c>true</c>.
-        /// </para>
         /// <para>
         ///     Note that this property only affects links to websites. Other types of links, including links within the
         ///     document, are currently not supported.
@@ -204,11 +194,9 @@ namespace PdfToSvg
 
         /// <summary>
         /// Determines whether annotations drawn in the PDF document should be included in the generated SVG.
+        /// The default value is <c>true</c>.
         /// </summary>
         /// <remarks>
-        /// <para>
-        ///     The default value is <c>true</c>.
-        /// </para>
         /// <para>
         ///     Interactive annotations are not supported. Links are technically also annotations, but are configured
         ///     by the <see cref="IncludeLinks"/> property.
@@ -302,11 +290,9 @@ namespace PdfToSvg
 
         /// <summary>
         /// Determines whether hidden text from the PDF document will be included in the generated SVG.
+        /// The default value is <c>true</c>.
         /// </summary>
         /// <remarks>
-        /// <para>
-        ///     The default value is <c>true</c>.
-        /// </para>
         /// <para>
         ///     Hidden text is used for multiple purposes in PDF documents. Some examples:
         /// </para>

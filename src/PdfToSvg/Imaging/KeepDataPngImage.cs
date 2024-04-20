@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +26,8 @@ namespace PdfToSvg.Imaging
         private readonly PdfStream imageDictionaryStream;
         private readonly ColorSpace colorSpace;
 
-        public KeepDataPngImage(PdfDictionary imageDictionary, ColorSpace colorSpace) : base("image/png")
+        public KeepDataPngImage(PdfDictionary imageDictionary, ColorSpace colorSpace)
+            : base(imageDictionary, "image/png", ".png")
         {
             if (imageDictionary.Stream == null)
             {
@@ -185,5 +187,15 @@ namespace PdfToSvg.Imaging
             return Task.FromResult(GetContent(cancellationToken));
         }
 #endif
+
+        public override int GetHashCode() =>
+            960926671 ^
+            RuntimeHelpers.GetHashCode(imageDictionaryStream) ^
+            colorSpace.GetHashCode();
+
+        public override bool Equals(object obj) =>
+            obj is KeepDataPngImage pngImage &&
+            ReferenceEquals(pngImage.imageDictionaryStream, imageDictionaryStream) &&
+            pngImage.colorSpace.Equals(colorSpace);
     }
 }

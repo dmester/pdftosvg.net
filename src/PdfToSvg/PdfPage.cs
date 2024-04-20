@@ -33,6 +33,8 @@ namespace PdfToSvg
             this.page = page;
         }
 
+        internal PdfDictionary PageDictionary => page;
+
         /// <summary>
         /// Gets the owner <see cref="PdfDocument"/> that this page is part of.
         /// </summary>
@@ -88,7 +90,7 @@ namespace PdfToSvg
         /// </remarks>
         public string ToSvgString(SvgConversionOptions? options = null, CancellationToken cancellationToken = default)
         {
-            AssertExtractPermission();
+            owner.AssertExtractPermission();
 
             return ToString(SvgRenderer.Convert(page, options, Document.Cache, cancellationToken));
         }
@@ -100,7 +102,7 @@ namespace PdfToSvg
         /// <inheritdoc cref="ToSvgString(SvgConversionOptions, CancellationToken)"/>
         public async Task<string> ToSvgStringAsync(SvgConversionOptions? options = null, CancellationToken cancellationToken = default)
         {
-            AssertExtractPermission();
+            owner.AssertExtractPermission();
 
             var element = await SvgRenderer.ConvertAsync(page, options, Document.Cache, cancellationToken).ConfigureAwait(false);
             return ToString(element);
@@ -130,7 +132,7 @@ namespace PdfToSvg
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
 
-            AssertExtractPermission();
+            owner.AssertExtractPermission();
 
             var content = SvgRenderer.Convert(page, options, Document.Cache, cancellationToken);
             var document = new XDocument(content);
@@ -179,7 +181,7 @@ namespace PdfToSvg
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
 
-            AssertExtractPermission();
+            owner.AssertExtractPermission();
 
             var content = await SvgRenderer.ConvertAsync(page, options, Document.Cache, cancellationToken).ConfigureAwait(false);
             var document = new XDocument(content);
@@ -209,17 +211,63 @@ namespace PdfToSvg
         }
 #endif
 
-        private void AssertExtractPermission()
-        {
-            if (!owner.Permissions.HasOwnerPermission &&
-                !owner.Permissions.AllowExtractContent)
-            {
-                throw new PermissionException(
-                    "The document author does not allow content being extracted from this document. " +
-                    "If you are the owner of the document, you can specify the owner password in an " + nameof(OpenOptions) + " instance " +
-                    "passed to " + nameof(PdfDocument) + "." + nameof(PdfDocument.Open) + " to proceed with the export.");
-            }
-        }
+        /// <summary>
+        /// Gets an enumerable of images embedded in this page.
+        /// </summary>
+        /// <example>
+        /// <para>
+        ///     The following example exports images from all pages in the PDF document to image files.
+        /// </para>
+        /// <code lang="cs">
+        /// using (var document = PdfDocument.Open("input.pdf"))
+        /// {
+        ///     var pageNo = 1;
+        ///
+        ///     foreach (var page in document.Pages)
+        ///     {
+        ///         var imageNo = 1;
+        ///         
+        ///         foreach (var image in page.Images)
+        ///         {
+        ///             var content = image.GetContent();
+        ///             var fileName = $"page{pageNo}_image{imageNo++}{image.Extension}";
+        ///             File.WriteAllBytes(fileName, content);
+        ///         }
+        ///         
+        ///         pageNo++;
+        ///     }
+        /// }
+        /// </code>
+        /// <para>
+        ///     The returned enumerable can also be consumed asynchronously if .NET Framework is not targeted.
+        /// </para>
+        /// <code lang="cs">
+        /// using (var document = await PdfDocument.OpenAsync("input.pdf"))
+        /// {
+        ///     var pageNo = 1;
+        /// 
+        ///     foreach (var page in document.Pages)
+        ///     {
+        ///         var imageNo = 1;
+        ///
+        ///         await foreach (var image in page.Images)
+        ///         {
+        ///             var content = await image.GetContentAsync();
+        ///             var fileName = $"page{pageNo}_image{imageNo++}{image.Extension}";
+        ///             await File.WriteAllBytesAsync(fileName, content);
+        ///         }
+        ///
+        ///         pageNo++;
+        ///     }
+        /// }
+        /// </code>
+        /// <para>
+        ///     Note that you can get duplicate images by using this method to export images from all pages.
+        ///     To enumerate unique images, use <see cref="PdfDocument.Images">PdfDocument.Images</see>.
+        /// </para>
+        /// </example>
+        /// <seealso cref="PdfDocument.Images">PdfDocument.Images</seealso>
+        public ImageEnumerable Images => new ImageEnumerable([page], owner.AssertExtractPermission);
 
         private static string ToString(XNode el)
         {

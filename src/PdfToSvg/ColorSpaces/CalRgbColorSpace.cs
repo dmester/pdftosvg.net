@@ -73,5 +73,14 @@ namespace PdfToSvg.ColorSpaces
             green = ColorConversion.LinearRgbToSRgb(rgb.M21);
             blue = ColorConversion.LinearRgbToSRgb(rgb.M31);
         }
+
+        public override int GetHashCode() =>
+           1721897427 ^
+           transform.GetHashCode();
+
+        public override bool Equals(object obj) =>
+            obj is CalRgbColorSpace colorSpace &&
+            (colorSpace.gamma ?? ArrayUtils.Empty<double>()).SequenceEqual(gamma ?? ArrayUtils.Empty<double>()) &&
+            colorSpace.transform == transform;
     }
 }

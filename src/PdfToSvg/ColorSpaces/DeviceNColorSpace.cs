@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.Functions;
 using PdfToSvg.Imaging;
 using System;
@@ -70,6 +71,18 @@ namespace PdfToSvg.ColorSpaces
         public ColorSpace AlternateSpace { get; }
 
         public override float[] DefaultColor => new float[ComponentsPerSample];
+
+        public override int GetHashCode() =>
+            895666034 ^
+            ComponentsPerSample ^
+            AlternateSpace.GetHashCode() ^
+            tintTransform.GetHashCode();
+
+        public override bool Equals(object obj) =>
+            obj is DeviceNColorSpace colorSpace &&
+            colorSpace.ComponentsPerSample == ComponentsPerSample &&
+            colorSpace.AlternateSpace.Equals(AlternateSpace) &&
+            ReferenceEquals(colorSpace.tintTransform, tintTransform);
 
         public override string ToString() => "DeviceN N=" + ComponentsPerSample + " " + AlternateSpace;
     }

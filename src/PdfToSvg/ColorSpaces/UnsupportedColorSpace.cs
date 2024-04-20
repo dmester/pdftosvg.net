@@ -36,7 +36,7 @@ namespace PdfToSvg.ColorSpaces
         public string Name => name.Value;
 
         public override int GetHashCode() => name.GetHashCode();
-        public bool Equals(UnsupportedColorSpace? other) => other != null;
+        public bool Equals(UnsupportedColorSpace? other) => name == other?.name;
         public override bool Equals(object? obj) => Equals(obj as UnsupportedColorSpace);
 
         public override string ToString() => "Unsupported color space: " + name;

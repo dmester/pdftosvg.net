@@ -7,6 +7,7 @@ using PdfToSvg.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace PdfToSvg.ColorSpaces
@@ -58,5 +59,13 @@ namespace PdfToSvg.ColorSpaces
             green = a;
             blue = a;
         }
+
+        public override int GetHashCode() =>
+           1182521745 ^
+           gamma.GetHashCode();
+
+        public override bool Equals(object obj) =>
+            obj is CalGrayColorSpace colorSpace &&
+            colorSpace.gamma == gamma;
     }
 }

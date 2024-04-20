@@ -263,7 +263,7 @@ namespace PdfToSvg.Parsing
 
                 while (true)
                 {
-                    var read = data.ReadAll(entryBuffer, 0, entryBuffer.Length);
+                    var read = data.ReadAll(entryBuffer, 0, entryBuffer.Length, cancellationToken);
                     if (read < entryBuffer.Length)
                     {
                         break;

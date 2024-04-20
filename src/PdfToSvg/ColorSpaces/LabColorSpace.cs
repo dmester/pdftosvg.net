@@ -92,5 +92,17 @@ namespace PdfToSvg.ColorSpaces
                 ? x * x * x
                 : (108f / 841f) * (x - (4f / 29f));
         }
+
+        public override int GetHashCode() =>
+            725317562 ^
+            transform.GetHashCode();
+
+        public override bool Equals(object obj) =>
+            obj is LabColorSpace colorSpace &&
+            colorSpace.amin == amin &&
+            colorSpace.amax == amax &&
+            colorSpace.bmin == bmin &&
+            colorSpace.bmax == bmax &&
+            colorSpace.transform == transform;
     }
 }

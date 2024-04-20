@@ -7,6 +7,7 @@ using PdfToSvg.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -52,5 +53,15 @@ namespace PdfToSvg.ColorSpaces
         public override float[] DefaultColor => new[] { 0f };
 
         public override string ToString() => "Separation " + AlternateSpace;
+
+        public override int GetHashCode() =>
+            1388104043 ^
+            AlternateSpace.GetHashCode() ^
+            tintTransform.GetHashCode();
+
+        public override bool Equals(object obj) =>
+            obj is SeparationColorSpace colorSpace &&
+            colorSpace.AlternateSpace.Equals(AlternateSpace) &&
+            colorSpace.tintTransform.Equals(tintTransform);
     }
 }

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,7 +38,8 @@ namespace PdfToSvg.Imaging
         private readonly int height;
         private readonly int[] colorKey;
 
-        public ResampledPngImage(PdfDictionary imageDictionary, ColorSpace colorSpace) : base("image/png")
+        public ResampledPngImage(PdfDictionary imageDictionary, ColorSpace colorSpace)
+            : base(imageDictionary, "image/png", ".png")
         {
             if (imageDictionary.Stream == null)
             {
@@ -207,5 +209,15 @@ namespace PdfToSvg.Imaging
             return Task.FromResult(GetContent(cancellationToken));
         }
 #endif
+
+        public override int GetHashCode() =>
+            838425911 ^
+            RuntimeHelpers.GetHashCode(imageDictionaryStream) ^
+            colorSpace.GetHashCode();
+
+        public override bool Equals(object obj) =>
+            obj is ResampledPngImage pngImage &&
+            ReferenceEquals(pngImage.imageDictionaryStream, imageDictionaryStream) &&
+            pngImage.colorSpace.Equals(colorSpace);
     }
 }

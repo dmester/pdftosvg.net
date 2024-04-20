@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,7 +24,8 @@ namespace PdfToSvg.Imaging
         private readonly ColorSpace colorSpace;
         private readonly PdfDictionary decodeParms;
 
-        public CcittFaxImage(PdfDictionary imageDictionary, PdfDictionary? decodeParms, ColorSpace colorSpace) : base("image/png")
+        public CcittFaxImage(PdfDictionary imageDictionary, PdfDictionary? decodeParms, ColorSpace colorSpace)
+            : base(imageDictionary, "image/png", ".png")
         {
             if (imageDictionary.Stream == null)
             {
@@ -124,5 +126,15 @@ namespace PdfToSvg.Imaging
                 .ConfigureAwait(false));
         }
 #endif
+
+        public override int GetHashCode() =>
+            604859080 ^
+            RuntimeHelpers.GetHashCode(imageDictionaryStream) ^
+            colorSpace.GetHashCode();
+
+        public override bool Equals(object obj) =>
+            obj is CcittFaxImage ccittImage &&
+            ReferenceEquals(ccittImage.imageDictionaryStream, imageDictionaryStream) &&
+            ccittImage.colorSpace.Equals(colorSpace);
     }
 }

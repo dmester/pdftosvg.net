@@ -13,6 +13,7 @@ namespace PdfToSvg.Tests
 {
     internal static class TestFiles
     {
+        private const string ProtectedTestFilesDirName = "Protected";
         private const string OwnTestFilesDirName = "Own";
         private const string InputDirName = "input";
         private const string ExpectedDirName = "expected";
@@ -60,6 +61,8 @@ namespace PdfToSvg.Tests
         public static string RootPath { get; }
 
         public static string TestFilesPath => Path.Combine(RootPath, TestFilesDirName);
+
+        public static string ProtectedInputDirectory => Path.Combine(TestFilesPath, ProtectedTestFilesDirName);
 
         public static string InputDirectory => Path.Combine(TestFilesPath, OwnTestFilesDirName, InputDirName);
 

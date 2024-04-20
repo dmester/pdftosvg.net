@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace PdfToSvg
 {
@@ -190,6 +191,56 @@ namespace PdfToSvg
 #endif
 
         /// <summary>
+        /// Gets an enumerable of images embedded in this document.
+        /// </summary>
+        /// <example>
+        /// <para>
+        ///     The following example exports images from all pages in the PDF document to image files.
+        /// </para>
+        /// <code lang="cs">
+        /// using (var document = PdfDocument.Open("input.pdf"))
+        /// {
+        ///     var imageNo = 1;
+        /// 
+        ///     foreach (var image in document.Images)
+        ///     {
+        ///         var content = image.GetContent();
+        ///         var fileName = $"image{imageNo++}{image.Extension}";
+        ///         File.WriteAllBytes(fileName, content);
+        ///     }
+        /// }
+        /// </code>
+        /// <para>
+        ///     The returned enumerable can also be consumed asynchronously if .NET Framework is not targeted.
+        /// </para>
+        /// <code lang="cs">
+        /// using (var document = await PdfDocument.OpenAsync("input.pdf"))
+        /// {
+        ///     var imageNo = 1;
+        /// 
+        ///     await foreach (var image in document.Images)
+        ///     {
+        ///         var content = await image.GetContentAsync();
+        ///         var fileName = $"image{imageNo++}{image.Extension}";
+        ///         File.WriteAllBytes(fileName, content);
+        ///     }
+        /// }
+        /// </code>
+        /// <para>
+        ///     Images from a specific page can be accessed from <see cref="PdfPage.Images">PdfPage.Images</see>.
+        /// </para>
+        /// </example>
+        /// <seealso cref="PdfPage.Images">PdfPage.Images</seealso>
+        public ImageEnumerable Images
+        {
+            get
+            {
+                var pageDicts = Pages.Select(page => page.PageDictionary);
+                return new ImageEnumerable(pageDicts, AssertExtractPermission);
+            }
+        }
+
+        /// <summary>
         /// Gets information about the document provided by the author.
         /// </summary>
         public DocumentInfo Info { get; }
@@ -198,6 +249,18 @@ namespace PdfToSvg
         /// Gets a collection of the pages in this PDF document.
         /// </summary>
         public PdfPageCollection Pages { get; }
+
+        internal void AssertExtractPermission()
+        {
+            if (!Permissions.HasOwnerPermission &&
+                !Permissions.AllowExtractContent)
+            {
+                throw new PermissionException(
+                    "The document author does not allow content being extracted from this document. " +
+                    "If you are the owner of the document, you can specify the owner password in an " + nameof(OpenOptions) + " instance " +
+                    "passed to " + nameof(PdfDocument) + "." + nameof(Open) + " to proceed with the export.");
+            }
+        }
 
         /// <summary>
         /// Closes the PDF file.

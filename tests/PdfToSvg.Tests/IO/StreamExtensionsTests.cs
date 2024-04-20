@@ -104,6 +104,44 @@ namespace PdfToSvg.Tests.IO
         }
 
         [Test]
+        public void ToMemoryStream_MemoryStream()
+        {
+            var data = new byte[] { 1, 2, 3, 4, 5, 6 };
+            var stream = (Stream)new MemoryStream(data);
+            stream.Position = 3;
+            Assert.AreEqual(new byte[] { 4, 5, 6 }, stream.ToMemoryStream().ToArray());
+        }
+
+        [Test]
+        public void ToMemoryStream_NonSeekableStream()
+        {
+            var data = new byte[] { 1, 2, 3, 4, 5, 6 };
+            var stream = (Stream)new NoSeekMemoryStream(data);
+            stream.Skip(2);
+            Assert.AreEqual(new byte[] { 3, 4, 5, 6 }, stream.ToMemoryStream().ToArray());
+        }
+
+#if !NET40
+        [Test]
+        public async Task ToMemoryStreamAsync_MemoryStream()
+        {
+            var data = new byte[] { 1, 2, 3, 4, 5, 6 };
+            var stream = (Stream)new MemoryStream(data);
+            stream.Position = 3;
+            Assert.AreEqual(new byte[] { 4, 5, 6 }, (await stream.ToMemoryStreamAsync()).ToArray());
+        }
+
+        [Test]
+        public async Task ToMemoryStreamAsync_NonSeekableStream()
+        {
+            var data = new byte[] { 1, 2, 3, 4, 5, 6 };
+            var stream = (Stream)new NoSeekMemoryStream(data);
+            stream.Skip(2);
+            Assert.AreEqual(new byte[] { 3, 4, 5, 6 }, (await stream.ToMemoryStreamAsync()).ToArray());
+        }
+#endif
+
+        [Test]
         public void ToArray_MemoryStream()
         {
             var data = new byte[] { 1, 2, 3, 4, 5, 6 };

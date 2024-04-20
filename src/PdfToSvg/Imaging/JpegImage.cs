@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +21,8 @@ namespace PdfToSvg.Imaging
         private readonly PdfStream imageDictionaryStream;
         private readonly ColorSpace colorSpace;
 
-        public JpegImage(PdfDictionary imageDictionary, ColorSpace colorSpace) : base("image/jpeg")
+        public JpegImage(PdfDictionary imageDictionary, ColorSpace colorSpace)
+            : base(imageDictionary, "image/jpeg", ".jpeg")
         {
             if (imageDictionary.Stream == null)
             {
@@ -104,5 +106,15 @@ namespace PdfToSvg.Imaging
                 .ConfigureAwait(false));
         }
 #endif
+
+        public override int GetHashCode() => 
+            611922474 ^ 
+            RuntimeHelpers.GetHashCode(imageDictionaryStream) ^ 
+            colorSpace.GetHashCode();
+
+        public override bool Equals(object obj) =>
+            obj is JpegImage jpegImage &&
+            ReferenceEquals(jpegImage.imageDictionaryStream, imageDictionaryStream) &&
+            jpegImage.colorSpace.Equals(colorSpace);
     }
 }

@@ -89,7 +89,7 @@ namespace PdfToSvg.Parsing
                     bufferLength = 128;
                 }
 
-                read = stream.ReadAll(buffer, bufferLength, buffer.Length - bufferLength);
+                read = stream.ReadAll(buffer, bufferLength, buffer.Length - bufferLength, cancellationToken);
                 bufferLength += read;
 
                 if (read > 0)

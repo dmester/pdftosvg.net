@@ -178,7 +178,7 @@ namespace PdfToSvg.ColorSpaces
                         using var lookupStream = lookupDict.Stream.OpenDecoded(cancellationToken);
 
                         var buffer = new byte[maxLookupLength];
-                        var lookupLength = lookupStream.ReadAll(buffer, 0, buffer.Length);
+                        var lookupLength = lookupStream.ReadAll(buffer, 0, buffer.Length, cancellationToken);
 
                         lookup = new byte[lookupLength];
                         Buffer.BlockCopy(buffer, 0, lookup, 0, lookupLength);

@@ -42,7 +42,7 @@ namespace PdfToSvg.Fonts
                 using var stream = cidToGidMapStream.OpenDecoded(cancellationToken);
                 do
                 {
-                    read = stream.ReadAll(buffer, 0, buffer.Length);
+                    read = stream.ReadAll(buffer, 0, buffer.Length, cancellationToken);
 
                     for (var i = 0; i + 1 < read; i += 2)
                     {

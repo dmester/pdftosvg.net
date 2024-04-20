@@ -72,7 +72,7 @@ namespace PdfToSvg.IO
         }
 #endif
 
-        public static int ReadAll(this Stream stream, byte[] buffer, int offset, int count)
+        public static int ReadAll(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken = default)
         {
             var totalRead = 0;
             int read;
@@ -83,6 +83,8 @@ namespace PdfToSvg.IO
                 offset += read;
                 count -= read;
                 totalRead += read;
+
+                cancellationToken.ThrowIfCancellationRequested();
             }
             while (read > 0);
 
@@ -105,6 +107,56 @@ namespace PdfToSvg.IO
             while (read > 0);
 
             return totalRead;
+        }
+#endif
+
+        public static MemoryStream ToMemoryStream(this Stream stream, CancellationToken cancellationToken = default)
+        {
+            if (stream.CanSeek)
+            {
+                var length = stream.Length - stream.Position;
+
+                if (length > int.MaxValue)
+                {
+                    throw new ArgumentException("The stream is too large to be converted to a MemoryStream.", nameof(stream));
+                }
+
+                var buffer = new byte[(int)length];
+                var read = stream.ReadAll(buffer, 0, buffer.Length, cancellationToken);
+                return new MemoryStream(buffer, 0, read);
+            }
+            else
+            {
+                var memoryStream = new MemoryStream();
+                stream.CopyTo(memoryStream, cancellationToken);
+                memoryStream.Position = 0;
+                return memoryStream;
+            }
+        }
+
+#if HAVE_ASYNC
+        public static async Task<MemoryStream> ToMemoryStreamAsync(this Stream stream, CancellationToken cancellationToken = default)
+        {
+            if (stream.CanSeek)
+            {
+                var length = stream.Length - stream.Position;
+
+                if (length > int.MaxValue)
+                {
+                    throw new ArgumentException("The stream is too large to be converted to a MemoryStream.", nameof(stream));
+                }
+
+                var buffer = new byte[(int)length];
+                var read = await stream.ReadAllAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                return new MemoryStream(buffer, 0, read);
+            }
+            else
+            {
+                var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream, cancellationToken).ConfigureAwait(false);
+                memoryStream.Position = 0;
+                return memoryStream;
+            }
         }
 #endif
 

@@ -16,6 +16,8 @@ namespace PdfToSvg.Parsing
 {
     internal class InlineImageHelper
     {
+        private const int VerifyFollowingTokenCount = 10;
+
         /// <summary>
         /// More restrictive comparison than <see cref="PdfCharacters.IsWhiteSpace(char)"/>, to minimize the risk of
         /// matching whitespace characters inside a binary stream.
@@ -67,6 +69,7 @@ namespace PdfToSvg.Parsing
 
             // For other filters, or no filter at all, we need to revert back to heuristics.
             // Find first index of <whitespace> 'E' 'I' <whitespace>
+            // Then try to parse a few tokens to ensure the following data is valid.
             //
             // Let's have a look at how other libraries handle this case:
             //
@@ -91,7 +94,34 @@ namespace PdfToSvg.Parsing
                     reader.PeekChar(3) == 'I' &&
                     IsWhiteSpaceOrEndOfStream(reader.PeekChar(4)))
                 {
-                    break;
+                    var originalPosition = reader.Position;
+
+                    var invalidDataFound = false;
+
+                    var followingLexer = new Lexer(reader);
+                    for (var i = 0; i < VerifyFollowingTokenCount; i++)
+                    {
+                        var lexeme = followingLexer.Read();
+                        
+                        if (lexeme.Token == Token.BeginImageData || // Start of another image
+                            lexeme.Token == Token.EndOfInput)
+                        {
+                            break;
+                        }
+
+                        if (lexeme.Token == Token.UnexpectedCharacter)
+                        {
+                            invalidDataFound = true;
+                            break;
+                        }
+                    }
+
+                    reader.Position = originalPosition;
+
+                    if (!invalidDataFound)
+                    {
+                        break;
+                    }
                 }
 
                 reader.Skip();

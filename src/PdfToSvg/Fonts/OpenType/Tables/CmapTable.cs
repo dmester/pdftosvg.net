@@ -43,6 +43,11 @@ namespace PdfToSvg.Fonts.OpenType.Tables
 
             foreach (var record in records)
             {
+                if (record.Offset >= reader.Length)
+                {
+                    continue;
+                }
+
                 var localReader = reader.Slice(record.Offset, reader.Length - record.Offset);
                 var format = localReader.ReadUInt16();
 
@@ -68,24 +73,34 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             return table;
         }
 
-        private static CMapFormat0 ReadFormat0(OpenTypeReader reader)
+        private static CMapFormat0? ReadFormat0(OpenTypeReader reader)
         {
+            const int MinSize = 262;
+            if (reader.Length < MinSize)
+            {
+                return null;
+            }
+
             var format = new CMapFormat0();
 
-            var length = reader.ReadUInt16();
-            reader = reader.Slice(4, length - 4);
+            reader.ReadUInt16(); // Other readers seem to ignore the length
             format.Language = reader.ReadUInt16();
             format.GlyphIdArray = reader.ReadBytes(256);
 
             return format;
         }
 
-        private static CMapFormat4 ReadFormat4(OpenTypeReader reader)
+        private static CMapFormat4? ReadFormat4(OpenTypeReader reader)
         {
-            var format = new CMapFormat4();
+            const int HeaderSize = 14;
+            if (reader.Length < HeaderSize)
+            {
+                return null;
+            }
 
+            var format = new CMapFormat4();
+            
             var length = reader.ReadUInt16();
-            reader = reader.Slice(4, length - 4);
             format.Language = reader.ReadUInt16();
 
             var segCountX2 = reader.ReadUInt16();
@@ -94,6 +109,11 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             reader.ReadUInt16(); // rangeShift
 
             var segCount = segCountX2 / 2;
+
+            if (reader.Length < HeaderSize + 3 * segCountX2 + 2)
+            {
+                return null;
+            }
 
             format.StartCode = new ushort[segCount];
             format.EndCode = new ushort[segCount];
@@ -117,12 +137,15 @@ namespace PdfToSvg.Fonts.OpenType.Tables
                 format.IdDelta[i] = reader.ReadInt16();
             }
 
-            for (var i = 0; i < segCount; i++)
+            // We will consider these optional
+            for (var i = 0; i < segCount && reader.Position + 2 <= reader.Length; i++)
             {
                 format.IdRangeOffsets[i] = reader.ReadUInt16();
             }
 
-            format.GlyphIdArray = new ushort[(reader.Length - reader.Position) / 2];
+            // Some PDFs contain fonts where the length exceeds the size of the table
+            var glyphIdArraySize = Math.Min(length, reader.Length) - reader.Position;
+            format.GlyphIdArray = new ushort[glyphIdArraySize / 2];
 
             for (var i = 0; i < format.GlyphIdArray.Length; i++)
             {
@@ -132,20 +155,25 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             return format;
         }
 
-        private static CMapFormat6 ReadFormat6(OpenTypeReader reader)
+        private static CMapFormat6? ReadFormat6(OpenTypeReader reader)
         {
+            const int MinSize = 10;
+            if (reader.Length < MinSize)
+            {
+                return null;
+            }
+
             var format = new CMapFormat6();
 
-            var length = reader.ReadUInt16();
-            reader = reader.Slice(4, length - 4);
-
+            reader.ReadUInt16(); // Other readers seem to ignore the length
+            
             format.Language = reader.ReadUInt16();
             format.FirstCode = reader.ReadUInt16();
             var entryCount = reader.ReadUInt16();
 
             format.GlyphIdArray = new ushort[entryCount];
 
-            for (var i = 0; i < format.GlyphIdArray.Length; i++)
+            for (var i = 0; i < format.GlyphIdArray.Length && reader.Position + 2 <= reader.Length; i++)
             {
                 format.GlyphIdArray[i] = reader.ReadUInt16();
             }
@@ -153,22 +181,26 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             return format;
         }
 
-        private static CMapFormat10 ReadFormat10(OpenTypeReader reader)
+        private static CMapFormat10? ReadFormat10(OpenTypeReader reader)
         {
+            const int MinSize = 20;
+            if (reader.Length < MinSize)
+            {
+                return null;
+            }
+
             var format = new CMapFormat10();
 
             reader.ReadUInt16(); // Reserved
-
-            var length = reader.ReadUInt32();
-            reader = reader.Slice(8, (int)length - 8);
-
+            reader.ReadUInt32(); // Other readers seem to ignore the length
+            
             format.Language = reader.ReadUInt32();
             format.StartCharCode = reader.ReadUInt32();
             var entryCount = reader.ReadUInt32();
 
             format.GlyphIdArray = new ushort[entryCount];
 
-            for (var i = 0; i < format.GlyphIdArray.Length; i++)
+            for (var i = 0; i < format.GlyphIdArray.Length && reader.Position + 2 <= reader.Length; i++)
             {
                 format.GlyphIdArray[i] = reader.ReadUInt16();
             }
@@ -176,16 +208,25 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             return format;
         }
 
-        private static CMapFormat12 ReadFormat12(OpenTypeReader reader)
+        private static CMapFormat12? ReadFormat12(OpenTypeReader reader)
         {
+            const int MinSize = 16;
+            if (reader.Length < MinSize)
+            {
+                return null;
+            }
+
             var format = new CMapFormat12();
 
             reader.ReadUInt16(); // reserved
-            var length = reader.ReadInt32();
-            reader = reader.Slice(8, length - 8);
+            reader.ReadInt32(); // Other readers seem to ignore the length
 
             format.Language = reader.ReadUInt32();
             var numGroups = reader.ReadUInt32();
+
+            const int EntrySize = 3 * 4;
+            var maxGroups = (uint)((reader.Length - reader.Position) / EntrySize);
+            numGroups = Math.Min(numGroups, maxGroups);
 
             format.Groups = new CMapFormat12Group[numGroups];
 

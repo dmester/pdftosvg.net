@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ttFont sfntVersion="\x00\x01\x00\x00" ttLibVersion="4.28">
+
+  <GlyphOrder>
+    <!-- The 'id' attribute is only for humans; it is ignored when parsed. -->
+    <GlyphID id="0" name=".notdef"/>
+    <GlyphID id="1" name=".null"/>
+    <GlyphID id="2" name="nonmarkingreturn"/>
+    <GlyphID id="3" name="A"/>
+    <GlyphID id="4" name="notequal"/>
+    <GlyphID id="5" name="Euro"/>
+    <GlyphID id="6" name="apple"/>
+  </GlyphOrder>
+
+  <head>
+    <!-- Most of this table will be recalculated by the compiler -->
+    <tableVersion value="1.0"/>
+    <fontRevision value="1.0"/>
+    <checkSumAdjustment value="0x60faa975"/>
+    <magicNumber value="0x5f0f3cf5"/>
+    <flags value="00000000 00001011"/>
+    <unitsPerEm value="1024"/>
+    <created value="Sun Jun  2 07:34:08 2024"/>
+    <modified value="Sun Jun  2 07:48:12 2024"/>
+    <xMin value="34"/>
+    <yMin value="-81"/>
+    <xMax value="1049"/>
+    <yMax value="774"/>
+    <macStyle value="00000000 00000000"/>
+    <lowestRecPPEM value="8"/>
+    <fontDirectionHint value="2"/>
+    <indexToLocFormat value="0"/>
+    <glyphDataFormat value="0"/>
+  </head>
+
+  <hhea>
+    <tableVersion value="0x00010000"/>
+    <ascent value="774"/>
+    <descent value="-81"/>
+    <lineGap value="92"/>
+    <advanceWidthMax value="1024"/>
+    <minLeftSideBearing value="0"/>
+    <minRightSideBearing value="0"/>
+    <xMaxExtent value="1049"/>
+    <caretSlopeRise value="1"/>
+    <caretSlopeRun value="0"/>
+    <caretOffset value="0"/>
+    <reserved0 value="0"/>
+    <reserved1 value="0"/>
+    <reserved2 value="0"/>
+    <reserved3 value="0"/>
+    <metricDataFormat value="0"/>
+    <numberOfHMetrics value="7"/>
+  </hhea>
+
+  <maxp>
+    <!-- Most of this table will be recalculated by the compiler -->
+    <tableVersion value="0x10000"/>
+    <numGlyphs value="7"/>
+    <maxPoints value="46"/>
+    <maxContours value="3"/>
+    <maxCompositePoints value="0"/>
+    <maxCompositeContours value="0"/>
+    <maxZones value="2"/>
+    <maxTwilightPoints value="0"/>
+    <maxStorage value="1"/>
+    <maxFunctionDefs value="1"/>
+    <maxInstructionDefs value="0"/>
+    <maxStackElements value="64"/>
+    <maxSizeOfInstructions value="46"/>
+    <maxComponentElements value="0"/>
+    <maxComponentDepth value="0"/>
+  </maxp>
+
+  <OS_2>
+    <!-- The fields 'usFirstCharIndex' and 'usLastCharIndex'
+         will be recalculated by the compiler -->
+    <version value="4"/>
+    <xAvgCharWidth value="1018"/>
+    <usWeightClass value="400"/>
+    <usWidthClass value="5"/>
+    <fsType value="00000000 00000000"/>
+    <ySubscriptXSize value="665"/>
+    <ySubscriptYSize value="716"/>
+    <ySubscriptXOffset value="0"/>
+    <ySubscriptYOffset value="143"/>
+    <ySuperscriptXSize value="665"/>
+    <ySuperscriptYSize value="716"/>
+    <ySuperscriptXOffset value="0"/>
+    <ySuperscriptYOffset value="491"/>
+    <yStrikeoutSize value="51"/>
+    <yStrikeoutPosition value="265"/>
+    <sFamilyClass value="0"/>
+    <panose>
+      <bFamilyType value="2"/>
+      <bSerifStyle value="0"/>
+      <bWeight value="5"/>
+      <bProportion value="3"/>
+      <bContrast value="0"/>
+      <bStrokeVariation value="0"/>
+      <bArmStyle value="0"/>
+      <bLetterForm value="0"/>
+      <bMidline value="0"/>
+      <bXHeight value="0"/>
+    </panose>
+    <ulUnicodeRange1 value="00000000 00000000 00000000 00000011"/>
+    <ulUnicodeRange2 value="00010000 00000000 00000000 01000000"/>
+    <ulUnicodeRange3 value="00000000 00000000 00000000 00000000"/>
+    <ulUnicodeRange4 value="00000000 00000000 00000000 00000000"/>
+    <achVendID value="PfEd"/>
+    <fsSelection value="00000000 10000000"/>
+    <usFirstCharIndex value="65"/>
+    <usLastCharIndex value="63743"/>
+    <sTypoAscender value="819"/>
+    <sTypoDescender value="-205"/>
+    <sTypoLineGap value="92"/>
+    <usWinAscent value="774"/>
+    <usWinDescent value="81"/>
+    <ulCodePageRange1 value="00000000 00000000 00000000 00000001"/>
+    <ulCodePageRange2 value="00000000 00000000 00000000 00000000"/>
+    <sxHeight value="0"/>
+    <sCapHeight value="711"/>
+    <usDefaultChar value="0"/>
+    <usBreakChar value="32"/>
+    <usMaxContext value="1"/>
+  </OS_2>
+
+  <hmtx>
+    <mtx name=".notdef" width="374" lsb="34"/>
+    <mtx name=".null" width="0" lsb="0"/>
+    <mtx name="A" width="1024" lsb="184"/>
+    <mtx name="apple" width="1000" lsb="130"/>
+    <mtx name="Euro" width="1024" lsb="77"/>
+    <mtx name="nonmarkingreturn" width="341" lsb="0"/>
+    <mtx name="notequal" width="1024" lsb="180"/>
+  </hmtx>
+
+  <cmap>
+    <tableVersion version="0"/>
+    <cmap_format_4 platformID="0" platEncID="3" language="0">
+      <map code="0x41" name="A"/><!-- LATIN CAPITAL LETTER A -->
+      <map code="0xa4" name="A"/><!-- Euro SIGN -->
+      <map code="0x2260" name="A"/><!-- NOT EQUAL TO -->
+      <map code="0xf8ff" name="A"/><!-- ???? -->
+    </cmap_format_4>
+    <cmap_format_0 platformID="1" platEncID="0" language="0">
+      <map code="0x0" name=".null"/>
+      <map code="0x8" name=".null"/>
+      <map code="0x9" name="nonmarkingreturn"/>
+      <map code="0xd" name="nonmarkingreturn"/>
+      <map code="0x1d" name=".null"/>
+      <map code="0x41" name="A"/>
+      <map code="0xad" name="A"/>
+      <map code="0xf0" name="A"/>
+    </cmap_format_0>
+    <cmap_format_4 platformID="3" platEncID="0" language="0">
+      <map code="0x41" name="A"/><!-- LATIN CAPITAL LETTER A -->
+      <map code="0xa4" name="A"/><!-- Euro SIGN -->
+      <map code="0xa5" name="A"/><!-- NOT EQUAL TO -->
+      <map code="0x20ac" name="A"/><!-- ???? -->
+      <map code="0x2260" name="A"/><!-- NOT EQUAL TO -->
+      <map code="0xf8ff" name="A"/><!-- ???? -->
+    </cmap_format_4>
+    <cmap_format_4 platformID="3" platEncID="1" language="0">
+      <map code="0x41" name="A"/><!-- LATIN CAPITAL LETTER A -->
+      <map code="0x20ac" name="Euro"/><!-- Euro SIGN -->
+      <map code="0x2260" name="notequal"/><!-- NOT EQUAL TO -->
+      <map code="0xf8ff" name="apple"/><!-- ???? -->
+    </cmap_format_4>
+  </cmap>
+
+  <cvt>
+    <cv index="0" value="34"/>
+    <cv index="1" value="648"/>
+  </cvt>
+
+  <loca>
+    <!-- The 'loca' table will be calculated by the compiler -->
+  </loca>
+
+  <glyf>
+
+    <!-- The xMin, yMin, xMax and yMax values
+         will be recalculated by the compiler. -->
+
+    <TTGlyph name=".notdef" xMin="34" yMin="0" xMax="306" yMax="682">
+      <contour>
+        <pt x="34" y="0" on="1"/>
+        <pt x="34" y="682" on="1"/>
+        <pt x="306" y="682" on="1"/>
+        <pt x="306" y="0" on="1"/>
+      </contour>
+      <contour>
+        <pt x="68" y="34" on="1"/>
+        <pt x="272" y="34" on="1"/>
+        <pt x="272" y="648" on="1"/>
+        <pt x="68" y="648" on="1"/>
+      </contour>
+      <instructions>
+        <assembly>
+          PUSHB[ ]	/* 2 values pushed */
+          1 0
+          MDAP[1]	/* MoveDirectAbsPt */
+          ALIGNRP[ ]	/* AlignRelativePt */
+          PUSHB[ ]	/* 3 values pushed */
+          7 4 0
+          MIRP[01101]	/* MoveIndirectRelPt */
+          SHP[0]	/* ShiftPointByLastPoint */
+          PUSHB[ ]	/* 2 values pushed */
+          6 5
+          MDRP[11100]	/* MoveDirectRelPt */
+          ALIGNRP[ ]	/* AlignRelativePt */
+          PUSHB[ ]	/* 3 values pushed */
+          3 2 0
+          MIRP[01101]	/* MoveIndirectRelPt */
+          SHP[0]	/* ShiftPointByLastPoint */
+          SVTCA[0]	/* SetFPVectorToAxis */
+          PUSHB[ ]	/* 2 values pushed */
+          3 0
+          MDAP[1]	/* MoveDirectAbsPt */
+          ALIGNRP[ ]	/* AlignRelativePt */
+          PUSHB[ ]	/* 3 values pushed */
+          5 4 0
+          MIRP[01101]	/* MoveIndirectRelPt */
+          SHP[0]	/* ShiftPointByLastPoint */
+          PUSHB[ ]	/* 3 values pushed */
+          7 6 1
+          MIRP[11100]	/* MoveIndirectRelPt */
+          ALIGNRP[ ]	/* AlignRelativePt */
+          PUSHB[ ]	/* 3 values pushed */
+          1 2 0
+          MIRP[01101]	/* MoveIndirectRelPt */
+          SHP[0]	/* ShiftPointByLastPoint */
+        </assembly>
+      </instructions>
+    </TTGlyph>
+
+    <TTGlyph name=".null"/><!-- contains no outline data -->
+
+    <TTGlyph name="A" xMin="184" yMin="-54" xMax="847" yMax="712">
+      <contour>
+        <pt x="449" y="711" on="1"/>
+        <pt x="582" y="711" on="1"/>
+        <pt x="846" y="-53" on="1"/>
+        <pt x="769" y="-53" on="1"/>
+        <pt x="674" y="222" on="1"/>
+        <pt x="356" y="222" on="1"/>
+        <pt x="261" y="-53" on="1"/>
+        <pt x="185" y="-53" on="1"/>
+      </contour>
+      <contour>
+        <pt x="503" y="644" on="1"/>
+        <pt x="382" y="294" on="1"/>
+        <pt x="649" y="294" on="1"/>
+        <pt x="528" y="644" on="1"/>
+      </contour>
+      <instructions/>
+    </TTGlyph>
+
+    <TTGlyph name="apple" xMin="130" yMin="-57" xMax="1049" yMax="774">
+      <contour>
+        <pt x="1049" y="495" on="1"/>
+      </contour>
+      <contour>
+        <pt x="713" y="241" on="1"/>
+      </contour>
+      <contour>
+        <pt x="459" y="774" on="1"/>
+        <pt x="481" y="757" on="0"/>
+        <pt x="512" y="714" on="0"/>
+        <pt x="529" y="657" on="0"/>
+        <pt x="537" y="618" on="0"/>
+        <pt x="542" y="584" on="1"/>
+        <pt x="564" y="588" on="0"/>
+        <pt x="628" y="615" on="0"/>
+        <pt x="672" y="630" on="0"/>
+        <pt x="741" y="627" on="0"/>
+        <pt x="778" y="609" on="1"/>
+        <pt x="829" y="584" on="0"/>
+        <pt x="872" y="458" on="0"/>
+        <pt x="857" y="303" on="0"/>
+        <pt x="811" y="142" on="0"/>
+        <pt x="738" y="8" on="0"/>
+        <pt x="699" y="-25" on="1"/>
+        <pt x="662" y="-57" on="0"/>
+        <pt x="517" y="9" on="1"/>
+        <pt x="501" y="17" on="1"/>
+        <pt x="498" y="15" on="0"/>
+        <pt x="486" y="9" on="0"/>
+        <pt x="452" y="-5" on="0"/>
+        <pt x="420" y="-18" on="0"/>
+        <pt x="378" y="-30" on="0"/>
+        <pt x="343" y="-36" on="0"/>
+        <pt x="312" y="-32" on="0"/>
+        <pt x="303" y="-25" on="1"/>
+        <pt x="265" y="8" on="0"/>
+        <pt x="191" y="142" on="0"/>
+        <pt x="145" y="303" on="0"/>
+        <pt x="130" y="458" on="0"/>
+        <pt x="173" y="584" on="0"/>
+        <pt x="224" y="609" on="1"/>
+        <pt x="261" y="626" on="0"/>
+        <pt x="329" y="630" on="0"/>
+        <pt x="371" y="616" on="0"/>
+        <pt x="435" y="589" on="0"/>
+        <pt x="456" y="585" on="1"/>
+        <pt x="435" y="632" on="0"/>
+        <pt x="395" y="697" on="0"/>
+        <pt x="366" y="722" on="1"/>
+      </contour>
+      <instructions/>
+    </TTGlyph>
+
+    <TTGlyph name="Euro" xMin="77" yMin="-81" xMax="954" yMax="753">
+      <contour>
+        <pt x="954" y="216" on="1"/>
+      </contour>
+      <contour>
+        <pt x="592" y="752" on="1"/>
+        <pt x="678" y="752" on="0"/>
+        <pt x="831" y="685" on="0"/>
+        <pt x="888" y="625" on="1"/>
+        <pt x="860" y="559" on="1"/>
+        <pt x="812" y="619" on="0"/>
+        <pt x="672" y="688" on="0"/>
+        <pt x="592" y="688" on="1"/>
+        <pt x="474" y="688" on="0"/>
+        <pt x="290" y="543" on="0"/>
+        <pt x="259" y="429" on="1"/>
+        <pt x="807" y="429" on="1"/>
+        <pt x="780" y="364" on="1"/>
+        <pt x="248" y="364" on="1"/>
+        <pt x="247" y="349" on="0"/>
+        <pt x="247" y="336" on="1"/>
+        <pt x="247" y="315" on="0"/>
+        <pt x="250" y="293" on="1"/>
+        <pt x="750" y="293" on="1"/>
+        <pt x="723" y="227" on="1"/>
+        <pt x="264" y="227" on="1"/>
+        <pt x="298" y="120" on="0"/>
+        <pt x="479" y="-17" on="0"/>
+        <pt x="592" y="-17" on="1"/>
+        <pt x="670" y="-17" on="0"/>
+        <pt x="806" y="49" on="0"/>
+        <pt x="855" y="106" on="1"/>
+        <pt x="855" y="16" on="1"/>
+        <pt x="740" y="-81" on="0"/>
+        <pt x="592" y="-81" on="1"/>
+        <pt x="452" y="-81" on="0"/>
+        <pt x="232" y="93" on="0"/>
+        <pt x="196" y="227" on="1"/>
+        <pt x="79" y="227" on="1"/>
+        <pt x="106" y="293" on="1"/>
+        <pt x="184" y="293" on="1"/>
+        <pt x="181" y="314" on="0"/>
+        <pt x="181" y="336" on="1"/>
+        <pt x="181" y="348" on="0"/>
+        <pt x="183" y="364" on="1"/>
+        <pt x="78" y="364" on="1"/>
+        <pt x="105" y="429" on="1"/>
+        <pt x="192" y="429" on="1"/>
+        <pt x="224" y="569" on="0"/>
+        <pt x="447" y="752" on="0"/>
+      </contour>
+      <instructions/>
+    </TTGlyph>
+
+    <TTGlyph name="nonmarkingreturn"/><!-- contains no outline data -->
+
+    <TTGlyph name="notequal" xMin="180" yMin="36" xMax="862" yMax="596">
+      <contour>
+        <pt x="587" y="595" on="1"/>
+        <pt x="655" y="571" on="1"/>
+        <pt x="609" y="440" on="1"/>
+        <pt x="862" y="440" on="1"/>
+        <pt x="862" y="368" on="1"/>
+        <pt x="583" y="368" on="1"/>
+        <pt x="543" y="257" on="1"/>
+        <pt x="862" y="257" on="1"/>
+        <pt x="862" y="184" on="1"/>
+        <pt x="517" y="184" on="1"/>
+        <pt x="464" y="36" on="1"/>
+        <pt x="396" y="60" on="1"/>
+        <pt x="440" y="184" on="1"/>
+        <pt x="180" y="184" on="1"/>
+        <pt x="180" y="257" on="1"/>
+        <pt x="466" y="257" on="1"/>
+        <pt x="506" y="368" on="1"/>
+        <pt x="180" y="368" on="1"/>
+        <pt x="180" y="440" on="1"/>
+        <pt x="532" y="440" on="1"/>
+      </contour>
+      <instructions/>
+    </TTGlyph>
+
+  </glyf>
+
+  <name>
+    <namerecord nameID="0" platformID="1" platEncID="0" langID="0x0" unicode="True">
+      Copyright (c) 2024
+    </namerecord>
+    <namerecord nameID="1" platformID="1" platEncID="0" langID="0x0" unicode="True">
+      PdfToSvgNet
+    </namerecord>
+    <namerecord nameID="2" platformID="1" platEncID="0" langID="0x0" unicode="True">
+      Regular
+    </namerecord>
+    <namerecord nameID="3" platformID="1" platEncID="0" langID="0x0" unicode="True">
+      FontForge : PdfToSvgNet : 2-6-2024
+    </namerecord>
+    <namerecord nameID="4" platformID="1" platEncID="0" langID="0x0" unicode="True">
+      PdfToSvgNet
+    </namerecord>
+    <namerecord nameID="5" platformID="1" platEncID="0" langID="0x0" unicode="True">
+      Version 001.000 
+    </namerecord>
+    <namerecord nameID="6" platformID="1" platEncID="0" langID="0x0" unicode="True">
+      PdfToSvgNet
+    </namerecord>
+    <namerecord nameID="0" platformID="3" platEncID="1" langID="0x409">
+      Copyright (c) 2024
+    </namerecord>
+    <namerecord nameID="1" platformID="3" platEncID="1" langID="0x409">
+      PdfToSvgNet
+    </namerecord>
+    <namerecord nameID="2" platformID="3" platEncID="1" langID="0x409">
+      Regular
+    </namerecord>
+    <namerecord nameID="3" platformID="3" platEncID="1" langID="0x409">
+      FontForge : PdfToSvgNet : 2-6-2024
+    </namerecord>
+    <namerecord nameID="4" platformID="3" platEncID="1" langID="0x409">
+      PdfToSvgNet
+    </namerecord>
+    <namerecord nameID="5" platformID="3" platEncID="1" langID="0x409">
+      Version 001.000 
+    </namerecord>
+    <namerecord nameID="6" platformID="3" platEncID="1" langID="0x409">
+      PdfToSvgNet
+    </namerecord>
+  </name>
+
+  <post>
+    <formatType value="2.0"/>
+    <italicAngle value="0.0"/>
+    <underlinePosition value="-76"/>
+    <underlineThickness value="51"/>
+    <isFixedPitch value="0"/>
+    <minMemType42 value="0"/>
+    <maxMemType42 value="0"/>
+    <minMemType1 value="0"/>
+    <maxMemType1 value="0"/>
+    <psNames>
+      <!-- This file uses unique glyph names based on the information
+           found in the 'post' table. Since these names might not be unique,
+           we have to invent artificial names in case of clashes. In order to
+           be able to retain the original information, we need a name to
+           ps name mapping for those cases where they differ. That's what
+           you see below.
+            -->
+    </psNames>
+    <extraNames>
+      <!-- following are the name that are not taken from the standard Mac glyph order -->
+    </extraNames>
+  </post>
+
+  <gasp>
+    <gaspRange rangeMaxPPEM="65535" rangeGaspBehavior="2"/>
+  </gasp>
+
+  <FFTM>
+    <!-- FontForge's timestamp, font source creation and modification dates -->
+    <version value="1"/>
+    <FFTimeStamp value="Sat Nov  7 21:17:49 2020"/>
+    <sourceCreated value="Sun Jun  2 07:34:08 2024"/>
+    <sourceModified value="Sun Jun  2 07:48:12 2024"/>
+  </FFTM>
+
+</ttFont>

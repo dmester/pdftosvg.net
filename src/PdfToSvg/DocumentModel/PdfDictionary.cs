@@ -9,8 +9,10 @@ using System.Text;
 
 namespace PdfToSvg.DocumentModel
 {
+#if DEBUG
     [DebuggerTypeProxy(typeof(PdfDictionaryDebugProxy))]
     [DebuggerDisplay("{DebugView,nq}")]
+#endif
     internal class PdfDictionary : IDictionary<PdfName, object?>
     {
         private readonly List<KeyValuePair<PdfName, object?>> ordered = new List<KeyValuePair<PdfName, object?>>();

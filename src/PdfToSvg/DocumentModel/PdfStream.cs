@@ -16,7 +16,9 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.DocumentModel
 {
+#if DEBUG
     [DebuggerTypeProxy(typeof(PdfStreamDebugProxy))]
+#endif
     internal abstract class PdfStream
     {
         protected readonly PdfDictionary owner;

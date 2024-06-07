@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#if DEBUG
 namespace PdfToSvg.DocumentModel
 {
     internal class PdfDictionaryDebugProxy
@@ -193,3 +194,4 @@ namespace PdfToSvg.DocumentModel
 
     }
 }
+#endif

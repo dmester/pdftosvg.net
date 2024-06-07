@@ -13,7 +13,9 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.DocumentModel
 {
+#if DEBUG
     [DebuggerTypeProxy(typeof(PdfStreamDebugProxy))]
+#endif
     internal class PdfMemoryStream : PdfStream
     {
         private readonly byte[] content;

@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+#if DEBUG
+
 namespace PdfToSvg.DocumentModel
 {
     internal class PdfStreamDebugProxy
@@ -45,3 +47,5 @@ namespace PdfToSvg.DocumentModel
         }
     }
 }
+
+#endif

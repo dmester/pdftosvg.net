@@ -23,7 +23,6 @@ namespace PdfToSvg.Filters
         public static Filter RunLengthDecode { get; } = new RunLengthDecodeFilter();
 
         public static Filter CcittFaxDecode { get; } = new CcittFaxDecodeFilter();
-        public static Filter Identity { get; } = new IdentityFilter();
 
         private static readonly Dictionary<PdfName, Filter> filters = new Dictionary<PdfName, Filter>
         {

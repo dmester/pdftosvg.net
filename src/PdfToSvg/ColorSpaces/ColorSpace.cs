@@ -49,57 +49,6 @@ namespace PdfToSvg.ColorSpaces
             }
         }
 
-        // TODO test
-        public void ToRgb16BE(float[] input, int inputOffset, byte[] rgbBuffer, int rgbBufferOffset, int count)
-        {
-            float red, green, blue;
-
-            for (var i = 0; i < count; i++)
-            {
-                ToRgb(input, ref inputOffset, out red, out green, out blue);
-
-                var intRed = ToRgb16Component(red);
-                var intGreen = ToRgb16Component(green);
-                var intBlue = ToRgb16Component(blue);
-
-                rgbBuffer[rgbBufferOffset++] = unchecked((byte)(intRed >> 8));
-                rgbBuffer[rgbBufferOffset++] = unchecked((byte)intRed);
-
-                rgbBuffer[rgbBufferOffset++] = unchecked((byte)(intGreen >> 8));
-                rgbBuffer[rgbBufferOffset++] = unchecked((byte)intGreen);
-
-                rgbBuffer[rgbBufferOffset++] = unchecked((byte)(intBlue >> 8));
-                rgbBuffer[rgbBufferOffset++] = unchecked((byte)intBlue);
-            }
-        }
-
-        // TODO test
-        public void ToRgba16BE(float[] input, int inputOffset, byte[] rgbBuffer, int rgbBufferOffset, int count)
-        {
-            float red, green, blue;
-
-            for (var i = 0; i < count; i++)
-            {
-                ToRgb(input, ref inputOffset, out red, out green, out blue);
-
-                var intRed = ToRgb16Component(red);
-                var intGreen = ToRgb16Component(green);
-                var intBlue = ToRgb16Component(blue);
-
-                rgbBuffer[rgbBufferOffset++] = unchecked((byte)(intRed >> 8));
-                rgbBuffer[rgbBufferOffset++] = unchecked((byte)intRed);
-
-                rgbBuffer[rgbBufferOffset++] = unchecked((byte)(intGreen >> 8));
-                rgbBuffer[rgbBufferOffset++] = unchecked((byte)intGreen);
-
-                rgbBuffer[rgbBufferOffset++] = unchecked((byte)(intBlue >> 8));
-                rgbBuffer[rgbBufferOffset++] = unchecked((byte)intBlue);
-
-                rgbBuffer[rgbBufferOffset++] = 0;
-                rgbBuffer[rgbBufferOffset++] = 0;
-            }
-        }
-
         public void ToRgb(float[] input, out float red, out float green, out float blue)
         {
             var index = 0;

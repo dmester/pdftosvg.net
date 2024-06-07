@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Filters
 {
-    // TODO create throw helper
     internal class FilterException : PdfException
     {
         public FilterException(string filter, byte unexpectedByte) :

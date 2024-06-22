@@ -43,7 +43,7 @@ namespace PdfToSvg.ColorSpaces
             310771017 ^
             AlternateSpace.GetHashCode();
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is PatternColorSpace colorSpace &&
             colorSpace.AlternateSpace.Equals(AlternateSpace);
     }

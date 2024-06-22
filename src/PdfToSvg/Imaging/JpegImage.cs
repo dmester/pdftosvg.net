@@ -107,12 +107,12 @@ namespace PdfToSvg.Imaging
         }
 #endif
 
-        public override int GetHashCode() => 
-            611922474 ^ 
-            RuntimeHelpers.GetHashCode(imageDictionaryStream) ^ 
+        public override int GetHashCode() =>
+            611922474 ^
+            RuntimeHelpers.GetHashCode(imageDictionaryStream) ^
             colorSpace.GetHashCode();
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is JpegImage jpegImage &&
             ReferenceEquals(jpegImage.imageDictionaryStream, imageDictionaryStream) &&
             jpegImage.colorSpace.Equals(colorSpace);

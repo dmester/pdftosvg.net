@@ -97,7 +97,7 @@ namespace PdfToSvg.ColorSpaces
             725317562 ^
             transform.GetHashCode();
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is LabColorSpace colorSpace &&
             colorSpace.amin == amin &&
             colorSpace.amax == amax &&

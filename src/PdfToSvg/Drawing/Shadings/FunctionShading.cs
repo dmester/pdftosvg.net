@@ -164,7 +164,7 @@ namespace PdfToSvg.Drawing.Shadings
 
             var imageUrl = RenderDataUrl(imageWidth, imageHeight);
 
-            var patternEl = new XElement(ns + "pattern",
+            var patternEl = New.XElement(ns + "pattern",
                 new XAttribute("width", SvgConversion.FormatCoordinate(clipRectangle.X2)),
                 new XAttribute("height", SvgConversion.FormatCoordinate(clipRectangle.Y2)),
                 new XAttribute("patternUnits", "userSpaceOnUse"),
@@ -172,7 +172,7 @@ namespace PdfToSvg.Drawing.Shadings
                 clipEl,
                 backgroundEl,
 
-                new XElement(ns + "g",
+                New.XElement(ns + "g",
                     clipAttribute,
                     new XElement(ns + "image",
                         new XAttribute("transform", SvgConversion.Matrix(matrix * transform)),

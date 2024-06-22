@@ -215,7 +215,7 @@ namespace PdfToSvg.Imaging
             RuntimeHelpers.GetHashCode(imageDictionaryStream) ^
             colorSpace.GetHashCode();
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is ResampledPngImage pngImage &&
             ReferenceEquals(pngImage.imageDictionaryStream, imageDictionaryStream) &&
             pngImage.colorSpace.Equals(colorSpace);

@@ -43,7 +43,7 @@ namespace PdfToSvg.Drawing
                 this.permissionAssert = permissionAssert;
             }
 
-            public override bool Equals(object obj) =>
+            public override bool Equals(object? obj) =>
                 obj is AccessControlledImage image &&
                 image.baseImage.Equals(baseImage);
 

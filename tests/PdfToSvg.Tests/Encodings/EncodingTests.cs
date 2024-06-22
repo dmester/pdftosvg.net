@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Tests.Encodings
 {
-    class EncodingTests
+    public class EncodingTests
     {
         [Test]
         public void WinAnsi()

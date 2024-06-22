@@ -59,7 +59,7 @@ namespace PdfToSvg.ColorSpaces
             AlternateSpace.GetHashCode() ^
             tintTransform.GetHashCode();
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is SeparationColorSpace colorSpace &&
             colorSpace.AlternateSpace.Equals(AlternateSpace) &&
             colorSpace.tintTransform.Equals(tintTransform);

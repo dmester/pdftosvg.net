@@ -36,16 +36,17 @@ namespace PdfToSvg.Security
         {
             // ISO 32000-2, Algorithm 2, step a)
 
-            // Convert Unicode to codepage encoding
-#if !NETSTANDARD1_6
-            var codepageBytes = Encoding.Default.GetBytes(password);
-            password = Encoding.Default.GetString(codepageBytes);
+            // Only the normalization part from the SASLprep preparation is performed.
+#if NETSTANDARD1_6
+            var normalizedPassword = password;
+#else
+            var normalizedPassword = password.Normalize(NormalizationForm.FormKC);
 #endif
 
             // Convert codepage encoding to PDFDocEncoding
             var encoding = SingleByteEncoding.PdfDoc;
-            var decodeCharCount = Math.Min(PaddedPasswordLength, password.Length);
-            var passwordLength = encoding.GetBytes(password, 0, decodeCharCount, output, 0);
+            var decodeCharCount = Math.Min(PaddedPasswordLength, normalizedPassword.Length);
+            var passwordLength = encoding.GetBytes(normalizedPassword, 0, decodeCharCount, output, 0);
 
             // Add padding
             var padIndex = 0;

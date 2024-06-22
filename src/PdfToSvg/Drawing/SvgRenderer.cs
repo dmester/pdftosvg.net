@@ -361,7 +361,7 @@ namespace PdfToSvg.Drawing
             {
                 if (path.Referenced && defIds.Add(path.Id))
                 {
-                    defs.Add(new XElement(ns + "clipPath",
+                    defs.Add(New.XElement(ns + "clipPath",
                         new XAttribute("id", path.Id),
                         path.Parent != null ? new XAttribute("clip-path", "url(#" + path.Parent.Id + ")") : null,
                         path.ClipElement));
@@ -794,7 +794,7 @@ namespace PdfToSvg.Drawing
 
             transform = originTransform.Invert() * transform;
 
-            var patternEl = new XElement(ns + "pattern",
+            var patternEl = New.XElement(ns + "pattern",
                 new XAttribute("width", SvgConversion.FormatCoordinate(xstep)),
                 new XAttribute("height", SvgConversion.FormatCoordinate(ystep)),
                 new XAttribute("patternUnits", "userSpaceOnUse"),
@@ -929,7 +929,7 @@ namespace PdfToSvg.Drawing
                 if (groupAttributes.Count > 0 ||
                     additionalGroupContent != null && additionalGroupContent.Count > 0)
                 {
-                    var newGroup = new XElement(ns + "g", groupAttributes, additionalGroupContent);
+                    var newGroup = New.XElement(ns + "g", groupAttributes, additionalGroupContent);
 
                     currentTransparencyGroup.Add(newGroup);
                     currentTransparencyGroup = newGroup;
@@ -1481,7 +1481,7 @@ namespace PdfToSvg.Drawing
                 var formattedX = SvgConversion.FormatCoordinate(rect.X1);
                 var formattedY = SvgConversion.FormatCoordinate(rect.Y1);
 
-                var element = new XElement(ns + "rect",
+                var element = New.XElement(ns + "rect",
                     formattedX != "0" ? new XAttribute("x", formattedX) : null,
                     formattedY != "0" ? new XAttribute("y", formattedY) : null,
                     new XAttribute("width", SvgConversion.FormatCoordinate(rect.Width)),
@@ -1521,7 +1521,7 @@ namespace PdfToSvg.Drawing
                     parent?.Id,
                     svgPathData, evenOdd);
 
-                var element = new XElement(ns + "path",
+                var element = New.XElement(ns + "path",
                     new XAttribute("d", svgPathData),
                     evenOdd ? new XAttribute("clip-rule", "evenodd") : null);
 
@@ -2776,7 +2776,7 @@ namespace PdfToSvg.Drawing
                         var dx = string.Join(" ", span.SpaceBefore.Select(x => SvgConversion.FormatTextOffset(x)));
                         tspan.SetAttributeValue("dx", dx);
                     }
-                    
+
                     var dy = SvgConversion.FormatTextOffset(currentYOffset - span.Style.TextRisePx);
                     if (dy != "0")
                     {

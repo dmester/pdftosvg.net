@@ -78,7 +78,7 @@ namespace PdfToSvg.ColorSpaces
            1721897427 ^
            transform.GetHashCode();
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is CalRgbColorSpace colorSpace &&
             (colorSpace.gamma ?? ArrayUtils.Empty<double>()).SequenceEqual(gamma ?? ArrayUtils.Empty<double>()) &&
             colorSpace.transform == transform;

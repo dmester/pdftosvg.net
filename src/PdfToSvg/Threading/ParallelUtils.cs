@@ -117,7 +117,7 @@ namespace PdfToSvg.Threading
                         }
                         else if (t.IsFaulted)
                         {
-                            exceptions.Add(t.Exception);
+                            exceptions.Add(t.Exception ?? new Exception());
                             cts.Cancel();
                         }
 

@@ -78,7 +78,7 @@ namespace PdfToSvg.ColorSpaces
             AlternateSpace.GetHashCode() ^
             tintTransform.GetHashCode();
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is DeviceNColorSpace colorSpace &&
             colorSpace.ComponentsPerSample == ComponentsPerSample &&
             colorSpace.AlternateSpace.Equals(AlternateSpace) &&

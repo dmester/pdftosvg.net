@@ -132,7 +132,7 @@ namespace PdfToSvg.Imaging
             RuntimeHelpers.GetHashCode(imageDictionaryStream) ^
             colorSpace.GetHashCode();
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is CcittFaxImage ccittImage &&
             ReferenceEquals(ccittImage.imageDictionaryStream, imageDictionaryStream) &&
             ccittImage.colorSpace.Equals(colorSpace);

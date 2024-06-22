@@ -66,13 +66,21 @@ namespace PdfToSvg.RealLifeTests
                 throw new DirectoryNotFoundException("Could not find test files directory.");
             }
 
+            var testResultsDir = Path.Combine(testDir, TestResultsDir);
             var testResultsDirName = string.Format(CultureInfo.InvariantCulture, "{0}-{1:yyyyMMddTHHmmss}", TargetFramework, Started);
-            currentResultsDir = Path.Combine(testDir, TestResultsDir, testResultsDirName);
+            currentResultsDir = Path.Combine(testResultsDir, testResultsDirName);
 
-            previousResultsDirs = Directory
-                .EnumerateDirectories(Path.Combine(testDir, TestResultsDir), TargetFramework + "-*")
-                .OrderByDescending(x => x)
-                .ToList();
+            if (Directory.Exists(testResultsDir))
+            {
+                previousResultsDirs = Directory
+                    .EnumerateDirectories(testResultsDir, TargetFramework + "-*")
+                    .OrderByDescending(x => x)
+                    .ToList();
+            }
+            else
+            {
+                previousResultsDirs = new();
+            }
         }
 
         public static List<TestCaseData> TestCases

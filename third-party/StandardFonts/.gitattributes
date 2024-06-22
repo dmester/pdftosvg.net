@@ -1,0 +1,3 @@
+
+# Using platform specific line endings might cause failing tests, since the license is included in embedded fonts
+LICENSE eol=crlf

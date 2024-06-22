@@ -6,28 +6,54 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  PdfToSvgSkipSigning: true
+
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ 'ubuntu-latest', 'windows-latest' ]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET Core 2
-      uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 2.1.x
-    - name: Setup .NET 5
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 5.0.x
-    - name: Setup .NET 8
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 8.0.x
+        dotnet-version: |
+          3.1.x
+          5.0.x
+          6.0.x
+          8.0.x
+
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore -c Release
+
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj --no-build -c Release --verbosity normal --collect "Code Coverage;Format=cobertura" --results-directory TestResults
+
+    - name: Code coverage report
+      uses: danielpalme/ReportGenerator-GitHub-Action@5
+      with:
+        reports: "TestResults/**/*.cobertura.xml"
+        targetdir: "TestReport"
+        reporttypes: "Html"
+        assemblyfilters: '+PdfToSvg'
+        classfilters: '-System.*'
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: coverage-${{ matrix.os }}
+        path: TestReport
+
+    - uses: actions/upload-artifact@v4
+      if: ${{ failure() }}
+      with:
+        name: actual-${{ matrix.os }}
+        path: tests/TestFiles/Own/actual-**

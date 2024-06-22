@@ -228,7 +228,7 @@ namespace PdfToSvg.Tests
 
 #endif
 
-#if !NETFRAMEWORK && !NETCOREAPP2_1
+#if !NETFRAMEWORK && !NETCOREAPP && !NET6_0 // .NET 6 is used for testing .NET Standard 1.6
 
         [Test]
         public async Task PdfDocument_Images_AsyncEnumerable_Protected_NotAllowed()

@@ -34,7 +34,7 @@ namespace PdfToSvg.Tests.Security
             new TestCaseData(OwnerPassword, "protected-aes256-rev6-identity.pdf"),
             new TestCaseData(LongUserPasswordNC, "protected-aes256-rev6-longpass.pdf"),
             new TestCaseData(LongUserPasswordNC + "xxx", "protected-aes256-rev6-longpass.pdf"),
-#if !NETCOREAPP2_1
+#if !NETCOREAPP
             new TestCaseData(LongUserPasswordND, "protected-aes256-rev6-longpass.pdf"),
             new TestCaseData(LongUserPasswordND + "xxx", "protected-aes256-rev6-longpass.pdf"),
 #endif

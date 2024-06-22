@@ -25,12 +25,12 @@ namespace PdfToSvg.RealLifeTests
         private const string TargetFramework = "net40";
 #elif NET45
         private const string TargetFramework = "net45";
-#elif NETCOREAPP2_1
-        private const string TargetFramework = "netstandard16";
+#elif NETCOREAPP3_1
+        private const string TargetFramework = "netstandard20";
 #elif NET5_0
-        private const string TargetFramework = "netstandard21";
+        private const string TargetFramework = "net50";
 #elif NET6_0
-        private const string TargetFramework = "net60";
+        private const string TargetFramework = "netstandard16";
 #elif NET7_0
         private const string TargetFramework = "net70";
 #elif NET8_0

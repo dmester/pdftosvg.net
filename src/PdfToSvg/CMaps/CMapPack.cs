@@ -12,6 +12,9 @@ using System.Text;
 
 namespace PdfToSvg.CMaps
 {
+    /// <summary>
+    /// Reads a pack created using the CompressCMaps project available in the Tools folder.
+    /// </summary>
     internal class CMapPack
     {
         private readonly byte[] data;

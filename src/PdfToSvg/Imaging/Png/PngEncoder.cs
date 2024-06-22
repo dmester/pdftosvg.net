@@ -204,7 +204,7 @@ namespace PdfToSvg.Imaging.Png
                     {
                         var x = scanlineBytes - 1;
 
-                        for ( ; x >= bytesPerSample; x--)
+                        for (; x >= bytesPerSample; x--)
                         {
                             var a = buffer[cursor - bytesPerSample];
                             var b = buffer[cursor - rowSize];
@@ -212,7 +212,7 @@ namespace PdfToSvg.Imaging.Png
                             cursor--;
                         }
 
-                        for ( ; x >= 0; x--)
+                        for (; x >= 0; x--)
                         {
                             var b = buffer[cursor - rowSize];
                             buffer[cursor] = (byte)(buffer[cursor] - b / 2);

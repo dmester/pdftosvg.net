@@ -216,7 +216,7 @@ namespace PdfToSvg.Drawing
             public PathPoint(PathPoint? previous, double x, double y)
             {
                 Original = new Point(x, y);
-                
+
                 if (previous == null)
                 {
                     Rounded = new Point(

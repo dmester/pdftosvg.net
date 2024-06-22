@@ -194,7 +194,7 @@ namespace PdfToSvg.Parsing
 
             if (nextLexeme.Token != token)
             {
-                return false;    
+                return false;
             }
 
             lexer.Read();

@@ -284,7 +284,7 @@ namespace PdfToSvg.Cli
             ColoredConsole.Write("OK ", ConsoleColor.Green);
             Console.WriteLine(
                 "Successfully converted {0} {1} to SVG in {2:0.0}s.",
-                convertedPages, convertedPages == 1 ? "page": "pages",
+                convertedPages, convertedPages == 1 ? "page" : "pages",
                 start.Elapsed.TotalSeconds);
             return 0;
         }

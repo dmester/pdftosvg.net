@@ -99,7 +99,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             }
 
             var format = new CMapFormat4();
-            
+
             var length = reader.ReadUInt16();
             format.Language = reader.ReadUInt16();
 
@@ -166,7 +166,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             var format = new CMapFormat6();
 
             reader.ReadUInt16(); // Other readers seem to ignore the length
-            
+
             format.Language = reader.ReadUInt16();
             format.FirstCode = reader.ReadUInt16();
             var entryCount = reader.ReadUInt16();
@@ -193,7 +193,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
 
             reader.ReadUInt16(); // Reserved
             reader.ReadUInt32(); // Other readers seem to ignore the length
-            
+
             format.Language = reader.ReadUInt32();
             format.StartCharCode = reader.ReadUInt32();
             var entryCount = reader.ReadUInt32();

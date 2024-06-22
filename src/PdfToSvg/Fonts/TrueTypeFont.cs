@@ -73,8 +73,8 @@ namespace PdfToSvg.Fonts
                        hibyte == 0xF1 ||
                        hibyte == 0xF2;
                })
-               .Select(ch => {
-
+               .Select(ch =>
+               {
                    string? unicode = null;
                    string? glyphName = null;
 

@@ -102,7 +102,7 @@ namespace PdfToSvg.Parsing
                     for (var i = 0; i < VerifyFollowingTokenCount; i++)
                     {
                         var lexeme = followingLexer.Read();
-                        
+
                         if (lexeme.Token == Token.BeginImageData || // Start of another image
                             lexeme.Token == Token.EndOfInput)
                         {

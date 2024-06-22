@@ -273,7 +273,7 @@ namespace PdfToSvg.Drawing
             var svgText = SvgConversion.ReplaceInvalidChars(text);
 
             var isLocalFont = style.Font.SubstituteFont is LocalFont;
-            
+
             var lastSpan = currentParagraph.Content.LastOrDefault();
             if (lastSpan != null && lastSpan.Style == style)
             {

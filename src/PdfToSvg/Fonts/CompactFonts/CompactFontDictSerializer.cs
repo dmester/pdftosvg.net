@@ -154,7 +154,7 @@ namespace PdfToSvg.Fonts.CompactFonts
 
                 return outputArray;
             }
-        
+
             public static void Serialize(OutputDictData target,
                 TDict dict, TDict defaultValues,
                 CompactFontStringTable strings, bool readOnlyStrings)

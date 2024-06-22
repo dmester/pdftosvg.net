@@ -80,7 +80,7 @@ namespace PdfToSvg.Tests
             using var doc = PdfDocument.Open(pdfPath, new OpenOptions { Password = "owner" });
             var extractedImages = 0;
 
-            foreach (var image in doc.Images) 
+            foreach (var image in doc.Images)
             {
                 image.GetContent();
                 extractedImages++;
@@ -326,7 +326,7 @@ namespace PdfToSvg.Tests
                 sizes.Add(image.Width);
             }
             sizes.Sort();
-            
+
             // The 70px image is not referenced
             Assert.AreEqual("20, 30, 40, 50, 60, 80", string.Join(", ", sizes));
         }

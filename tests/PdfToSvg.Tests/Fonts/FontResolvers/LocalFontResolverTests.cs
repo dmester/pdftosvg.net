@@ -102,6 +102,7 @@ namespace PdfToSvg.Tests.Fonts.FontResolvers
         [TestCase("SourceSansPro-LightIt", "sans-serif", FontWeight.Light, FontStyle.Italic)]
         [TestCase("SourceSansPro-Regular", "sans-serif", FontWeight.Regular, FontStyle.Normal)]
         [TestCase("SourceSansPro-SemiboldIt", "sans-serif", FontWeight.SemiBold, FontStyle.Italic)]
+        [TestCase("STSongStd-Light", "serif", FontWeight.Light, FontStyle.Normal)]
         [TestCase("Tahoma", "Tahoma,sans-serif", FontWeight.Regular, FontStyle.Normal)]
         [TestCase("Tahoma-Bold", "Tahoma,sans-serif", FontWeight.Bold, FontStyle.Normal)]
         [TestCase("Times New Roman", "'Times New Roman',serif", FontWeight.Regular, FontStyle.Normal)]

@@ -136,6 +136,11 @@ namespace PdfToSvg.Fonts.FontResolvers
             "code", "monospace",
             "consol", "monospace",
             "mono", "monospace",
+
+            // CJK
+            "mincho", "serif",
+            "ming", "serif",
+            "song", "serif",
         };
 
         /// <inheritdoc/>

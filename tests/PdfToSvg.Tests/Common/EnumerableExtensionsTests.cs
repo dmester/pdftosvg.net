@@ -77,6 +77,7 @@ namespace PdfToSvg.Tests.Common
             Assert.AreEqual(new IGrouping<int, string>[0], actual);
         }
 
+#if !NET8_0_OR_GREATER // Already existing in .NET 8
         [Test]
         public void DistinctBy()
         {
@@ -94,5 +95,6 @@ namespace PdfToSvg.Tests.Common
             Assert.AreEqual(new[] { 1, 4, 7 }, items.Select(x => x.Id));
             Assert.AreEqual(new[] { 1, 4, 7 }, items.Select(x => x.Id));
         }
+#endif
     }
 }

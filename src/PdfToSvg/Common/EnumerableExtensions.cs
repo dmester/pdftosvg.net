@@ -79,7 +79,7 @@ namespace PdfToSvg.Common
             }
         }
 
-#if !NET8_0
+#if !NET8_0_OR_GREATER
         public static IEnumerable<T> DistinctBy<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector)
         {
             return DistinctBy(source, selector, EqualityComparer<TKey>.Default);

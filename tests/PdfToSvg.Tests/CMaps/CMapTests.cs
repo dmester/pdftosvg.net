@@ -21,6 +21,8 @@ namespace PdfToSvg.Tests.CMaps
 
 /Parent-CMap usecmap
 
+/CMapVersion 1.000 def
+
 4 begincodespacerange
 <01> <09>
 <AA22> <AB33>
@@ -316,6 +318,7 @@ endcidrange
             };
 
             Assert.AreEqual("Parent-CMap", cmapData.UseCMap);
+            Assert.AreEqual("1.000", cmapData.Version);
             Assert.AreEqual(expectedCodeSpaceRanges, cmapData.CodeSpaceRanges);
             Assert.AreEqual(expectedBfChars, cmapData.BfChars);
             Assert.AreEqual(expectedBfRanges, cmapData.BfRanges);

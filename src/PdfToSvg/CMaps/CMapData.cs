@@ -13,6 +13,8 @@ namespace PdfToSvg.CMaps
     {
         public string? Name { get; set; }
 
+        public string? Version { get; set; }
+
         public string? UseCMap { get; set; }
 
         public bool IsUnicodeCMap { get; set; }

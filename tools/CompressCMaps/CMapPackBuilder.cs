@@ -61,6 +61,7 @@ namespace CompressCMaps
                 var file = new FileEx();
 
                 file.Name = cmap.Name;
+                file.Version = cmap.Version ?? "";
                 file.UseCMap = cmap.UseCMap;
                 file.CodeSpaceRangesData.AddRange(cmap.CodeSpaceRanges);
 
@@ -125,6 +126,7 @@ namespace CompressCMaps
             foreach (var file in files)
             {
                 writer.Write(file.Name);
+                writer.Write(file.Version ?? "");
                 writer.Write(file.UseCMap ?? "");
 
                 writer.WriteCompactUInt32(file.CodeSpaceRangeOffset);

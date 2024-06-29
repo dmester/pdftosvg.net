@@ -55,6 +55,7 @@ namespace PdfToSvg.CMaps
                 var file = new CMapFile();
 
                 file.Name = reader.ReadString();
+                file.Version = reader.ReadString();
                 file.UseCMap = reader.ReadString();
 
                 if (file.UseCMap == "")

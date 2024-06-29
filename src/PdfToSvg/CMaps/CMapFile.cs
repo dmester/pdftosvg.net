@@ -12,6 +12,8 @@ namespace PdfToSvg.CMaps
     internal class CMapFile
     {
         public string Name = "";
+        public string Version = "";
+
         public string? UseCMap;
 
         public uint CodeSpaceRangeOffset;

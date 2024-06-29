@@ -103,6 +103,10 @@ namespace PdfToSvg.CMaps
                             {
                                 cmap.Name = name.Value.ToString();
                             }
+                            else if (lexeme.Value.ToString() == "CMapVersion" && lexer.TryRead(Token.Real, out var version))
+                            {
+                                cmap.Version = version.Value.ToString();
+                            }
                             else if (lexer.TryRead(Token.UseCMap))
                             {
                                 cmap.UseCMap = lexeme.Value.ToString();

@@ -1,0 +1,74 @@
+%PDF-1.7
+
+xref
+0 5
+0000000000 65535 f
+0000000167 00000 n
+0000000218 00000 n
+0000000282 00000 n
+0000001371 00000 n
+trailer
+<< /Root 1 0 R  /Size 5 >>
+     
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >> endobj
+
+3 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /F1 <<
+            /Type /Font
+            /Subtype /Type0
+            /BaseFont /Testing
+            /Encoding /Add-RKSJ-H
+            /DescendantFonts [
+              <<
+                /Type /Font
+                /Subtype /CIDFontType0
+                /BaseFont /Testing
+                /CIDSystemInfo <<
+                  /Registry (Adobe)
+                  /Ordering (Japan1)
+                  /Supplement 2
+                >>
+                /FontDescriptor <<
+                   /Type /FontDescriptor
+                   /Flags 6
+                   /Ascent 700
+                   /CapHeight 700
+                   /Descent -200
+                   /FontBBox [ -100 -254 1000 1000 ]
+                   /FontName /Testing
+                   /ItalicAngle 0
+                   /StemV 50
+                   /XHeight 500
+                >>
+              >>
+            ]
+         >>
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj << /Length 111 >>
+stream
+   0 0 0 rg
+
+   BT
+      100 700 Td
+     
+      /F1 50 Tf
+      <82b182f182c982bf82cd90a28a45> '
+
+   ET
+endstream
+endobj
+
+startxref
+8
+%%EOF

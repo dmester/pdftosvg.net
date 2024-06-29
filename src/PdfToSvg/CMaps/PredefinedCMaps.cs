@@ -11,7 +11,8 @@ namespace PdfToSvg.CMaps
 {
     internal static class PredefinedCMaps
     {
-        private static readonly Dictionary<string, CMap> cache = new Dictionary<string, CMap>();
+        private static readonly Dictionary<string, CMap> cmapCache = new Dictionary<string, CMap>();
+        private static readonly Dictionary<string, UnicodeMap> unicodeCache = new Dictionary<string, UnicodeMap>();
         private static CMapPack? pack;
 
         // PDF 1.7, Table 118
@@ -80,12 +81,74 @@ namespace PdfToSvg.CMaps
             "Identity-V",
         };
 
+        public static UnicodeMap? GetUnicodeMap(string registry, string ordering)
+        {
+            UnicodeMap? result;
+
+            var name = registry + "-" + ordering + "-UCS2";
+
+            lock (unicodeCache)
+            {
+                if (unicodeCache.TryGetValue(name, out result))
+                {
+                    return result;
+                }
+            }
+
+            if (name != "Adobe-CNS1-UCS2" &&
+                name != "Adobe-GB1-UCS2" &&
+                name != "Adobe-Japan1-UCS2" &&
+                name != "Adobe-Korea1-UCS2")
+            {
+                return null;
+            }
+
+            var mapData = GetPack().GetCMap(name);
+            if (mapData == null)
+            {
+                return null;
+            }
+
+            result = UnicodeMap.Create(mapData);
+
+            lock (unicodeCache)
+            {
+                unicodeCache[name] = result;
+            }
+
+            return result;
+        }
+
         public static CMap? Get(string name, CancellationToken cancellationToken = default)
         {
             return Get(name, 0, cancellationToken);
         }
 
         public static bool Contains(string name) => names.Contains(name);
+
+        private static CMapPack GetPack()
+        {
+            if (pack != null)
+            {
+                return pack;
+            }
+
+            lock (cmapCache)
+            {
+                if (pack == null)
+                {
+                    var assembly = typeof(PredefinedCMaps).GetTypeInfo().Assembly;
+                    var resourceName = typeof(PredefinedCMaps).Namespace + ".PredefinedCMaps.bin";
+
+                    using (var stream = assembly.GetManifestResourceStreamOrThrow(resourceName))
+                    {
+                        pack = new CMapPack(stream);
+                    }
+                }
+            }
+
+            return pack;
+        }
 
         private static CMap? Get(string? name, int recursionDepth, CancellationToken cancellationToken)
         {
@@ -107,28 +170,15 @@ namespace PdfToSvg.CMaps
                 return null;
             }
 
-            lock (cache)
+            lock (cmapCache)
             {
-                if (cache.TryGetValue(name, out var cachedCMap))
+                if (cmapCache.TryGetValue(name, out var cachedCMap))
                 {
                     return cachedCMap;
                 }
-
-                if (pack == null)
-                {
-                    var assembly = typeof(PredefinedCMaps).GetTypeInfo().Assembly;
-                    var resourceName = typeof(PredefinedCMaps).Namespace + ".PredefinedCMaps.bin";
-
-                    using (var stream = assembly.GetManifestResourceStreamOrThrow(resourceName))
-                    {
-                        pack = new CMapPack(stream);
-                    }
-
-                    cancellationToken.ThrowIfCancellationRequested();
-                }
             }
 
-            var cmapData = pack.GetCMap(name);
+            var cmapData = GetPack().GetCMap(name);
             if (cmapData == null)
             {
                 return null;
@@ -137,9 +187,9 @@ namespace PdfToSvg.CMaps
             var parent = Get(cmapData.UseCMap, recursionDepth + 1, cancellationToken);
             var cmap = new CustomCMap(cmapData, parent);
 
-            lock (cache)
+            lock (cmapCache)
             {
-                cache[name] = cmap;
+                cmapCache[name] = cmap;
             }
 
             return cmap;

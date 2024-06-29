@@ -15,5 +15,8 @@ namespace PdfToSvg.CMaps
         CidChars,
         NotDefRanges,
         CidRanges,
+        BfChars,
+        BfCharString,
+        BfRanges,
     }
 }

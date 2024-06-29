@@ -252,6 +252,28 @@ endcidrange
             Assert.IsTrue(reverseCode.Contains(code.CharCode), "Reverse char code lookup");
         }
 
+
+        [TestCase("CNS1", 0x0060, "\u00a9")]
+        [TestCase("CNS1", 0x32e3, "\u7517")]
+        [TestCase("CNS1", 0x3b12, "\ud855\udd81")]
+        [TestCase("CNS1", 0x4a11, "\u9fae")]
+        [TestCase("GB1", 0x0063, "\u00b7")]
+        [TestCase("GB1", 0x565f, "\ud850\uddfe")]
+        [TestCase("GB1", 0x0061, "\u3001")]
+        [TestCase("Japan1", 0x003d, "\u00a5")]
+        [TestCase("Japan1", 0x0806, "\u9d60\udb40\udd00")]
+        [TestCase("Japan1", 0x3b6e, "\u91ae")]
+        [TestCase("Korea1", 0x0060, "\u20A9")]
+        [TestCase("Korea1", 0x2443, "\u005B\u5341\u4E00\u005D")]
+        [TestCase("Korea1", 0x0A3E, "\uC752")]
+        public void PredefinedUnicodeMap(string ordering, int cid, string expectedUnicode)
+        {
+            var cmap = PredefinedCMaps.GetUnicodeMap("Adobe", ordering);
+            var unicode = cmap.GetUnicode((uint)cid);
+
+            Assert.AreEqual(expectedUnicode, unicode);
+        }
+
         [Test]
         public void Parse()
         {

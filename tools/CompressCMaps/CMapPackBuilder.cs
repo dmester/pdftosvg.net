@@ -55,8 +55,15 @@ namespace CompressCMaps
 
                 var cidRanges = new List<CMapRange>(cmap.CidRanges.Count);
                 var cidChars = new List<CMapChar>(cmap.CidChars.Count);
+                var bfRanges = new List<CMapRange>(cmap.BfRanges.Count);
+                var bfChars = new List<CMapChar>(cmap.BfChars.Count);
 
-                CMapOptimizer.Optimize(cidRanges, cidChars, cmap.CidRanges, cmap.CidChars);
+                var bfCharString = cmap.BfChars
+                    .Where(x => x.Unicode != null && x.Unicode.Length > 1)
+                    .ToList();
+
+                CMapOptimizer.Optimize(cidRanges, cidChars, cmap.CidRanges, cmap.CidChars, isBfChars: false);
+                CMapOptimizer.Optimize(bfRanges, bfChars, cmap.BfRanges, cmap.BfChars, isBfChars: true);
 
                 var file = new FileEx();
 
@@ -69,6 +76,9 @@ namespace CompressCMaps
                 file.CidTables.AddRange(PackTables(CMapCidTableType.CidRanges, cidRanges));
                 file.CidTables.AddRange(PackTables(CMapCidTableType.NotDefRanges, cmap.NotDefRanges));
                 file.CidTables.AddRange(PackTables(CMapCidTableType.NotDefChars, cmap.NotDefChars));
+                file.CidTables.AddRange(PackTables(CMapCidTableType.BfChars, bfChars));
+                file.CidTables.AddRange(PackTables(CMapCidTableType.BfCharString, bfCharString));
+                file.CidTables.AddRange(PackTables(CMapCidTableType.BfRanges, bfRanges));
 
                 files.Add(file);
             }
@@ -211,15 +221,23 @@ namespace CompressCMaps
 
                 CMapChar previous = default;
 
-                foreach (var range in group)
+                foreach (var ch in group)
                 {
-                    var charCodeOffset = range.CharCode - previous.CharCode - 1;
-                    var cidOffset = range.Cid - previous.Cid;
+                    var charCodeOffset = ch.CharCode - previous.CharCode - 1;
 
                     charCodes.WriteCompactUInt32(charCodeOffset);
-                    cids.WriteCompactUInt32(cidOffset);
 
-                    previous = range;
+                    if (type == CMapCidTableType.BfCharString)
+                    {
+                        cids.Write(ch.Unicode ?? throw new Exception("Unicode should not be null."));
+                    }
+                    else
+                    {
+                        var cidOffset = ch.Cid - previous.Cid;
+                        cids.WriteCompactUInt32(cidOffset);
+                    }
+
+                    previous = ch;
                 }
 
                 yield return new CidTableEx

@@ -44,7 +44,7 @@ endobj
                <<
                   /BaseFont /PdfToSvgTestFont
                   /CIDSystemInfo <<
-                     /Ordering (CNS1)
+                     /Ordering (ABC1)
                      /Registry (Adobe)
                      /Supplement 3
                   >>
@@ -109,7 +109,7 @@ endobj
    /Length 372
    /CMapName /PdfToSvgTest-H
    /CIDSystemInfo <<
-      /Ordering (CNS1)
+      /Ordering (ABC1)
       /Registry (Adobe)
       /Supplement 3
    >>
@@ -119,7 +119,7 @@ stream
 12 dict begin
 begincmap
 /CIDSystemInfo
-<< /Registry (Adobe) /Ordering (CNS1) /Supplement 3 >> def
+<< /Registry (Adobe) /Ordering (ABC1) /Supplement 3 >> def
 /CMapName /PdfToSvgTest-H def
 /CMapType 1 def
 1 begincodespacerange

@@ -113,6 +113,9 @@ namespace PdfToSvg.DocumentModel
         public static PdfName DescendantFonts { get; } = new PdfName("DescendantFonts");
         public static PdfName FontDescriptor { get; } = new PdfName("FontDescriptor");
         public static PdfName CIDToGIDMap { get; } = new PdfName("CIDToGIDMap");
+        public static PdfName CIDSystemInfo { get; } = new PdfName("CIDSystemInfo");
+        public static PdfName Registry { get; } = new PdfName("Registry");
+        public static PdfName Ordering { get; } = new PdfName("Ordering");
         public static PdfName FontName { get; } = new PdfName("FontName");
         public static PdfName FontFile { get; } = new PdfName("FontFile");
         public static PdfName FontFile2 { get; } = new PdfName("FontFile2");

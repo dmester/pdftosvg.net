@@ -15,10 +15,13 @@ namespace CompressCMaps
     {
         public static void Optimize(
             List<CMapRange> outputRanges, List<CMapChar> outputChars,
-            IEnumerable<CMapRange> inputRanges, IEnumerable<CMapChar> inputChars)
+            IEnumerable<CMapRange> inputRanges, IEnumerable<CMapChar> inputChars, bool isBfChars)
         {
             var charsAsRanges = inputChars
-                .Select(ch => new CMapRange(ch.CharCode, ch.CharCode, ch.CharCodeLength, ch.Cid));
+                .Where(ch => !isBfChars || ch.Unicode != null && ch.Unicode.Length == 1)
+                .Select(ch => new CMapRange(
+                    ch.CharCode, ch.CharCode, ch.CharCodeLength,
+                    isBfChars ? ch.Unicode![0] : ch.Cid));
 
             var allRanges = Enumerable.Concat(charsAsRanges, inputRanges)
                 .OrderBy(x => x.CharCodeLength)

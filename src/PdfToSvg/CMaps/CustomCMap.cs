@@ -14,6 +14,8 @@ namespace PdfToSvg.CMaps
     {
         private const int ExpandRangesThreshold = 100;
 
+        private readonly string? name;
+        private readonly string? version;
         private readonly CMap? parentCMap;
         private readonly bool isUnicodeCMap;
 
@@ -29,6 +31,9 @@ namespace PdfToSvg.CMaps
 
         public CustomCMap(CMapData data, CMap? parentCMap = null)
         {
+            name = data.Name;
+            version = data.Version;
+
             this.parentCMap = parentCMap;
             isUnicodeCMap = data.IsUnicodeCMap;
 
@@ -299,6 +304,11 @@ namespace PdfToSvg.CMaps
                     }
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            return ((name ?? nameof(CustomCMap)) + " " + version).TrimEnd();
         }
     }
 }

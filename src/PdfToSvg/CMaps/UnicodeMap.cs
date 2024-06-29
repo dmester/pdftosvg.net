@@ -19,6 +19,11 @@ namespace PdfToSvg.CMaps
         public static UnicodeMap Empty { get; } = new UnicodeEmptyMap();
         public static UnicodeMap Identity { get; } = new UnicodeIdentityMap();
 
+        public static UnicodeMap Link(CMap encoding, UnicodeMap unicodeMap)
+        {
+            return new LinkedUnicodeCMap(encoding, unicodeMap);
+        }
+
         public static UnicodeMap Create(CMapData cmapData)
         {
             return new UnicodeCMap(cmapData);
@@ -28,6 +33,31 @@ namespace PdfToSvg.CMaps
         {
             var cmapData = CMapParser.Parse(stream, cancellationToken);
             return new UnicodeCMap(cmapData);
+        }
+
+        private class LinkedUnicodeCMap : UnicodeMap
+        {
+            private readonly CMap encoding;
+            private readonly UnicodeMap unicodeMap;
+
+            public LinkedUnicodeCMap(CMap encoding, UnicodeMap unicodeMap)
+            {
+                this.encoding = encoding;
+                this.unicodeMap = unicodeMap;
+            }
+
+            public override string? GetUnicode(uint charCode)
+            {
+                var cid = encoding.GetCid(charCode);
+                if (cid == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return unicodeMap.GetUnicode(cid.Value);
+                }
+            }
         }
 
         private class UnicodeCMap : UnicodeMap

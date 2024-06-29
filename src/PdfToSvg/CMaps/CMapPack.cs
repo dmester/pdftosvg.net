@@ -130,15 +130,27 @@ namespace PdfToSvg.CMaps
             switch (table.Type)
             {
                 case CMapCidTableType.CidChars:
-                    ReadChars(reader, table, cmap.CidChars);
+                    ReadChars(reader, table, cmap.CidChars, bfChars: false);
                     break;
 
                 case CMapCidTableType.CidRanges:
                     ReadRanges(reader, table, cmap.CidRanges);
                     break;
 
+                case CMapCidTableType.BfChars:
+                    ReadChars(reader, table, cmap.BfChars, bfChars: true);
+                    break;
+
+                case CMapCidTableType.BfCharString:
+                    ReadCharStrings(reader, table, cmap.BfChars);
+                    break;
+
+                case CMapCidTableType.BfRanges:
+                    ReadRanges(reader, table, cmap.BfRanges);
+                    break;
+
                 case CMapCidTableType.NotDefChars:
-                    ReadChars(reader, table, cmap.NotDefChars);
+                    ReadChars(reader, table, cmap.NotDefChars, bfChars: false);
                     break;
 
                 case CMapCidTableType.NotDefRanges:
@@ -183,7 +195,7 @@ namespace PdfToSvg.CMaps
             }
         }
 
-        private void ReadChars(BinaryReader reader, CMapCidTable table, List<CMapChar> output)
+        private void ReadChars(BinaryReader reader, CMapCidTable table, List<CMapChar> output, bool bfChars)
         {
             var cids = ReadCids(reader, table.CidOffset, table.EntryCount);
 
@@ -197,7 +209,36 @@ namespace PdfToSvg.CMaps
 
                 var charCode = ch.CharCode + charCodeDiff + 1;
 
-                ch = new CMapChar(charCode, (int)table.CharCodeLength, cids[i]);
+                if (bfChars)
+                {
+                    ch = new CMapChar(charCode, (int)table.CharCodeLength, new string((char)cids[i], 1));
+                }
+                else
+                {
+                    ch = new CMapChar(charCode, (int)table.CharCodeLength, cids[i]);
+                }
+                output.Add(ch);
+            }
+        }
+
+        private void ReadCharStrings(BinaryReader reader, CMapCidTable table, List<CMapChar> output)
+        {
+            reader.BaseStream.Position = table.CidOffset;
+
+            var unicodeStrings = new string[table.EntryCount];
+            for (var i = 0; i < unicodeStrings.Length; i++)
+            {
+                unicodeStrings[i] = reader.ReadString();
+            }
+
+            reader.BaseStream.Position = table.CharCodeOffset;
+
+            CMapChar ch = default;
+            for (var i = 0; i < unicodeStrings.Length; i++)
+            {
+                var charCodeDiff = reader.ReadCompactUInt32();
+                var charCode = ch.CharCode + charCodeDiff + 1;
+                ch = new CMapChar(charCode, (int)table.CharCodeLength, unicodeStrings[i]);
                 output.Add(ch);
             }
         }

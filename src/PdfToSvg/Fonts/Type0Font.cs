@@ -37,6 +37,17 @@ namespace PdfToSvg.Fonts
             {
                 toUnicode = UnicodeMap.Identity;
             }
+            else if (
+                fontDict.TryGetDictionary(Names.DescendantFonts / Indexes.First / Names.CIDSystemInfo, out var cidSystemInfo) &&
+                cidSystemInfo.TryGetValue(Names.Registry, out PdfString registry) &&
+                cidSystemInfo.TryGetValue(Names.Ordering, out PdfString ordering))
+            {
+                var unicodeMap = PredefinedCMaps.GetUnicodeMap(registry.ToString(), ordering.ToString());
+                if (unicodeMap != null)
+                {
+                    toUnicode = UnicodeMap.Link(cmap, unicodeMap);
+                }
+            }
         }
 
         [DebuggerDisplay("{Cid} -> {GlyphIndex} ('{Unicode}')")]

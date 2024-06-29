@@ -35,26 +35,62 @@
 
   <!-- Embedded resources -->
   <ItemGroup Condition=" '$(TargetName)' != 'PdfToSvg.Packer' ">
-    <EmbeddedResource Include="..\..\third-party\AdobeCMaps\PredefinedCMaps.bin" Link="CMaps\PredefinedCMaps.bin" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\AdobeCMaps\PredefinedCMaps.bin" Visible="false">
+      <LogicalName>PdfToSvg.CMaps.PredefinedCMaps.bin</LogicalName>
+    </EmbeddedResource>
 
-    <EmbeddedResource Include="..\..\third-party\AdobeGlyphList\glyphlist.txt" Link="Encodings\AdobeGlyphList\glyphlist.txt" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\AdobeGlyphList\zapfdingbats.txt" Link="Encodings\AdobeGlyphList\zapfdingbats.txt" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\AdobeGlyphList\glyphlist.txt" Visible="false">
+      <LogicalName>PdfToSvg.Encodings.AdobeGlyphList.glyphlist.txt</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\AdobeGlyphList\zapfdingbats.txt" Visible="false">
+      <LogicalName>PdfToSvg.Encodings.AdobeGlyphList.zapfdingbats.txt</LogicalName>
+    </EmbeddedResource>
 
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitDingbats.cff" Link="Fonts\StandardFonts\FoxitDingbats.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitFixed.modified.cff" Link="Fonts\StandardFonts\FoxitFixed.modified.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitFixedBold.modified.cff" Link="Fonts\StandardFonts\FoxitFixedBold.modified.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitFixedBoldItalic.modified.cff" Link="Fonts\StandardFonts\FoxitFixedBoldItalic.modified.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitFixedItalic.cff" Link="Fonts\StandardFonts\FoxitFixedItalic.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSans.cff" Link="Fonts\StandardFonts\FoxitSans.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSansBold.cff" Link="Fonts\StandardFonts\FoxitSansBold.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSansBoldItalic.cff" Link="Fonts\StandardFonts\FoxitSansBoldItalic.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSansItalic.cff" Link="Fonts\StandardFonts\FoxitSansItalic.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSerif.cff" Link="Fonts\StandardFonts\FoxitSerif.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSerifBold.cff" Link="Fonts\StandardFonts\FoxitSerifBold.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSerifBoldItalic.cff" Link="Fonts\StandardFonts\FoxitSerifBoldItalic.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSerifItalic.cff" Link="Fonts\StandardFonts\FoxitSerifItalic.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSymbol.cff" Link="Fonts\StandardFonts\FoxitSymbol.cff" Visible="false" />
-    <EmbeddedResource Include="..\..\third-party\StandardFonts\LICENSE" Link="Fonts\StandardFonts\LICENSE" Visible="false" />
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitDingbats.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitDingbats.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitFixed.modified.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitFixed.modified.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitFixedBold.modified.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitFixedBold.modified.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitFixedBoldItalic.modified.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitFixedBoldItalic.modified.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitFixedItalic.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitFixedItalic.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSans.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitSans.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSansBold.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitSansBold.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSansBoldItalic.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitSansBoldItalic.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSansItalic.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitSansItalic.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSerif.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitSerif.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSerifBold.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitSerifBold.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSerifBoldItalic.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitSerifBoldItalic.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSerifItalic.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitSerifItalic.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\FoxitSymbol.cff" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.FoxitSymbol.cff</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\third-party\StandardFonts\LICENSE" Visible="false">
+      <LogicalName>PdfToSvg.Fonts.StandardFonts.LICENSE</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

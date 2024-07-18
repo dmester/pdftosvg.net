@@ -23,12 +23,6 @@ namespace PdfToSvg.Fonts
         protected override void OnInit(CancellationToken cancellationToken)
         {
             base.OnInit(cancellationToken);
-
-            if (pdfFontEncoding == null && openTypeFont == null && Name == "Symbol")
-            {
-                pdfFontEncoding = new SymbolEncoding();
-            }
-
             widthMap = Type1WidthMap.Parse(fontDict);
         }
 

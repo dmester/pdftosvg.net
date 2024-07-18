@@ -73,7 +73,7 @@ namespace PdfToSvg.Fonts
             // Symbolic
             var descriptor = fontDict.GetDictionaryOrEmpty(Names.FontDescriptor);
             var fontFlags = (FontFlags)descriptor.GetValueOrDefault(Names.Flags, 0);
-            isSymbolic = fontFlags.HasFlag(FontFlags.Symbolic);
+            isSymbolic |= fontFlags.HasFlag(FontFlags.Symbolic);
 
             // Read font
             try
@@ -94,7 +94,7 @@ namespace PdfToSvg.Fonts
             }
 
             // Encoding
-            var baseEncoding = (isSymbolic ? openTypeFontEncoding : null) ?? SingleByteEncoding.Standard;
+            var baseEncoding = openTypeFontEncoding ?? SingleByteEncoding.Standard;
             var encodingDefinition = fontDict.GetValueOrDefault(Names.Encoding);
             pdfFontEncoding = EncodingFactory.Create(encodingDefinition, baseEncoding);
 
@@ -244,6 +244,7 @@ namespace PdfToSvg.Fonts
                             openTypeFont.Names.License = standardFont.License;
                         }
 
+                        isSymbolic |= standardFont.IsSymbolic;
                         isStandardFont = true;
                     }
                     catch (Exception ex)

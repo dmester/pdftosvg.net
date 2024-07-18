@@ -156,7 +156,9 @@ namespace PdfToSvg.Fonts
                     normalizedName == ZapfDingbats ? SingleByteEncoding.ZapfDingbats :
                     SingleByteEncoding.Standard;
 
-                return new StandardFont(normalizedName, data, encoding, license);
+                var isSymbolic = normalizedName == Symbol || normalizedName == ZapfDingbats;
+
+                return new StandardFont(normalizedName, data, encoding, isSymbolic, license);
             }
 
             return null;

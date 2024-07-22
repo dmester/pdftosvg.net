@@ -188,7 +188,11 @@ namespace PdfToSvg.Fonts
 
             // Char code -> Encoding -> Glyph name
             var charCodeLookup = Enumerable.Range(0, 256)
-                .Select(charCode => new { GlyphName = encoding.GetGlyphName((byte)charCode), CharCode = charCode })
+                .Select(charCode => new
+                {
+                    GlyphName = encoding.GetGlyphName((byte)charCode),
+                    CharCode = charCode,
+                })
                 .Where(ch => ch.GlyphName != null)
                 .ToLookup(ch => ch.GlyphName, ch => (uint)ch.CharCode);
 
@@ -199,6 +203,7 @@ namespace PdfToSvg.Fonts
                     {
                         var clone = glyph.Clone();
                         clone.CharCode = charCode;
+                        clone.IsExplicitlyMapped = encoding.IsExplicitlyMapped((byte)charCode);
                         return clone;
                     }));
         }

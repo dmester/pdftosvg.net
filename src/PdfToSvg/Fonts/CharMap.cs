@@ -175,10 +175,14 @@ namespace PdfToSvg.Fonts
 
             foreach (var glyph in charsByGlyphIndex)
             {
-                // Prefer width of lower char codes if there are multiple char codes mapping to the same glyph. It
-                // is more likely that the PDF producer mapped used chars to a low char code.
+                // Prefer:
+                // 1. Char codes explicitly mapped using a /Differences array (see issue #33).
+                // 2. Width of lower char codes if there are multiple char codes mapping to the same
+                //    glyph. It is more likely that the PDF producer mapped used chars to a low char code.
+
                 var width = glyph
-                    .OrderBy(ch => ch.CharCode)
+                    .OrderBy(ch => ch.IsExplicitlyMapped ? 0 : 1)
+                    .ThenBy(ch => ch.CharCode)
                     .Select(ch => widthMap.GetWidth(ch))
                     .Where(w => w > 0)
                     .FirstOrDefault();

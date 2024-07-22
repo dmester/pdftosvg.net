@@ -274,6 +274,11 @@ namespace PdfToSvg.Encodings
             return toGlyphName[charCode];
         }
 
+        public virtual bool IsExplicitlyMapped(byte charCode)
+        {
+            return false;
+        }
+
         public override bool IsSingleByte => true;
     }
 }

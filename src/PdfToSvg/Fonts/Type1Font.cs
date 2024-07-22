@@ -81,6 +81,7 @@ namespace PdfToSvg.Fonts
                         GlyphIndex = glyphIndex,
                         GlyphName = glyphName,
                         Unicode = encodingUnicode ?? CharInfo.NotDef,
+                        IsExplicitlyMapped = encoding.IsExplicitlyMapped((byte)charCode),
                     };
                 }
             }

@@ -24,6 +24,7 @@ namespace PdfToSvg.Fonts
         public string Unicode = NotDef;
 
         public double Width;
+        public bool IsExplicitlyMapped;
 
         public CharInfo Clone() => (CharInfo)MemberwiseClone();
 

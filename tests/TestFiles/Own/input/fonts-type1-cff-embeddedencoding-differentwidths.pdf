@@ -1,0 +1,87 @@
+%PDF-1.7
+
+xref
+0 6
+0000000000 65535 f
+0000000187 00000 n
+0000000238 00000 n
+0000000302 00000 n
+0000000444 00000 n
+0000001848 00000 n
+trailer
+<< /Root 1 0 R  /Size 5 >>
+     
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 4 0 R ]  /Count 1 >> endobj
+
+3 0 obj << /Length 85 >>
+stream
+   0 0 0 rg
+
+   BT
+      150 600 Td
+      /F1 200 Tf
+      <A1A2A5A3A3> '
+   ET
+endstream
+endobj
+
+4 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /F1 <<
+            /Type /Font
+            /Subtype /Type1   
+            /BaseFont /PdfToSvgTestFont
+            /FirstChar 161
+            /LastChar 165
+            % Issue 33: some PDFs will remap characters to higher character codes than specified by the CFF encoding.
+            % The best solution would be to support different widths for the same glyph, but that would require a larger
+            % refactoring of the text decoder. For this reason, prefer widths of the character codes mapped explicitly by
+            % the /Differences array.
+            /Encoding << /Differences [ 165 /exclam ] >>
+            /Widths [
+               445 % H
+               227 % I
+               409 % !
+               409 % !
+               209 % ! (mapped by /Differences)
+               ]
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvgTestFont
+               /Flags 4 
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 0
+               /Ascent 666
+               /Descent 0
+               /CapHeight 666
+               /StemV 0
+               /FontFile3 5 0 R
+               /MissingWidth 400
+            >>
+         >>
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 3 0 R ]
+>>
+endobj
+
+5 0 obj
+<<
+   /Length1 362
+   /Length 725
+   /Filter /ASCIIHexDecode
+   /Subtype /Type1C
+>>
+stream
+010004020001010111506466546f53766754657374466f6e740001010124f80f00f81c01f81e02f81e03f81804bc8bf83ff92205f7cd0ff7d710f73211a8f7e1120004010108243444756e6930303030436f707972696768742028632920323032312c20506466546f537667506466546f53766754657374466f6e74506466546f53766754657374466f6e74000066546f53766754657374466f6e7400000005010124385c7e93f8108bbdf845bd01bdbdf7c0bd03bd16f824f8a9fc2406bdfc7715f845f7c0fc45070ef803bcf7e815f75afbbef748f7befb48f7bc050ee48be301c7df03c7e3158d6788578c8b08df068b8be48a8a378c8b1fc804dff87937060ea076f7beeb01bfe6f727e303bf16e6f7bef727fbbee3f92233fb98fb27f79830060ef6a076f9147701d5d303d5f91415fd14d3f914070e01018700000200002901800402a3a1a201a40002779ff9149906eb0ad30bf85114f70c158b0c0ae3930c0cd3978f8e0c0d>
+endstream
+endobj
+
+startxref
+8
+%%EOF

@@ -14,9 +14,15 @@ namespace PdfToSvg.Encodings
 {
     internal class CustomEncoding : SingleByteEncoding
     {
-        private CustomEncoding(string?[] toUnicode, string?[] toGlyphName) : base(toUnicode, toGlyphName)
+        private readonly bool[] explicitlyMapped;
+
+        private CustomEncoding(string?[] toUnicode, string?[] toGlyphName, bool[] explicitlyMapped)
+            : base(toUnicode, toGlyphName)
         {
+            this.explicitlyMapped = explicitlyMapped;
         }
+
+        public override bool IsExplicitlyMapped(byte charCode) => explicitlyMapped[charCode];
 
         public static CustomEncoding Create(PdfDictionary encodingDict, SingleByteEncoding defaultBaseEncoding)
         {
@@ -36,6 +42,7 @@ namespace PdfToSvg.Encodings
 
             var toUnicode = new string?[256];
             var toGlyphName = new string?[256];
+            var explicitlyMapped = new bool[256];
 
             for (var i = 0; i < toUnicode.Length; i++)
             {
@@ -53,6 +60,7 @@ namespace PdfToSvg.Encodings
 
                     if (item is PdfName glyphName)
                     {
+                        explicitlyMapped[nextCharCode] = true;
                         toGlyphName[nextCharCode] = glyphName.Value;
 
                         if (AdobeGlyphList.TryGetUnicode(glyphName, out var unicode))
@@ -73,7 +81,7 @@ namespace PdfToSvg.Encodings
                 }
             }
 
-            return new CustomEncoding(toUnicode, toGlyphName);
+            return new CustomEncoding(toUnicode, toGlyphName, explicitlyMapped);
         }
     }
 }

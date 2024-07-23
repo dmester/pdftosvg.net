@@ -259,7 +259,7 @@ namespace PdfToSvg.IO
 
         public char PeekChar(int offset)
         {
-            if (offset < 1 || offset > buffer.Length / 2)
+            if (offset < 1 || offset > buffer.Length)
             {
                 throw new ArgumentOutOfRangeException(nameof(offset));
             }

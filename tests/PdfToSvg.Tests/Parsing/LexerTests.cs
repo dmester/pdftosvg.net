@@ -213,6 +213,39 @@ namespace PdfToSvg.Tests.Parsing
         }
 
         [Test]
+        public void RD()
+        {
+            var lexer = new Lexer(" -| ", basicKeywords);
+
+            Assert.AreEqual(new Lexeme(Token.RD), lexer.Read());
+
+            Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
+        }
+
+        [Test]
+        public void ND()
+        {
+            var lexer = new Lexer(" |- ", basicKeywords);
+
+            Assert.AreEqual(new Lexeme(Token.ND), lexer.Read());
+
+            Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
+        }
+
+        [Test]
+        public void NP()
+        {
+            var lexer = new Lexer(" | ", basicKeywords);
+
+            Assert.AreEqual(new Lexeme(Token.NP), lexer.Read());
+
+            Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
+        }
+
+        [Test]
         public void Name()
         {
             // Examples from Table 4 in PDF spec 1.7

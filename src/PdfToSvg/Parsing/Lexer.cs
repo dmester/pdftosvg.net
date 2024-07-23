@@ -601,6 +601,26 @@ namespace PdfToSvg.Parsing
                         result = ReadKeyword();
                         break;
 
+                    case '-' when Stream.PeekChar(2) == '|':
+                        // In Type 1 fonts, -| can be an alias for RD
+                        result = CreateLexeme(Token.RD, Stream.Position);
+                        Stream.Skip(2);
+                        break;
+
+                    case '|':
+                        // In Type 1 fonts, |- can be an alias for ND, and | for NP
+                        if (Stream.PeekChar(2) == '-')
+                        {
+                            result = CreateLexeme(Token.ND, Stream.Position);
+                            Stream.Skip(2);
+                        }
+                        else
+                        {
+                            result = CreateLexeme(Token.NP, Stream.Position);
+                            Stream.Skip(1);
+                        }
+                        break;
+
                     case '+':
                     case '-':
                     case '.':

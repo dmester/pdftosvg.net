@@ -39,7 +39,7 @@ jobs:
       run: dotnet test tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj --no-build -c Release --verbosity normal --collect "Code Coverage;Format=cobertura" --results-directory TestResults
 
     - name: Code coverage report
-      uses: danielpalme/ReportGenerator-GitHub-Action@5
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.3.8
       with:
         reports: "TestResults/**/*.cobertura.xml"
         targetdir: "TestReport"

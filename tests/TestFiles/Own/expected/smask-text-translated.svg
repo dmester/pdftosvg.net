@@ -1,0 +1,22 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID4{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:65px;fill:#0c2b33;}
+</style>
+<defs class="ID1">
+<linearGradient x1="38" y1="460" x2="200" y2="460" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="ID2">
+<stop offset=".001%" stop-color="#fff" />
+<stop offset="99.999%" stop-color="#000" />
+</linearGradient>
+<mask id="ID3">
+<g transform="translate(180 0)">
+<path d="M30 381.92h180v-180h-180z" fill="url(#ID2)" />
+</g>
+</mask>
+</defs>
+<g stroke-miterlimit="10" class="ID1">
+<path d="M200 391.92h200v-200h-200z" fill="none" stroke="#0c2b33" stroke-width="1" />
+<text x="218" y="371.92" class="ID4" mask="url(#ID3)">TEXT</text>
+</g>
+</svg>

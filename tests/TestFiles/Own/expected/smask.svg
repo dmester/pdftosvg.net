@@ -3,11 +3,11 @@
 <style>
 .ID1 text{white-space:pre;}
 .ID5{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:60px;fill:url(#ID2);fill-opacity:.8;}
-.ID11{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:60px;fill:#0c2b33;}
-.ID12{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:150px;fill:#0c2b33;mask:url(#ID9);}
+.ID12{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:60px;fill:#0c2b33;}
+.ID13{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:150px;fill:#0c2b33;}
 </style>
 <defs class="ID1">
-<linearGradient x1="0" y1="0" x2="480" y2="0" gradientTransform="matrix(1 0 0 -1 0 100)" gradientUnits="userSpaceOnUse" id="ID2">
+<linearGradient x1="0" y1="0" x2="480" y2="0" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="ID2">
 <stop offset="0%" stop-color="#0ff" stop-opacity="0" />
 <stop offset=".001%" stop-color="#0ff" />
 <stop offset="99.999%" stop-color="#000" />
@@ -15,26 +15,32 @@
 </linearGradient>
 <image id="ID3" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANJJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT3PgGa8gRwIYbLhljAgwoQYDes1iHYMDJGhAdVJmOj7bDQnHU2B82UEGRw0GOoDGOangNDkGAYffQYJfobPM2EajqagBCtQYnsxQ4U3Q4INCGU4MizPZHg/DS1YgeBIAlEeACqDxvSvz0QlDaAyROIDcvDYA5QCq0bSAE/ewDBATt5ALmryBgA34dLM/tOwHgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" />
 <mask mask-type="alpha" id="ID4">
-<g transform="translate(90 101.92)">
-<text x="0" y="95" class="ID5">TEXT SMASK</text>
-<g transform="matrix(30 0 0 30 405 65)">
+<g transform="translate(90 -640)">
+<g clip-path="url(#ID11)">
+<text x="0" y="836.92" class="ID5">TEXT SMASK</text>
+<g transform="matrix(30 0 0 30 405 806.92)">
 <use href="#ID3" />
+</g>
 </g>
 </g>
 </mask>
 <mask mask-type="alpha" id="ID6">
-<g transform="translate(90 161.92)">
-<text x="0" y="95" class="ID5">TEXT SMASK</text>
-<g transform="matrix(30 0 0 30 405 65)">
+<g transform="translate(90 -580)">
+<g clip-path="url(#ID11)">
+<text x="0" y="836.92" class="ID5">TEXT SMASK</text>
+<g transform="matrix(30 0 0 30 405 806.92)">
 <use href="#ID3" />
+</g>
 </g>
 </g>
 </mask>
 <mask id="ID7">
-<g transform="translate(90 221.92)">
-<text x="0" y="95" class="ID5">TEXT SMASK</text>
-<g transform="matrix(30 0 0 30 405 65)">
+<g transform="translate(90 -520)">
+<g clip-path="url(#ID11)">
+<text x="0" y="836.92" class="ID5">TEXT SMASK</text>
+<g transform="matrix(30 0 0 30 405 806.92)">
 <use href="#ID3" />
+</g>
 </g>
 </g>
 </mask>
@@ -43,31 +49,38 @@
 <stop offset="99.999%" stop-color="#0c2b33" />
 </linearGradient>
 <mask id="ID9">
-<g transform="translate(90 281.92)">
-<text x="0" y="95" class="ID5">TEXT SMASK</text>
-<g transform="matrix(30 0 0 30 405 65)">
+<g transform="translate(90 -460)">
+<g clip-path="url(#ID11)">
+<text x="0" y="836.92" class="ID5">TEXT SMASK</text>
+<g transform="matrix(30 0 0 30 405 806.92)">
 <use href="#ID3" />
+</g>
 </g>
 </g>
 </mask>
 <mask id="ID10">
-<g transform="matrix(0 .7 -.7 0 330 421.92)">
-<text x="0" y="95" class="ID5">TEXT SMASK</text>
-<g transform="matrix(30 0 0 30 405 65)">
+<g transform="matrix(0 .7 -.7 0 849.344 421.92)">
+<g clip-path="url(#ID11)">
+<text x="0" y="836.92" class="ID5">TEXT SMASK</text>
+<g transform="matrix(30 0 0 30 405 806.92)">
 <use href="#ID3" />
 </g>
 </g>
+</g>
 </mask>
+<clipPath id="ID11">
+<rect y="741.92" width="520" height="100" />
+</clipPath>
 </defs>
 <g class="ID1">
 <path d="M0 841.92h280v-842h-280z" fill="#bae0ed" />
 <path d="M90 201.92h1000v-1000h-1000z" fill="#0c2b33" mask="url(#ID4)" />
-<text x="90" y="136.92" class="ID11">TEXT SMASK</text>
+<text x="90" y="136.92" class="ID12">TEXT SMASK</text>
 <g mask="url(#ID6)">
 <path d="M90 261.92h1000v-1000h-1000z" fill="#0c2b33" />
 </g>
 <path d="M0 841.92h594.96v-841.92h-594.96z" fill="url(#ID8)" mask="url(#ID7)" />
-<text x="90" y="381.92" class="ID12">zzzzzzz</text>
+<text x="90" y="381.92" class="ID13" mask="url(#ID9)">zzzzzzz</text>
 <path d="M-3240 -3078.08v6300h6300v-6300z" fill="#0c2b33" mask="url(#ID10)" />
 </g>
 </svg>

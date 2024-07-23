@@ -865,13 +865,9 @@ namespace PdfToSvg.Drawing
                 graphicsState = new GraphicsState();
                 currentTransparencyGroup = maskEl;
 
-                // Move origin to prevent unnecessary transforms in the content
-                if (group.TryGetRectangle(Names.BBox, out var bbox))
-                {
-                    var originTransform = MoveOriginToTopLeft(bbox);
-                    graphicsState.Transform = originTransform;
-                    transform = originTransform.Invert() * transform;
-                }
+                graphicsState.Transform = originalTransform;
+                
+                transform = originalTransform.Invert() * transform;
 
                 if (!transform.IsIdentity)
                 {
@@ -880,7 +876,10 @@ namespace PdfToSvg.Drawing
                     currentTransparencyGroup = maskContentEl;
                 }
 
-                originalTransform = graphicsState.Transform;
+                if (group.TryGetRectangle(Names.BBox, out var bbox))
+                {
+                    AppendClipping(bbox, rectIsTransformed: false);
+                }
             });
 
             var id = StableID.Generate("sm", maskEl);
@@ -1184,6 +1183,7 @@ namespace PdfToSvg.Drawing
             var isStencilMask = xobject.GetValueOrDefault(Names.ImageMask, false);
 
             // Decide mask
+            var graphicsStateSMaskIsApplicable = true;
             PdfDictionary? maskImage;
 
             if (isStencilMask)
@@ -1193,6 +1193,9 @@ namespace PdfToSvg.Drawing
             else if (xobject.TryGetDictionary(Names.SMask, out var smask))
             {
                 maskImage = smask;
+
+                // According to ISO 32000-2-2020 Table 87 SMask description:
+                graphicsStateSMaskIsApplicable = false;
             }
             else if (xobject.TryGetDictionary(Names.Mask, out var stencilMask))
             {
@@ -1226,20 +1229,23 @@ namespace PdfToSvg.Drawing
             }
 
             // Output
-            if (isStencilMask)
-            {
-                AppendClipped(new XElement(ns + "g", imageAttributes,
+            var imageEl = isStencilMask
+                ? new XElement(ns + "g", imageAttributes,
                     new XElement(ns + "path",
                         new XAttribute("d", "M0 0V1H1V-1z"),
                         new XAttribute("fill", SvgConversion.FormatColor(graphicsState.FillColor)))
-                    ));
-            }
-            else
-            {
-                AppendClipped(new XElement(ns + "g", imageAttributes,
+                    )
+                : new XElement(ns + "g", imageAttributes,
                     new XElement(ns + "use", new XAttribute("href", "#" + imageId))
-                    ));
+                    );
+
+            // Soft mask from graphics state
+            if (graphicsStateSMaskIsApplicable)
+            {
+                imageEl = ApplySMask(imageEl, graphicsState.SMaskId);
             }
+            
+            AppendClipped(imageEl);
         }
 
         [Operation("Do")]
@@ -1647,6 +1653,27 @@ namespace PdfToSvg.Drawing
             GetClipParent().Add(el);
         }
 
+        private XElement ApplySMask(XElement target, string? smaskId)
+        {
+            if (smaskId != null)
+            {
+                // We don't want the transform to affect the mask, as the mask is already transformed according to
+                // the transform that was active when the mask was applied
+                if (target.Attribute("transform") == null)
+                {
+                    target.SetAttributeValue("mask", "url(#" + smaskId + ")");
+                }
+                else
+                {
+                    target = new XElement(ns + "g",
+                        new XAttribute("mask", "url(#" + smaskId + ")"),
+                        target);
+                }
+            }
+
+            return target;
+        }
+
         private string GetFill(GraphicsState state, Matrix currentTransform)
         {
             if (state.FillColorSpace is PatternColorSpace)
@@ -1844,11 +1871,6 @@ namespace PdfToSvg.Drawing
                 visible = true;
             }
 
-            if (graphicsState.SMaskId != null)
-            {
-                attributes.Add(new XAttribute("mask", "url(#" + graphicsState.SMaskId + ")"));
-            }
-
             if (graphicsState.BlendMode != BlendMode.Normal)
             {
                 attributes.Add(new XAttribute("style", "mix-blend-mode:" + SvgConversion.FormatBlendMode(graphicsState.BlendMode)));
@@ -1861,6 +1883,9 @@ namespace PdfToSvg.Drawing
                     new XAttribute("d", pathString.ToString()),
                     attributes
                     );
+
+                el = ApplySMask(el, graphicsState.SMaskId);
+
                 if (graphicsState.ClipPath != null && contained)
                 {
                     clipWrapper = null;
@@ -2363,6 +2388,9 @@ namespace PdfToSvg.Drawing
                             newParagraph.Content.Last().Style.TextScaling != 100 ||
                             span.Style.TextScaling != 100 ||
 
+                            // Soft masks needs to be applied outside text transform => split paragraph when mask changes
+                            newParagraph.Content.Last().Style.SMaskId != span.Style.SMaskId ||
+
                             // Split spans with separate display modes into separate paragraphs
                             visible != newParagraph.Visible ||
                             appendClipping != newParagraph.AppendClipping)
@@ -2469,8 +2497,6 @@ namespace PdfToSvg.Drawing
             // Word spacing is precalculated and applied by the <text> position, since PDF and CSS don't
             // interpret word spacing the same way.
 
-            var visible = false;
-
             // Fill
             if (style.TextRenderingMode.HasFlag(TextRenderingMode.Fill))
             {
@@ -2490,8 +2516,6 @@ namespace PdfToSvg.Drawing
                     {
                         cssClass["fill-opacity"] = SvgConversion.FormatCoordinate(graphicsState.FillAlpha);
                     }
-
-                    visible = true;
                 }
             }
             else
@@ -2568,14 +2592,6 @@ namespace PdfToSvg.Drawing
                         cssClass["stroke-dashoffset"] = style.StrokeDashPhase.ToString(CultureInfo.InvariantCulture);
                     }
                 }
-
-                visible = true;
-            }
-
-            // Soft mask
-            if (visible && graphicsState.SMaskId != null)
-            {
-                cssClass["mask"] = "url(#" + graphicsState.SMaskId + ")";
             }
 
             // Blend mode
@@ -2788,6 +2804,9 @@ namespace PdfToSvg.Drawing
                     textEl.Add(tspan);
                 }
             }
+
+            // Soft mask
+            textEl = ApplySMask(textEl, paragraph.Content[0].Style.SMaskId);
 
             if (paragraph.Visible || options.IncludeHiddenText)
             {

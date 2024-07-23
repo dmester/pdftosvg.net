@@ -1,0 +1,23 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<defs>
+<linearGradient x1="50" y1="480" x2="170" y2="600" gradientTransform="matrix(1 0 0 -1 0 841.92)" gradientUnits="userSpaceOnUse" id="ID1">
+<stop offset=".001%" stop-color="#fff" />
+<stop offset="99.999%" stop-color="#000" />
+</linearGradient>
+<mask id="ID2">
+<g transform="matrix(.92 .38 -.38 .95 319.9296 42.096)">
+<path d="M30 381.92h180v-180h-180z" fill="url(#ID1)" />
+</g>
+</mask>
+<image id="ID3" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANJJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT3PgGa8gRwIYbLhljAgwoQYDes1iHYMDJGhAdVJmOj7bDQnHU2B82UEGRw0GOoDGOangNDkGAYffQYJfobPM2EajqagBCtQYnsxQ4U3Q4INCGU4MizPZHg/DS1YgeBIAlEeACqDxvSvz0QlDaAyROIDcvDYA5QCq0bSAE/ewDBATt5ALmryBgA34dLM/tOwHgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
+</defs>
+<g stroke-miterlimit="10">
+<path d="M20 450h200v200h-200z" transform="matrix(.92 .38 .38 -.95 0 841.92)" fill="none" stroke="#0c2b33" stroke-width="1" />
+<g mask="url(#ID2)">
+<g transform="matrix(165.6 68.4 -68.4 171 270.8 245.32)">
+<use href="#ID3" />
+</g>
+</g>
+</g>
+</svg>

@@ -78,6 +78,8 @@ namespace PdfToSvg.Fonts.Type1
             cff.PrivateDict.BlueScale = info.BlueScale;
             cff.PrivateDict.BlueValues = info.BlueValues ?? new double[0];
 
+            SeacMerger.ReplaceSeacChars(cff);
+
             var openTypeFont = new OpenTypeFont();
             openTypeFont.Tables.Add(new CffTable { Content = cffFontSet });
             return openTypeFont;

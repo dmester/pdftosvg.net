@@ -2,6 +2,8 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Encodings;
+using PdfToSvg.Fonts.CompactFonts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,45 @@ namespace PdfToSvg.Fonts.CharStrings
                 code == CharStringOpCode.HStemHm ||
                 code == CharStringOpCode.HintMask ||
                 code == CharStringOpCode.CntrMask;
+        }
+
+        public static void ReplaceSeacChars(CompactFont font)
+        {
+            for (var glyphIndex = 0; glyphIndex < font.Glyphs.Count; glyphIndex++)
+            {
+                var glyph = font.Glyphs[glyphIndex];
+                var seac = glyph.CharString.Seac;
+                if (seac != null)
+                {
+                    var content = glyph.CharString.Content;
+                    var standardEncoding = SingleByteEncoding.Standard;
+
+                    var acharValue = standardEncoding.GetString(new byte[] { (byte)seac.Achar });
+                    var bcharValue = standardEncoding.GetString(new byte[] { (byte)seac.Bchar });
+
+                    var achar = font.Glyphs.FirstOrDefault(x => x.Unicode == acharValue);
+                    var bchar = font.Glyphs.FirstOrDefault(x => x.Unicode == bcharValue);
+
+                    if (achar == null || bchar == null)
+                    {
+                        continue;
+                    }
+
+                    var mergedCharString = SeacMerger.Merge(achar.CharString, bchar.CharString, seac.Adx, seac.Ady);
+
+                    content.Clear();
+
+                    foreach (var lexeme in mergedCharString)
+                    {
+                        content.Add(lexeme);
+                    }
+
+                    if (content.LastOrDefault().OpCode != CharStringOpCode.EndChar)
+                    {
+                        content.Add(CharStringLexeme.Operator(CharStringOpCode.EndChar));
+                    }
+                }
+            }
         }
 
         public static List<CharStringLexeme> Merge(CharString? achar, CharString? bchar, double adx, double ady)

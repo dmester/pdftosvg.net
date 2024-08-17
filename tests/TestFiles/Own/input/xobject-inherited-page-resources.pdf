@@ -1,0 +1,82 @@
+%PDF-1.7
+
+xref
+0 7
+0000000000 65535 f
+0000000202 00000 n
+0000000252 00000 n
+0000000314 00000 n
+0000000531 00000 n
+0000000599 00000 n
+0000000769 00000 n
+trailer
+<< /Root 1 0 R  /Size 7 >>
+
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Kids [ 3 0 R ] /Count 1 >> endobj
+
+3 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /XObject <<
+         /Fm1 5 0 R
+         /Im1 6 0 R
+      >>
+   >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj
+<< /Length 10 >>
+stream
+   /Fm1 Do
+endstream
+endobj
+
+5 0 obj
+<<
+   /Type /XObject
+   /Subtype /Form
+   /BBox [ 0 0 594.96 841.92 ]
+   /Length 37
+>>
+stream
+   280 0 0 264 157 477 cm
+   /Im1 Do
+endstream
+endobj
+
+6 0 obj
+<<
+   /Type /XObject
+   /Subtype /Image
+   /Width 16
+   /Height 16
+   /BitsPerComponent 8
+   /Filter /ASCIIHexDecode
+   /ColorSpace /DeviceRGB
+   /Length 1559
+>>
+stream
+ffffffffffffffffffffffffffedcfffc768ffaf28ffa100ffa100ffaf28ffc768ffedcffffffffffffffffffffffffffffffffffffffffcf7ffc768ffa100ff
+a100ffa100ffa100ffa100ffa100ffa100ffa100ffc768fffcf7fffffffffffffffffffffcf7ffb73cffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa1
+00ffa100ffa100ffb73cfffcf7ffffffffffffffc768ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffc768ffffff
+ffedcfffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffedcfffc768ffa100ffa100ffa100ffa10030
+1e00301e00ffa100ffa100301e00301e00ffa100ffa100ffa100ffa100ffc768ffaf28ffa100ffa100ffa100ffa100301e00301e00ffa100ffa100301e00301e
+00ffa100ffa100ffa100ffa100ffaf28ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100
+ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffaf28ffa100ffa100ffa100ffa100ff
+a100ffa100ffa100ffa100ffa100ffa100f79b00ffa100ffa100ffa100ffaf28ffc564ffa100ffa100ffa1001c11004028007f50009f64009f6400935c004c2f
+00180f00f39900ffa100ffa100ffc564ffedcfffa100ffa100ffa100f39900b77300784b00603c00603c00684100a76900ef9600ffa100ffa100ffa100ffedcf
+ffffffffc460ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffc460fffffffffffffffaf3ffb73cffa100ffa100ff
+a100ffa100ffa100ffa100ffa100ffa100ffa100ffa100ffb73cfffaf3fffffffffffffffffffffaf3ffc460ffa100ffa100ffa100ffa100ffa100ffa100ffa1
+00ffa100ffc460fffaf3ffffffffffffffffffffffffffffffffffffffedcfffc564ffaf28ffa100ffa100ffaf28ffc564ffedcfffffffffffffffffffffffff>
+endstream
+endobj
+
+startxref
+12
+%%EOF

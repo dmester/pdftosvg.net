@@ -1087,7 +1087,11 @@ namespace PdfToSvg.Drawing
 
                 try
                 {
-                    resources = new ResourceCache(xobject.GetDictionaryOrEmpty(Names.Resources));
+                    // In older PDF's the resources are specified on the page instead of the form.
+                    if (xobject.TryGetDictionary(Names.Resources, out var resourcesDict))
+                    {
+                        resources = new ResourceCache(resourcesDict);
+                    }
 
                     graphicsStateStack = new Stack<GraphicsState>();
                     graphicsState = graphicsState.Clone();

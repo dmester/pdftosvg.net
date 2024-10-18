@@ -17,7 +17,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
 
         public CompactFontSet? Content;
 
-        public void Write(OpenTypeWriter writer)
+        public void Write(OpenTypeWriter writer, IList<IBaseTable> _)
         {
             if (Content != null)
             {

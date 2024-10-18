@@ -38,6 +38,27 @@ namespace PdfToSvg.Tests.Drawing
             Assert.AreEqual(expectedResult, SvgConversion.FormatFontMetric(input));
         }
 
+        [Test]
+        public void ReplaceInvalidChars_ValidChar_uFFFD()
+        {
+            var actualResult = SvgConversion.ReplaceInvalidChars("\ufffd", '#');
+            Assert.AreEqual("\ufffd", actualResult);
+        }
+
+        [Test]
+        public void ReplaceInvalidChars_InvalidChar_uFFFE()
+        {
+            var actualResult = SvgConversion.ReplaceInvalidChars("\ufffe", '#');
+            Assert.AreEqual("#", actualResult);
+        }
+
+        [Test]
+        public void ReplaceInvalidChars_InvalidChar_uFFFF()
+        {
+            var actualResult = SvgConversion.ReplaceInvalidChars("\uffff", '#');
+            Assert.AreEqual("#", actualResult);
+        }
+
         [TestCase("")]
         [TestCase(" ")]
         [TestCase("\r")]

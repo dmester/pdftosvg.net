@@ -367,7 +367,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             lengthField.WriteInt32(writer.Position - startPos);
         }
 
-        void IBaseTable.Write(OpenTypeWriter writer)
+        void IBaseTable.Write(OpenTypeWriter writer, IList<IBaseTable> _)
         {
             var tableStartPos = writer.Position;
 

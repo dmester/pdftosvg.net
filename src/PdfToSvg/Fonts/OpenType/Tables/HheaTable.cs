@@ -30,7 +30,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
         public short MetricDataFormat;
         public ushort NumberOfHMetrics;
 
-        void IBaseTable.Write(OpenTypeWriter writer)
+        void IBaseTable.Write(OpenTypeWriter writer, IList<IBaseTable> _)
         {
             writer.WriteUInt16(1);
             writer.WriteUInt16(0);

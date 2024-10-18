@@ -56,6 +56,14 @@ namespace PdfToSvg.Common
             throw new ArgumentException("Unknown array element type " + elementType.FullName + ".", nameof(elementType));
         }
 
+        public static T[] Add<T>(T[] array, params T[] extraItems)
+        {
+            var result = new T[array.Length + extraItems.Length];
+            Array.Copy(array, result, array.Length);
+            Array.Copy(extraItems, 0, result, array.Length, extraItems.Length);
+            return result;
+        }
+
         public static T[] Concat<T>(params T[]?[] arrays)
         {
             var totalLength = 0;

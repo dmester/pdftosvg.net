@@ -14,6 +14,6 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     {
         string Tag { get; }
 
-        void Write(OpenTypeWriter writer);
+        void Write(OpenTypeWriter writer, IList<IBaseTable> tables);
     }
 }

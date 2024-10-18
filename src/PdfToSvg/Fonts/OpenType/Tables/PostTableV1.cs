@@ -23,7 +23,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             GlyphNames = (string[])MacintoshNames.Clone();
         }
 
-        protected override void Write(OpenTypeWriter writer)
+        protected override void Write(OpenTypeWriter writer, IList<IBaseTable> _)
         {
             writer.WriteUInt32(Version);
             WriteHeader(writer);

@@ -292,12 +292,12 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             "dcroat",
         };
 
-        void IBaseTable.Write(OpenTypeWriter writer)
+        void IBaseTable.Write(OpenTypeWriter writer, IList<IBaseTable> tables)
         {
-            Write(writer);
+            Write(writer, tables);
         }
 
-        protected abstract void Write(OpenTypeWriter writer);
+        protected abstract void Write(OpenTypeWriter writer, IList<IBaseTable> tables);
 
         protected void WriteHeader(OpenTypeWriter writer)
         {

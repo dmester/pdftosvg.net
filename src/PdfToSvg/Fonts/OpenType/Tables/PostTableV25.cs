@@ -18,7 +18,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
 
         private const uint Version = 0x00025000;
 
-        protected override void Write(OpenTypeWriter writer)
+        protected override void Write(OpenTypeWriter writer, IList<IBaseTable> tables)
         {
             // This format is deprecated => convert to format 2
 
@@ -34,7 +34,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             postTableV2.MaxMemType1 = MaxMemType1;
             postTableV2.GlyphNames = GlyphNames;
 
-            ((IBaseTable)postTableV2).Write(writer);
+            ((IBaseTable)postTableV2).Write(writer, tables);
         }
 
         private static IBaseTable? Read(OpenTypeReader reader)

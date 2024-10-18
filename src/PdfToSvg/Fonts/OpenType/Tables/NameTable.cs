@@ -24,7 +24,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
         public NameRecord[] NameRecords = ArrayUtils.Empty<NameRecord>();
         public LangTagRecord[] LangTagRecords = ArrayUtils.Empty<LangTagRecord>();
 
-        void IBaseTable.Write(OpenTypeWriter writer)
+        void IBaseTable.Write(OpenTypeWriter writer, IList<IBaseTable> _)
         {
             if (NameRecords == null)
             {

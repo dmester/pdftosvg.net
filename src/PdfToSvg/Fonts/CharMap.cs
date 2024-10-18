@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
@@ -87,6 +86,59 @@ namespace PdfToSvg.Fonts
             return false;
         }
 
+        private static bool IsValidTargetChar(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                return false;
+            }
+
+            uint codePoint;
+            if (s.Length == 1)
+            {
+                // Incomplete surrogate pair
+                if (char.IsSurrogate(s[0]))
+                {
+                    return false;
+                }
+
+                codePoint = s[0];
+            }
+            else
+            {
+                codePoint = Utf16Encoding.DecodeCodePoint(s, 0, out var codePointLength);
+
+                // Multiple characters
+                if (codePointLength != s.Length)
+                {
+                    return false;
+                }
+            }
+
+            // .notdef
+            if (codePoint == 0xfffd)
+            {
+                return false;
+            }
+
+            // Unassigned chars
+            // https://www.unicode.org/faq/private_use.html#nonchar1
+            // Especially ffff causes problems in SVG, since browsers are replacing it with their own .notdef glyph
+            if (codePoint >= 0xfdd0 && codePoint <= 0xfdef ||
+                (codePoint & 0xfffe) == 0xfffe) // Captures 0xfffe, 0xffff and corresponding from supplementary planes
+            {
+                return false;
+            }
+
+            // Control characters might break the layout in SVG
+            if (char.IsControl(s, 0))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private void PopulateForEmbeddedFont(IEnumerable<CharInfo> chars, UnicodeMap toUnicode, SingleByteEncoding? explicitEncoding)
         {
             const char StartPrivateUseArea = '\uE000';
@@ -111,17 +163,13 @@ namespace PdfToSvg.Fonts
                     this.chars[ch.CharCode] = ch;
                 }
                 else if (
-                    ch.Unicode != CharInfo.NotDef &&
-                    IsSingleChar(ch.Unicode) &&
-                    (
-                        ch.Unicode.Length > 1 ||       // Surrogate pair cannot be a control character
-                        !char.IsControl(ch.Unicode[0]) // Don't allow mapping to control characters
-                    ) &&
+                    IsValidTargetChar(ch.Unicode) &&
                     (
                         !usedUnicodeToGidMappings.TryGetValue(ch.Unicode, out var mappedGid) ||
                         mappedGid == ch.GlyphIndex.Value
                     ))
                 {
+                    // Valid mapping
                     this.chars[ch.CharCode] = ch;
                     usedUnicodeToGidMappings[ch.Unicode] = ch.GlyphIndex.Value;
                 }

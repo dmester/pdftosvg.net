@@ -6,6 +6,7 @@ using PdfToSvg.CMaps;
 using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Encodings;
+using PdfToSvg.Fonts.CharStrings;
 using PdfToSvg.Fonts.CompactFonts;
 using PdfToSvg.Fonts.OpenType;
 using PdfToSvg.Fonts.OpenType.Enums;
@@ -29,6 +30,7 @@ namespace PdfToSvg.Fonts
         private static readonly PdfDictionary emptyDict = new();
 
         private string? name;
+        private Font? substituteFontDuplicatedGlyph0;
 
         protected SingleByteEncoding? pdfFontEncoding;
 
@@ -37,6 +39,7 @@ namespace PdfToSvg.Fonts
         protected Exception? openTypeFontException;
 
         protected PdfDictionary fontDict = emptyDict;
+        protected Glyph0Options glyph0Options;
 
         private readonly CharMap chars = new();
         protected UnicodeMap toUnicode = UnicodeMap.Empty;
@@ -262,7 +265,7 @@ namespace PdfToSvg.Fonts
             yield break;
         }
 
-        private void OverwriteOpenTypeGlyphWidths(OpenTypeFont inputFont)
+        private void OverwriteOpenTypeGlyphWidths(OpenTypeFont inputFont, int glyph0DuplicateIndex)
         {
             var head = inputFont.Tables.Get<HeadTable>();
             var hhea = inputFont.Tables.Get<HheaTable>();
@@ -324,6 +327,12 @@ namespace PdfToSvg.Fonts
                 }
             }
 
+            // Width of duplicated glyph 0
+            if (glyph0DuplicateIndex > 0)
+            {
+                hmtx.HorMetrics[glyph0DuplicateIndex] = hmtx.HorMetrics[0];
+            }
+
             // Update CFF widths (they are used by Chrome)
             var cff = inputFont.Tables.Get<CffTable>()?.Content?.Fonts[0];
             if (cff != null)
@@ -357,23 +366,146 @@ namespace PdfToSvg.Fonts
             }
         }
 
-        private void RecreateOpenTypeCMap(OpenTypeFont font)
+        public Font GetSubstituteFontWithDuplicatedGlyph0(FontResolver fontResolver, CancellationToken cancellationToken)
+        {
+            if (substituteFontDuplicatedGlyph0 == null)
+            {
+                var withDuplicatedGlyph0 = Create(fontDict, fontResolver, Glyph0Options.Duplicate, cancellationToken);
+                var substituteFont = withDuplicatedGlyph0.SubstituteFont;
+                Interlocked.CompareExchange(ref substituteFontDuplicatedGlyph0, substituteFont, null);
+            }
+
+            return substituteFontDuplicatedGlyph0;
+        }
+
+        private int DuplicateGlyph0(OpenTypeFont font)
+        {
+            const int MaxGlyphZeroReferences = 100;
+
+            var glyph0Ref = chars
+                .FirstOrDefault(ch => ch.GlyphIndex == 0);
+            if (glyph0Ref == null)
+            {
+                return -1;
+            }
+
+            var duplicateGlyphZero = !chars
+                .Where(ch => ch.GlyphIndex == 0)
+                .Skip(MaxGlyphZeroReferences)
+                .Any();
+
+            if (!duplicateGlyphZero)
+            {
+                return -1;
+            }
+
+            var maxpTable = font.Tables.Get<MaxpTable>();
+
+            var cffTable = font.Tables.Get<CffTable>();
+            if (cffTable == null)
+            {
+                var rawCffTable = font.Tables.OfType<RawTable>().FirstOrDefault(x => x.Tag == "CFF ");
+                if (rawCffTable != null && rawCffTable.Content != null)
+                {
+                    cffTable = new CffTable
+                    {
+                        Content = CompactFontParser.Parse(rawCffTable.Content)
+                    };
+                    font.Tables.Remove(rawCffTable);
+                    font.Tables.Add(cffTable);
+                }
+            }
+
+            if (cffTable != null && cffTable.Content != null)
+            {
+                var glyphs = cffTable.Content.Fonts[0].Glyphs;
+                if (glyphs.Count > 0)
+                {
+                    glyphs.Add(glyphs[0]);
+
+                    if (maxpTable != null)
+                    {
+                        maxpTable.NumGlyphs++;
+                    }
+
+                    // CFF fonts must use post table V3, not including any glyph names
+
+                    return glyphs.Count - 1;
+                }
+            }
+
+            var locaTable = font.Tables.Get<LocaTable>();
+            var glyfTable = font.Tables.Get<GlyfTable>();
+            if (locaTable != null && glyfTable != null)
+            {
+                if (locaTable.Offsets.Length > 1)
+                {
+                    var startOffset = (int)locaTable.Offsets[0];
+                    var endOffset = (int)locaTable.Offsets[1];
+                    var lastOffset = (int)locaTable.Offsets.Last();
+                    var glyph0Length = endOffset - startOffset;
+
+                    if (glyph0Length > 0)
+                    {
+                        // Duplicate content
+                        var originalContent = glyfTable.Content;
+                        var newContent = new byte[lastOffset + glyph0Length];
+
+                        Buffer.BlockCopy(originalContent, 0, newContent, 0, lastOffset);
+                        Buffer.BlockCopy(originalContent, 0, newContent, lastOffset, glyph0Length);
+
+                        glyfTable.Content = newContent;
+                    }
+
+                    locaTable.Offsets = ArrayUtils.Add(locaTable.Offsets, (uint)(lastOffset + glyph0Length));
+
+                    if (maxpTable != null)
+                    {
+                        maxpTable.NumGlyphs++;
+                    }
+
+                    var postTable = font.Tables.Get<PostTable>();
+                    if (postTable is PostTableV2 ||
+                        postTable is PostTableV25)
+                    {
+                        postTable.GlyphNames = ArrayUtils.Add(
+                            postTable.GlyphNames,
+                            glyph0Ref.GlyphName ?? postTable.GlyphNames[0]);
+                    }
+
+                    return locaTable.Offsets.Length - 2;
+                }
+            }
+
+            return -1;
+        }
+
+        private void RecreateOpenTypeCMap(OpenTypeFont font, int glyph0DuplicateIndex)
         {
             var maxpTable = font.Tables.Get<MaxpTable>();
             var numGlyphs = maxpTable?.NumGlyphs ?? ushort.MaxValue;
 
             var cmapTable = new CMapTable();
 
-            var allChars = chars
-                .Where(ch => ch.GlyphIndex != null && ch.GlyphIndex < numGlyphs)
+            var sourceChars = chars.Where(ch => ch.GlyphIndex != null && ch.GlyphIndex < numGlyphs);
 
-                // Some PDF producers map all non-included chars to glyph 0. Those mappings have no value for us.
-                .Where(ch => ch.GlyphIndex > 0)
+            if (glyph0DuplicateIndex < 0)
+            {
+                sourceChars = sourceChars.Where(ch => ch.GlyphIndex > 0);
+            }
 
+            var allChars = sourceChars
                 .Select(ch =>
                 {
                     var unicode = Utf16Encoding.DecodeCodePoint(ch.Unicode, 0, out var _);
-                    return new OpenTypeCMapRange(unicode, unicode, ch.GlyphIndex!.Value);
+                    
+                    var glyphIndex = ch.GlyphIndex!.Value;
+                    if (glyphIndex == 0)
+                    {
+                        glyphIndex = (uint)glyph0DuplicateIndex;
+                    }
+
+                    return new OpenTypeCMapRange(unicode, unicode, glyphIndex);
                 })
                 .DistinctBy(ch => ch.StartUnicode);
 
@@ -409,7 +541,7 @@ namespace PdfToSvg.Fonts
             font.Tables.Add(cmapTable);
         }
 
-        private static BaseFont Create(PdfDictionary fontDict, CancellationToken cancellationToken)
+        private static BaseFont CreateCore(PdfDictionary fontDict, Glyph0Options glyph0Options, CancellationToken cancellationToken)
         {
             if (fontDict == null) throw new ArgumentNullException(nameof(fontDict));
             cancellationToken.ThrowIfCancellationRequested();
@@ -446,13 +578,19 @@ namespace PdfToSvg.Fonts
             }
 
             font.fontDict = fontDict;
+            font.glyph0Options = glyph0Options;
 
             return font;
         }
 
         public static BaseFont Create(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
         {
-            var font = Create(fontDict, cancellationToken);
+            return Create(fontDict, fontResolver, Glyph0Options.None, cancellationToken);
+        }
+
+        private static BaseFont Create(PdfDictionary fontDict, FontResolver fontResolver, Glyph0Options glyph0Options, CancellationToken cancellationToken)
+        {
+            var font = CreateCore(fontDict, glyph0Options, cancellationToken);
             font.OnInit(cancellationToken);
             font.SubstituteFont = fontResolver.ResolveFont(font, cancellationToken);
             font.OnPostInit(cancellationToken);
@@ -461,7 +599,7 @@ namespace PdfToSvg.Fonts
 
         public static Task<BaseFont> CreateAsync(PdfDictionary fontDict, FontResolver fontResolver, CancellationToken cancellationToken)
         {
-            var font = Create(fontDict, cancellationToken);
+            var font = CreateCore(fontDict, Glyph0Options.None, cancellationToken);
             font.OnInit(cancellationToken);
 
             return fontResolver
@@ -490,8 +628,18 @@ namespace PdfToSvg.Fonts
                 preparedFont.Tables.Add(table);
             }
 
-            RecreateOpenTypeCMap(preparedFont);
-            OverwriteOpenTypeGlyphWidths(preparedFont);
+            // Some PDFs are using the zero glyph as a real character (#35). In a reported case, U+FFFF is mapped to the
+            // zero glyph, and then used inside the document. The problem is that browsers will try to use a fallback font
+            // instead of our font if it encounters a mapping to glyph 0. If we encounter such a mapping, use a duplicate
+            // of glyph 0, which won't be replaced by any browser.
+            var duplicatedGlyph0Index = -1;
+            if (glyph0Options == Glyph0Options.Duplicate)
+            {
+                duplicatedGlyph0Index = DuplicateGlyph0(preparedFont);
+            }
+            
+            RecreateOpenTypeCMap(preparedFont, duplicatedGlyph0Index);
+            OverwriteOpenTypeGlyphWidths(preparedFont, duplicatedGlyph0Index);
 
             OpenTypeSanitizer.Sanitize(preparedFont);
 
@@ -515,11 +663,17 @@ namespace PdfToSvg.Fonts
         /// <remarks>
         /// The resulting list will always contain at least one string.
         /// </remarks>
-        public List<DecodedString> DecodeString(PdfString value, bool splitWords)
+        public List<DecodedString> DecodeString(PdfString value, bool splitWords) => DecodeString(value, splitWords, out _);
+
+        /// <remarks>
+        /// The resulting list will always contain at least one string.
+        /// </remarks>
+        public List<DecodedString> DecodeString(PdfString value, bool splitWords, out bool hasGlyph0Reference)
         {
             const uint Whitespace = 0x20;
 
             var result = new List<DecodedString>(1);
+            hasGlyph0Reference = false;
 
             var wordValue = new StringBuilder(value.Length);
             var wordLength = 0;
@@ -552,6 +706,11 @@ namespace PdfToSvg.Fonts
 
                     if (charInfo.Unicode != null)
                     {
+                        if (charInfo.GlyphIndex == 0)
+                        {
+                            hasGlyph0Reference = true;
+                        }
+
                         i += character.CharCodeLength;
                         wordValue.Append(charInfo.Unicode);
                         wordWidth += charInfo.Width;

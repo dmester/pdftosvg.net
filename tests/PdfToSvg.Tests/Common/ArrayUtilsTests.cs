@@ -27,5 +27,13 @@ namespace PdfToSvg.Tests.Common
 
             Assert.AreEqual(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, actual);
         }
+
+        [Test]
+        public void Add()
+        {
+            var actual = ArrayUtils.Add<byte>(new byte[] { 1, 2, 3, 4 }, 5, 6, 7);
+
+            Assert.AreEqual(new byte[] { 1, 2, 3, 4, 5, 6, 7 }, actual);
+        }
     }
 }

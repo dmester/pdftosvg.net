@@ -21,7 +21,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
         public LongHorMetricRecord[] HorMetrics = ArrayUtils.Empty<LongHorMetricRecord>();
         public short[] LeftSideBearings = ArrayUtils.Empty<short>();
 
-        void IBaseTable.Write(OpenTypeWriter writer)
+        void IBaseTable.Write(OpenTypeWriter writer, IList<IBaseTable> _)
         {
             foreach (var hMetric in HorMetrics)
             {

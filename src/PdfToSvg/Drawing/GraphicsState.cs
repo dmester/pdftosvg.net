@@ -57,6 +57,9 @@ namespace PdfToSvg.Drawing
         public double TextRisePx;
         public double TextScaling = 100;
 
+        // Non-PDF state
+        public bool HasGlyph0Reference;
+
         public GraphicsState Clone()
         {
             return (GraphicsState)MemberwiseClone();

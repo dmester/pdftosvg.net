@@ -1,0 +1,15 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID2{font-family:sans-serif;font-size:70px;}
+.ID3{font-family:'Times New Roman',serif;font-size:14px;}
+</style>
+<g class="ID1">
+<text x="120" y="191.92" class="ID2">P�	����</text>
+<g class="ID3">
+<text x="120" y="231.92">Expected Unicode representation:</text>
+<text x="120" y="251.92">"P" followed by 7 PUA chars</text>
+</g>
+</g>
+</svg>

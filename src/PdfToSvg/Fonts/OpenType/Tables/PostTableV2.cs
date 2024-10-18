@@ -19,7 +19,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
         private const int NameMaxLength = 63;
         private const uint Version = 0x00020000;
 
-        protected override void Write(OpenTypeWriter writer)
+        protected override void Write(OpenTypeWriter writer, IList<IBaseTable> _)
         {
             var numGlyphs = (ushort)Math.Min(ushort.MaxValue, GlyphNames.Length);
 

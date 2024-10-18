@@ -156,7 +156,16 @@ namespace PdfToSvg.Drawing
             var wordSpacing = graphicsState.TextWordSpacingPx * textScaling * scale;
             var totalWidth = 0d;
 
-            var words = graphicsState.Font.DecodeString(text, splitWords: wordSpacing != 0);
+            var words = graphicsState.Font.DecodeString(text, splitWords: wordSpacing != 0, out var hasGlyph0Reference);
+
+            // Some PDFs are using the zero glyph as a real character (#35). In a reported case, U+FFFF is mapped to the
+            // zero glyph, and then used inside the document. The problem is that browsers will try to use a fallback font
+            // instead of our font if it encounters a mapping to glyph 0.
+            if (hasGlyph0Reference && !style.HasGlyph0Reference)
+            {
+                style = textStyle = style.Clone();
+                style.HasGlyph0Reference = true;
+            }
 
             for (var i = 0; i < words.Count; i++)
             {

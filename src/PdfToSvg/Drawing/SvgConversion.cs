@@ -51,7 +51,7 @@ namespace PdfToSvg.Drawing
             // Invalid XML char according to 
             // https://www.w3.org/TR/REC-xml/#charsets
             return
-                ch > '\ufffe' ||
+                ch >= '\ufffe' ||
                 ch < '\u0020' &&
                 ch != '\u0009' &&
                 ch != '\u000A' &&

@@ -77,7 +77,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
         public ushort LowerOpticalPointSize;
         public ushort UpperOpticalPointSize = 0xffff;
 
-        void IBaseTable.Write(OpenTypeWriter writer)
+        void IBaseTable.Write(OpenTypeWriter writer, IList<IBaseTable> _)
         {
             writer.WriteUInt16(Version);
             writer.WriteInt16(AvgXCharWidth);

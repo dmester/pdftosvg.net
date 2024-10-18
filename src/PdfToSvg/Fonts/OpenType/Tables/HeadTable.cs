@@ -36,7 +36,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
         public short IndexToLocFormat;
         public short GlyphDataFormat;
 
-        void IBaseTable.Write(OpenTypeWriter writer)
+        void IBaseTable.Write(OpenTypeWriter writer, IList<IBaseTable> _)
         {
             writer.WriteUInt16(MajorVersion);
             writer.WriteUInt16(MinorVersion);

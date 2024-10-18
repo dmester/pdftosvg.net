@@ -8,8 +8,10 @@ using PdfToSvg.Fonts;
 using PdfToSvg.Fonts.WidthMaps;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace PdfToSvg.Tests.Fonts
@@ -71,6 +73,26 @@ namespace PdfToSvg.Tests.Fonts
                 // No Unicode mapping
                 new CharInfo { CharCode = 40, GlyphIndex = 40 },
                 new CharInfo { CharCode = 41, GlyphIndex = 41 },
+
+                // ToUnicode specifies control character
+                new CharInfo { CharCode = 50, Unicode = "\u0000", GlyphIndex = 50 },
+                new CharInfo { CharCode = 51, Unicode = "\u0009", GlyphIndex = 51 },
+                new CharInfo { CharCode = 52, Unicode = "\u000a", GlyphIndex = 52 },
+                new CharInfo { CharCode = 53, Unicode = "\u000d", GlyphIndex = 53 },
+                new CharInfo { CharCode = 54, Unicode = "\u001f", GlyphIndex = 54 },
+                new CharInfo { CharCode = 55, Unicode = "\u007f", GlyphIndex = 55 },
+
+                // ToUnicode specifies unassigned Unicode char
+                new CharInfo { CharCode = 60, Unicode = "\ufdd0", GlyphIndex = 60 },
+                new CharInfo { CharCode = 61, Unicode = "\ufdef", GlyphIndex = 61 },
+                new CharInfo { CharCode = 62, Unicode = "\ufffd", GlyphIndex = 62 },
+                new CharInfo { CharCode = 63, Unicode = "\ufffe", GlyphIndex = 63 },
+                new CharInfo { CharCode = 64, Unicode = "\uffff", GlyphIndex = 64 },
+                new CharInfo { CharCode = 65, Unicode = "\ud87f\udffe", GlyphIndex = 65 },
+
+                // ToUnicode specifies incomplete surrogate pair
+                new CharInfo { CharCode = 70, Unicode = "\udbff", GlyphIndex = 70 }, // High surrogate
+                new CharInfo { CharCode = 71, Unicode = "\udffd", GlyphIndex = 71 }, // Low surrogate
             };
 
             var unicodeMapData = new CMapData();
@@ -105,10 +127,24 @@ namespace PdfToSvg.Tests.Fonts
         [TestCase(32, "\ue002", 32)]
         [TestCase(40, "\ue003", 40)]
         [TestCase(41, "\ue004", 41)]
+        [TestCase(50, "\ue005", 50)]
+        [TestCase(51, "\ue006", 51)]
+        [TestCase(52, "\ue007", 52)]
+        [TestCase(53, "\ue008", 53)]
+        [TestCase(54, "\ue009", 54)]
+        [TestCase(55, "\ue00a", 55)]
+        [TestCase(60, "\ue00b", 60)]
+        [TestCase(61, "\ue00c", 61)]
+        [TestCase(62, "\ue00d", 62)]
+        [TestCase(63, "\ue00e", 63)]
+        [TestCase(64, "\ue00f", 64)]
+        [TestCase(65, "\ue010", 65)]
+        [TestCase(70, "\ue011", 70)]
+        [TestCase(71, "\ue012", 71)]
         public void OptimizedForEmbeddedFont(int charCode, string expectedUnicode, int expectedGlyph)
         {
             Assert.IsTrue(optimizedForEmbeddedFont.TryGetChar((uint)charCode, out var ch), nameof(CharMap.TryGetChar));
-            Assert.AreEqual(expectedUnicode, ch.Unicode, nameof(ch.Unicode));
+            Assert.AreEqual(EscapeString(expectedUnicode), EscapeString(ch.Unicode), nameof(ch.Unicode));
             Assert.AreEqual(expectedGlyph, ch.GlyphIndex, nameof(ch.GlyphIndex));
         }
 
@@ -128,15 +164,35 @@ namespace PdfToSvg.Tests.Fonts
         [TestCase(24, "tz", 24)]
         [TestCase(25, "ĳ", 25)]
         [TestCase(26, "K", 26)]
-        [TestCase(30, "\u04AC", 30)]
+        [TestCase(30, "u04AC", 30)]
         [TestCase(31, "ft", 31)]
         [TestCase(32, "fq", 32)]
-        [TestCase(40, "\ufffd", 40)]
-        [TestCase(41, "\ufffd", 41)]
+        [TestCase(40, "ufffd", 40)]
+        [TestCase(41, "ufffd", 41)]
+        [TestCase(50, "u0000", 50)]
+        [TestCase(51, "u0009", 51)]
+        [TestCase(52, "u000a", 52)]
+        [TestCase(53, "u000d", 53)]
+        [TestCase(54, "u001f", 54)]
+        [TestCase(55, "u007f", 55)]
+        [TestCase(60, "ufdd0", 60)]
+        [TestCase(61, "ufdef", 61)]
+        [TestCase(62, "ufffd", 62)]
+        [TestCase(63, "ufffe", 63)]
+        [TestCase(64, "uffff", 64)]
+        [TestCase(65, "\ud87f\udffe", 65)]
+        [TestCase(70, "udbff", 70)]
+        [TestCase(71, "udffd", 71)]
         public void OptimizedForTextExtract(int charCode, string expectedUnicode, int expectedGlyph)
         {
+            // NUnit runner did not like some of the control chars
+            if (Regex.IsMatch(expectedUnicode, "^u[0-9a-fA-F]{4}$"))
+            {
+                expectedUnicode = ((char)int.Parse(expectedUnicode.Substring(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture)).ToString();
+            }
+
             Assert.IsTrue(optimizedForTextExtract.TryGetChar((uint)charCode, out var ch), nameof(CharMap.TryGetChar));
-            Assert.AreEqual(expectedUnicode, ch.Unicode, nameof(ch.Unicode));
+            Assert.AreEqual(EscapeString(expectedUnicode), EscapeString(ch.Unicode), nameof(ch.Unicode));
             Assert.AreEqual(expectedGlyph, ch.GlyphIndex, nameof(ch.GlyphIndex));
         }
 
@@ -177,6 +233,11 @@ namespace PdfToSvg.Tests.Fonts
 
             stopEvent.Set();
             thread.Join();
+        }
+
+        private static string EscapeString(string s)
+        {
+            return string.Join(" ", s.Select(c => "U+" + ((int)c).ToString("x4")));
         }
     }
 }

@@ -49,7 +49,7 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
         private static IBaseTable RoundTrip(IBaseTable table, TableFactory factory, IBaseTable[] readTables = null)
         {
             var writer = new OpenTypeWriter();
-            table.Write(writer);
+            table.Write(writer, readTables);
 
             var buffer = writer.ToArray();
             var reader = new OpenTypeReader(buffer, 0, buffer.Length);
@@ -105,6 +105,40 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
             var resultTable = RoundTrip(sourceTable, HmtxTable.Factory, new IBaseTable[]
             {
                 new HheaTable { NumberOfHMetrics = 3 },
+            });
+
+            Assert.AreEqual(
+                JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
+                JsonConvert.SerializeObject(resultTable, Formatting.Indented));
+        }
+
+        [Test]
+        public void TestLocaTable_ShortFormat()
+        {
+            var sourceTable = new LocaTable();
+
+            sourceTable.Offsets = new uint[] { 2, 4, 6, 8 };
+
+            var resultTable = RoundTrip(sourceTable, LocaTable.Factory, new IBaseTable[]
+            {
+                new HeadTable { IndexToLocFormat = 0 },
+            });
+
+            Assert.AreEqual(
+                JsonConvert.SerializeObject(sourceTable, Formatting.Indented),
+                JsonConvert.SerializeObject(resultTable, Formatting.Indented));
+        }
+
+        [Test]
+        public void TestLocaTable_LongFormat()
+        {
+            var sourceTable = new LocaTable();
+
+            sourceTable.Offsets = new uint[] { 2, 4, 6, 8 };
+
+            var resultTable = RoundTrip(sourceTable, LocaTable.Factory, new IBaseTable[]
+            {
+                new HeadTable { IndexToLocFormat = 1 },
             });
 
             Assert.AreEqual(

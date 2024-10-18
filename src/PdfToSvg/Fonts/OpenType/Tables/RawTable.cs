@@ -24,7 +24,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
 
         public byte[]? Content { get; set; }
 
-        void IBaseTable.Write(OpenTypeWriter writer)
+        void IBaseTable.Write(OpenTypeWriter writer, IList<IBaseTable> _)
         {
             if (Content != null)
             {

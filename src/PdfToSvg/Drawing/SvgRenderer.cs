@@ -2442,13 +2442,19 @@ namespace PdfToSvg.Drawing
             string? fontSize = SvgConversion.FormatFontMetric(style.FontSize) + "px";
 
             // Font
-            if (style.Font.SubstituteFont is LocalFont localFont)
+            var substituteFont = style.Font.SubstituteFont;
+            if (style.HasGlyph0Reference && substituteFont is WebFont)
+            {
+                substituteFont = style.Font.GetSubstituteFontWithDuplicatedGlyph0(options.FontResolver, cancellationToken);
+            }
+
+            if (substituteFont is LocalFont localFont)
             {
                 fontFamily = localFont.FontFamily;
                 fontWeight = SvgConversion.FormatFontWeight(localFont.FontWeight);
                 fontStyle = SvgConversion.FormatFontStyle(localFont.FontStyle);
             }
-            else if (style.Font.SubstituteFont is WebFont webFont)
+            else if (substituteFont is WebFont webFont)
             {
                 if (webFont.FallbackFont == null)
                 {

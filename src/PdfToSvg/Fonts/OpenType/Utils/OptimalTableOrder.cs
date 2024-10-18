@@ -54,6 +54,7 @@ namespace PdfToSvg.Fonts.OpenType.Utils
             { "head", 0 },
             { "hhea", 1 },
             { "hmtx", 2 }, // Has dependencies to hhea
+            { "loca", 3 }, // Has dependencies to head
         };
 
         private class StorageComparerImpl<T> : IComparer<T>

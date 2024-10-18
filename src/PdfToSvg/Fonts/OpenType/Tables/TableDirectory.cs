@@ -38,6 +38,8 @@ namespace PdfToSvg.Fonts.OpenType.Tables
                 PostTableV25.Factory,
                 PostTableV3.Factory,
                 RawTable.Factory,
+                GlyfTable.Factory,
+                LocaTable.Factory,
             };
 
             tableFactories = factories.ToLookup(x => x.Tag);
@@ -83,7 +85,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             {
                 var startPosition = writer.Position;
 
-                Tables[i].Write(writer);
+                Tables[i].Write(writer, Tables);
 
                 var endPosition = writer.Position;
 

@@ -18,7 +18,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
 
         public ushort NumGlyphs;
 
-        void IBaseTable.Write(OpenTypeWriter writer)
+        void IBaseTable.Write(OpenTypeWriter writer, IList<IBaseTable> _)
         {
             Write(writer);
         }

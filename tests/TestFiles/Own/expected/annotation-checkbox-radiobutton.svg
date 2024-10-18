@@ -1,0 +1,49 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns:annot="https://pdftosvg.net/xmlns/annotations" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID8{font-family:Helvetica,Arial,sans-serif;font-size:10px;}
+</style>
+<defs class="ID1">
+<image id="ID2" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAABGdBTUEAALGPC/xhBQAAAAxJREFUeJxjYGBgAAAABAAB9hc4VQAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" />
+<image id="ID3" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAABGdBTUEAALGPC/xhBQAAAApJREFUeJxjYAAAAAIAAUivpHEAAAAASUVORK5CYII=" width="1" height="1" preserveAspectRatio="none" />
+<mask id="ID4">
+<use href="#ID3" />
+</mask>
+<clipPath id="ID5">
+<rect width="594.9999" height="841.8536" />
+</clipPath>
+<clipPath id="ID6">
+<rect x="66" y="104.92" width="11" height="11" />
+</clipPath>
+<clipPath id="ID7">
+<rect x="66" y="124.92" width="11" height="11" />
+</clipPath>
+</defs>
+<g class="ID1" stroke-miterlimit="10">
+<g clip-path="url(#ID5)">
+<path d="M0 0h594.9999v841.8536h-594.9999z" fill="#fff" />
+<g transform="matrix(.7503 0 0 .7503 6.0025 6.0025)" mask="url(#ID4)">
+<use href="#ID2" />
+</g>
+</g>
+<g class="ID8">
+<text x="87" y="77.92">Checkbox</text>
+<text x="88" y="113.92">Radio 1</text>
+<text x="88" y="133.92">Radio 2</text>
+</g>
+<g annot:type="Widget">
+<path d="M66.5 78.42h10v-10h-10z" fill="none" stroke="#666" stroke-width=".72" />
+</g>
+<g annot:type="Widget">
+<g clip-path="url(#ID6)">
+<path d="M75.5 110.92c0 -2.9365,-1.5635 -4.5,-4.5 -4.5c-2.9365 0,-4.5 1.5635,-4.5 4.5c0 2.9365,1.5635 4.5,4.5 4.5c2.9365 0,4.5 -1.5635,4.5 -4.5z" fill="none" stroke="#666" stroke-width=".72" />
+</g>
+</g>
+<g annot:type="Widget">
+<g clip-path="url(#ID7)">
+<path d="M75.5 130.92c0 -2.9365,-1.5635 -4.5,-4.5 -4.5c-2.9365 0,-4.5 1.5635,-4.5 4.5c0 2.9365,1.5635 4.5,4.5 4.5c2.9365 0,4.5 -1.5635,4.5 -4.5z" fill="none" stroke="#666" stroke-width=".72" />
+</g>
+</g>
+</g>
+</svg>

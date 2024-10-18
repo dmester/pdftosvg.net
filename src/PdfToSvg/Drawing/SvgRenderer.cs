@@ -957,12 +957,23 @@ namespace PdfToSvg.Drawing
                 return;
             }
 
-            if (!normalAppearance.TryGetMatrix(Names.Matrix, out var matrix))
+            var appearanceStream = normalAppearance;
+
+            // ISO-32000-2 Table 170
+            // The appearance can either be a stream, or a dictionary of streams
+            if (annot.TryGetName(Names.AS, out var appearanceState) &&
+                normalAppearance.TryGetDictionary(appearanceState, out var appearanceStateStream) &&
+                appearanceStateStream.Stream != null)
+            {
+                appearanceStream = appearanceStateStream;
+            }
+
+            if (!appearanceStream.TryGetMatrix(Names.Matrix, out var matrix))
             {
                 matrix = Matrix.Identity;
             }
 
-            if (normalAppearance.TryGetRectangle(Names.BBox, out var bbox))
+            if (appearanceStream.TryGetRectangle(Names.BBox, out var bbox))
             {
                 var additionalGroupContent = new List<object>();
 
@@ -1069,7 +1080,7 @@ namespace PdfToSvg.Drawing
                         originalTransform;
                 }
 
-                RenderForm(normalAppearance, additionalGroupContent);
+                RenderForm(appearanceStream, additionalGroupContent);
             }
         }
 

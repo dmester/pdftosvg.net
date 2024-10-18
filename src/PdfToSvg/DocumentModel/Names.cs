@@ -84,6 +84,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName QuadPoints { get; } = new PdfName("QuadPoints");
         public static PdfName A { get; } = new PdfName("A");
         public static PdfName AP { get; } = new PdfName("AP");
+        public static PdfName AS { get; } = new PdfName("AS");
         public static PdfName S { get; } = new PdfName("S");
         public static PdfName URI { get; } = new PdfName("URI");
         public static PdfName Popup { get; } = new PdfName("Popup");

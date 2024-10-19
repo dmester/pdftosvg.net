@@ -1,0 +1,79 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns:annot="https://pdftosvg.net/xmlns/annotations" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID8{font-family:Helvetica,Arial,sans-serif;font-size:12px;fill:#00f;}
+.ID9{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:12px;}
+.ID10{font-family:Helvetica,Arial,sans-serif;font-size:12px;}
+</style>
+<defs class="ID1">
+<linearGradient x1="0" y1="0" x2="16" y2="16" gradientTransform="matrix(1 0 0 -1 413 321.92)" gradientUnits="userSpaceOnUse" id="ID2">
+<stop offset="0%" stop-color="#fff" stop-opacity="0" />
+<stop offset=".001%" stop-color="#fff" />
+<stop offset="99.999%" stop-color="#00f" />
+<stop offset="100%" stop-color="#00f" stop-opacity="0" />
+</linearGradient>
+<image id="ID3" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANJJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT3PgGa8gRwIYbLhljAgwoQYDes1iHYMDJGhAdVJmOj7bDQnHU2B82UEGRw0GOoDGOangNDkGAYffQYJfobPM2EajqagBCtQYnsxQ4U3Q4INCGU4MizPZHg/DS1YgeBIAlEeACqDxvSvz0QlDaAyROIDcvDYA5QCq0bSAE/ewDBATt5ALmryBgA34dLM/tOwHgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" />
+<clipPath id="ID4">
+<path d="M413 321.92h15v-15h-15zh15v-15h-15z" />
+</clipPath>
+<clipPath id="ID5">
+<rect x="417" y="311.92" width="50" height="50" />
+</clipPath>
+<clipPath id="ID6">
+<rect x="417" y="351.92" width="50" height="50" />
+</clipPath>
+<clipPath id="ID7">
+<rect x="417" y="71.92" width="50" height="50" />
+</clipPath>
+</defs>
+<g stroke-miterlimit="10" class="ID1">
+<path d="M413 241.92h15v-15h-15z" fill="none" stroke="#00f" stroke-width="1" />
+<path d="M413 281.92h15v-15h-15zh15v-15h-15z" fill="#00f" />
+<g clip-path="url(#ID4)">
+<path d="M0 841.92h594.96v-841.92h-594.96z" fill="url(#ID2)" />
+</g>
+<g clip-path="url(#ID5)">
+<text x="417" y="361.92" class="ID8">X</text>
+</g>
+<g clip-path="url(#ID6)">
+<text x="417" y="401.92" class="ID8">X</text>
+</g>
+<g transform="matrix(20 0 0 20 410 421.92)">
+<use href="#ID3" />
+</g>
+<g transform="matrix(20 0 0 20 410 461.92)">
+<use href="#ID3" />
+</g>
+<g transform="matrix(20 0 0 20 410 501.92)">
+<use href="#ID3" />
+</g>
+<g class="ID9">
+<text x="320" y="51.92">EXPECTED STATE</text>
+<text x="300" y="71.92">Visible</text>
+<text x="390" y="71.92">Not visible</text>
+</g>
+<g class="ID10">
+<text x="70" y="121.92">Annotation</text>
+<text x="70" y="161.92">Text</text>
+</g>
+<text x="417" y="161.92" class="ID8">X</text>
+<text x="70" y="201.92" class="ID10">Nested OCG</text>
+<text x="417" y="201.92" class="ID8">X</text>
+<g class="ID10">
+<text x="70" y="241.92">Stroke</text>
+<text x="70" y="281.92">Fill</text>
+<text x="70" y="321.92">Shading</text>
+<text x="70" y="361.92">XObject form</text>
+<text x="70" y="401.92">XObject form with /OC</text>
+<text x="70" y="441.92">XObject image</text>
+<text x="70" y="481.92">XObject image with /OC</text>
+<text x="70" y="521.92">Inline image</text>
+</g>
+<g annot:type="Text">
+<g clip-path="url(#ID7)">
+<text x="417" y="121.92" class="ID8">X</text>
+</g>
+</g>
+</g>
+</svg>

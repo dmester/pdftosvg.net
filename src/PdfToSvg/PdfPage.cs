@@ -92,7 +92,7 @@ namespace PdfToSvg
         {
             owner.AssertExtractPermission();
 
-            return ToString(SvgRenderer.Convert(page, options, Document.Cache, cancellationToken));
+            return ToString(SvgRenderer.Convert(page, options, Document.Cache, Document.OptionalContentGroupManager, cancellationToken));
         }
 
 #if HAVE_ASYNC
@@ -104,7 +104,7 @@ namespace PdfToSvg
         {
             owner.AssertExtractPermission();
 
-            var element = await SvgRenderer.ConvertAsync(page, options, Document.Cache, cancellationToken).ConfigureAwait(false);
+            var element = await SvgRenderer.ConvertAsync(page, options, Document.Cache, Document.OptionalContentGroupManager, cancellationToken).ConfigureAwait(false);
             return ToString(element);
         }
 #endif
@@ -134,7 +134,7 @@ namespace PdfToSvg
 
             owner.AssertExtractPermission();
 
-            var content = SvgRenderer.Convert(page, options, Document.Cache, cancellationToken);
+            var content = SvgRenderer.Convert(page, options, Document.Cache, Document.OptionalContentGroupManager, cancellationToken);
             var document = new XDocument(content);
 
             using var writer = new SvgXmlWriter(stream, ConformanceLevel.Document);
@@ -183,7 +183,7 @@ namespace PdfToSvg
 
             owner.AssertExtractPermission();
 
-            var content = await SvgRenderer.ConvertAsync(page, options, Document.Cache, cancellationToken).ConfigureAwait(false);
+            var content = await SvgRenderer.ConvertAsync(page, options, Document.Cache, Document.OptionalContentGroupManager, cancellationToken).ConfigureAwait(false);
             var document = new XDocument(content);
 
             // XmlTextWriter does not support async, so buffer the file before writing it to the output stream.

@@ -1,0 +1,640 @@
+%PDF-1.7
+
+xref
+0 35
+0000000000 65535 f
+0000000768 00000 n
+0000001546 00000 n
+0000001643 00000 n
+0000001722 00000 n
+0000001805 00000 n
+0000001889 00000 n
+0000001977 00000 n
+0000002823 00000 n
+0000002901 00000 n
+0000002998 00000 n
+0000003099 00000 n
+0000003180 00000 n
+0000003280 00000 n
+0000003376 00000 n
+0000003457 00000 n
+0000003557 00000 n
+0000003652 00000 n
+0000003720 00000 n
+0000003807 00000 n
+0000003914 00000 n
+0000004019 00000 n
+0000004120 00000 n
+0000004232 00000 n
+0000004339 00000 n
+0000004449 00000 n
+0000004559 00000 n
+0000004706 00000 n
+0000004807 00000 n
+0000005832 00000 n
+0000002418 00000 n
+0000002598 00000 n
+0000002710 00000 n
+0000002127 00000 n
+0000002275 00000 n
+trailer
+<< /Root 1 0 R /Size 35 >>
+     
+1 0 obj
+<<
+   /Type /Catalog
+   /Pages 2 0 R
+   /OCProperties <<
+      /OCGs [
+         3 0 R
+         4 0 R
+         5 0 R
+         6 0 R
+         7 0 R
+         31 0 R
+         32 0 R
+         33 0 R
+         34 0 R
+      ]
+      /D	<<
+         /Order [
+            3 0 R
+            4 0 R
+            5 0 R
+            6 0 R
+         ]
+         /BaseState /OFF
+         /ON [
+            3 0 R
+            4 0 R
+            7 0 R % Overridden by ExportState
+            33 0 R % Overridden by PrintState
+            34 0 R % Overridden by ViewState
+         ]
+         /OFF [
+            % 5 0 R - disabled by BaseState
+            6 0 R
+            30 0 R
+            31 0 R
+            32 0 R
+         ]
+      >>
+   >>
+>>
+endobj
+
+2 0 obj
+<<
+   /Type /Pages
+   /Kids [ 28 0 R ]
+   /Count 1
+>>
+endobj
+
+
+% OCG - visible
+3 0 obj
+<<
+  /Type /OCG
+  /Name (OC 3 - ON)
+>>
+endobj
+
+% OCG - visible
+4 0 obj
+<<
+  /Type /OCG
+  /Name (OC 4 - ON)
+>>
+endobj
+
+% OCG - not visible
+5 0 obj
+<<
+  /Type /OCG
+  /Name (OC 5 - OFF)
+>>
+endobj
+
+% OCG - not visible
+6 0 obj
+<<
+  /Type /OCG
+  /Name (OC 6 - OFF)
+>>
+endobj
+
+% OCG - ExportState OFF
+7 0 obj
+<<
+  /Type /OCG
+  /Name (OC 7 - export OFF)
+  /Usage <<
+    /Export << /ExportState /OFF >>
+  >>
+>>
+endobj
+
+% OCG - PrintState OFF
+33 0 obj
+<<
+  /Type /OCG
+  /Name (OC 33 - print OFF)
+  /Usage <<
+    /Print << /PrintState /OFF >>
+  >>
+>>
+endobj
+
+% OCG - ViewState OFF
+34 0 obj
+<<
+  /Type /OCG
+  /Name (OC 34 - view OFF)
+  /Usage <<
+    /View << /ViewState /OFF >>
+  >>
+>>
+endobj
+
+% OCG - Unknown OCG
+30 0 obj
+<<
+  /Type /OCG
+  /Name (OC 30 - unknown)
+  /Usage <<
+    /View << /ViewState /OFF >>
+    /Export << /ExportState /OFF >>
+  >>
+>>
+endobj
+
+% OCG - empty intent
+31 0 obj
+<<
+  /Type /OCG
+  /Name (OC 31 - empty intent)
+  /Intent [ ]
+>>
+endobj
+
+% OCG - Design intent
+32 0 obj
+<<
+  /Type /OCG
+  /Name (OC 32 - design intent)
+  /Intent /Design
+>>
+endobj
+
+
+% AllOn - empty
+8 0 obj <<  /Type /OCMD  /P /AllOn  /OCGs [ ] >> endobj
+
+% AllOn - visible
+9 0 obj <<  /Type /OCMD  /P /AllOn  /OCGs [  3 0 R  4 0 R  ] >> endobj
+
+% AllOn - not visible
+10 0 obj <<  /Type /OCMD  /P /AllOn  /OCGs [  3 0 R  4 0 R  5 0 R ] >> endobj
+
+
+% AllOff - empty
+11 0 obj <<  /Type /OCMD  /P /AllOff  /OCGs [ ] >> endobj
+
+% AllOff - visible
+12 0 obj <<  /Type /OCMD  /P /AllOff  /OCGs [  5 0 R  6 0 R  ] >> endobj
+
+% AllOff - not visible
+13 0 obj <<  /Type /OCMD  /P /AllOff  /OCGs [  3 0 R  5 0 R  ] >> endobj
+
+
+% AnyOff - empty
+14 0 obj <<  /Type /OCMD  /P /AnyOff  /OCGs [ ] >> endobj
+
+% AnyOff - visible
+15 0 obj <<  /Type /OCMD  /P /AnyOff  /OCGs [  3 0 R  6 0 R  ] >> endobj
+
+% AnyOff - not visible
+16 0 obj <<  /Type /OCMD  /P /AnyOff  /OCGs [  3 0 R  4 0 R  ] >> endobj
+
+
+% AnyOn - empty
+17 0 obj <<  /Type /OCMD  /OCGs [ ] >> endobj
+
+% AnyOn - visible
+18 0 obj <<  /Type /OCMD  /OCGs [  3 0 R  6 0 R  ] >> endobj
+
+% AnyOn - not visible
+19 0 obj <<  /Type /OCMD  /OCGs [  5 0 R  6 0 R  ] >> endobj
+
+
+% Visibility expression - Not - visible
+20 0 obj <<  /Type /OCMD  /VE [ /Not  5 0 R  ] >> endobj
+
+% Visibility expression - Not - not visible
+21 0 obj <<  /Type /OCMD  /VE [ /Not  3 0 R  ] >> endobj
+
+% Visibility expression - And - visible
+22 0 obj <<  /Type /OCMD  /VE [ /And  3 0 R  4 0 R  ] >> endobj
+
+% Visibility expression - And - not visible
+23 0 obj <<  /Type /OCMD  /VE [ /And  3 0 R  5 0 R  ] >> endobj
+
+% Visibility expression - Or - visible
+24 0 obj <<  /Type /OCMD  /VE [ /Or  3 0 R  5 0 R  ] >> endobj
+
+% Visibility expression - Or - not visible
+25 0 obj <<  /Type /OCMD  /VE [ /Or  5 0 R  6 0 R  ] >> endobj
+
+% Visibility expression - Nested - visible
+26 0 obj <<  /Type /OCMD  /VE [ /And  [ /Or  3 0 R  4 0 R ]  [ /And  3 0 R  4 0 R ] ] >> endobj
+
+% Visibility expression - Nested - not visible
+27 0 obj <<  /Type /OCMD  /VE [ /And  [ /Or  5 0 R  6 0 R ]  [ /And  3 0 R  4 0 R ] ] >> endobj
+
+
+28 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /FR << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+         /FB << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+      >>
+      /Properties <<
+         /oc3 3 0 R
+         /oc4 4 0 R
+         /oc5 5 0 R
+         /oc6 6 0 R
+         /oc7 7 0 R
+         /oc8 8 0 R
+         /oc9 9 0 R
+         /oc10 10 0 R
+         /oc11 11 0 R
+         /oc12 12 0 R
+         /oc13 13 0 R
+         /oc14 14 0 R
+         /oc15 15 0 R
+         /oc16 16 0 R
+         /oc17 17 0 R
+         /oc18 18 0 R
+         /oc19 19 0 R
+         /oc20 20 0 R
+         /oc21 21 0 R
+         /oc22 22 0 R
+         /oc23 23 0 R
+         /oc24 24 0 R
+         /oc25 25 0 R
+         /oc26 26 0 R
+         /oc27 27 0 R
+         /oc30 30 0 R
+         /oc31 31 0 R
+         /oc32 32 0 R
+         /oc33 33 0 R
+         /oc34 34 0 R
+      >>
+   >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 29 0 R ]
+>>
+endobj
+
+29 0 obj << /Length 6705 >>
+stream
+   BT
+      /FB 12 Tf
+      
+      1 0 0 1 320 790 Tm
+      (EXPECTED STATE) '
+      
+      1 0 0 1 300 770 Tm
+      (Visible) '
+      1 0 0 1 390 770 Tm
+      (Not visible) '
+      
+      /FR 12 Tf
+      
+      1 0 0 1 0 760 cm
+      
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (OCG) '
+         
+         % Not visible
+         /OC /oc5 BDC
+            0 0 1 rg
+            1 0 0 1 417 0 Tm
+            (X) '
+         EMC
+         
+         % Visible
+         /OC /oc3 BDC
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         % 8.11.2.3 Intent: empty intent => shall not be used in determining visibility
+         (OCG - empty intent) '
+         
+         % Visible
+         /OC /oc31 BDC
+            0 0 1 rg
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+      
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (OCG - intent /Design) '
+         
+         % Visible
+         /OC /oc32 BDC
+            0 0 1 rg
+            1 0 0 1 314 0 Tm
+         (X) '
+         EMC
+      Q
+      
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (OCG - not registered) '
+
+         % Visible
+         /OC /oc30 BDC
+            0 0 1 rg
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+
+      
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (Nested OCG) '
+         
+         % Not visible
+         /OC /oc3 BDC
+         /OC /oc5 BDC
+            0 0 1 rg
+            1 0 0 1 417 0 Tm
+            (X) '
+         EMC
+         EMC
+         
+         % Visible
+         /OC /oc4 BDC
+         /OC /oc3 BDC
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+         EMC
+      Q
+      
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (OCG - ExportState) '
+         
+         % Not visible
+         /OC /oc7 BDC
+            0 0 1 rg
+            1 0 0 1 417 0 Tm
+            (X) '
+         EMC
+         
+         % Visible
+         1 0 0 1 314 0 Tm
+         (X) '
+      Q
+
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (OCG - PrintState) '
+         
+         % Visible
+         /OC /oc33 BDC
+            0 0 1 rg
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (OCG - ViewState) '
+         
+         % Not visible
+         /OC /oc34 BDC
+            0 0 1 rg
+            1 0 0 1 417 0 Tm
+            (X) '
+         EMC
+         
+         % Visible
+         1 0 0 1 314 0 Tm
+         (X) '
+      Q
+
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (AllOn) '
+         
+         % Not visible
+         /OC /oc10 BDC
+            0 0 1 rg
+            1 0 0 1 417 0 Tm
+            (X) '
+         EMC
+         
+         % Visible
+         /OC /oc9 BDC
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (AllOff) '
+         
+         % Not visible
+         /OC /oc13 BDC
+            0 0 1 rg
+            1 0 0 1 417 0 Tm
+            (X) '
+         EMC
+         
+         % Visible
+         /OC /oc12 BDC
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (AnyOn) '
+         
+         % Not visible
+         /OC /oc19 BDC
+            0 0 1 rg
+            1 0 0 1 417 0 Tm
+            (X) '
+         EMC
+         
+         % Visible
+         /OC /oc18 BDC
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (AnyOff) '
+         
+         % Not visible
+         /OC /oc16 BDC
+            0 0 1 rg
+            1 0 0 1 417 0 Tm
+            (X) '
+         EMC
+         
+         % Visible
+         /OC /oc15 BDC
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (AllOn - Empty) '
+         
+         % Visible (P should have no effect on visibiliy if PCGs is null or empty)
+         /OC /oc8 BDC
+            0 0 1 rg
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+      
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (AllOff - Empty) '
+         
+         % Visible (P should have no effect on visibiliy if PCGs is null or empty)
+         /OC /oc11 BDC
+            0 0 1 rg
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+      
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (AnyOn - Empty) '
+         
+         % Visible (P should have no effect on visibiliy if PCGs is null or empty)
+         /OC /oc17 BDC
+            0 0 1 rg
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+      
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (AnyOff - Empty) '
+         
+         % Visible (P should have no effect on visibiliy if PCGs is null or empty)
+         /OC /oc17 BDC
+            0 0 1 rg
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+      
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (Visibility expression - Not) '
+         
+         % Not visible
+         /OC /oc21 BDC
+            0 0 1 rg
+            1 0 0 1 417 0 Tm
+            (X) '
+         EMC
+         
+         % Visible
+         /OC /oc20 BDC
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+      
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (Visibility expression - And) '
+         
+         % Not visible
+         /OC /oc23 BDC
+            0 0 1 rg
+            1 0 0 1 417 0 Tm
+            (X) '
+         EMC
+         
+         % Visible
+         /OC /oc22 BDC
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+      
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (Visibility expression - Or) '
+         
+         % Not visible
+         /OC /oc25 BDC
+            0 0 1 rg
+            1 0 0 1 417 0 Tm
+            (X) '
+         EMC
+         
+         % Visible
+         /OC /oc24 BDC
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+      
+      1 0 0 1 0 -25 cm 1 0 0 1 70 0 Tm
+      q
+         (Visibility expression - Nested) '
+         
+         % Not visible
+         /OC /oc27 BDC
+            0 0 1 rg
+            1 0 0 1 417 0 Tm
+            (X) '
+         EMC
+         
+         % Visible
+         /OC /oc26 BDC
+            1 0 0 1 314 0 Tm
+            (X) '
+         EMC
+      Q
+
+   ET
+endstream
+endobj
+
+startxref
+12
+%%EOF

@@ -133,6 +133,41 @@ namespace PdfToSvg.Drawing
             }
         }
 
+        public void SkipSpan(GraphicsState graphicsState, PdfString text)
+        {
+            if (text.Length == 0)
+            {
+                return;
+            }
+
+            currentParagraph = null;
+
+            var style = GetTextStyle(graphicsState);
+
+            var textScaling = style.TextScaling * ScalingMultiplier;
+            var wordSpacing = graphicsState.TextWordSpacingPx * textScaling * scale;
+            var totalWidth = 0d;
+
+            var words = graphicsState.Font.DecodeString(text, splitWords: wordSpacing != 0);
+
+            for (var i = 0; i < words.Count; i++)
+            {
+                var word = words[i];
+                var wordWidth = (word.Width * normalizedFontSize + word.Length * style.TextCharSpacingPx) * textScaling;
+
+                if (i > 0)
+                {
+                    pendingSpace += wordSpacing;
+                    aggregateOffset += wordSpacing;
+                    totalWidth += wordSpacing;
+                }
+
+                totalWidth += wordWidth;
+            }
+
+            Translate(graphicsState, totalWidth);
+        }
+
         public void AddSpan(GraphicsState graphicsState, PdfString text)
         {
             if (text.Length > 0)

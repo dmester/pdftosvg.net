@@ -75,14 +75,26 @@ namespace PdfToSvg
             this.Permissions = permissions;
             this.IsEncrypted = isEncrypted;
             this.Info = new DocumentInfo(info);
+
+            OptionalContentGroupManager.Initialize(root);
         }
 
         internal DocumentCache Cache { get; } = new();
+
+        internal OptionalContentGroupManager OptionalContentGroupManager { get; } = new();
 
         /// <summary>
         /// Gets information about which operations that the document author has allowed for this document.
         /// </summary>
         public DocumentPermissions Permissions { get; }
+
+        /// <summary>
+        /// Gets a collection of the optional content groups of this PDF document, whose visibility can be controlled
+        /// individually.
+        /// </summary>
+        /// <inheritdoc cref="OptionalContentGroup" path="example"/>
+        /// <seealso cref="OptionalContentGroup"/>
+        public OptionalContentGroupCollection OptionalContentGroups => OptionalContentGroupManager.PublicGroups;
 
         /// <summary>
         /// Gets a value indicating whether this document is encrypted.

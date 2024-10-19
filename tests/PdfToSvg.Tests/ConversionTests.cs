@@ -123,7 +123,9 @@ namespace PdfToSvg.Tests
             return Path.Combine(TestFiles.OutputDirectory(sync), Path.ChangeExtension(fileName, ".svg"));
         }
 
-        private void ConvertSync(string pdfName, string expectedSvgName, SvgConversionOptions conversionOptions)
+        private void ConvertSync(string pdfName, string expectedSvgName,
+            SvgConversionOptions conversionOptions = null,
+            Action<PdfDocument> documentSetup = null)
         {
             var expectedSvgPath = GetExpectedFilePath(expectedSvgName);
             var actualSvgPath = GetActualFilePath(expectedSvgName, sync: true);
@@ -134,6 +136,7 @@ namespace PdfToSvg.Tests
             string actual;
             using (var doc = PdfDocument.Open(pdfPath))
             {
+                documentSetup?.Invoke(doc);
                 actual = doc.Pages[0].ToSvgString(conversionOptions);
             }
 
@@ -203,6 +206,25 @@ namespace PdfToSvg.Tests
             {
                 FontResolver = FontResolver.EmbedOpenType,
             });
+        }
+
+        [Test]
+        public void ToggleOptionalContentGroup()
+        {
+            ConvertSync("optionalcontentgroup-contentypes.pdf", "optionalcontentgroup-contentypes-toggled.svg",
+                new SvgConversionOptions
+                {
+                    FontResolver = FontResolver.LocalFonts,
+                },
+                doc =>
+                {
+                    var group = doc.OptionalContentGroups[0];
+                    
+                    Assert.AreEqual("Group 1", group.Name);
+                    Assert.IsTrue(group.Visible);
+
+                    group.Visible = false;
+                });
         }
 
         [Test]

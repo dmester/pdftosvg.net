@@ -1,0 +1,89 @@
+%PDF-1.7
+
+xref
+0 6
+0000000000 65535 f
+0000000186 00000 n
+0000000392 00000 n
+0000000486 00000 n
+0000000546 00000 n
+0000000840 00000 n
+trailer
+<< /Root 1 0 R /Size 6 >>
+     
+1 0 obj
+<<
+   /Type /Catalog
+   /Pages 2 0 R
+   /OCProperties <<
+      /OCGs [
+         3 0 R
+      ]
+      /D	<<
+         /Order [ 3 0 R ]
+         /OFF [ 3 0 R ]
+      >>
+   >>
+>>
+endobj
+
+2 0 obj
+<<
+   /Type /Pages
+   /Kids [ 4 0 R ]
+   /Count 1
+>>
+endobj
+
+% OCG - visible
+3 0 obj
+<<
+  /Type /OCG
+  /Name (Group 1)
+>>
+endobj
+
+4 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /FR << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+      >>
+      /Properties <<
+         /oc3 3 0 R
+      >>
+   >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 5 0 R ]
+>>
+endobj
+
+5 0 obj << /Length 288 >>
+stream
+   1 0 0 1 70 760 cm
+   
+   BT
+      /FR 12 Tf
+
+      10 Tw
+      
+      (The quick brown ) Tj
+      
+      /OC /oc3 BDC
+         (fox jumps over the ) Tj
+      EMC
+
+      (lazy dog) Tj
+      
+      0 -2 m 0 25 l
+      121 -2 m 121 25 l s
+      262 -2 m 262 25 l s
+   ET
+endstream
+endobj
+
+startxref
+12
+%%EOF

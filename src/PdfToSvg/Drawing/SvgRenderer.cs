@@ -48,6 +48,9 @@ namespace PdfToSvg.Drawing
         private GraphicsState graphicsState = new GraphicsState();
         private Stack<GraphicsState> graphicsStateStack = new Stack<GraphicsState>();
 
+        private bool markedContentVisible = true;
+        private Stack<MarkedContent> markedContentStack = new Stack<MarkedContent>();
+
         private XElement svg;
         private XElement rootGraphics;
         private XElement currentTransparencyGroup;
@@ -64,6 +67,7 @@ namespace PdfToSvg.Drawing
         private double currentPointX, currentPointY;
 
         private DocumentCache documentCache;
+        private OptionalContentGroupManager optionalContentGroupManager;
         private ResourceCache resources;
 
         private XElement defs = new XElement(ns + "defs");
@@ -93,7 +97,7 @@ namespace PdfToSvg.Drawing
 
         private Dictionary<string, ClipPath> clipPaths = new Dictionary<string, ClipPath>();
 
-        private SvgRenderer(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, CancellationToken cancellationToken)
+        private SvgRenderer(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, OptionalContentGroupManager optionalContentGroupManager, CancellationToken cancellationToken)
         {
             if (options == null)
             {
@@ -103,6 +107,7 @@ namespace PdfToSvg.Drawing
             this.options = options;
             this.pageDict = pageDict;
             this.documentCache = documentCache;
+            this.optionalContentGroupManager = optionalContentGroupManager;
             this.cancellationToken = cancellationToken;
 
             textBuilder = new TextBuilder(options);
@@ -261,6 +266,11 @@ namespace PdfToSvg.Drawing
 
             foreach (var annot in annots)
             {
+                if (annot.TryGetDictionary(Names.OC, out var oc) && !optionalContentGroupManager.GroupVisible(oc))
+                {
+                    continue;
+                }
+
                 var fileIndex = (int?)null;
 
                 var attachment = FileAttachment.Create(annot);
@@ -281,6 +291,11 @@ namespace PdfToSvg.Drawing
 
                 foreach (var annot in annots)
                 {
+                    if (annot.TryGetDictionary(Names.OC, out var oc) && !optionalContentGroupManager.GroupVisible(oc))
+                    {
+                        continue;
+                    }
+
                     // PDF spec 1.7, Table 173
                     if (annot.GetNameOrNull(Names.Subtype) == Names.Link &&
 
@@ -464,9 +479,9 @@ namespace PdfToSvg.Drawing
 #endif
         }
 
-        public static XElement Convert(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, CancellationToken cancellationToken)
+        public static XElement Convert(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, OptionalContentGroupManager optionalContentGroupManager, CancellationToken cancellationToken)
         {
-            var renderer = new SvgRenderer(pageDict, options, documentCache, cancellationToken);
+            var renderer = new SvgRenderer(pageDict, options, documentCache, optionalContentGroupManager, cancellationToken);
 
             using (var contentStream = ContentStream.Combine(pageDict, cancellationToken))
             {
@@ -483,9 +498,9 @@ namespace PdfToSvg.Drawing
         }
 
 #if HAVE_ASYNC
-        public static async Task<XElement> ConvertAsync(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, CancellationToken cancellationToken)
+        public static async Task<XElement> ConvertAsync(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, OptionalContentGroupManager optionalContentGroupManager, CancellationToken cancellationToken)
         {
-            var renderer = new SvgRenderer(pageDict, options, documentCache, cancellationToken);
+            var renderer = new SvgRenderer(pageDict, options, documentCache, optionalContentGroupManager, cancellationToken);
 
             using (var contentStream = await ContentStream.CombineAsync(pageDict, cancellationToken).ConfigureAwait(false))
             {
@@ -519,6 +534,28 @@ namespace PdfToSvg.Drawing
             {
                 graphicsState = graphicsStateStack.Pop();
                 textBuilder.InvalidateStyle();
+            }
+        }
+
+        [Operation("BDC")]
+        private void BDC_BeginMarkedContent(PdfName tag, PdfName ocName)
+        {
+            if (tag == Names.OC &&
+                resources.Dictionary.TryGetDictionary(Names.Properties / ocName, out var ocgDict))
+            {
+                markedContentVisible = markedContentVisible && optionalContentGroupManager.GroupVisible(ocgDict);
+            }
+
+            markedContentStack.Push(new MarkedContent { Visible = markedContentVisible });
+        }
+
+        [Operation("EMC")]
+        private void EMC_EndMarkedContent()
+        {
+            if (markedContentStack.Count > 0)
+            {
+                markedContentStack.Pop();
+                markedContentVisible = markedContentStack.Count == 0 || markedContentStack.Peek().Visible;
             }
         }
 
@@ -890,6 +927,19 @@ namespace PdfToSvg.Drawing
 
         private void RenderForm(PdfDictionary xobject, IList<object>? additionalGroupContent = null)
         {
+            // Optional content group
+            if (!markedContentVisible)
+            {
+                // Hidden by BDC content operator
+                return;
+            }
+            if (xobject.TryGetDictionary(Names.OC, out var ocDict) &&
+                !optionalContentGroupManager.GroupVisible(ocDict))
+            {
+                // Hidden by /OC property on XObject dict
+                return;
+            }
+
             RenderXObject(xobject, () =>
             {
                 var groupAttributes = new List<XAttribute>();
@@ -1086,6 +1136,7 @@ namespace PdfToSvg.Drawing
             {
                 var originalGraphicsStateStack = graphicsStateStack;
                 var originalGraphicsState = graphicsState;
+                var originalMarkedContentStack = markedContentStack;
                 var originalIgnoreColorChange = ignoreColorChange;
                 var originalTransparencyGroup = currentTransparencyGroup;
                 var originalOriginalTransform = originalTransform;
@@ -1099,6 +1150,8 @@ namespace PdfToSvg.Drawing
                     {
                         resources = new ResourceCache(resourcesDict);
                     }
+
+                    markedContentStack = new Stack<MarkedContent>();
 
                     graphicsStateStack = new Stack<GraphicsState>();
                     graphicsState = graphicsState.Clone();
@@ -1125,6 +1178,8 @@ namespace PdfToSvg.Drawing
                 {
                     graphicsStateStack = originalGraphicsStateStack;
                     graphicsState = originalGraphicsState;
+                    markedContentStack = originalMarkedContentStack;
+                    markedContentVisible = markedContentStack.Count == 0 || markedContentStack.Peek().Visible;
                     ignoreColorChange = originalIgnoreColorChange;
                     currentTransparencyGroup = originalTransparencyGroup;
                     originalTransform = originalOriginalTransform;
@@ -1141,6 +1196,19 @@ namespace PdfToSvg.Drawing
 
         private void RenderImage(PdfDictionary xobject)
         {
+            // Optional content group
+            if (!markedContentVisible)
+            {
+                // Hidden by BDC content operator
+                return;
+            }
+            if (xobject.TryGetDictionary(Names.OC, out var ocDict) &&
+                !optionalContentGroupManager.GroupVisible(ocDict))
+            {
+                // Hidden by /OC property on XObject dict
+                return;
+            }
+
             var imageAttributes = new List<XAttribute>();
 
             // Positioning
@@ -1342,6 +1410,11 @@ namespace PdfToSvg.Drawing
         [Operation("sh")]
         private void sh_Shading(PdfName shadingName)
         {
+            if (!markedContentVisible)
+            {
+                return;
+            }
+
             var shading = resources.GetShading(shadingName, cancellationToken);
             if (shading == null)
             {
@@ -1726,6 +1799,11 @@ namespace PdfToSvg.Drawing
 
         private void DrawPath(bool stroke, bool fill, bool evenOddWinding)
         {
+            if (!markedContentVisible)
+            {
+                return;
+            }
+
             var remainingTransform = graphicsState.Transform;
             var pathTransformed = false;
 
@@ -2308,7 +2386,14 @@ namespace PdfToSvg.Drawing
         [Operation("Tj")]
         private void Tj_Show(PdfString text)
         {
-            textBuilder.AddSpan(graphicsState, text);
+            if (markedContentVisible)
+            {
+                textBuilder.AddSpan(graphicsState, text);
+            }
+            else
+            {
+                textBuilder.SkipSpan(graphicsState, text);
+            }
         }
 
         [Operation("'")]
@@ -2347,7 +2432,14 @@ namespace PdfToSvg.Drawing
                 }
                 else if (item is PdfString text)
                 {
-                    textBuilder.AddSpan(graphicsState, text);
+                    if (markedContentVisible)
+                    {
+                        textBuilder.AddSpan(graphicsState, text);
+                    }
+                    else
+                    {
+                        textBuilder.SkipSpan(graphicsState, text);
+                    }
                 }
             }
         }

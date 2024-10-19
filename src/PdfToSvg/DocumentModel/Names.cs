@@ -95,6 +95,30 @@ namespace PdfToSvg.DocumentModel
         public static PdfName FileAttachment { get; } = new PdfName("FileAttachment");
         public static PdfName FS { get; } = new PdfName("FS");
 
+        public static PdfName OCProperties { get; } = new PdfName("OCProperties");
+        public static PdfName Properties { get; } = new PdfName("Properties");
+        public static PdfName OCGs { get; } = new PdfName("OCGs");
+        public static PdfName OCMD { get; } = new PdfName("OCMD");
+        public static PdfName VE { get; } = new PdfName("VE");
+        public static PdfName AllOn { get; } = new PdfName("AllOn");
+        public static PdfName AllOff { get; } = new PdfName("AllOff");
+        public static PdfName AnyOn { get; } = new PdfName("AnyOn");
+        public static PdfName AnyOff { get; } = new PdfName("AnyOff");
+        public static PdfName Not { get; } = new PdfName("Not");
+        public static PdfName And { get; } = new PdfName("And");
+        public static PdfName Or { get; } = new PdfName("Or");
+        public static PdfName Intent { get; } = new PdfName("Intent");
+        public static PdfName BaseState { get; } = new PdfName("BaseState");
+        public static PdfName Usage { get; } = new PdfName("Usage");
+        public static PdfName View { get; } = new PdfName("View");
+        public static PdfName ViewState { get; } = new PdfName("ViewState");
+        public static PdfName Export { get; } = new PdfName("Export");
+        public static PdfName ExportState { get; } = new PdfName("ExportState");
+        public static PdfName OFF { get; } = new PdfName("OFF");
+        public static PdfName ON { get; } = new PdfName("ON");
+        public static PdfName OC { get; } = new PdfName("OC");
+        public static PdfName D { get; } = new PdfName("D");
+
         public static PdfName Encoding { get; } = new PdfName("Encoding");
         public static PdfName BaseEncoding { get; } = new PdfName("BaseEncoding");
         public static PdfName Differences { get; } = new PdfName("Differences");

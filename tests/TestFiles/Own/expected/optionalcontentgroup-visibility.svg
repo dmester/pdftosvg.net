@@ -1,0 +1,56 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID2{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:12px;}
+.ID3{font-family:Helvetica,Arial,sans-serif;font-size:12px;}
+.ID4{font-family:Helvetica,Arial,sans-serif;font-size:12px;fill:#00f;}
+</style>
+<g class="ID1">
+<g class="ID2">
+<text x="320" y="51.92">EXPECTED STATE</text>
+<text x="300" y="71.92">Visible</text>
+<text x="390" y="71.92">Not visible</text>
+</g>
+<text x="70" y="106.92" class="ID3">OCG</text>
+<text x="314" y="106.92" class="ID4">X</text>
+<text x="70" y="131.92" class="ID3">OCG - empty intent</text>
+<text x="314" y="131.92" class="ID4">X</text>
+<text x="70" y="156.92" class="ID3">OCG - intent /Design</text>
+<text x="314" y="156.92" class="ID4">X</text>
+<text x="70" y="181.92" class="ID3">OCG - not registered</text>
+<text x="314" y="181.92" class="ID4">X</text>
+<text x="70" y="206.92" class="ID3">Nested OCG</text>
+<text x="314" y="206.92" class="ID4">X</text>
+<text x="70" y="231.92" class="ID3">OCG - ExportState</text>
+<text x="314" y="231.92" class="ID4">X</text>
+<text x="70" y="256.92" class="ID3">OCG - PrintState</text>
+<text x="314" y="256.92" class="ID4">X</text>
+<text x="70" y="281.92" class="ID3">OCG - ViewState</text>
+<text x="314" y="281.92" class="ID4">X</text>
+<text x="70" y="306.92" class="ID3">AllOn</text>
+<text x="314" y="306.92" class="ID4">X</text>
+<text x="70" y="331.92" class="ID3">AllOff</text>
+<text x="314" y="331.92" class="ID4">X</text>
+<text x="70" y="356.92" class="ID3">AnyOn</text>
+<text x="314" y="356.92" class="ID4">X</text>
+<text x="70" y="381.92" class="ID3">AnyOff</text>
+<text x="314" y="381.92" class="ID4">X</text>
+<text x="70" y="406.92" class="ID3">AllOn - Empty</text>
+<text x="314" y="406.92" class="ID4">X</text>
+<text x="70" y="431.92" class="ID3">AllOff - Empty</text>
+<text x="314" y="431.92" class="ID4">X</text>
+<text x="70" y="456.92" class="ID3">AnyOn - Empty</text>
+<text x="314" y="456.92" class="ID4">X</text>
+<text x="70" y="481.92" class="ID3">AnyOff - Empty</text>
+<text x="314" y="481.92" class="ID4">X</text>
+<text x="70" y="506.92" class="ID3">Visibility expression - Not</text>
+<text x="314" y="506.92" class="ID4">X</text>
+<text x="70" y="531.92" class="ID3">Visibility expression - And</text>
+<text x="314" y="531.92" class="ID4">X</text>
+<text x="70" y="556.92" class="ID3">Visibility expression - Or</text>
+<text x="314" y="556.92" class="ID4">X</text>
+<text x="70" y="581.92" class="ID3">Visibility expression - Nested</text>
+<text x="314" y="581.92" class="ID4">X</text>
+</g>
+</svg>

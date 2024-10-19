@@ -1,0 +1,22 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID3{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:56px;fill:#00f;}
+.ID4{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:56px;fill:#f00;}
+</style>
+<defs class="ID1">
+<clipPath id="ID2">
+<rect y="-338.08" width="500" height="500" />
+</clipPath>
+</defs>
+<g class="ID1">
+<g clip-path="url(#ID2)">
+<text x="140" y="146.92" class="ID3">Inside form</text>
+</g>
+<g class="ID4">
+<text x="70" y="111.92">Before form</text>
+<text x="200" y="181.92">After form</text>
+</g>
+</g>
+</svg>

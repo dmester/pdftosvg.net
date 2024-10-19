@@ -105,12 +105,7 @@ namespace PdfToSvg.Drawing
             this.documentCache = documentCache;
             this.cancellationToken = cancellationToken;
 
-            textBuilder = new TextBuilder(
-                collapseSpaceLocalFont: options.CollapseSpaceLocalFont,
-                collapseSpaceEmbeddedFont: options.CollapseSpaceEmbeddedFont,
-                minSpacePx: 0.001 // Lower space will be rounded to "0" in SVG formatting.
-                );
-
+            textBuilder = new TextBuilder(options);
             resources = new ResourceCache(pageDict.GetDictionaryOrEmpty(Names.Resources));
 
             cropBox = GetCropBox(pageDict);
@@ -1095,6 +1090,7 @@ namespace PdfToSvg.Drawing
                 var originalTransparencyGroup = currentTransparencyGroup;
                 var originalOriginalTransform = originalTransform;
                 var originalResources = resources;
+                var originalTextBuilder = textBuilder;
 
                 try
                 {
@@ -1106,6 +1102,8 @@ namespace PdfToSvg.Drawing
 
                     graphicsStateStack = new Stack<GraphicsState>();
                     graphicsState = graphicsState.Clone();
+
+                    textBuilder = new TextBuilder(options);
 
                     preparations();
 
@@ -1131,6 +1129,7 @@ namespace PdfToSvg.Drawing
                     currentTransparencyGroup = originalTransparencyGroup;
                     originalTransform = originalOriginalTransform;
                     resources = originalResources;
+                    textBuilder = originalTextBuilder;
 
                     clipWrapper = null;
                     clipWrapperId = null;

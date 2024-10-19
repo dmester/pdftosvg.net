@@ -498,7 +498,7 @@ namespace PdfToSvg.Fonts
                 .Select(ch =>
                 {
                     var unicode = Utf16Encoding.DecodeCodePoint(ch.Unicode, 0, out var _);
-                    
+
                     var glyphIndex = ch.GlyphIndex!.Value;
                     if (glyphIndex == 0)
                     {
@@ -637,7 +637,7 @@ namespace PdfToSvg.Fonts
             {
                 duplicatedGlyph0Index = DuplicateGlyph0(preparedFont);
             }
-            
+
             RecreateOpenTypeCMap(preparedFont, duplicatedGlyph0Index);
             OverwriteOpenTypeGlyphWidths(preparedFont, duplicatedGlyph0Index);
 

@@ -899,7 +899,7 @@ namespace PdfToSvg.Drawing
                 currentTransparencyGroup = maskEl;
 
                 graphicsState.Transform = originalTransform;
-                
+
                 transform = originalTransform.Invert() * transform;
 
                 if (!transform.IsIdentity)
@@ -1327,7 +1327,7 @@ namespace PdfToSvg.Drawing
             {
                 imageEl = ApplySMask(imageEl, graphicsState.SMaskId);
             }
-            
+
             AppendClipped(imageEl);
         }
 

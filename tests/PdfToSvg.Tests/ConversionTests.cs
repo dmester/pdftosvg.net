@@ -219,7 +219,7 @@ namespace PdfToSvg.Tests
                 doc =>
                 {
                     var group = doc.OptionalContentGroups[0];
-                    
+
                     Assert.AreEqual("Group 1", group.Name);
                     Assert.IsTrue(group.Visible);
 

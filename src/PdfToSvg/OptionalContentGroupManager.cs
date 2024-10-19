@@ -19,7 +19,7 @@ namespace PdfToSvg
 
         public OptionalContentGroupCollection PublicGroups { get; }
 
-        public OptionalContentGroupManager() 
+        public OptionalContentGroupManager()
         {
             PublicGroups = new OptionalContentGroupCollection(publicGroups);
         }
@@ -189,7 +189,7 @@ namespace PdfToSvg
         private void InitializeState(PdfDictionary configDict)
         {
             var baseState = true;
-            
+
             if (configDict.TryGetName(Names.BaseState, out var baseStateValue) && baseStateValue == Names.OFF)
             {
                 baseState = false;

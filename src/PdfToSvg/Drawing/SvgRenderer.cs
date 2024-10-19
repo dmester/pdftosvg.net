@@ -563,6 +563,7 @@ namespace PdfToSvg.Drawing
         private void cm_SetMatrix(double a, double b, double c, double d, double e, double f)
         {
             graphicsState.Transform = new Matrix(a, b, c, d, e, f) * graphicsState.Transform;
+            textBuilder.UpdateLineMatrix(graphicsState);
         }
 
         [Operation("w")]

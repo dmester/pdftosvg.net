@@ -28,7 +28,7 @@ namespace PdfToSvg.Common
 
         public static string FormatDebugView(ArraySegment<byte> buffer, int byteCursor, int bitCursor, int currentByte)
         {
-            var result = "";
+            var result = byteCursor + ":" + bitCursor + " ";
 
             string Format(int cursorOffset)
             {

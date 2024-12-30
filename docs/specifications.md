@@ -54,6 +54,11 @@ T.6 : Facsimile coding schemes and coding control functions for Group 4 facsimil
 
 https://www.itu.int/rec/T-REC-T.6/en
 
+### JBIG2
+ITU-T Rec. T.88 - ISO/IEC 14492 – Lossy/lossless coding of bi-level images
+
+https://www.itu.int/ITU-T/recommendations/rec.aspx?rec=13688&lang=en
+
 
 ## Fonts
 

@@ -192,6 +192,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName LZWDecode { get; } = new PdfName("LZWDecode");
         public static PdfName CCITTFaxDecode { get; } = new PdfName("CCITTFaxDecode");
         public static PdfName RunLengthDecode { get; } = new PdfName("RunLengthDecode");
+        public static PdfName JBIG2Decode { get; } = new PdfName("JBIG2Decode");
 
         public static PdfName DecodeParms { get; } = new PdfName("DecodeParms");
         public static PdfName EarlyChange { get; } = new PdfName("EarlyChange");
@@ -206,6 +207,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName BitsPerFlag { get; } = new PdfName("BitsPerFlag");
         public static PdfName Colors { get; } = new PdfName("Colors");
         public static PdfName Interpolate { get; } = new PdfName("Interpolate");
+        public static PdfName JBIG2Globals { get; } = new PdfName("JBIG2Globals");
 
         public static PdfName ColorSpace { get; } = new PdfName("ColorSpace");
         public static PdfName DeviceGray { get; } = new PdfName("DeviceGray");

@@ -38,6 +38,14 @@ https://koushtav.me/jpeg/tutorial/2017/11/25/lets-write-a-simple-jpeg-library-pa
 https://koushtav.me/jpeg/tutorial/c++/decoder/2019/03/02/lets-write-a-simple-jpeg-library-part-2/
 
 
+## JBIG2
+
+### STDU Viewer
+The JBI2 support in image viewers are rare. This is a tool that supports opening JBIG2 files.
+
+http://www.stdutility.com/stduviewer.html
+
+
 ## Fonts
 
 ### fontbakery

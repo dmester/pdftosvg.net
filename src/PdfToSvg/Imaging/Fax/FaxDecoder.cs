@@ -98,7 +98,11 @@ namespace PdfToSvg.Imaging.Fax
         public IEnumerable<bool[]> ReadRows(byte[] data, int offset, int count)
         {
             var reader = new VariableBitReader(data, offset, count);
+            return ReadRows(reader);
+        }
 
+        public IEnumerable<bool[]> ReadRows(VariableBitReader reader)
+        {
             var referenceLine = new bool[Width];
             var codeLine = new bool[Width];
 

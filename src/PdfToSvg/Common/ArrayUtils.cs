@@ -93,6 +93,24 @@ namespace PdfToSvg.Common
             return result;
         }
 
+        public static bool StartsWith(byte[] data, int offset, int count, byte[] lookFor)
+        {
+            if (lookFor.Length > count)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < lookFor.Length; i++)
+            {
+                if (data[offset + i] != lookFor[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
 #if (NET40 || NET45)
         private class EmptyArrayHolder<T>
         {

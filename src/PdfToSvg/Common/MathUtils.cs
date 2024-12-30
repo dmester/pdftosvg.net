@@ -115,5 +115,53 @@ namespace PdfToSvg.Common
 
             return result;
         }
+
+        public static int IntLog2Ceil(int value)
+        {
+            var result = 0;
+
+            value--;
+
+            while (value > 0)
+            {
+                result++;
+                value >>= 1;
+            }
+
+            return result;
+        }
+
+        public static int FloorDiv(int x, int y)
+        {
+            var neg = false;
+
+            if (x < 0)
+            {
+                neg = true;
+                x = -x;
+            }
+
+            if (y < 0)
+            {
+                neg ^= true;
+                y = -y;
+            }
+
+            if (neg)
+            {
+                x += y - 1;
+            }
+
+            var result = x / y;
+
+            if (neg)
+            {
+                return -result;
+            }
+            else
+            {
+                return result;
+            }
+        }
     }
 }

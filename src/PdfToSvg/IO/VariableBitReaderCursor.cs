@@ -13,5 +13,10 @@ namespace PdfToSvg.IO
     {
         public int Cursor;
         public int BitCursor;
+
+        public override string ToString()
+        {
+            return Cursor + ":" + BitCursor;
+        }
     }
 }

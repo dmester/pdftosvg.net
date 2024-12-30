@@ -6,13 +6,13 @@ This is a incomplete summary of non-supported features.
 
 ## Image formats
 
-The by far most commonly used image formats in PDFs are images encoded with DCTDecode (JPEG) and FlateDecode (PNG alike). Those are supported, with the exception that DCTDecode is only supported for RGB images.
+The by far most commonly used image formats in PDFs are images encoded with DCTDecode (JPEG) and FlateDecode (PNG alike). Those are supported, with the exception that DCTDecode is not supported for
+progressive CMYK or YCCK images.
 
 The following image formats are not supported:
 
 * JPEG 2000
 * Progressive CMYK or YCCK JPEG
-* JBIG2
 
 ## Color spaces
 

@@ -43,6 +43,15 @@ namespace PdfToSvg.Common
                 value;
         }
 
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static long Clamp(long value, long min, long max)
+        {
+            return
+                value < min ? min :
+                value > max ? max :
+                value;
+        }
+
         public static bool ToInt(object? value, out int result)
         {
             if (value is int intValue)

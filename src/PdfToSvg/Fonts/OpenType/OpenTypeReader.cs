@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +16,10 @@ namespace PdfToSvg.Fonts.OpenType
     internal class OpenTypeReader
     {
         private static readonly DateTime Epoch = new DateTime(1904, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        private const long MinTime = 0;          // 1904-01-01 00:00:00
+        private const long MaxTime = 6185289599; // 2099-12-31 23:59:59
+
         private readonly byte[] buffer;
         private readonly int startIndex, endIndex;
         private int cursor;
@@ -135,6 +140,8 @@ namespace PdfToSvg.Fonts.OpenType
                 ((long)buffer[cursor - 3] << 16) |
                 ((long)buffer[cursor - 2] << 8) |
                 ((long)buffer[cursor - 1]);
+
+            seconds = MathUtils.Clamp(seconds, MinTime, MaxTime);
 
             return Epoch.AddSeconds(seconds);
         }

@@ -87,5 +87,63 @@ namespace PdfToSvg.Tests.Common
             var actual = MathUtils.FloorDiv(x, y);
             Assert.AreEqual(result, actual);
         }
+
+        [TestCase(int.MinValue, 10, 20, 10)]
+        [TestCase(9, 10, 20, 10)]
+        [TestCase(10, 10, 20, 10)]
+        [TestCase(11, 10, 20, 11)]
+        [TestCase(19, 10, 20, 19)]
+        [TestCase(20, 10, 20, 20)]
+        [TestCase(21, 10, 20, 20)]
+        [TestCase(int.MaxValue, 10, 20, 20)]
+        public void Clamp_Int32(int value, int min, int max, int expectedResult)
+        {
+            Assert.AreEqual(expectedResult, MathUtils.Clamp(value, min, max));
+        }
+
+        [TestCase(long.MinValue, 10, 20, 10)]
+        [TestCase(9, 10, 20, 10)]
+        [TestCase(10, 10, 20, 10)]
+        [TestCase(11, 10, 20, 11)]
+        [TestCase(19, 10, 20, 19)]
+        [TestCase(20, 10, 20, 20)]
+        [TestCase(21, 10, 20, 20)]
+        [TestCase(long.MaxValue, 10, 20, 20)]
+        public void Clamp_Int64(long value, long min, long max, long expectedResult)
+        {
+            Assert.AreEqual(expectedResult, MathUtils.Clamp(value, min, max));
+        }
+
+        [TestCase(float.NaN, 10, 20, float.NaN)]
+        [TestCase(float.NegativeInfinity, 10, 20, 10)]
+        [TestCase(float.MinValue, 10, 20, 10)]
+        [TestCase(9, 10, 20, 10)]
+        [TestCase(10, 10, 20, 10)]
+        [TestCase(11, 10, 20, 11)]
+        [TestCase(19, 10, 20, 19)]
+        [TestCase(20, 10, 20, 20)]
+        [TestCase(21, 10, 20, 20)]
+        [TestCase(float.MaxValue, 10, 20, 20)]
+        [TestCase(float.PositiveInfinity, 10, 20, 20)]
+        public void Clamp_Single(float value, float min, float max, float expectedResult)
+        {
+            Assert.AreEqual(expectedResult, MathUtils.Clamp(value, min, max));
+        }
+
+        [TestCase(double.NaN, 10, 20, double.NaN)]
+        [TestCase(double.NegativeInfinity, 10, 20, 10)]
+        [TestCase(double.MinValue, 10, 20, 10)]
+        [TestCase(9, 10, 20, 10)]
+        [TestCase(10, 10, 20, 10)]
+        [TestCase(11, 10, 20, 11)]
+        [TestCase(19, 10, 20, 19)]
+        [TestCase(20, 10, 20, 20)]
+        [TestCase(21, 10, 20, 20)]
+        [TestCase(double.MaxValue, 10, 20, 20)]
+        [TestCase(double.PositiveInfinity, 10, 20, 20)]
+        public void Clamp_Double(double value, double min, double max, double expectedResult)
+        {
+            Assert.AreEqual(expectedResult, MathUtils.Clamp(value, min, max));
+        }
     }
 }

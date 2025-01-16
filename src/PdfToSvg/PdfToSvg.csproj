@@ -5,6 +5,7 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>5</AnalysisLevel>
     <AssemblyTitle>PdfToSvg.NET</AssemblyTitle>
+    <CheckNotRecommendedTargetFramework>false</CheckNotRecommendedTargetFramework>
   </PropertyGroup>
 
   <!-- NuGet package -->

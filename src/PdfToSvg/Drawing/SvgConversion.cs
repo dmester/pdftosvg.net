@@ -267,10 +267,6 @@ namespace PdfToSvg.Drawing
                             {
                                 result.Append("M" + FormatCoordinate(dest.Diff.X) + " " + FormatCoordinate(dest.Diff.Y));
                             }
-                            else if (dest.Diff.X == 0 && dest.Diff.Y == 0)
-                            {
-                                // Skip noop command
-                            }
                             else
                             {
                                 result.Append("m" + FormatCoordinate(dest.Diff.X) + " " + FormatCoordinate(dest.Diff.Y));

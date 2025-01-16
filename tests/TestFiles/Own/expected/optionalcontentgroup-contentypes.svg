@@ -25,8 +25,8 @@
 </clipPath>
 </defs>
 <g stroke-miterlimit="10" class="ID1">
-<path d="M310 241.92h15v-15h-15zh15v-15h-15z" fill="none" stroke="#00f" stroke-width="1" />
-<path d="M310 281.92h15v-15h-15zh15v-15h-15z" fill="#00f" />
+<path d="M310 241.92h15v-15h-15zm0 0h15v-15h-15z" fill="none" stroke="#00f" stroke-width="1" />
+<path d="M310 281.92h15v-15h-15zm0 0h15v-15h-15z" fill="#00f" />
 <path d="M310 321.92h15v-15h-15z" fill="url(#ID2)" />
 <g clip-path="url(#ID4)">
 <text x="314" y="361.92" class="ID7">X</text>

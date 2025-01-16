@@ -15,7 +15,7 @@
 </linearGradient>
 <image id="ID3" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANJJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT3PgGa8gRwIYbLhljAgwoQYDes1iHYMDJGhAdVJmOj7bDQnHU2B82UEGRw0GOoDGOangNDkGAYffQYJfobPM2EajqagBCtQYnsxQ4U3Q4INCGU4MizPZHg/DS1YgeBIAlEeACqDxvSvz0QlDaAyROIDcvDYA5QCq0bSAE/ewDBATt5ALmryBgA34dLM/tOwHgAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" />
 <clipPath id="ID4">
-<path d="M413 321.92h15v-15h-15zh15v-15h-15z" />
+<path d="M413 321.92h15v-15h-15zm0 0h15v-15h-15z" />
 </clipPath>
 <clipPath id="ID5">
 <rect x="417" y="311.92" width="50" height="50" />
@@ -29,7 +29,7 @@
 </defs>
 <g stroke-miterlimit="10" class="ID1">
 <path d="M413 241.92h15v-15h-15z" fill="none" stroke="#00f" stroke-width="1" />
-<path d="M413 281.92h15v-15h-15zh15v-15h-15z" fill="#00f" />
+<path d="M413 281.92h15v-15h-15zm0 0h15v-15h-15z" fill="#00f" />
 <g clip-path="url(#ID4)">
 <path d="M0 841.92h594.96v-841.92h-594.96z" fill="url(#ID2)" />
 </g>

@@ -36,86 +36,60 @@ namespace PdfToSvg.Drawing.Shadings
             buffer = new byte[height * width * BytesPerSample];
         }
 
-        private struct Edge
-        {
-            public readonly double X1;
-            public readonly double X2;
-            public readonly double Y1;
-            public readonly double Y2;
-
-            public Edge(double x1, double x2, double y1, double y2)
-            {
-                X1 = x1;
-                X2 = x2;
-                Y1 = y1;
-                Y2 = y2;
-            }
-
-            public double Intersection(double y)
-            {
-                var dx = (X2 - X1) * (Y1 - y) / (Y1 - Y2);
-                return X1 + dx;
-            }
-        }
-
-        private List<Edge> GetPolygonEdges(Point[] points)
-        {
-            var edges = new List<Edge>(points.Length);
-
-            if (points.Length > 2)
-            {
-                for (var i = 1; i < points.Length; i++)
-                {
-                    var from = points[i - 1];
-                    var to = points[i];
-                    if (from.Y != to.Y)
-                    {
-                        edges.Add(new Edge(from.X, to.X, from.Y, to.Y));
-                    }
-                }
-
-                if (points[0].Y != points[points.Length - 1].Y)
-                {
-                    var from = points[points.Length - 1];
-                    var to = points[0];
-                    edges.Add(new Edge(from.X, to.X, from.Y, to.Y));
-                }
-            }
-
-            return edges;
-        }
-
-        private static void PopulateIntersections(List<int> intersections, List<Edge> edges, int y, int width)
+        private static void PopulateIntersections(List<int> intersections, Point[] points, int y, int width)
         {
             var intersectionLineY = y + 0.5;
 
             intersections.Clear();
 
-            for (var i = 0; i < edges.Count; i++)
-            {
-                var edge = edges[i];
+            Point p1, p2;
 
-                if (edge.Y1 < edge.Y2)
+            for (var i = 0; i < points.Length; i++)
+            {
+                if (i == 0)
                 {
-                    if (edge.Y1 > intersectionLineY || edge.Y2 <= intersectionLineY)
+                    p1 = points[points.Length - 1];
+                    p2 = points[0];
+                }
+                else
+                {
+                    p1 = points[i - 1];
+                    p2 = points[i];
+                }
+
+                if (p1.Y == p2.Y)
+                {
+                    continue;
+                }
+
+                if (p1.Y < p2.Y)
+                {
+                    if (p1.Y > intersectionLineY || p2.Y <= intersectionLineY)
                     {
                         continue;
                     }
                 }
                 else
                 {
-                    if (edge.Y2 > intersectionLineY || edge.Y1 <= intersectionLineY)
+                    if (p2.Y > intersectionLineY || p1.Y <= intersectionLineY)
                     {
                         continue;
                     }
                 }
 
-                var intersectionX = edge.Intersection(intersectionLineY);
+                var dx = (p2.X - p1.X) * (p1.Y - intersectionLineY) / (p1.Y - p2.Y);
+
+                var intersectionX = p1.X + dx;
                 var intIntersectionX = (int)(intersectionX + 0.5);
 
                 if (intIntersectionX < width)
                 {
-                    intersections.Add(Math.Max(0, intIntersectionX));
+                    if (intIntersectionX < 0)
+                    {
+                        intIntersectionX = 0;
+                    }
+
+                    intersections.Add(intIntersectionX);
                 }
             }
 
@@ -131,12 +105,31 @@ namespace PdfToSvg.Drawing.Shadings
 
         public void FillPolygon(Point[] points, RgbColor color)
         {
-            var bbox = points.GetBoundingRectangle();
+            if (points.Length < 2)
+            {
+                return;
+            }
 
-            var miny = Math.Max(0, (int)(bbox.Y1 + 0.5));
-            var maxy = Math.Min(height, (int)(bbox.Y2 + 0.5));
+            var dminy = points[0].Y;
+            var dmaxy = dminy;
 
-            var edges = GetPolygonEdges(points);
+            for (var i = 1; i < points.Length; i++)
+            {
+                var pointY = points[i].Y;
+
+                if (dminy > pointY)
+                {
+                    dminy = pointY;
+                }
+                else if (dmaxy < pointY)
+                {
+                    dmaxy = pointY;
+                }
+            }
+
+            var miny = Math.Max(0, (int)(dminy + 0.5));
+            var maxy = Math.Min(height, (int)(dmaxy + 0.5));
+
             var intersections = new List<int>();
 
             ConvertToRgb24(color, out var red, out var green, out var blue);
@@ -150,7 +143,7 @@ namespace PdfToSvg.Drawing.Shadings
             {
                 var rowOffset = y * width * BytesPerSample;
 
-                PopulateIntersections(intersections, edges, y, width);
+                PopulateIntersections(intersections, points, y, width);
 
                 for (var i = 0; i < intersections.Count; i += 2)
                 {

@@ -24,9 +24,15 @@ namespace PdfToSvg.Drawing.Shadings
     {
         private static readonly XNamespace ns = "http://www.w3.org/2000/svg";
 
-        private const int MinSizePx = 100;
+        private const int MinSizePx = 20;
         private const int MaxSizePx = 600;
         private const int ResolutionPxPerPt = 2;
+
+        // The patch is divided into cells filled with a solid color.
+        // The number of cells needs to be high enough to not cause too much banding, but also low enough to not cause performance issues.
+        private const double OptimalCellSize = 2.5;
+        private const int MinApproximationResolution = 4;
+        private const int MaxApproximationResolution = 80;
 
         protected readonly List<Patch> patches = new();
 
@@ -43,25 +49,103 @@ namespace PdfToSvg.Drawing.Shadings
 
         protected readonly VariableBitReader reader;
 
-        private const int ApproximationResolution = 80;
-        private const float TimeMultiplier = 1.0f / (ApproximationResolution - 1);
-
-        private static readonly float[] b0 = new float[ApproximationResolution];
-        private static readonly float[] b1 = new float[ApproximationResolution];
-        private static readonly float[] b2 = new float[ApproximationResolution];
-        private static readonly float[] b3 = new float[ApproximationResolution];
-
-        static MeshShading()
+        private class Approximation
         {
-            for (var t = 0; t < b0.Length; t++)
-            {
-                var ft = t * TimeMultiplier;
-                var ift = 1 - ft;
+            private readonly float[] b0;
+            private readonly float[] b1;
+            private readonly float[] b2;
+            private readonly float[] b3;
 
-                b0[t] = ift * ift * ift;
-                b1[t] = 3 * ft * ift * ift;
-                b2[t] = 3 * ft * ft * ift;
-                b3[t] = ft * ft * ft;
+            public readonly int Resolution;
+            public readonly float TimeMultiplier;
+
+            public Approximation(int resolution)
+            {
+                Resolution = resolution;
+                TimeMultiplier = 1.0f / (resolution - 1);
+
+                b0 = new float[resolution];
+                b1 = new float[resolution];
+                b2 = new float[resolution];
+                b3 = new float[resolution];
+
+                for (var t = 0; t < b0.Length; t++)
+                {
+                    var ft = t * TimeMultiplier;
+                    var ift = 1 - ft;
+
+                    b0[t] = ift * ift * ift;
+                    b1[t] = 3 * ft * ift * ift;
+                    b2[t] = 3 * ft * ft * ift;
+                    b3[t] = ft * ft * ft;
+                }
+            }
+
+            public Point GetXY(Point[] points, int u, int v)
+            {
+                var b00 = b0[u] * b0[v];
+                var b01 = b0[u] * b1[v];
+                var b02 = b0[u] * b2[v];
+                var b03 = b0[u] * b3[v];
+
+                var b10 = b1[u] * b0[v];
+                var b11 = b1[u] * b1[v];
+                var b12 = b1[u] * b2[v];
+                var b13 = b1[u] * b3[v];
+
+                var b20 = b2[u] * b0[v];
+                var b21 = b2[u] * b1[v];
+                var b22 = b2[u] * b2[v];
+                var b23 = b2[u] * b3[v];
+
+                var b30 = b3[u] * b0[v];
+                var b31 = b3[u] * b1[v];
+                var b32 = b3[u] * b2[v];
+                var b33 = b3[u] * b3[v];
+
+                var x =
+                    points[0].X * b00 +
+                    points[1].X * b01 +
+                    points[2].X * b02 +
+                    points[3].X * b03 +
+
+                    points[11].X * b10 +
+                    points[12].X * b11 +
+                    points[13].X * b12 +
+                    points[4].X * b13 +
+
+                    points[10].X * b20 +
+                    points[15].X * b21 +
+                    points[14].X * b22 +
+                    points[5].X * b23 +
+
+                    points[9].X * b30 +
+                    points[8].X * b31 +
+                    points[7].X * b32 +
+                    points[6].X * b33;
+
+                var y =
+                    points[0].Y * b00 +
+                    points[1].Y * b01 +
+                    points[2].Y * b02 +
+                    points[3].Y * b03 +
+
+                    points[11].Y * b10 +
+                    points[12].Y * b11 +
+                    points[13].Y * b12 +
+                    points[4].Y * b13 +
+
+                    points[10].Y * b20 +
+                    points[15].Y * b21 +
+                    points[14].Y * b22 +
+                    points[5].Y * b23 +
+
+                    points[9].Y * b30 +
+                    points[8].Y * b31 +
+                    points[7].Y * b32 +
+                    points[6].Y * b33;
+
+                return new Point(x, y);
             }
         }
 
@@ -159,86 +243,82 @@ namespace PdfToSvg.Drawing.Shadings
             }
         }
 
-        private static Point GetXY(Point[] points, int u, int v)
-        {
-            var x =
-                points[0].X * b0[u] * b0[v] +
-                points[1].X * b0[u] * b1[v] +
-                points[2].X * b0[u] * b2[v] +
-                points[3].X * b0[u] * b3[v] +
-
-                points[11].X * b1[u] * b0[v] +
-                points[12].X * b1[u] * b1[v] +
-                points[13].X * b1[u] * b2[v] +
-                points[4].X * b1[u] * b3[v] +
-
-                points[10].X * b2[u] * b0[v] +
-                points[15].X * b2[u] * b1[v] +
-                points[14].X * b2[u] * b2[v] +
-                points[5].X * b2[u] * b3[v] +
-
-                points[9].X * b3[u] * b0[v] +
-                points[8].X * b3[u] * b1[v] +
-                points[7].X * b3[u] * b2[v] +
-                points[6].X * b3[u] * b3[v];
-
-            var y =
-                points[0].Y * b0[u] * b0[v] +
-                points[1].Y * b0[u] * b1[v] +
-                points[2].Y * b0[u] * b2[v] +
-                points[3].Y * b0[u] * b3[v] +
-
-                points[11].Y * b1[u] * b0[v] +
-                points[12].Y * b1[u] * b1[v] +
-                points[13].Y * b1[u] * b2[v] +
-                points[4].Y * b1[u] * b3[v] +
-
-                points[10].Y * b2[u] * b0[v] +
-                points[15].Y * b2[u] * b1[v] +
-                points[14].Y * b2[u] * b2[v] +
-                points[5].Y * b2[u] * b3[v] +
-
-                points[9].Y * b3[u] * b0[v] +
-                points[8].Y * b3[u] * b1[v] +
-                points[7].Y * b3[u] * b2[v] +
-                points[6].Y * b3[u] * b3[v];
-
-            return new Point(x, y);
-        }
-
         private byte[] Render(int width, int height, Matrix transform)
         {
             var bitmap = new Bitmap(width, height);
 
-            foreach (var patch in patches)
+            if (patches.Count > 0)
             {
+                var roughMaxPatchSize = patches
+                    .Select(patch =>
+                    {
+                        var bbox = patch.Coordinates
+                            .Select(p => transform * p)
+                            .Take(12) // Skip middle control points
+                            .GetBoundingRectangle();
+
+                        return Math.Max(bbox.Width, bbox.Height);
+                    })
+                    .Max();
+
+                var approximationResolution = MathUtils.Clamp((int)(0.5 + roughMaxPatchSize / OptimalCellSize), MinApproximationResolution, MaxApproximationResolution);
+                var approximation = new Approximation(approximationResolution);
+
                 var colorU0 = new float[componentsPerSample];
                 var colorU1 = new float[componentsPerSample];
                 var colorUV = new float[componentsPerSample];
 
-                for (var u = 1; u < ApproximationResolution; u++) // x-axis
+                var cellCornerPoints = new Point[approximation.Resolution * approximation.Resolution];
+
+                var dp0 = -approximation.Resolution - 1;
+                var dp1 = -approximation.Resolution;
+                var dp2 = 0;
+                var dp3 = -1;
+
+                foreach (var patch in patches)
                 {
-                    Interpolate(patch.Colors[1], patch.Colors[2], colorU0, (u - 1) * TimeMultiplier);
-                    Interpolate(patch.Colors[0], patch.Colors[3], colorU1, u * TimeMultiplier);
+                    var cornerPointIndex = 0;
 
-                    for (var v = 1; v < ApproximationResolution; v++) // y-axis
+                    // Calculate corners
+                    for (var u = 0; u < approximation.Resolution; u++) // x-axis
                     {
-                        Interpolate(colorU1, colorU0, colorUV, v * TimeMultiplier);
-
-                        var p0 = GetXY(patch.Coordinates, u - 1, v - 1);
-                        var p1 = GetXY(patch.Coordinates, u - 1, v);
-                        var p2 = GetXY(patch.Coordinates, u, v);
-                        var p3 = GetXY(patch.Coordinates, u, v - 1);
-
-                        var color = GetPolygonColor(colorUV);
-
-                        bitmap.FillPolygon(new[]
+                        for (var v = 0; v < approximation.Resolution; v++) // y-axis
                         {
-                            transform * p0,
-                            transform * p1,
-                            transform * p2,
-                            transform * p3
-                        }, color);
+                            cellCornerPoints[cornerPointIndex++] = approximation.GetXY(patch.Coordinates, u, v);
+                        }
+                    }
+
+                    // Transform points
+                    for (var i = 0; i < cellCornerPoints.Length; i++)
+                    {
+                        cellCornerPoints[i] = transform * cellCornerPoints[i];
+                    }
+
+                    // Render polygons
+                    cornerPointIndex = approximation.Resolution; // Skip first column
+
+                    for (var u = 1; u < approximation.Resolution; u++) // x-axis
+                    {
+                        Interpolate(patch.Colors[1], patch.Colors[2], colorU0, (u - 1) * approximation.TimeMultiplier);
+                        Interpolate(patch.Colors[0], patch.Colors[3], colorU1, u * approximation.TimeMultiplier);
+
+                        cornerPointIndex++;
+
+                        for (var v = 1; v < approximation.Resolution; v++) // y-axis
+                        {
+                            Interpolate(colorU1, colorU0, colorUV, v * approximation.TimeMultiplier);
+
+                            var color = GetPolygonColor(colorUV);
+
+                            bitmap.FillPolygon([
+                                cellCornerPoints[cornerPointIndex + dp0],
+                                cellCornerPoints[cornerPointIndex + dp1],
+                                cellCornerPoints[cornerPointIndex + dp2],
+                                cellCornerPoints[cornerPointIndex + dp3],
+                            ], color);
+
+                            cornerPointIndex++;
+                        }
                     }
                 }
             }
@@ -269,35 +349,99 @@ namespace PdfToSvg.Drawing.Shadings
             return new RgbColor(ColorSpace, components);
         }
 
-        private IEnumerable<Point> GetOutline()
+        private Rectangle GetBoundingBox(Matrix transform)
         {
-            foreach (var patch in patches)
+            var minX = double.MaxValue;
+            var minY = double.MaxValue;
+            var maxX = double.MinValue;
+            var maxY = double.MinValue;
+
+            [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+            static void VisitCurve1D(double p0, double p1, double p2, double p3, ref double min, ref double max)
             {
-                for (var u = 0; u < ApproximationResolution; u++) // x-axis
-                {
-                    yield return GetXY(patch.Coordinates, u, 0);
-                }
+                // If none of the control points is outside the current min/max range, there is no
+                // point in computing the actual bounds of the Bézier curve
+                if (p0 < min ||
+                    p1 < min ||
+                    p2 < min ||
+                    p3 < min ||
 
-                for (var v = 1; v < ApproximationResolution; v++) // y-axis
+                    p0 > max ||
+                    p1 > max ||
+                    p2 > max ||
+                    p3 > max)
                 {
-                    yield return GetXY(patch.Coordinates, ApproximationResolution - 1, v);
-                }
+                    Bezier.GetCubicBounds(p0, p1, p2, p3, out var curveMin, out var curveMax);
 
-                for (var u = ApproximationResolution - 2; u >= 0; u--) // x-axis
-                {
-                    yield return GetXY(patch.Coordinates, u, ApproximationResolution - 1);
-                }
+                    if (min > curveMin)
+                    {
+                        min = curveMin;
+                    }
 
-                for (var v = ApproximationResolution - 2; v >= 0; v--) // y-axis
-                {
-                    yield return GetXY(patch.Coordinates, 0, v);
+                    if (max < curveMax)
+                    {
+                        max = curveMax;
+                    }
                 }
             }
+
+            [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+            void VisitCurve2D(Point p0, Point p1, Point p2, Point p3)
+            {
+                VisitCurve1D(p0.X, p1.X, p2.X, p3.X, ref minX, ref maxX);
+                VisitCurve1D(p0.Y, p1.Y, p2.Y, p3.Y, ref minY, ref maxY);
+            }
+
+            foreach (var patch in patches)
+            {
+                // According to Wikipedia, affine transformations can be applied on the control points instead of the computed curve coordinates.
+                // https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Computer_graphics
+
+                var transformed0 = transform * patch.Coordinates[0];
+                var transformed3 = transform * patch.Coordinates[3];
+                var transformed6 = transform * patch.Coordinates[6];
+                var transformed9 = transform * patch.Coordinates[9];
+
+                VisitCurve2D(
+                    transformed0,
+                    transform * patch.Coordinates[1],
+                    transform * patch.Coordinates[2],
+                    transformed3
+                    );
+
+                VisitCurve2D(
+                    transformed3,
+                    transform * patch.Coordinates[4],
+                    transform * patch.Coordinates[5],
+                    transformed6
+                    );
+
+                VisitCurve2D(
+                    transformed6,
+                    transform * patch.Coordinates[7],
+                    transform * patch.Coordinates[8],
+                    transformed9
+                    );
+
+                VisitCurve2D(
+                    transformed9,
+                    transform * patch.Coordinates[10],
+                    transform * patch.Coordinates[11],
+                    transformed0
+                    );
+            }
+
+            return new Rectangle(minX, minY, maxX, maxY);
         }
 
         public override XElement? GetShadingElement(Matrix transform, Rectangle clipRectangle, bool inPattern)
         {
-            var imageBBox = GetOutline().Select(p => transform * p).GetBoundingRectangle();
+            if (clipRectangle.X2 <= 0 || clipRectangle.Y2 <= 0)
+            {
+                return null;
+            }
+
+            var imageBBox = GetBoundingBox(transform);
 
             XElement? backgroundEl = null;
             XElement? clipEl = null;

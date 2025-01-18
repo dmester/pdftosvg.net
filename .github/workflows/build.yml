@@ -8,6 +8,7 @@ on:
 
 env:
   PdfToSvgSkipSigning: true
+  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
 
 jobs:
   build:

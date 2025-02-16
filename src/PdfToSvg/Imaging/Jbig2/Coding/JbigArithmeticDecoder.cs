@@ -40,7 +40,7 @@ namespace PdfToSvg.Imaging.Jbig2.Coding
         private int offset;
         private int count;
 
-        private const int MaxFinishedStateCounter = 5;
+        private const int MaxFinishedStateCounter = 2;
         private int finishedStateCounter;
 
         static JbigArithmeticDecoder()
@@ -163,6 +163,20 @@ namespace PdfToSvg.Imaging.Jbig2.Coding
             InitDec();
         }
 
+        private uint PeekByte(int byteOffset)
+        {
+            byteOffset += this.byteCursor;
+
+            if (byteOffset - this.offset >= this.count)
+            {
+                return 0xff;
+            }
+            else
+            {
+                return this.data[byteOffset];
+            }
+        }
+
         private void InitDec()
         {
             // Figure G.1
@@ -181,15 +195,11 @@ namespace PdfToSvg.Imaging.Jbig2.Coding
         {
             // Figure G.3
 
-            if (byteCursor + 1 - offset >= count)
-            {
-                throw new EndOfStreamException("The arithmetic encoded stream terminated unexpectedly");
-            }
+            var b = PeekByte(byteOffset: 0);
+            var b1 = PeekByte(byteOffset: 1);
 
-            var b = (uint)data[byteCursor];
-            if (b == 0xFF)
+            if (b == 0xff)
             {
-                var b1 = (uint)data[byteCursor + 1];
                 if (b1 > 0x8f)
                 {
                     ct = 8;
@@ -202,16 +212,14 @@ namespace PdfToSvg.Imaging.Jbig2.Coding
                 else
                 {
                     byteCursor++;
-                    b = b1;
-                    c = c + 0xfe00 - (b << 9);
+                    c = c + 0xfe00 - (b1 << 9);
                     ct = 7;
                 }
             }
             else
             {
                 byteCursor++;
-                b = data[byteCursor];
-                c = c + 0xff00 - (b << 8);
+                c = c + 0xff00 - (b1 << 8);
                 ct = 8;
             }
         }

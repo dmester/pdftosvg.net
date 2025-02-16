@@ -56,6 +56,30 @@ namespace PdfToSvg.Tests.Images.Jbig2
             Assert.AreEqual(DecodedTestData, actualDecoded);
         }
 
+        [TestCase(1)] // Without 0xac
+        [TestCase(2)] // Without 0xffac
+        public void Decode_NonTerminatedData(int missingBytes)
+        {
+            var actualDecoded = new byte[DecodedTestData.Length];
+
+            var decoder = new JbigArithmeticDecoder(EncodedTestData, 0, EncodedTestData.Length - missingBytes);
+            var cx = new JbigArithmeticContext(1);
+
+            for (var i = 0; i < actualDecoded.Length; i++)
+            {
+                var number = 0;
+
+                for (var j = 0; j < 8; j++)
+                {
+                    number = (number << 1) | decoder.DecodeBit(cx);
+                }
+
+                actualDecoded[i] = (byte)number;
+            }
+
+            Assert.AreEqual(DecodedTestData, actualDecoded);
+        }
+
         [Test]
         public void ThrowsWhenReadingPastEnd()
         {
@@ -70,7 +94,7 @@ namespace PdfToSvg.Tests.Images.Jbig2
             Assert.Throws<EndOfStreamException>(() =>
             {
                 // The exception is not entirely accurate, so lets read a couple of bits
-                for (var i = 0; i < 100; i++)
+                for (var i = 0; i < 1000; i++)
                 {
                     decoder.DecodeBit(cx);
                 }
@@ -78,20 +102,28 @@ namespace PdfToSvg.Tests.Images.Jbig2
         }
 
         [Test]
-        public void DataWithoutEnding_0xFF_0xAC()
+        public void MalformedData()
         {
-            var encoded = new byte[] { 1, 2, 3 };
-            var decoder = new JbigArithmeticDecoder(encoded, 0, encoded.Length);
-            var cx = new JbigArithmeticContext(1);
+            var encoded = new byte[10];
 
-            Assert.Throws<EndOfStreamException>(() =>
+            var random = new Random(0);
+
+            for (var i = 0; i < 100; i++)
             {
-                // The exception is not entirely accurate, so lets read a couple of bits
-                for (var i = 0; i < 100; i++)
+                random.NextBytes(encoded);
+
+                var decoder = new JbigArithmeticDecoder(encoded, 0, encoded.Length);
+                var cx = new JbigArithmeticContext(1);
+
+                Assert.Throws<EndOfStreamException>(() =>
                 {
-                    decoder.DecodeBit(cx);
-                }
-            });
+                    // The exception is not entirely accurate, so lets read a couple of bits
+                    for (var i = 0; i < 10000; i++)
+                    {
+                        decoder.DecodeBit(cx);
+                    }
+                });
+            }
         }
     }
 }

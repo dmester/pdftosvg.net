@@ -83,7 +83,7 @@ namespace PdfToSvg.Imaging.Jbig2.DecodingProcedures
         {
             // 6.2.5.7 Decoding the bitmap
 
-            var templateCoordinates = GetTemplateCoordinates();
+            var template = GetTemplate();
 
             // 1)
             var typicallyPredictedLine = false;
@@ -137,15 +137,31 @@ namespace PdfToSvg.Imaging.Jbig2.DecodingProcedures
                 // d)
                 else
                 {
+                    var fullContextUpdateRequired = true;
+                    var context = 0;
+
                     for (var x = 0; x < bitmap.Width; x++)
                     {
                         if (Skip != null && Skip[x, y])
                         {
                             bitmap[x, y] = false;
+                            fullContextUpdateRequired = true;
                         }
                         else
                         {
-                            cx.GB.EntryIndex = GetContextFromTemplate(templateCoordinates, bitmap, x, y);
+                            if (fullContextUpdateRequired)
+                            {
+                                context = 0;
+                                template.FullUpdate(bitmap, x, y, ref context);
+                                fullContextUpdateRequired = false;
+                            }
+                            else
+                            {
+                                context = (context << 1) & template.PartialUpdateMask;
+                                template.PartialUpdate(bitmap, x, y, ref context);
+                            }
+
+                            cx.GB.EntryIndex = context;
                             var pixel = arithmeticDecoder.DecodeBit(cx.GB);
                             bitmap[x, y] = pixel == 1;
                         }
@@ -212,14 +228,14 @@ namespace PdfToSvg.Imaging.Jbig2.DecodingProcedures
             }
         }
 
-        private int[] GetTemplateCoordinates()
+        private JbigArithmeticTemplate GetTemplate()
         {
             if (Template == 0)
             {
                 if (ExtendedTemplate)
                 {
                     // Figure 3(b)
-                    return [
+                    return new JbigArithmeticTemplate([
                         ATX[10], ATY[10],
                         ATX[3], ATY[3],
                         ATX[1], ATY[1],
@@ -238,12 +254,12 @@ namespace PdfToSvg.Imaging.Jbig2.DecodingProcedures
                         ATX[6], ATY[6],
                         ATX[0], ATY[0],
                         -1, 0,
-                    ];
+                    ]);
                 }
                 else
                 {
                     // Figure 3(a)
-                    return [
+                    return new JbigArithmeticTemplate([
                         ATX[3], ATY[3],
                         -1, -2,
                         0, -2,
@@ -262,14 +278,14 @@ namespace PdfToSvg.Imaging.Jbig2.DecodingProcedures
                         -3, 0,
                         -2, 0,
                         -1, 0,
-                    ];
+                    ]);
                 }
             }
 
             if (Template == 1)
             {
                 // Figure 4
-                return [
+                return new JbigArithmeticTemplate([
                     -1, -2,
                     0, -2,
                     1, -2,
@@ -285,13 +301,13 @@ namespace PdfToSvg.Imaging.Jbig2.DecodingProcedures
                     -3, 0,
                     -2, 0,
                     -1, 0,
-                ];
+                ]);
             }
 
             if (Template == 2)
             {
                 // Figure 5
-                return [
+                return new JbigArithmeticTemplate([
                     -1, -2,
                     0, -2,
                     1, -2,
@@ -304,13 +320,13 @@ namespace PdfToSvg.Imaging.Jbig2.DecodingProcedures
 
                     -2, 0,
                     -1, 0,
-                ];
+                ]);
             }
 
             if (Template == 3)
             {
                 // Figure 6
-                return [
+                return new JbigArithmeticTemplate([
                     -3, -1,
                     -2, -1,
                     -1, -1,
@@ -322,40 +338,10 @@ namespace PdfToSvg.Imaging.Jbig2.DecodingProcedures
                     -3, 0,
                     -2, 0,
                     -1, 0,
-                ];
+                ]);
             }
 
             throw new JbigException("Unknown template " + Template);
         }
-
-        private static int GetContextFromTemplate(int[] templateCoordinates, JbigBitmap bitmap, int originX, int originY)
-        {
-            var result = 0;
-
-            for (var i = 0; i < templateCoordinates.Length; i += 2)
-            {
-                result <<= 1;
-
-                var x = originX + templateCoordinates[i + 0];
-                if (x < 0 || x >= bitmap.Width)
-                {
-                    continue;
-                }
-
-                var y = originY + templateCoordinates[i + 1];
-                if (y < 0 || y >= bitmap.Height)
-                {
-                    continue;
-                }
-
-                if (bitmap[x, y])
-                {
-                    result |= 1;
-                }
-            }
-
-            return result;
-        }
-
     }
 }

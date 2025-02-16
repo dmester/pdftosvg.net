@@ -6,7 +6,6 @@ using PdfToSvg.Common;
 using PdfToSvg.Imaging.Jbig2.Coding;
 using PdfToSvg.IO;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -59,101 +58,58 @@ namespace PdfToSvg.Imaging.Jbig2.DecodingProcedures
         /// </summary>
         public sbyte[] ATY = ArrayUtils.Empty<sbyte>();
 
-        private int[][] GetTemplateCoordinates()
+        private void GetTemplates(out JbigArithmeticTemplate decodedBitmapTemplate, out JbigArithmeticTemplate referenceBitmapTemplate)
         {
             if (Template == 0)
             {
                 // Figure 12
-                return [
-                    // Decoded bitmap
-                    [
-                        ATX[0], ATY[0],
-                        0, -1,
-                        1, -1,
+                referenceBitmapTemplate = new JbigArithmeticTemplate([
+                    ATX[1] - ReferenceDx, ATY[1] - ReferenceDy,
+                    0 - ReferenceDx, -1 - ReferenceDy,
+                    1 - ReferenceDx, -1 - ReferenceDy,
 
-                        -1, 0,
-                    ],
+                    -1 - ReferenceDx, 0 - ReferenceDy,
+                    0 - ReferenceDx, 0 - ReferenceDy,
+                    1 - ReferenceDx, 0 - ReferenceDy,
 
-                    // Reference bitmap
-                    [
-                        ATX[1] - ReferenceDx, ATY[1] - ReferenceDy,
-                        0 - ReferenceDx, -1 - ReferenceDy,
-                        1 - ReferenceDx, -1 - ReferenceDy,
+                    -1 - ReferenceDx, 1 - ReferenceDy,
+                    0 - ReferenceDx, 1 - ReferenceDy,
+                    1 - ReferenceDx, 1 - ReferenceDy,
+                ]);
+                decodedBitmapTemplate = new JbigArithmeticTemplate([
+                    ATX[0], ATY[0],
+                    0, -1,
+                    1, -1,
 
-                        -1 - ReferenceDx, 0 - ReferenceDy,
-                        0 - ReferenceDx, 0 - ReferenceDy,
-                        1 - ReferenceDx, 0 - ReferenceDy,
-
-                        -1 - ReferenceDx, 1 - ReferenceDy,
-                        0 - ReferenceDx, 1 - ReferenceDy,
-                        1 - ReferenceDx, 1 - ReferenceDy,
-                    ],
-                ];
+                    -1, 0,
+                ], referenceBitmapTemplate.Pixels);
+                return;
             }
 
             if (Template == 1)
             {
                 // Figure 13
-                return [
-                    // Decoded bitmap
-                    [
-                        -1, -1,
-                        0, -1,
-                        1, -1,
+                referenceBitmapTemplate = new JbigArithmeticTemplate([
+                    0 - ReferenceDx, -1 - ReferenceDy,
 
-                        -1, 0,
-                    ],
+                    -1 - ReferenceDx, 0 - ReferenceDy,
+                    0 - ReferenceDx, 0 - ReferenceDy,
+                    1 - ReferenceDx, 0 - ReferenceDy,
 
-                    // Reference bitmap
-                    [
-                        0 - ReferenceDx, -1 - ReferenceDy,
+                    0 - ReferenceDx, 1 - ReferenceDy,
+                    1 - ReferenceDx, 1 - ReferenceDy,
+                ]);
+                decodedBitmapTemplate = new JbigArithmeticTemplate([
+                    -1, -1,
+                    0, -1,
+                    1, -1,
 
-                        -1 - ReferenceDx, 0 - ReferenceDy,
-                        0 - ReferenceDx, 0 - ReferenceDy,
-                        1 - ReferenceDx, 0 - ReferenceDy,
-
-                        0 - ReferenceDx, 1 - ReferenceDy,
-                        1 - ReferenceDx, 1 - ReferenceDy,
-                    ],
-                ];
+                    -1, 0,
+                ], referenceBitmapTemplate.Pixels);
+                return;
             }
 
             throw new JbigException("Unknown refinement template " + Template);
-        }
-
-        private static int GetContextFromTemplate(int[][] templateCoordinatesForBitmaps, JbigBitmap[] bitmaps, int originX, int originY)
-        {
-            var result = 0;
-
-            for (var bitmapIndex = 0; bitmapIndex < bitmaps.Length; bitmapIndex++)
-            {
-                var bitmap = bitmaps[bitmapIndex];
-                var templateCoordinates = templateCoordinatesForBitmaps[bitmapIndex];
-
-                for (var i = 0; i < templateCoordinates.Length; i += 2)
-                {
-                    result <<= 1;
-
-                    var x = originX + templateCoordinates[i + 0];
-                    if (x < 0 || x >= bitmap.Width)
-                    {
-                        continue;
-                    }
-
-                    var y = originY + templateCoordinates[i + 1];
-                    if (y < 0 || y >= bitmap.Height)
-                    {
-                        continue;
-                    }
-
-                    if (bitmap[x, y])
-                    {
-                        result |= 1;
-                    }
-                }
-            }
-
-            return result;
         }
 
         public static bool? GetPredictedValue(JbigBitmap bitmap, int x, int y)
@@ -229,7 +185,8 @@ namespace PdfToSvg.Imaging.Jbig2.DecodingProcedures
         {
             // 6.3.5.6 Decoding the refinement bitmap
 
-            var templateCoordinates = GetTemplateCoordinates();
+            GetTemplates(out var decodedBitmapTemplate, out var referenceBitmapTemplate);
+            var combinedPartialUpdateMask = decodedBitmapTemplate.PartialUpdateMask & referenceBitmapTemplate.PartialUpdateMask;
 
             // 1)
             var typicallyPredictedLine = false;
@@ -259,31 +216,39 @@ namespace PdfToSvg.Imaging.Jbig2.DecodingProcedures
                 }
 
                 // c) d)
-                if (typicallyPredictedLine)
+                var fullContextUpdateRequired = true;
+                var context = 0;
+
+                for (var x = 0; x < Width; x++)
                 {
-                    for (var x = 0; x < Width; x++)
+                    if (typicallyPredictedLine)
                     {
                         var predictedValue = GetPredictedValue(ReferenceBitmap, x - ReferenceDx, y - ReferenceDy);
                         if (predictedValue.HasValue)
                         {
                             bitmap[x, y] = predictedValue.Value;
-                        }
-                        else
-                        {
-                            cx.GR.EntryIndex = GetContextFromTemplate(templateCoordinates, [bitmap, ReferenceBitmap], x, y);
-                            var pixel = arithmeticDecoder.DecodeBit(cx.GR);
-                            bitmap[x, y] = pixel == 1;
+                            fullContextUpdateRequired = true;
+                            continue;
                         }
                     }
-                }
-                else
-                {
-                    for (var x = 0; x < Width; x++)
+
+                    if (fullContextUpdateRequired)
                     {
-                        cx.GR.EntryIndex = GetContextFromTemplate(templateCoordinates, [bitmap, ReferenceBitmap], x, y);
-                        var pixel = arithmeticDecoder.DecodeBit(cx.GR);
-                        bitmap[x, y] = pixel == 1;
+                        context = 0;
+                        decodedBitmapTemplate.FullUpdate(bitmap, x, y, ref context);
+                        referenceBitmapTemplate.FullUpdate(ReferenceBitmap, x, y, ref context);
+                        fullContextUpdateRequired = false;
                     }
+                    else
+                    {
+                        context = (context << 1) & combinedPartialUpdateMask;
+                        decodedBitmapTemplate.PartialUpdate(bitmap, x, y, ref context);
+                        referenceBitmapTemplate.PartialUpdate(ReferenceBitmap, x, y, ref context);
+                    }
+
+                    cx.GR.EntryIndex = context;
+                    var pixel = arithmeticDecoder.DecodeBit(cx.GR);
+                    bitmap[x, y] = pixel == 1;
                 }
             }
 

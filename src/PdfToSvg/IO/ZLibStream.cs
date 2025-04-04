@@ -112,25 +112,29 @@ namespace PdfToSvg.IO
                     endOfStream = true;
                     return;
                 }
-
-                var cm = cmf & 0xf;
-                if (cm != CM_Deflate)
-                {
-                    throw new InvalidDataException("Unsupported compression algorithm in ZLib stream.");
-                }
-
-                var fdict = (flg >> 5) & 1;
-                if (fdict != 0)
-                {
-                    throw new InvalidDataException("Unknown dictionary in ZLib stream.");
-                }
-
-                if (((cmf * 256 + flg) % 31) != 0)
-                {
-                    throw new InvalidDataException("Invalid ZLib header.");
-                }
+                VerifyHeader(cmf, flg);
 
                 deflateStream = new DeflateStream(trailerStream, CompressionMode.Decompress, leaveOpen: true);
+            }
+        }
+
+        public static void VerifyHeader(int cmf, int flg)
+        {
+            var cm = cmf & 0xf;
+            if (cm != CM_Deflate)
+            {
+                throw new InvalidDataException("Unsupported compression algorithm in ZLib stream.");
+            }
+
+            var fdict = (flg >> 5) & 1;
+            if (fdict != 0)
+            {
+                throw new InvalidDataException("Unknown dictionary in ZLib stream.");
+            }
+
+            if (((cmf * 256 + flg) % 31) != 0)
+            {
+                throw new InvalidDataException("Invalid ZLib header.");
             }
         }
 

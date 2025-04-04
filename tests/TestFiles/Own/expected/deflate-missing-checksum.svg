@@ -1,0 +1,33 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID5{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:24px;}
+.ID6{font-family:Helvetica,Arial,sans-serif;font-size:12px;}
+</style>
+<defs class="ID1">
+<clipPath id="ID2">
+<rect x="70" y="-358.08" width="500" height="500" />
+</clipPath>
+<clipPath id="ID3">
+<rect x="70" y="-258.08" width="500" height="500" />
+</clipPath>
+<clipPath id="ID4">
+<rect x="70" y="-158.08" width="500" height="500" />
+</clipPath>
+</defs>
+<g class="ID1">
+<g clip-path="url(#ID2)">
+<text x="70" y="131.92" class="ID5">OK</text>
+</g>
+<text x="70" y="101.92" class="ID6">FlateDecode - zlib stream with correct checksum</text>
+<g clip-path="url(#ID3)">
+<text x="70" y="231.92" class="ID5">OK</text>
+</g>
+<text x="70" y="201.92" class="ID6">FlateDecode - zlib stream with incorrect checksum</text>
+<g clip-path="url(#ID4)">
+<text x="70" y="331.92" class="ID5">OK</text>
+</g>
+<text x="70" y="301.92" class="ID6">FlateDecode - zlib stream with missing checksum</text>
+</g>
+</svg>

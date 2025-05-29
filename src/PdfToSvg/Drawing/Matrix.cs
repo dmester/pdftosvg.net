@@ -47,9 +47,9 @@ namespace PdfToSvg.Drawing
 
         public static Matrix operator *(Matrix a, Matrix b) => Multiply(a, b);
 
-        public static bool operator ==(Matrix a, Matrix b) => (object)a == null ? (object)b == null : a.Equals(b);
+        public static bool operator ==(Matrix? a, Matrix? b) => a is null ? b is null : a.Equals(b);
 
-        public static bool operator !=(Matrix a, Matrix b) => !(a == b);
+        public static bool operator !=(Matrix? a, Matrix? b) => !(a == b);
 
         public static Point operator *(Matrix matrix, Point point)
         {
@@ -188,13 +188,30 @@ namespace PdfToSvg.Drawing
         {
             return
                 ReferenceEquals(this, other) ||
-                (object?)other != null &&
+                other is not null &&
                 other.A == A &&
                 other.B == B &&
                 other.E == E &&
                 other.F == F &&
                 other.C == C &&
                 other.D == D;
+        }
+
+        public bool Equals(Matrix? other, double delta) => Equals(this, other, delta);
+
+        public static bool Equals(Matrix? first, Matrix? second, double delta)
+        {
+            return
+                ReferenceEquals(first, second) ||
+                first is null && second is null ||
+
+                first is not null && second is not null &&
+                Math.Abs(first.A - second.A) < delta &&
+                Math.Abs(first.B - second.B) < delta &&
+                Math.Abs(first.E - second.E) < delta &&
+                Math.Abs(first.F - second.F) < delta &&
+                Math.Abs(first.C - second.C) < delta &&
+                Math.Abs(first.D - second.D) < delta;
         }
 
         public override bool Equals(object? obj) => Equals(obj as Matrix);

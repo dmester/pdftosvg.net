@@ -1,0 +1,117 @@
+%PDF-1.7
+
+xref
+0 5
+0000000000 65535 f
+0000000162 00000 n
+0000000213 00000 n
+0000000277 00000 n
+0000000661 00000 n
+trailer
+<< /Root 1 0 R  /Size 5 >>
+
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >> endobj
+
+3 0 obj 
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+         /F2 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+      >>
+   >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+   /Rotate 0
+>>
+endobj
+
+4 0 obj << /Length 1685 >>
+stream
+
+   0 0 0 rg
+   1 0 0 RG
+   
+   BT
+      
+      /F2 12 Tf
+      1 0 0 1 70 750 Tm
+      (Single <text> with dx:) '
+      
+      /F1 12 Tf
+      q
+         1 0 0 1 0 0 Tm
+         0.941429 0.341429 -0.341429 0.941429 70 660 cm
+
+         (The ) Tj
+         
+         30.1234 0 Td
+         (quick ) Tj
+         
+         37.1234 0 Td
+         (brown) Tj
+         
+         39.1234 0 Td
+         (fox) Tj
+         
+         16.1234 0 Td
+         ( jumps) Tj
+         
+         41.1234 0 Td
+         ( over) Tj
+         
+         29.1234 0 Td
+         ( the) Tj
+         
+         26.1234 0 Td
+         (lazy) Tj
+         
+         23.1234 0 Td
+         (dog) Tj
+      Q
+      
+      /F2 12 Tf
+      1 0 0 1 70 600 Tm
+      (Single <text> with merged substrings:) '
+      
+      /F1 12 Tf
+      q
+         1 0 0 1 0 0 Tm
+         0.941429 0.341429 -0.341429 0.941429 70 500 cm
+         [ (The ) -1 (quick ) 1 (brown ) -1 (fox ) 1 (jumps ) -1 (over) 1 ( the ) -1 ( lazy ) 1 (dog) ] TJ
+      Q
+      
+      /F2 12 Tf
+      1 0 0 1 70 450 Tm
+      (Divided into <tspan>s:) '
+      
+      /F1 12 Tf
+      q
+         1 0 0 1 0 0 Tm
+         0.941429 0.341429 -0.341429 0.941429 70 360 cm
+         [ (The quick brown fox jumps over the lazy ) -1000 (dog) ] TJ
+      Q
+      
+      /F2 12 Tf
+      1 0 0 1 70 300 Tm
+      (Expanded <text> with dx:) '
+      
+      /F1 12 Tf
+      q
+         1 0 0 1 0 0 Tm
+         0.941429 0.341429 -0.341429 0.941429 82 220 cm
+         150 Tz
+         [ 660 (The ) -1000 (quick ) -500 (brown) -500 (fox) -40 ( jumps) -400 ( over) -100 ( the) -500 (lazy) -200 (dog) ] TJ
+      Q
+
+   ET
+
+endstream
+endobj
+
+startxref
+8
+%%EOF

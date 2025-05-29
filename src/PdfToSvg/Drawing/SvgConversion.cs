@@ -17,6 +17,9 @@ namespace PdfToSvg.Drawing
     {
         private const string Hex = "0123456789abcdef";
 
+        public const double CoordinateResolution = 0.0001;
+        public const double TextOffsetResolution = 0.01;
+
         private static string FormatRgbComponent(float component)
         {
             var intComponent = (int)(component * 255);

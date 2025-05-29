@@ -18,7 +18,6 @@ namespace PdfToSvg.Drawing
 
         private readonly double collapseSpaceLocalFont;
         private readonly double collapseSpaceEmbeddedFont;
-        private readonly double minSpacePx;
 
         private GraphicsState? textStyle;
         private double pendingSpace;
@@ -35,18 +34,16 @@ namespace PdfToSvg.Drawing
 
         private const double ScalingMultiplier = 1.0 / 100;
 
-        public TextBuilder(double collapseSpaceLocalFont, double collapseSpaceEmbeddedFont, double minSpacePx)
+        public TextBuilder(double collapseSpaceLocalFont, double collapseSpaceEmbeddedFont)
         {
             this.collapseSpaceLocalFont = collapseSpaceLocalFont;
             this.collapseSpaceEmbeddedFont = collapseSpaceEmbeddedFont;
-            this.minSpacePx = minSpacePx;
             Clear();
         }
 
         public TextBuilder(SvgConversionOptions options) : this(
             collapseSpaceLocalFont: options.CollapseSpaceLocalFont,
-            collapseSpaceEmbeddedFont: options.CollapseSpaceEmbeddedFont,
-            minSpacePx: 0.001 // Lower space will be rounded to "0" in SVG formatting.
+            collapseSpaceEmbeddedFont: options.CollapseSpaceEmbeddedFont
             )
         { }
 
@@ -111,8 +108,8 @@ namespace PdfToSvg.Drawing
                 translateX >= currentParagraph.X &&
 
                 scale == previousScale &&
-                translateY == previousTranslateY &&
-                remainingTransform == previousTransform &&
+                Math.Abs(translateY - previousTranslateY) < SvgConversion.CoordinateResolution &&
+                Matrix.Equals(remainingTransform, previousTransform, delta: SvgConversion.CoordinateResolution) &&
 
                 // Don't overdo merging of adjacent text spans to avoid issues e.g. in tabular views
                 Math.Abs(translateX - previousTranslateX) < 10)
@@ -332,11 +329,13 @@ namespace PdfToSvg.Drawing
                     ? collapseSpaceLocalFont
                     : collapseSpaceEmbeddedFont;
 
-                var absolutePendingSpace = Math.Abs(pendingSpace);
+                var spaceBefore = isLocalFont
+                    ? pendingSpace
+                    : aggregateOffset;
 
                 var mergeWithPrevious =
                     // Too small offsets will be rounded to 0, so they should not cause an extra <tspan>
-                    absolutePendingSpace < minSpacePx ||
+                    Math.Abs(spaceBefore) < SvgConversion.TextOffsetResolution ||
 
                     // When the threshold is low, it is most important to produce an as accurate result as possible, so in
                     // this case, we will look at the total aggregate offset from the real line matrix. If the threshold is
@@ -345,7 +344,7 @@ namespace PdfToSvg.Drawing
                     (
                         collapseSpaceEm < 0.1
                         ? Math.Abs(aggregateOffset) < collapseSpaceEm * normalizedFontSize
-                        : absolutePendingSpace < collapseSpaceEm * normalizedFontSize
+                        : Math.Abs(pendingSpace) < collapseSpaceEm * normalizedFontSize
                     );
 
                 if (mergeWithPrevious)
@@ -369,7 +368,7 @@ namespace PdfToSvg.Drawing
                 var trailingZeroDxChars = lastSpan.Value.Length - lastSpan.SpaceBefore.Count;
                 if (TSpanOverhead > DxOverhead * trailingZeroDxChars)
                 {
-                    lastSpan.AddText(isLocalFont ? pendingSpace : aggregateOffset, svgText, width);
+                    lastSpan.AddText(spaceBefore, svgText, width);
                     pendingSpace = 0;
                     aggregateOffset = 0;
                     return;

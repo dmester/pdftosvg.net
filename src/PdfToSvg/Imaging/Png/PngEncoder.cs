@@ -46,7 +46,7 @@ namespace PdfToSvg.Imaging.Png
                 _ => 1,
             };
 
-            estimatedSize = width * height * componentsPerSample * bitDepth / 50;
+            estimatedSize = (int)((long)width * height * componentsPerSample * bitDepth / 50);
 
             using (var chunk = new PngChunkStream(output, PngChunkIdentifier.ImageHeader))
             {

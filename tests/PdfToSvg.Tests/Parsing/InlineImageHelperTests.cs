@@ -57,6 +57,13 @@ namespace PdfToSvg.Tests.Parsing
             var stream = new MemoryStream(Encoding.ASCII.GetBytes("fjg\0h EI EI EI dk\0djgk \r ~> end of stream"));
             Assert.AreEqual(27, InlineImageHelper.DetectStreamLength(stream, new object[] { Names.ASCII85Decode, Names.FlateDecode }));
         }
+        
+        [Test]
+        public void DoNotCrashIfFilterIsEmptyArray()
+        {
+            var stream = new MemoryStream(Encoding.ASCII.GetBytes("fjg\0h EI EI EI dk\0djgk \r ~> end of stream"));
+            Assert.AreEqual(27, InlineImageHelper.DetectStreamLength(stream, new object[0]));
+        }
 
         [Test]
         public void DeabbreviateDictionary()

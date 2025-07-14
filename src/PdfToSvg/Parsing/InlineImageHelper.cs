@@ -58,7 +58,7 @@ namespace PdfToSvg.Parsing
             // Prefer deterministic stream length detectors
             var outerFilterName =
                 filterNames is PdfName singleFilterName ? singleFilterName :
-                filterNames is object?[] filterNamesArray ? filterNamesArray[0] as PdfName :
+                filterNames is object?[] filterNamesArray && filterNamesArray.Length > 0 ? filterNamesArray[0] as PdfName :
                 null;
 
             var outerFilter = Filter.ByName(outerFilterName);

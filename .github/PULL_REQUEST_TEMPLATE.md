@@ -1,1 +1,1 @@
-This project does not accept pull requests not agreed upon in advance. If you have a feature you would like to implement, please start a new discussion on the [Discussions](https://github.com/dmester/pdftosvg.net/discussions) tab before starting to work on the feaure.
+This project does not accept pull requests not agreed upon in advance. If you have a feature you would like to implement, please start a new discussion on the [Issues](https://github.com/dmester/pdftosvg.net/issues) tab before starting to work on the feature.

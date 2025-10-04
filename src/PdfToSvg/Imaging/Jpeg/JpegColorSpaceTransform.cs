@@ -134,5 +134,46 @@ namespace PdfToSvg.Imaging.Jpeg
 
             return outputCursor;
         }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static void YccToRgb(float[] data, int offset, int count)
+        {
+            for (var i = 0; i + 2 < count; i += 3)
+            {
+                var ycckY = data[offset + i + 0];
+                var ycckCb = data[offset + i + 1];
+                var ycckCr = data[offset + i + 2];
+
+                YccToRgb(ycckY, ycckCb, ycckCr, out var rgbR, out var rgbG, out var rgbB);
+
+                data[offset + i + 0] = MathUtils.Clamp(rgbR, 0f, 255f);
+                data[offset + i + 1] = MathUtils.Clamp(rgbG, 0f, 255f);
+                data[offset + i + 2] = MathUtils.Clamp(rgbB, 0f, 255f);
+            }
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static void YcckToCmyk(float[] data, int offset, int count)
+        {
+            for (var i = 0; i + 3 < count; i += 4)
+            {
+                var ycckY = data[offset + i + 0];
+                var ycckCb = data[offset + i + 1];
+                var ycckCr = data[offset + i + 2];
+
+                YccToRgb(ycckY, ycckCb, ycckCr, out var ycckR, out var ycckG, out var ycckB);
+
+                // The relationship between CMYK and YCCK is documented in section 13.1:
+                // https://www.pdfa.org/norm-refs/5116.DCT_Filter.pdf
+                var cmykC = 255f - ycckR;
+                var cmykM = 255f - ycckG;
+                var cmykY = 255f - ycckB;
+
+                data[offset + i + 0] = MathUtils.Clamp(cmykC, 0f, 255f);
+                data[offset + i + 1] = MathUtils.Clamp(cmykM, 0f, 255f);
+                data[offset + i + 2] = MathUtils.Clamp(cmykY, 0f, 255f);
+            }
+        }
+
     }
 }

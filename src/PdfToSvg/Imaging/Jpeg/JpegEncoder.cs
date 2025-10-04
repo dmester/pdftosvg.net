@@ -80,10 +80,20 @@ namespace PdfToSvg.Imaging.Jpeg
             // Format specified in section 18 in:
             // https://www.pdfa.org/norm-refs/5116.DCT_Filter.pdf
 
-            if (ColorSpace != JpegColorSpace.Ycck)
+            // More info:
+            // https://exiftool.org/TagNames/JPEG.html#Adobe
+            // https://docs.oracle.com/javase/8/docs/api/javax/imageio/metadata/doc-files/jpeg_metadata.html#color
+
+            var colorTransform = ColorSpace switch
             {
-                return;
-            }
+                JpegColorSpace.Ycck => 2,
+                JpegColorSpace.YCbCr => 1,
+                _ => 0,
+            };
+
+            const int DCTDecodeVersion = 100;
+            const int flags0 = 0;
+            const int flags1 = 0;
 
             using var writer = BeginSegment(JpegMarkerCode.APP14);
 
@@ -93,10 +103,10 @@ namespace PdfToSvg.Imaging.Jpeg
             writer.WriteByte('b');
             writer.WriteByte('e');
 
-            writer.WriteUInt16(0x100); // DCTEncodeVersion
-            writer.WriteUInt16(0);     // flags0
-            writer.WriteUInt16(0);     // flags1
-            writer.WriteByte(2);       // colorTransform ycck
+            writer.WriteUInt16(DCTDecodeVersion);
+            writer.WriteUInt16(flags0);
+            writer.WriteUInt16(flags1);
+            writer.WriteByte(colorTransform);
         }
 
         private void WriteQuantizationTables()
@@ -220,21 +230,26 @@ namespace PdfToSvg.Imaging.Jpeg
             switch (colorSpace)
             {
                 case JpegColorSpace.Ycck:
-                    treatAsLuminance = new[] { true, false, false, true };
+                    treatAsLuminance = [true, false, false, true];
                     break;
 
                 case JpegColorSpace.Cmyk:
-                    treatAsLuminance = new[] { true, true, true, true };
+                    treatAsLuminance = [true, true, true, true];
+                    chromaSubSampling = JpegChromaSubSampling.None;
+                    break;
+
+                case JpegColorSpace.Rgb:
+                    treatAsLuminance = [true, true, true];
                     chromaSubSampling = JpegChromaSubSampling.None;
                     break;
 
                 case JpegColorSpace.Gray:
-                    treatAsLuminance = new[] { true };
+                    treatAsLuminance = [true];
                     chromaSubSampling = JpegChromaSubSampling.None;
                     break;
 
                 default:
-                    treatAsLuminance = new[] { true, false, false };
+                    treatAsLuminance = [true, false, false];
                     break;
             }
 
@@ -305,8 +320,23 @@ namespace PdfToSvg.Imaging.Jpeg
 
             WriteMarker(JpegMarkerCode.SOI);
 
-            WriteApp0();
-            WriteApp14();
+            //
+            // Pdfium will not render JPEG images with an APP14 marker correctly if there is an APP0 marker.
+            //
+            // Handling in Java described here:
+            // https://docs.oracle.com/javase/8/docs/api/javax/imageio/metadata/doc-files/jpeg_metadata.html#color
+            //
+            if (ColorSpace == JpegColorSpace.Ycck ||
+                ColorSpace == JpegColorSpace.Rgb)
+            {
+                // Adobe JPEG
+                WriteApp14();
+            }
+            else
+            {
+                // JFIF JPEG
+                WriteApp0();
+            }
 
             WriteQuantizationTables();
             WriteFrame();

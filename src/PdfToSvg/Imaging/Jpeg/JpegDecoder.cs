@@ -38,6 +38,8 @@ namespace PdfToSvg.Imaging.Jpeg
         public int Components => frameComponents.Length;
         public bool IsSupported => Components > 0;
 
+        public bool HasAdobeMarker => adobeColorTransformCode >= 0;
+
         public JpegColorSpace ColorSpace
         {
             get
@@ -51,7 +53,9 @@ namespace PdfToSvg.Imaging.Jpeg
                         return JpegColorSpace.Gray;
 
                     case 3:
-                        return JpegColorSpace.YCbCr;
+                        return adobeColorTransformCode == 0
+                            ? JpegColorSpace.Rgb
+                            : JpegColorSpace.YCbCr;
 
                     case 4:
                         return adobeColorTransformCode == 2

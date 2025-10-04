@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.ColorSpaces;
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Imaging.Jpeg;
 using System;
@@ -18,8 +19,13 @@ namespace PdfToSvg.Imaging
 {
     internal class JpegImage : Image
     {
+        private const int YccComponents = 3;
+
+        private readonly PdfDictionary imageDictionary;
         private readonly PdfStream imageDictionaryStream;
         private readonly ColorSpace colorSpace;
+        private readonly DecodeArray decodeArray;
+        private readonly int? dctDecodeColorTransform;
 
         public JpegImage(PdfDictionary imageDictionary, ColorSpace colorSpace)
             : base(imageDictionary, "image/jpeg", ".jpeg")
@@ -29,25 +35,98 @@ namespace PdfToSvg.Imaging
                 throw new ArgumentException("There was no data stream attached to the image dictionary.", nameof(imageDictionary));
             }
 
+            this.imageDictionary = imageDictionary;
             this.imageDictionaryStream = imageDictionary.Stream;
             this.colorSpace = colorSpace;
+            this.decodeArray = ImageHelper.GetDecodeArray(imageDictionary, colorSpace);
+
+            var lastFilter = imageDictionaryStream.Filters.LastOrDefault();
+            this.dctDecodeColorTransform = lastFilter?.DecodeParms?.GetValueOrDefault<int?>(Names.ColorTransform);
         }
 
-        private byte[] Convert(byte[] sourceJpegData)
+        public JpegColorSpace GetSourceColorSpace(JpegDecoder decoder)
         {
-            if (colorSpace is DeviceRgbColorSpace ||
-                colorSpace is DeviceGrayColorSpace)
+            // ISO 32000-2:2020 - Table 13 - Optional parameter for the DCTDecode filter
+
+            // The color transform should be ignored if the number of components is 1 or 2
+            if (decoder.Components <= 2)
             {
-                return sourceJpegData;
+                return decoder.Components switch
+                {
+                    1 => JpegColorSpace.Gray,
+                    _ => JpegColorSpace.Unknown,
+                };
             }
 
+            // APP14 marker in the JPEG data overrides the ColorTransform parameter
+            if (decoder.HasAdobeMarker)
+            {
+                return decoder.ColorSpace;
+            }
+
+            // Default value for ColorTransform depends on the number of components
+            var colorTransform = dctDecodeColorTransform == null
+                ? (decoder.Components == 3)
+                : (dctDecodeColorTransform == 1);
+
+            if (colorTransform)
+            {
+                return decoder.Components switch
+                {
+                    1 => JpegColorSpace.Gray,
+                    3 => JpegColorSpace.YCbCr,
+                    4 => JpegColorSpace.Ycck,
+                    _ => JpegColorSpace.Unknown,
+                };
+            }
+            else
+            {
+                return decoder.Components switch
+                {
+                    1 => JpegColorSpace.Gray,
+                    3 => JpegColorSpace.Rgb,
+                    4 => JpegColorSpace.Cmyk,
+                    _ => JpegColorSpace.Unknown,
+                };
+            }
+        }
+
+        private bool IsPassThroughPossible(JpegColorSpace sourceColorSpace)
+        {
+            if (ImageHelper.HasCustomDecodeArray(imageDictionary, colorSpace))
+            {
+                return false;
+            }
+
+            if (colorSpace is UnsupportedColorSpace &&
+                (sourceColorSpace == JpegColorSpace.Gray || sourceColorSpace == JpegColorSpace.YCbCr || sourceColorSpace == JpegColorSpace.Unknown))
+            {
+                return true;
+            }
+
+            if (colorSpace is DeviceRgbColorSpace &&
+                sourceColorSpace == JpegColorSpace.YCbCr)
+            {
+                return true;
+            }
+
+            if (colorSpace is DeviceGrayColorSpace &&
+                sourceColorSpace == JpegColorSpace.Gray)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private byte[] Convert(byte[] sourceJpegData, CancellationToken cancellationToken)
+        {
             var decoder = new JpegDecoder();
             decoder.ReadMetadata(sourceJpegData, 0, sourceJpegData.Length);
 
-            var sourceColorSpace = decoder.ColorSpace;
+            var sourceColorSpace = GetSourceColorSpace(decoder);
 
-            if (sourceColorSpace == JpegColorSpace.YCbCr ||
-                sourceColorSpace == JpegColorSpace.Gray)
+            if (IsPassThroughPossible(sourceColorSpace))
             {
                 return sourceJpegData;
             }
@@ -59,6 +138,11 @@ namespace PdfToSvg.Imaging
                 return sourceJpegData;
             }
 
+            return FullTranscode(decoder, sourceColorSpace, cancellationToken);
+        }
+
+        private byte[] FullTranscode(JpegDecoder decoder, JpegColorSpace sourceColorSpace, CancellationToken cancellationToken)
+        {
             var encoder = new JpegEncoder();
 
             encoder.Width = decoder.Width;
@@ -68,24 +152,55 @@ namespace PdfToSvg.Imaging
 
             encoder.WriteMetadata();
 
+            var floatScan = ArrayUtils.Empty<float>();
+            var convertedScan = ArrayUtils.Empty<short>();
+
             foreach (var scan in decoder.ReadImageData())
             {
-                var length = scan.Length;
+                cancellationToken.ThrowIfCancellationRequested();
 
-                if (sourceColorSpace == JpegColorSpace.Ycck)
+                var sampleCount = scan.Length / decoder.Components;
+
+                // Convert to float
+                if (floatScan.Length != scan.Length)
                 {
-                    length = JpegColorSpaceTransform.YcckToYcc(scan, 0, length);
-                }
-                else if (sourceColorSpace == JpegColorSpace.Cmyk)
-                {
-                    length = JpegColorSpaceTransform.CmykToYcc(scan, 0, length);
-                }
-                else
-                {
-                    throw new PdfException("Unexpected state. Color space should have been either YCCK or CMYK but was " + sourceColorSpace + ".");
+                    floatScan = new float[scan.Length];
                 }
 
-                encoder.WriteImageData(scan, 0, length);
+                for (var i = 0; i < scan.Length; i++)
+                {
+                    floatScan[i] = scan[i];
+                }
+
+                // Reverse DCTDecode implicit color transform
+                switch (sourceColorSpace)
+                {
+                    case JpegColorSpace.YCbCr:
+                        JpegColorSpaceTransform.YccToRgb(floatScan, 0, floatScan.Length);
+                        break;
+
+                    case JpegColorSpace.Ycck:
+                        JpegColorSpaceTransform.YcckToCmyk(floatScan, 0, floatScan.Length);
+                        break;
+                }
+
+                // Decode
+                decodeArray.Decode(floatScan, 0, floatScan.Length);
+
+                // Convert to RGB
+                var convertedLength = sampleCount * YccComponents;
+                if (convertedScan.Length != convertedLength)
+                {
+                    convertedScan = new short[convertedLength];
+                }
+
+                colorSpace.ToRgb8(floatScan, 0, convertedScan, 0, sampleCount);
+
+                // Convert to YCbCr
+                JpegColorSpaceTransform.RgbToYcc(convertedScan, 0, convertedScan.Length);
+
+                // Done!
+                encoder.WriteImageData(convertedScan, 0, convertedLength);
             }
 
             encoder.WriteEndImage();
@@ -95,15 +210,17 @@ namespace PdfToSvg.Imaging
 
         public override byte[] GetContent(CancellationToken cancellationToken)
         {
-            return Convert(ImageHelper.GetContent(imageDictionaryStream, cancellationToken));
+            return Convert(ImageHelper.GetContent(imageDictionaryStream, cancellationToken), cancellationToken);
         }
 
 #if HAVE_ASYNC
         public override async Task<byte[]> GetContentAsync(CancellationToken cancellationToken)
         {
-            return Convert(await ImageHelper
+            var sourceJpegData = await ImageHelper
                 .GetContentAsync(imageDictionaryStream, cancellationToken)
-                .ConfigureAwait(false));
+                .ConfigureAwait(false);
+
+            return Convert(sourceJpegData, cancellationToken);
         }
 #endif
 

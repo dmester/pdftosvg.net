@@ -16,5 +16,6 @@ namespace PdfToSvg.Imaging.Jpeg
         YCbCr,
         Ycck,
         Cmyk,
+        Rgb,
     }
 }

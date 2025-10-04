@@ -208,6 +208,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Colors { get; } = new PdfName("Colors");
         public static PdfName Interpolate { get; } = new PdfName("Interpolate");
         public static PdfName JBIG2Globals { get; } = new PdfName("JBIG2Globals");
+        public static PdfName ColorTransform { get; } = new PdfName("ColorTransform");
 
         public static PdfName ColorSpace { get; } = new PdfName("ColorSpace");
         public static PdfName DeviceGray { get; } = new PdfName("DeviceGray");

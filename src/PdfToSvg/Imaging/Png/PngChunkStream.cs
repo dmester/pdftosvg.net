@@ -19,11 +19,11 @@ namespace PdfToSvg.Imaging.Png
         private readonly MemoryStream buffer;
         private readonly string name;
 
-        public PngChunkStream(Stream outputStream, string name, int capacity = 0)
+        public PngChunkStream(Stream outputStream, string name)
         {
             this.outputStream = outputStream;
             this.name = name;
-            this.buffer = new MemoryStream(capacity);
+            this.buffer = new MemoryStream();
         }
 
         protected override void Dispose(bool disposing)

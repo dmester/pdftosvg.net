@@ -134,7 +134,7 @@ namespace PdfToSvg.Parsing
 
                 // Detect stream length
                 var startPosition = lexer.Stream.Position;
-                var streamLength = InlineImageHelper.DetectStreamLength(lexer.Stream, dictionary[Names.Filter]);
+                var streamLength = InlineImageHelper.DetectStreamLength(lexer.Stream, dictionary[Names.Filter] ?? dictionary[Names.F]);
 
                 // Read stream data
                 var imageData = new byte[streamLength];

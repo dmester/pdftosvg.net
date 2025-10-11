@@ -13,37 +13,70 @@ namespace PdfToSvg.ColorSpaces
 {
     internal class IndexedColorSpace : ColorSpace, IEquatable<IndexedColorSpace>
     {
-        private readonly ColorSpace baseSpace;
-        private readonly float[] baseBuffer;
-        private readonly byte[] lookup;
+        private const int RgbComponents = 3;
 
-        public IndexedColorSpace(ColorSpace baseSpace, byte[] lookup)
+        private readonly ColorSpace baseSpace;
+        private readonly float[] rgbLookup;
+
+        public IndexedColorSpace(ColorSpace baseSpace, byte[] lookup) : this(baseSpace, lookup, lookup.Length) { }
+
+        public IndexedColorSpace(ColorSpace baseSpace, byte[] lookup, int lookupLength)
         {
+            if (baseSpace == null) throw new ArgumentNullException(nameof(baseSpace));
+            if (lookup == null) throw new ArgumentNullException(nameof(lookup));
+            if (lookupLength < 0 || lookupLength > lookup.Length) throw new ArgumentOutOfRangeException(nameof(lookupLength));
+
+            var componentsPerSample = baseSpace.ComponentsPerSample;
+            var colors = lookupLength / componentsPerSample;
+
+            // Convert to float
+            var mappedColors = new float[colors * componentsPerSample];
+            for (var i = 0; i < mappedColors.Length; i++)
+            {
+                mappedColors[i] = lookup[i];
+            }
+
+            // Decode
+            var decodeArray = baseSpace.GetDefaultDecodeArray(bitsPerComponent: 8);
+            decodeArray.Decode(mappedColors);
+
+            // Map to RGB
+            var rgbLookup = new float[colors * RgbComponents];
+            var mappedColorIndex = 0;
+
+            for (var i = 0; i < colors; i++)
+            {
+                var redIndex = i * RgbComponents;
+
+                baseSpace.ToRgb(
+                    mappedColors, ref mappedColorIndex,
+                    out rgbLookup[redIndex + 0],
+                    out rgbLookup[redIndex + 1],
+                    out rgbLookup[redIndex + 2]);
+            }
+
             this.baseSpace = baseSpace;
-            this.baseBuffer = new float[baseSpace.ComponentsPerSample];
-            this.lookup = lookup;
-            this.ColorCount = (lookup.Length + baseBuffer.Length - 1) / baseBuffer.Length;
+            this.ColorCount = colors;
+            this.rgbLookup = rgbLookup;
         }
 
         public override void ToRgb(float[] input, ref int inputOffset, out float red, out float green, out float blue)
         {
-            var index = (int)input[inputOffset++];
-            var maxIndexWithValues = Math.Min(baseBuffer.Length, lookup.Length - index * baseBuffer.Length);
-            var i = 0;
+            var index = (int)(input[inputOffset++] + 0.5f);
+            var rgbStartIndex = index * RgbComponents;
 
-            for (; i < maxIndexWithValues; i++)
+            if (rgbStartIndex + RgbComponents <= rgbLookup.Length)
             {
-                // TODO This is not correct but will probably work most of the time.
-                baseBuffer[i] = lookup[index * baseBuffer.Length + i] * (1f / 255);
+                red = rgbLookup[rgbStartIndex + 0];
+                green = rgbLookup[rgbStartIndex + 1];
+                blue = rgbLookup[rgbStartIndex + 2];
             }
-
-            for (; i < baseBuffer.Length; i++)
+            else
             {
-                baseBuffer[i] = 0f;
+                red = 0;
+                green = 0;
+                blue = 0;
             }
-
-            var baseIndex = 0;
-            baseSpace.ToRgb(baseBuffer, ref baseIndex, out red, out green, out blue);
         }
 
         public override DecodeArray GetDefaultDecodeArray(int bitsPerComponent)
@@ -55,11 +88,11 @@ namespace PdfToSvg.ColorSpaces
 
         public ColorSpace BaseSpace => baseSpace;
 
-        public override float[] DefaultColor => new[] { 0f };
+        public override float[] DefaultColor => [0f];
 
         public int ColorCount { get; }
 
-        public override int GetHashCode() => baseSpace.GetHashCode() ^ lookup.Length;
+        public override int GetHashCode() => baseSpace.GetHashCode() ^ rgbLookup.Length;
         public override bool Equals(object? obj) => Equals(obj as IndexedColorSpace);
         public bool Equals(IndexedColorSpace? other)
         {
@@ -71,11 +104,11 @@ namespace PdfToSvg.ColorSpaces
             if (!ReferenceEquals(this, other))
             {
                 if (!other.baseSpace.Equals(baseSpace)) return false;
-                if (other.lookup.Length != lookup.Length) return false;
+                if (other.rgbLookup.Length != rgbLookup.Length) return false;
 
-                for (var i = 0; i < lookup.Length && i < other.lookup.Length; i++)
+                for (var i = 0; i < rgbLookup.Length && i < other.rgbLookup.Length; i++)
                 {
-                    if (other.lookup[i] != lookup[i])
+                    if (other.rgbLookup[i] != rgbLookup[i])
                     {
                         return false;
                     }

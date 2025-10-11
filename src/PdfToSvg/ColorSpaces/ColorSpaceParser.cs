@@ -158,6 +158,7 @@ namespace PdfToSvg.ColorSpaces
         {
             ColorSpace? baseSpace = null;
             var lookup = ArrayUtils.Empty<byte>();
+            var lookupLength = 0;
 
             if (colorSpaceParams.Length < 4)
             {
@@ -170,22 +171,27 @@ namespace PdfToSvg.ColorSpaces
 
                 if (colorSpaceParams.Length > 3)
                 {
-                    var maxLookupLength = baseSpace.ComponentsPerSample * 256;
+                    const int MaxValidHival = byte.MaxValue;
+
+                    if (!(colorSpaceParams[2] is int hival))
+                    {
+                        hival = MaxValidHival;
+                    }
+
+                    var maxLookupLength = baseSpace.ComponentsPerSample * (MathUtils.Clamp(hival, 0, MaxValidHival) + 1);
 
                     if (colorSpaceParams[3] is PdfDictionary lookupDict &&
                         lookupDict.Stream != null)
                     {
                         using var lookupStream = lookupDict.Stream.OpenDecoded(cancellationToken);
 
-                        var buffer = new byte[maxLookupLength];
-                        var lookupLength = lookupStream.ReadAll(buffer, 0, buffer.Length, cancellationToken);
-
-                        lookup = new byte[lookupLength];
-                        Buffer.BlockCopy(buffer, 0, lookup, 0, lookupLength);
+                        lookup = new byte[maxLookupLength];
+                        lookupLength = lookupStream.ReadAll(lookup, 0, lookup.Length, cancellationToken);
                     }
                     else if (colorSpaceParams[3] is PdfString lookupString)
                     {
                         lookup = new byte[Math.Min(maxLookupLength, lookupString.Length)];
+                        lookupLength = lookup.Length;
 
                         for (var i = 0; i < lookup.Length; i++)
                         {
@@ -199,7 +205,7 @@ namespace PdfToSvg.ColorSpaces
                 }
             }
 
-            return new IndexedColorSpace(baseSpace ?? new DeviceRgbColorSpace(), lookup);
+            return new IndexedColorSpace(baseSpace ?? new DeviceRgbColorSpace(), lookup, lookupLength);
         }
 
         private static ColorSpace Parse(object? definition, PdfDictionary? colorSpaceResourcesDictionary, int recursionCount, CancellationToken cancellationToken)

@@ -17,11 +17,27 @@ namespace PdfToSvg.Imaging
 {
     internal static class ImageHelper
     {
+        public static int GetBitsPerComponent(PdfDictionary imageDictionary)
+        {
+            var isStencilMask = imageDictionary.GetValueOrDefault(Names.ImageMask, false);
+
+            if (isStencilMask)
+            {
+                // ISO 32000-2:2020 section 8.9.6.2
+                // For stencil masks, BitsPerComponent is always 1
+                return 1;
+            }
+            else
+            {
+                return imageDictionary.GetValueOrDefault(Names.BitsPerComponent, 8);
+            }
+        }
+
         public static bool HasCustomDecodeArray(PdfDictionary imageDictionary, ColorSpace colorSpace)
         {
             if (imageDictionary.TryGetArray<double>(Names.Decode, out var decodeValues))
             {
-                var bitsPerComponent = imageDictionary.GetValueOrDefault(Names.BitsPerComponent, 8);
+                var bitsPerComponent = GetBitsPerComponent(imageDictionary);
 
                 var decodeArray = new DecodeArray(bitsPerComponent, decodeValues);
                 var defaultDecodeArray = colorSpace.GetDefaultDecodeArray(bitsPerComponent);
@@ -36,7 +52,7 @@ namespace PdfToSvg.Imaging
         {
             DecodeArray result;
 
-            var bitsPerComponent = imageDictionary.GetValueOrDefault(Names.BitsPerComponent, 8);
+            var bitsPerComponent = GetBitsPerComponent(imageDictionary);
 
             if (imageDictionary.TryGetArray<double>(Names.Decode, out var decodeValues))
             {

@@ -96,7 +96,7 @@ namespace PdfToSvg.Imaging
 
         public override byte[] GetContent(CancellationToken cancellationToken)
         {
-            var bitsPerComponent = imageDictionary.GetValueOrDefault(Names.BitsPerComponent, 8);
+            var bitsPerComponent = ImageHelper.GetBitsPerComponent(imageDictionary);
             var width = imageDictionary.GetValueOrDefault(Names.Width, 0);
             var height = imageDictionary.GetValueOrDefault(Names.Height, 0);
 

@@ -53,14 +53,7 @@ namespace PdfToSvg.Imaging
             this.width = imageDictionary.GetValueOrDefault(Names.Width, 0);
             this.height = imageDictionary.GetValueOrDefault(Names.Height, 0);
 
-            if (imageDictionary.GetValueOrDefault(Names.ImageMask, false) == true)
-            {
-                bitsPerComponent = 1;
-            }
-            else
-            {
-                bitsPerComponent = imageDictionary.GetValueOrDefault(Names.BitsPerComponent, 8);
-            }
+            this.bitsPerComponent = ImageHelper.GetBitsPerComponent(imageDictionary);
 
             var potentialColorKey = imageDictionary.GetArrayOrNull<int>(Names.Mask);
             if (potentialColorKey != null && potentialColorKey.Length >= colorSpace.ComponentsPerSample * 2)

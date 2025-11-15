@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,24 @@ namespace PdfToSvg.Fonts.CompactFonts
             if (privateDict.ExpansionFactor == 0)
             {
                 privateDict.ExpansionFactor = 0.06;
+            }
+
+            privateDict.BlueValues = EnsureValidBlues(privateDict.BlueValues);
+            privateDict.OtherBlues = EnsureValidBlues(privateDict.OtherBlues);
+            privateDict.FamilyBlues = EnsureValidBlues(privateDict.FamilyBlues);
+            privateDict.FamilyOtherBlues = EnsureValidBlues(privateDict.FamilyOtherBlues);
+        }
+
+        private static double[] EnsureValidBlues(double[] values)
+        {
+            if ((values.Length & 1) != 0)
+            {
+                // OTS sanitizer only allows blues with even number of entries
+                return ArrayUtils.Empty<double>();
+            }
+            else
+            {
+                return values;
             }
         }
     }

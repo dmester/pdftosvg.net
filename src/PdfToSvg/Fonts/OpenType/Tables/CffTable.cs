@@ -13,23 +13,38 @@ namespace PdfToSvg.Fonts.OpenType.Tables
 {
     internal class CffTable : IBaseTable
     {
+        public static TableFactory Factory => new("CFF ", Read);
         public string Tag => "CFF ";
 
         public CompactFontSet? Content;
+
+        private static IBaseTable? Read(OpenTypeReader reader)
+        {
+            var binaryCff = reader.ReadBytes(reader.Length - reader.Position);
+
+            try
+            {
+                var cff = CompactFontParser.Parse(binaryCff, maxFontCount: 1);
+
+                return new CffTable
+                {
+                    Content = cff,
+                };
+            }
+            catch
+            {
+                return new RawTable
+                {
+                    Tag = "CFF ",
+                    Content = binaryCff,
+                };
+            }
+        }
 
         public void Write(OpenTypeWriter writer, IList<IBaseTable> _)
         {
             if (Content != null)
             {
-                CompactFontSanitizer.Sanitize(Content);
-
-                // OTS does not support supplemental codes, so let's skip writing an encoding to the font. The CFF
-                // encoding has no meaning in an OpenType font.
-                foreach (var font in Content.Fonts)
-                {
-                    font.Encoding = SingleByteEncoding.Standard;
-                }
-
                 var data = CompactFontBuilder.Build(Content);
                 writer.WriteBytes(data);
             }

@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.Common;
+using PdfToSvg.Encodings;
 using PdfToSvg.Fonts.CharStrings;
 using PdfToSvg.Fonts.CompactFonts;
 using PdfToSvg.Fonts.OpenType.Conversion;
@@ -31,7 +32,14 @@ namespace PdfToSvg.Fonts.OpenType
 
         private void Sanitize()
         {
-            var cff = GetCff();
+            var cffTable = font.Tables.Get<CffTable>();
+            var cffSet = cffTable?.Content;
+            var cff = cffSet?.Fonts.FirstOrDefault();
+
+            if (cffTable != null && cff == null)
+            {
+                throw new OpenTypeException("Invalid CFF table");
+            }
 
             HeadTable head;
             CMapTable cmap;
@@ -42,7 +50,7 @@ namespace PdfToSvg.Fonts.OpenType
             MaxpTable maxp;
             OS2Table os2;
 
-            if (cff == null)
+            if (cffSet == null || cff == null)
             {
                 // TrueType
                 head = GetOrThrow<HeadTable>();
@@ -54,6 +62,8 @@ namespace PdfToSvg.Fonts.OpenType
             else
             {
                 // CFF OpenType
+                UpdateCff(cffSet);
+
                 var glyphs = GetGlyphs(cff);
                 head = GetOrCreate(() => CreateHead(cff, glyphs));
                 maxp = GetOrCreate(() => CreateMaxp(cff));
@@ -125,23 +135,6 @@ namespace PdfToSvg.Fonts.OpenType
             font.Tables.Remove<NameTable>();
             font.Tables.Add(newTable);
             return newTable;
-        }
-
-        private CompactFont? GetCff()
-        {
-            var cffTable = font.Tables.FirstOrDefault(x => x.Tag == "CFF ");
-            if (cffTable is CffTable parsedCffTable)
-            {
-                return parsedCffTable.Content?.Fonts.FirstOrDefault();
-            }
-            else if (cffTable is RawTable rawCffTable && rawCffTable.Content != null)
-            {
-                return CompactFontParser.Parse(rawCffTable.Content, maxFontCount: 1).Fonts.FirstOrDefault();
-            }
-            else
-            {
-                return null;
-            }
         }
 
         private HeadTable CreateHead(CompactFont cff, List<CompactFontGlyph> glyphs)
@@ -423,6 +416,28 @@ namespace PdfToSvg.Fonts.OpenType
                     .Take(expectedLeftSideBearings)
                     .ToArray();
             }
+        }
+
+        private void UpdateCff(CompactFontSet compactFontSet)
+        {
+            if (compactFontSet.Fonts.Count == 0)
+            {
+                throw new OpenTypeException("No fonts were found in the OpenType CFF font set.");
+            }
+            
+            var compactFont = compactFontSet.Fonts[0];
+
+            // There must be exactly one font in the CFF
+            // https://learn.microsoft.com/en-us/typography/opentype/spec/cff
+            compactFontSet.Fonts.Clear();
+            compactFontSet.Fonts.Add(compactFont);
+
+            // Sanitize content
+            CompactFontSanitizer.Sanitize(compactFont);
+
+            // OTS does not support supplemental codes, so let's skip writing an encoding to the font. The CFF
+            // encoding has no meaning in an OpenType font.
+            compactFont.Encoding = SingleByteEncoding.Standard;
         }
 
         private void UpdateHhea(HheaTable hheaTable, HmtxTable hmtxTable)

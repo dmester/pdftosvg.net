@@ -25,7 +25,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             var factories = new[]
             {
                 CMapTable.Factory,
-                CMapTable.Factory,
+                CffTable.Factory,
                 HeadTable.Factory,
                 HheaTable.Factory,
                 HmtxTable.Factory,

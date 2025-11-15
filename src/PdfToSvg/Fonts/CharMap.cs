@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.CMaps;
+using PdfToSvg.Common;
 using PdfToSvg.Encodings;
 using PdfToSvg.Fonts.WidthMaps;
 using System;
@@ -132,6 +133,12 @@ namespace PdfToSvg.Fonts
 
             // Control characters might break the layout in SVG
             if (char.IsControl(s, 0))
+            {
+                return false;
+            }
+
+            // Bidirectional formatting characters might break the layout in SVG
+            if (UnicodeBidi.IsFormattingCharacter(s[0]))
             {
                 return false;
             }

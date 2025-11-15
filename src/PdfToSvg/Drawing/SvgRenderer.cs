@@ -39,11 +39,50 @@ namespace PdfToSvg.Drawing
         private static readonly string RootClassName = StableID.Generate("g", "PdfToSvg_Root");
         private static readonly string NoPrintClassName = StableID.Generate("g", "PdfToSvg_NoPrint");
         private static readonly string NoScreenClassName = StableID.Generate("g", "PdfToSvg_NoScreen");
+        private static readonly string RtlClassName = StableID.Generate("g", "PdfToSvg_Rtl");
 
         private static readonly string LinkStyle = "." + RootClassName + " a:active path{fill:#ffe4002e;}";
         private static readonly string TextStyle = "." + RootClassName + " text{white-space:pre;}";
         private static readonly string NoPrintStyle = "@media print{." + NoPrintClassName + "{display:none;}}";
         private static readonly string NoScreenStyle = "@media screen{." + NoScreenClassName + "{display:none;}}";
+
+        // The characters of right-to-left text are usually stored in the order they are read, logical order, not the
+        // order they appear on the screen, visual order.
+        //
+        // SVG viewers will apply the Unicode Bidi algorithm (https://www.unicode.org/reports/tr9/) to convert the text
+        // from logical to visual order before the text is presented on the screen.
+        //
+        // In PDFs, characters are stored in visual order from left to right.
+        //
+        // If the PDF text is extracted as-is, the SVG viewer will rearrange the text, making it unreadable.
+        //
+        // Evaluated options:
+        //
+        // * Reverse the Bidi algorithm on the text before embedding it in SVG
+        //   + Text can be extracted in the expected logical order from the SVG
+        //   - Increases the dll size as the bidirectional class of characters are not provided by .NET and must be
+        //     bundled by the lib
+        //   - The `dx` positioning attributes on <text> and <tspan> are applied on logical order rather than visual
+        //     order
+        //   - Characters might be rearranged across <tspan> bounds, making positioning more complex
+        //
+        // * Map RTL characters to PUA code points in the embedded font
+        //   + No presentational issues
+        //   - Copying or extracting text will always result in garbage
+        //
+        // * Use fixed character positions (`x` instead of `dx` attribute)
+        //   + No positioning issues
+        //   - Always wrong order when copying text from SVG viewers
+        //   - Unexpected order when extracting text from the SVG file
+        //
+        // * Use `unicode-bidi: bidi-override` to declare that the text is stored in visual order
+        //   + No positioning issues
+        //   + Bidi algorithm not needed
+        //   - Unexpected order when extracting text from the SVG file
+        //   - Undefined behavior when copying text from SVG viewers. Some copies the text in expected logical order
+        //     while others don't.
+        //
+        private static readonly string RtlTextStyle = "." + RtlClassName + " text{direction:ltr;unicode-bidi:bidi-override;}";
 
         private GraphicsState graphicsState = new GraphicsState();
         private Stack<GraphicsState> graphicsStateStack = new Stack<GraphicsState>();
@@ -88,6 +127,7 @@ namespace PdfToSvg.Drawing
 
         private TextBuilder textBuilder;
         private bool hasTextStyle;
+        private bool hasRtlText;
 
         private readonly PdfDictionary pageDict;
         private readonly Rectangle cropBox;
@@ -223,6 +263,13 @@ namespace PdfToSvg.Drawing
             }
 
             AddClipPaths(clipPaths.Values);
+
+            if (hasRtlText)
+            {
+                AddStyle(RtlTextStyle);
+                rootGraphics.SetAttributeValue("class", RootClassName + " " + RtlClassName);
+                defs.SetAttributeValue("class", RootClassName + " " + RtlClassName);
+            }
 
             if (!defs.HasElements)
             {
@@ -2834,7 +2881,7 @@ namespace PdfToSvg.Drawing
 
                 if (className != null)
                 {
-                    textEl.SetAttributeValue("class", className);
+                    textEl.Add(new XAttribute("class", className));
                 }
 
                 if (singleSpan.Style.TextScaling != 100)
@@ -2852,7 +2899,9 @@ namespace PdfToSvg.Drawing
                     textEl.SetAttributeValue("dx", dx);
                 }
 
-                textEl.Value = singleSpan.Value.ToString();
+                var text = singleSpan.Value.ToString();
+                textEl.Value = text;
+                hasRtlText = hasRtlText || UnicodeBidi.MightBeRtl(text);
 
                 paragraphWidth = singleSpan.Width;
             }
@@ -2885,9 +2934,9 @@ namespace PdfToSvg.Drawing
                     paragraphWidth += span.Width;
                 }
 
-                if (!multipleClasses)
+                if (!multipleClasses && classNames[0] is string firstClassName)
                 {
-                    textEl.SetAttributeValue("class", classNames[0]);
+                    textEl.Add(new XAttribute("class", firstClassName));
                 }
 
                 for (var i = 0; i < classNames.Length; i++)
@@ -2913,7 +2962,10 @@ namespace PdfToSvg.Drawing
                         currentYOffset = span.Style.TextRisePx;
                     }
 
-                    tspan.Value = span.Value.ToString();
+                    var text = span.Value.ToString();
+                    tspan.Value = text;
+                    hasRtlText = hasRtlText || UnicodeBidi.MightBeRtl(text);
+
                     textEl.Add(tspan);
                 }
             }

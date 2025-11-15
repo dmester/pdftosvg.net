@@ -558,6 +558,11 @@ namespace PdfToSvg.Fonts.CharStrings
 
         private static void Hint(Parser parser, bool isHorizontal, CharStringOpCode? opCode = null)
         {
+            if (parser.Stack.Count < 2)
+            {
+                return;
+            }
+
             // All hints use an even number of arguments
             var startAt = parser.Stack.Count % 2;
 
@@ -618,23 +623,22 @@ namespace PdfToSvg.Fonts.CharStrings
         private static void Mask(Parser parser, CharStringOpCode opCode)
         {
             // vstem hint operator is optional if hstem and vstem direcly preceeds the hintmask operator.
-            var lastOperator = parser.CharString.Hints.LastOrDefault(x => x.Token == CharStringToken.Operator);
-
-            if (lastOperator.OpCode == CharStringOpCode.HStem ||
-                lastOperator.OpCode == CharStringOpCode.HStemHm)
+            if (parser.CharString.Content.Count == 0)
             {
-                Hint(parser, isHorizontal: true);
+                Hint(parser, isHorizontal: false);
             }
-
-            parser.CharString.Content.Add(CharStringLexeme.Operator(opCode));
 
             // Mask
             var maskBytes = MathUtils.BitsToBytes(parser.CharString.HintCount);
-
-            for (var i = 0; i < maskBytes; i++)
+            if (maskBytes > 0)
             {
-                var lexeme = CharStringLexeme.Mask(parser.Lexer.ReadByte());
-                parser.CharString.Content.Add(lexeme);
+                parser.CharString.Content.Add(CharStringLexeme.Operator(opCode));
+
+                for (var i = 0; i < maskBytes; i++)
+                {
+                    var lexeme = CharStringLexeme.Mask(parser.Lexer.ReadByte());
+                    parser.CharString.Content.Add(lexeme);
+                }
             }
         }
 

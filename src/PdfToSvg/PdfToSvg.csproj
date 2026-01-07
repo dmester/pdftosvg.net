@@ -33,6 +33,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="PdfToSvg.Tests$(PdfToSvgPublicKeySuffix)"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\PdfToSvg.logo.png" Pack="true" PackagePath="\" Visible="false" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <None Include="..\..\LICENSE" Pack="true" PackagePath="\" />

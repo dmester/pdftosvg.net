@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="src/Directory.Build.props" />
+  </Folder>
+  <Project Path="src/PdfToSvg.Cli.NativeAot/PdfToSvg.Cli.NativeAot.csproj" />
+  <Project Path="src/PdfToSvg.Cli/PdfToSvg.Cli.csproj" />
+  <Project Path="src/PdfToSvg.Packer/PdfToSvg.Packer.csproj">
+    <BuildDependency Project="src/PdfToSvg.Cli/PdfToSvg.Cli.csproj" />
+    <BuildDependency Project="src/PdfToSvg/PdfToSvg.csproj" />
+  </Project>
+  <Project Path="src/PdfToSvg.SourceGenerators/PdfToSvg.SourceGenerators.csproj" />
+  <Project Path="src/PdfToSvg/PdfToSvg.csproj" />
+  <Project Path="tests/PdfToSvg.Cli.NativeAot.Tests/PdfToSvg.Cli.NativeAot.Tests.csproj" />
+  <Project Path="tests/PdfToSvg.Cli.Tests/PdfToSvg.Cli.Tests.csproj" />
+  <Project Path="tests/PdfToSvg.Driver/PdfToSvg.Driver.csproj" />
+  <Project Path="tests/PdfToSvg.RealLifeTests/PdfToSvg.RealLifeTests.csproj" />
+  <Project Path="tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj" />
+</Solution>

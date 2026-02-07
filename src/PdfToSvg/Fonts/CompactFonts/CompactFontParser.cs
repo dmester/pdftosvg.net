@@ -302,6 +302,15 @@ namespace PdfToSvg.Fonts.CompactFonts
             // Encoding
             font.Encoding = ReadEncoding(font, font.TopDict.Encoding);
 
+            // Repair FDSelect if needed
+            if (font.TopDict.FDSelect != null)
+            {
+                while (font.FDSelect.Count < font.Glyphs.Count)
+                {
+                    font.FDSelect.Add(0);
+                }
+            }
+
             SeacMerger.ReplaceSeacChars(font);
         }
 

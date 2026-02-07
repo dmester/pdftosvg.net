@@ -1,0 +1,156 @@
+%PDF-1.7
+
+xref
+0 8
+0000000000 65535 f
+0000000227 00000 n
+0000000278 00000 n
+0000000342 00000 n
+0000000488 00000 n
+0000001758 00000 n
+0000002217 00000 n
+0000002840 00000 n
+trailer
+<< /Root 1 0 R  /Size 8 >>
+     
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 4 0 R ]  /Count 1 >> endobj
+
+3 0 obj << /Length 89 >>
+stream
+   0 0 0 rg
+
+   BT
+      200 600 Td
+      /F1 200 Tf
+      <01020304> '      
+   ET
+endstream
+endobj
+
+4 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /F1 <<
+            /Type /Font
+            /Subtype /Type0
+            /BaseFont /PdfToSvgTestFont
+            /Encoding 6 0 R
+            /ToUnicode 5 0 R
+            /DescendantFonts [
+               <<
+                  /BaseFont /PdfToSvgTestFont
+                  /CIDSystemInfo <<
+                     /Ordering (Identity)
+                     /Registry (Adobe)
+                     /Supplement 0
+                  >>
+                  /Type /Font
+                  /Subtype /CIDFontType0
+                  /W [ 2 [ 209 ] 41 [ 445 227 ] ]
+                  /FontDescriptor <<
+                     /Type /FontDescriptor
+                     /FontName /PdfToSvgTestFont
+                     /Flags 32
+                     /FontBBox [33 0 427 666]
+                     /ItalicAngle 0
+                     /Ascent 666
+                     /Descent 0
+                     /CapHeight 666
+                     /StemV 0
+                     /FontFile3 7 0 R
+                     /MissingWidth 400
+                  >>
+               >>
+            ]
+         >>
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 3 0 R ]
+>>
+endobj
+
+5 0 obj
+<< 
+   /Type /CMap
+   /Length 387
+>> 
+stream
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+/CIDSystemInfo
+<< /Registry (Adobe)
+/Ordering (UCS) /Supplement 0 >> def
+/CMapName /Adobe-Identity-UCS def
+/CMapType 2 def
+1 begincodespacerange
+<00> <FF>
+endcodespacerange
+3 beginbfchar
+<01> <0048>
+<02> <0049>
+<03> <0021>
+endbfchar 
+endcmap 
+CMapName currentdict /CMap defineresource pop 
+end
+end
+endstream
+endobj
+
+6 0 obj
+<< 
+   /Type /CMap
+   /Length 408
+   /CMapName /PdfToSvgTest-H
+   /CIDSystemInfo <<
+      /Ordering (Identity)
+      /Registry (Adobe)
+      /Supplement 0
+   >>
+>> 
+stream
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+/CIDSystemInfo
+<< /Registry (Adobe) /Ordering (Identity) /Supplement 0 >> def
+/CMapName /PdfToSvgTest-H def
+/CMapType 1 def
+1 begincodespacerange
+<00> <FF>
+endcodespacerange
+1 beginnotdefchar
+<04> 2
+endnotdefchar
+3 begincidchar
+<01> 41
+<02> 42
+<03> 2
+endcidchar 
+endcmap 
+CMapName currentdict /CMap defineresource pop 
+end
+end
+endstream
+endobj
+
+7 0 obj
+<<
+   /Length1 363
+   /Length 727
+   /Filter /ASCIIHexDecode
+   /Subtype /CIDFontType0C
+>>
+stream
+010004020001010111506466546F53766754657374466F6E74000101012FF81CF81D8E0C1EF81E01F82002F82003F81804BD8BF856F92205F7E00FF758118C0C1FB60C22F7F20C24F7EA0C250006010111161A364656506466546F53766754657374466F6E7441646F6265434E5331436F707972696768742028632920323032312C20506466546F537667506466546F53766754657374466F6E74506466546F53766754657374466F6E74000074466F6E74506466546F53766754657374466F6E7400000005010122466A7F808BBDF845BD01BDBDF7C0BD03BD16F824F8A9FC2406BDFC7715F845F7C0FC45070EE48BE301C7DF03C7E3158D6788578C8B08DF068B8BE48A8A378C8B1FC804DFF87937060EF7D9A076F7BEEB01BFE6F727E303BF16E6F7BEF727FBBEE3F92233FB98FB27F79830060EF6A076F9147701D5D303D5F91415FD14D3F914070E0E01000200002901006300030001000000000400010101098BF7F212F8200C26>
+endstream
+endobj
+
+startxref
+8
+%%EOF

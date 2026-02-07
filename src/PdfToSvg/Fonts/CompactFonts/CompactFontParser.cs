@@ -393,10 +393,20 @@ namespace PdfToSvg.Fonts.CompactFonts
 
             try
             {
-                var charStringData = new ArraySegment<byte>(data, startIndex, endIndex - startIndex);
-                charString = CharStringParser.Parse(
-                    CharStringType.Type2, charStringData,
-                    font.FontSet.Subrs, charLocalSubrs);
+                // Some PDFs have replaced unused glyphs with a char string containing a single zero byte
+                if (endIndex <= startIndex ||
+                    startIndex + 1 == endIndex && data[startIndex] == 0)
+                {
+                    charString = new CharString();
+                }
+                else
+                {
+                    var charStringData = new ArraySegment<byte>(data, startIndex, endIndex - startIndex);
+
+                    charString = CharStringParser.Parse(
+                        CharStringType.Type2, charStringData,
+                        font.FontSet.Subrs, charLocalSubrs);
+                }
             }
             catch (Exception ex)
             {

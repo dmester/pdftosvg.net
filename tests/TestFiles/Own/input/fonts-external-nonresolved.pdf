@@ -1,0 +1,347 @@
+%PDF-1.7
+
+xref
+0 5
+0000000000 65535 f
+0000000161 00000 n
+0000000211 00000 n
+0000000273 00000 n
+0000008519 00000 n
+trailer
+<< /Root 1 0 R /Size 5 >>
+
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Kids [ 3 0 R ] /Count 1 >> endobj
+
+3 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /FThin <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /PdfToSvg-UnknownFont-Thin
+            /Encoding /WinAnsiEncoding
+            /FirstChar 0
+            /LastChar 255
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvg-UnknownFont-Thin
+               /Flags 32
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 0
+               /Ascent 900
+               /Descent 124
+               /CapHeight 807
+               /StemV 0
+               /MissingWidth 400
+            >>
+         >>
+         /FHairline <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /PdfToSvg-UnknownFont-Hairline
+            /Encoding /WinAnsiEncoding
+            /FirstChar 0
+            /LastChar 255
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvg-UnknownFont-Hairline
+               /Flags 32
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 0
+               /Ascent 900
+               /Descent 124
+               /CapHeight 807
+               /StemV 0
+               /MissingWidth 400
+            >>
+         >>
+         /FLight <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /PdfToSvg-UnknownFont-Light
+            /Encoding /WinAnsiEncoding
+            /FirstChar 0
+            /LastChar 255
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvg-UnknownFont-Light
+               /Flags 32
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 0
+               /Ascent 900
+               /Descent 124
+               /CapHeight 807
+               /StemV 0
+               /MissingWidth 400
+            >>
+         >>
+         /FBook <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /PdfToSvg-UnknownFont-Book
+            /Encoding /WinAnsiEncoding
+            /FirstChar 0
+            /LastChar 255
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvg-UnknownFont-Book
+               /Flags 32
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 0
+               /Ascent 900
+               /Descent 124
+               /CapHeight 807
+               /StemV 0
+               /MissingWidth 400
+            >>
+         >>
+         /FRegular <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /PdfToSvg-UnknownFont-Regular
+            /Encoding /WinAnsiEncoding
+            /FirstChar 0
+            /LastChar 255
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvg-UnknownFont-Regular
+               /Flags 32
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 0
+               /Ascent 900
+               /Descent 124
+               /CapHeight 807
+               /StemV 0
+               /MissingWidth 400
+            >>
+         >>
+         /FMedium <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /PdfToSvg-UnknownFont-Medium
+            /Encoding /WinAnsiEncoding
+            /FirstChar 0
+            /LastChar 255
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvg-UnknownFont-Medium
+               /Flags 32
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 0
+               /Ascent 900
+               /Descent 124
+               /CapHeight 807
+               /StemV 0
+               /MissingWidth 400
+            >>
+         >>
+         /FSemibold <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /PdfToSvg-UnknownFont-Semibold
+            /Encoding /WinAnsiEncoding
+            /FirstChar 0
+            /LastChar 255
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvg-UnknownFont-Semibold
+               /Flags 32
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 0
+               /Ascent 900
+               /Descent 124
+               /CapHeight 807
+               /StemV 0
+               /MissingWidth 400
+            >>
+         >>
+         /FBold <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /PdfToSvg-UnknownFont-Bold
+            /Encoding /WinAnsiEncoding
+            /FirstChar 0
+            /LastChar 255
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvg-UnknownFont-Bold
+               /Flags 32
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 0
+               /Ascent 900
+               /Descent 124
+               /CapHeight 807
+               /StemV 0
+               /MissingWidth 400
+            >>
+         >>
+         /FExtraBold <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /PdfToSvg-UnknownFont-ExtraBold
+            /Encoding /WinAnsiEncoding
+            /FirstChar 0
+            /LastChar 255
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvg-UnknownFont-ExtraBold
+               /Flags 32
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 0
+               /Ascent 900
+               /Descent 124
+               /CapHeight 807
+               /StemV 0
+               /MissingWidth 400
+            >>
+         >>
+         /FBlack <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /PdfToSvg-UnknownFont-Black
+            /Encoding /WinAnsiEncoding
+            /FirstChar 0
+            /LastChar 255
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvg-UnknownFont-Black
+               /Flags 32
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 0
+               /Ascent 900
+               /Descent 124
+               /CapHeight 807
+               /StemV 0
+               /MissingWidth 400
+            >>
+         >>
+         /FOblique <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /PdfToSvg-UnknownFont-Oblique
+            /Encoding /WinAnsiEncoding
+            /FirstChar 0
+            /LastChar 255
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvg-UnknownFont-Oblique
+               /Flags 32
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 30
+               /Ascent 900
+               /Descent 124
+               /CapHeight 807
+               /StemV 0
+               /MissingWidth 400
+            >>
+         >>
+         /FItalic <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /PdfToSvg-UnknownFont-Italic
+            /Encoding /WinAnsiEncoding
+            /FirstChar 0
+            /LastChar 255
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvg-UnknownFont-Italic
+               /Flags 32
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 30
+               /Ascent 900
+               /Descent 124
+               /CapHeight 807
+               /StemV 0
+               /MissingWidth 400
+            >>
+         >>
+         /FBoldItalic <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /PdfToSvg-UnknownFont-BoldItalic
+            /Encoding /WinAnsiEncoding
+            /FirstChar 0
+            /LastChar 255
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /PdfToSvg-UnknownFont-BoldItalic
+               /Flags 32
+               /FontBBox [33 0 427 666]
+               /ItalicAngle 30
+               /Ascent 900
+               /Descent 124
+               /CapHeight 807
+               /StemV 0
+               /MissingWidth 400
+            >>
+         >>
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj << /Length 795 >>
+stream
+   0 0 0 rg
+
+   BT
+      100 690 Td
+      /FThin 30 Tf
+      (Thin) '
+      
+      0 -40 Td
+      /FHairline 30 Tf
+      (Hairline) '
+      
+      0 -40 Td
+      /FBook 30 Tf
+      (Book) '
+      
+      0 -40 Td
+      /FRegular 30 Tf
+      (Regular) '
+      
+      0 -40 Td
+      /FMedium 30 Tf
+      (Medium) '
+      
+      0 -40 Td
+      /FSemibold 30 Tf
+      (Semi Bold) '
+ 
+      0 -40 Td
+      /FBold 30 Tf
+      (Bold) '
+      
+      0 -40 Td
+      /FExtraBold 30 Tf
+      (Extra Bold) '
+
+      0 -40 Td
+      /FBlack 30 Tf
+      (Black) '
+      
+      0 -40 Td
+      /FOblique 30 Tf
+      (Oblique) '
+      
+      0 -40 Td
+      /FItalic 30 Tf
+      (Italic) '
+      
+      0 -40 Td
+      /FBoldItalic 30 Tf
+      (Bold Italic) '
+   ET
+
+endstream
+endobj
+
+startxref
+8
+%%EOF

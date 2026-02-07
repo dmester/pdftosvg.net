@@ -32,6 +32,7 @@ namespace PdfToSvg.Fonts.FontResolvers
             "xtlight", "200",
             "normal", "400",
             "regular", "400",
+            "book", "400",
             "roman", "400",
             "medium", "500",
             "thin", "100",
@@ -79,6 +80,7 @@ namespace PdfToSvg.Fonts.FontResolvers
             "ArialBlack", "'Arial Black',Arial,sans-serif",
 
             "Arial", "Arial,sans-serif",
+            "Antiqua", "serif",
             "Bahnschrift", "Bahnschrift,sans-serif",
             "Calibri", "Calibri,sans-serif",
             "Cambria", "Cambria,serif",
@@ -131,7 +133,6 @@ namespace PdfToSvg.Fonts.FontResolvers
             "sans", "sans-serif",
             "roman", "serif",
             "serif", "serif",
-            "book", "serif",
             "source", "monospace",
             "code", "monospace",
             "consol", "monospace",

@@ -37,6 +37,28 @@ namespace PdfToSvg.Tests.Common
         }
 
         [Test]
+        [TestCase("2,3", 0)]
+        [TestCase("1,3", 1)]
+        [TestCase("1,2", 2)]
+        public void Remove_Success(string expected, int indexToRemove)
+        {
+            var actual = ArrayUtils.Remove(new byte[] { 1, 2, 3 }, indexToRemove);
+
+            Assert.AreEqual(expected, string.Join(",", actual));
+        }
+
+        [Test]
+        [TestCase(-1)]
+        [TestCase(3)]
+        public void Remove_OutOfRange(int indexToRemove)
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                ArrayUtils.Remove(new byte[] { 1, 2, 3 }, indexToRemove);
+            });
+        }
+
+        [Test]
         public void StartsWith_EmptyHaystack()
         {
             var haystack = new byte[0];

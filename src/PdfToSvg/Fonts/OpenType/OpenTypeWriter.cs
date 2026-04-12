@@ -134,6 +134,25 @@ namespace PdfToSvg.Fonts.OpenType
             }
         }
 
+        public void WriteBytes(ArraySegment<byte> value)
+        {
+            if (value.Count > 0)
+            {
+                if (value.Array == null) throw new ArgumentNullException(nameof(value));
+
+                EnsureCapacity(cursor + value.Count);
+
+                Buffer.BlockCopy(value.Array, value.Offset, buffer, cursor, value.Count);
+
+                cursor += value.Count;
+
+                if (cursor > length)
+                {
+                    length = cursor;
+                }
+            }
+        }
+
         public void WriteField16(out OpenTypeWriterField16 field)
         {
             field = new OpenTypeWriterField16(this, cursor);
@@ -198,6 +217,11 @@ namespace PdfToSvg.Fonts.OpenType
             }
 
             WriteAscii(value);
+        }
+
+        public void WriteInt8(sbyte value)
+        {
+            WriteUInt8((byte)value);
         }
 
         public void WriteUInt8(byte value)

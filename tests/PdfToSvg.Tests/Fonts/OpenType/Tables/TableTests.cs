@@ -6,8 +6,10 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using PdfToSvg.Fonts.OpenType;
 using PdfToSvg.Fonts.OpenType.Enums;
+using PdfToSvg.Fonts.OpenType.Glyf;
 using PdfToSvg.Fonts.OpenType.Tables;
 using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -445,5 +447,80 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Tables
 
             Assert.AreEqual((ushort)expectedValue, table.FsType);
         }
+
+        [Test]
+        public void TestGlyf()
+        {
+            var sourceData = new byte[]
+            {
+                // Simple glyph
+                // -----------------------
+
+                0, 1, // numberOfContours
+                0, 2, // xMin
+                0, 3, // yMin
+                0, 4, // xMax
+                0, 5, // yMax
+
+                0, 4, // endPtsOfContours
+                0, 3, // instructionLength
+                1, 2, 3, // instructions
+
+                (byte)(SimpleGlyphFlags.XShortVector | SimpleGlyphFlags.YShortVector | SimpleGlyphFlags.RepeatFlag), // flags
+                4,  // repeatCount
+
+                01, // coordinates
+                02,
+                03,
+                04,
+                05,
+                06,
+                07,
+                08,
+                09,
+                10,
+
+                0, // Padding
+
+                // Composite glyph
+                // -----------------------
+
+                0xff, 0xff, // numberOfContours
+                0, 6, // xMin
+                0, 7, // yMin
+                0, 8, // xMax
+                0, 9, // yMax
+
+                0x01, 0x08, // flags (WeHaveInstructions | WeHaveAScale)
+                0, 0, // glyphIndex
+                77, 88, // arg1and2
+                98, 99, // scale
+
+                0, 4, // numInstr
+                10, 11, 12, 13, // instr
+
+                // no padding
+            };
+
+            var loca = new LocaTable
+            {
+                Offsets = [0, 30, 54],
+            };
+            var context = new OpenTypeReaderContext("glyf", [loca]);
+            var reader = new OpenTypeReader(sourceData, 0, sourceData.Length);
+            
+            var glyfTable = GlyfTable.Factory.Create(reader, context);
+
+            var writer = new OpenTypeWriter();
+            glyfTable.Write(writer, []);
+
+            var targetData = writer.ToArray();
+
+            var sourceDataString = string.Join(" ", sourceData.Select(x => x.ToString("x2")));
+            var targetDataString = string.Join(" ", targetData.Select(x => x.ToString("x2")));
+
+            Assert.AreEqual(sourceDataString, targetDataString);
+        }
+
     }
 }

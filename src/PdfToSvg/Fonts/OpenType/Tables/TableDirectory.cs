@@ -66,6 +66,18 @@ namespace PdfToSvg.Fonts.OpenType.Tables
 
             var isCffFont = Tables.Any(table => table.Tag == "CFF ");
 
+            // Update TrueType offsets
+            if (!isCffFont)
+            {
+                var glyfTable = Tables.Get<GlyfTable>();
+                var headTable = Tables.Get<HeadTable>();
+                if (glyfTable != null)
+                {
+                    var locaTable = Tables.GetOrCreate<LocaTable>();
+                    UpdateLoca(locaTable, headTable, glyfTable);
+                }
+            }
+
             OptimalTableOrder.StorageSort(Tables, table => table.Tag, isCffFont);
 
             var numTables = (ushort)Tables.Length;
@@ -126,6 +138,39 @@ namespace PdfToSvg.Fonts.OpenType.Tables
                     writer.Position = record.Offset + HeadChecksumAdjustmentOffset;
                     writer.WriteUInt32(0xB1B0AFBA - writer.Checksum(0, writer.Length));
                     break;
+                }
+            }
+        }
+
+        private void UpdateLoca(LocaTable locaTable, HeadTable? headTable, GlyfTable glyfTable)
+        {
+            var glyphs = glyfTable.Glyphs;
+
+            if (glyphs.Length == 0)
+            {
+                locaTable.Offsets = ArrayUtils.Empty<uint>();
+            }
+            else
+            {
+                var offsets = new uint[glyphs.Length + 1];
+                offsets[0] = 0;
+
+                var cursor = 0;
+                for (var i = 0; i < glyphs.Length; i++)
+                {
+                    ref var glyph = ref glyphs[i];
+                    cursor += glyph.Data.Count;
+                    offsets[i + 1] = (uint)cursor;
+                }
+
+                locaTable.Offsets = offsets;
+
+                if (headTable != null)
+                {
+                    var lastOffset = offsets[offsets.Length - 1];
+                    headTable.IndexToLocFormat = lastOffset > LocaTable.MaxShortOffset
+                        ? LocaTable.LongFormat
+                        : LocaTable.ShortFormat;
                 }
             }
         }

@@ -14,6 +14,10 @@ namespace PdfToSvg.Fonts.OpenType.Tables
 {
     internal class LocaTable : IBaseTable
     {
+        public const int MaxShortOffset = ushort.MaxValue * 2;
+        public const short ShortFormat = 0;
+        public const short LongFormat = 1;
+
         public static TableFactory Factory => new("loca", Read);
         public string Tag => "loca";
 
@@ -22,9 +26,9 @@ namespace PdfToSvg.Fonts.OpenType.Tables
         public void Write(OpenTypeWriter writer, IList<IBaseTable> tables)
         {
             var headTable = tables.Get<HeadTable>();
-            var indexToLocFormat = headTable == null ? 0 : headTable.IndexToLocFormat;
+            var indexToLocFormat = headTable == null ? ShortFormat : headTable.IndexToLocFormat;
 
-            if (indexToLocFormat == 0)
+            if (indexToLocFormat == ShortFormat)
             {
                 foreach (var offset in Offsets)
                 {

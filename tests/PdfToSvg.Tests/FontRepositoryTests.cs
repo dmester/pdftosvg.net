@@ -92,7 +92,7 @@ namespace PdfToSvg.Tests
 
             repo.AddDirectory(TestFiles.ExternalFontsDirectory);
 
-            Assert.AreEqual(12, repo.Count);
+            Assert.AreEqual(13, repo.Count);
         }
 
         [Test]

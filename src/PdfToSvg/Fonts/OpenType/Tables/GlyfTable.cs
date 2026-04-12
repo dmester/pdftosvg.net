@@ -3,9 +3,9 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.Common;
-using PdfToSvg.Encodings;
-using PdfToSvg.Fonts.CompactFonts;
+using PdfToSvg.Fonts.OpenType.Glyf;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,19 +17,53 @@ namespace PdfToSvg.Fonts.OpenType.Tables
         public static TableFactory Factory => new("glyf", Read);
         public string Tag => "glyf";
 
-        public byte[] Content = ArrayUtils.Empty<byte>();
+        public GlyfRecord[] Glyphs = ArrayUtils.Empty<GlyfRecord>();
 
-        void IBaseTable.Write(OpenTypeWriter writer, IList<IBaseTable> _)
+        public GlyfStats Stats = new GlyfStats();
+
+        void IBaseTable.Write(OpenTypeWriter writer, IList<IBaseTable> tables)
         {
-            writer.WriteBytes(Content);
+            var glyphs = Glyphs;
+
+            for (var glyphIndex = 0; glyphIndex < glyphs.Length; glyphIndex++)
+            {
+                writer.WriteBytes(glyphs[glyphIndex].Data);
+            }
         }
 
         private static IBaseTable? Read(OpenTypeReader reader, OpenTypeReaderContext context)
         {
-            return new GlyfTable
+            var glyfTable = new GlyfTable();
+
+            var offsets = context.ReadTables.Get<LocaTable>()?.Offsets;
+            if (offsets != null && offsets.Length > 1)
             {
-                Content = reader.ReadBytes(reader.Length - reader.Position),
-            };
+                var fullGlyphs = GlyfParser.Read(reader, offsets);
+                GlyfSanitizer.Sanitize(fullGlyphs, glyfTable.Stats);
+                glyfTable.Glyphs = GlyfBuilder.Write(fullGlyphs, reader.Length);
+            }
+
+            return glyfTable;
         }
+    }
+
+    internal struct GlyfRecord
+    {
+        public ArraySegment<byte> Data;
+        public short XMin;
+        public short XMax;
+        public short YMin;
+        public short YMax;
+    }
+
+    internal class GlyfStats
+    {
+        public ushort MaxPoints;
+        public ushort MaxContours;
+        public ushort MaxComponentDepth;
+        public ushort MaxCompositePoints;
+        public ushort MaxCompositeContours;
+        public ushort MaxComponentElements;
+        public ushort MaxSizeOfInstructions;
     }
 }

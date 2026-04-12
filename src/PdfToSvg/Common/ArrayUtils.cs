@@ -21,6 +21,16 @@ namespace PdfToSvg.Common
             return result;
         }
 
+        public static T[] Remove<T>(T[] array, int index)
+        {
+            if (index < 0 || index >= array.Length) throw new ArgumentOutOfRangeException(nameof(index));
+
+            var result = new T[array.Length - 1];
+            Array.Copy(array, result, index);
+            Array.Copy(array, index + 1, result, index, array.Length - index - 1);
+            return result;
+        }
+
         public static T[] Concat<T>(params T[]?[] arrays)
         {
             var totalLength = 0;

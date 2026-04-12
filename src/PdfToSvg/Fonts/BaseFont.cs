@@ -619,30 +619,15 @@ namespace PdfToSvg.Fonts
                 }
             }
 
-            var locaTable = font.Tables.Get<LocaTable>();
             var glyfTable = font.Tables.Get<GlyfTable>();
-            if (locaTable != null && glyfTable != null)
+            if (glyfTable != null)
             {
-                if (locaTable.Offsets.Length > 1)
+                var glyphs = glyfTable.Glyphs;
+                
+                if (glyphs.Length > 0)
                 {
-                    var startOffset = (int)locaTable.Offsets[0];
-                    var endOffset = (int)locaTable.Offsets[1];
-                    var lastOffset = (int)locaTable.Offsets.Last();
-                    var glyph0Length = endOffset - startOffset;
-
-                    if (glyph0Length > 0)
-                    {
-                        // Duplicate content
-                        var originalContent = glyfTable.Content;
-                        var newContent = new byte[lastOffset + glyph0Length];
-
-                        Buffer.BlockCopy(originalContent, 0, newContent, 0, lastOffset);
-                        Buffer.BlockCopy(originalContent, 0, newContent, lastOffset, glyph0Length);
-
-                        glyfTable.Content = newContent;
-                    }
-
-                    locaTable.Offsets = ArrayUtils.Add(locaTable.Offsets, (uint)(lastOffset + glyph0Length));
+                    // Duplicate glyph 0
+                    glyfTable.Glyphs = ArrayUtils.Add(glyphs, glyphs[0]);
 
                     if (maxpTable != null)
                     {
@@ -658,7 +643,7 @@ namespace PdfToSvg.Fonts
                             glyph0Ref.GlyphName ?? postTable.GlyphNames[0]);
                     }
 
-                    return locaTable.Offsets.Length - 2;
+                    return glyphs.Length;
                 }
             }
 

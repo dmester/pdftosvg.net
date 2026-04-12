@@ -10,8 +10,10 @@ using PdfToSvg.Fonts.OpenType.Conversion;
 using PdfToSvg.Fonts.OpenType.Enums;
 using PdfToSvg.Fonts.OpenType.Tables;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 
 namespace PdfToSvg.Fonts.OpenType
@@ -49,20 +51,31 @@ namespace PdfToSvg.Fonts.OpenType
             PostTable post;
             MaxpTable maxp;
             OS2Table os2;
+            GlyfTable? glyf = null;
 
             if (cffSet == null || cff == null)
             {
                 // TrueType
-                head = GetOrThrow<HeadTable>();
-                hmtx = GetOrThrow<HmtxTable>();
-                maxp = GetOrThrow<MaxpTable>();
+                font.Tables.Remove<MaxpTableV05>(); // maxp v0.5 only for fonts with CFF outlines
+                
+                glyf = GetOrThrow<GlyfTable>();
                 cmap = GetOrCreate(() => CreateEmptyCMap());
-                hhea = GetOrNull<HheaTable>();
+                hmtx = GetOrCreate(() => CreateHmtx(glyf));
+                head = GetOrCreate(() => CreateHead(glyf));
+                hhea = GetOrCreate(() => CreateHhea(head, glyf));
+
+                var maxpV10 = GetOrCreate(() => new MaxpTableV10());
+                maxp = maxpV10;
+                // `loca` table is created when the font is serialized
+
+                UpdateTrueTypeGlyphs(maxpV10, glyf);
             }
             else
             {
                 // CFF OpenType
                 UpdateCff(cffSet);
+
+                font.Tables.Remove<MaxpTableV10>(); // maxp v1.0 only for fonts with TrueType outlines
 
                 var glyphs = GetGlyphs(cff);
                 head = GetOrCreate(() => CreateHead(cff, glyphs));
@@ -132,7 +145,7 @@ namespace PdfToSvg.Fonts.OpenType
 
         private T Replace<T>(T newTable) where T : IBaseTable
         {
-            font.Tables.Remove<NameTable>();
+            font.Tables.Remove<T>();
             font.Tables.Add(newTable);
             return newTable;
         }
@@ -202,6 +215,39 @@ namespace PdfToSvg.Fonts.OpenType
             return head;
         }
 
+        private HeadTable CreateHead(GlyfTable glyf)
+        {
+            var xMin = glyf.Glyphs.Min(x => x.XMin);
+            var xMax = glyf.Glyphs.Max(x => x.XMax);
+            var yMin = glyf.Glyphs.Min(x => x.YMin);
+            var yMax = glyf.Glyphs.Max(x => x.YMax);
+
+            var head = new HeadTable();
+
+            // The dates are hard-coded to ensure deterministic output.
+            // This ensures fonts can be reused between pages.
+            head.Created = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            head.Modified = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+            head.Flags = 0;
+            head.UnitsPerEm = xMax < 1000 ? (ushort)1000 : (ushort)2048;
+
+            head.MinX = xMin;
+            head.MaxX = xMax;
+            head.MinY = yMin;
+            head.MaxY = yMax;
+
+            head.MacStyle = 0;
+
+            head.LowestRecPPEM = 8;
+
+            head.FontDirectionHint = 2;
+
+            head.FontRevision = 1;
+
+            return head;
+        }
+
         private HheaTable CreateHhea(HeadTable head, CompactFont cff, List<CompactFontGlyph> glyphs)
         {
             var hhea = new HheaTable();
@@ -219,6 +265,27 @@ namespace PdfToSvg.Fonts.OpenType
             hhea.CaretSlopeRise = 1;
 
             hhea.NumberOfHMetrics = (ushort)cff.Glyphs.Count;
+
+            return hhea;
+        }
+
+        private HheaTable CreateHhea(HeadTable head, GlyfTable glyf)
+        {
+            var hhea = new HheaTable();
+
+            hhea.Ascender = head.MaxY;
+            hhea.Descender = head.MinY;
+
+            hhea.LineGap = 0;
+
+            hhea.AdvanceWidthMax = (ushort)head.MaxX;
+            hhea.MinLeftSideBearing = head.MinX;
+            hhea.MinRightSideBearing = 0;
+            hhea.MaxXExtent = head.MaxX;
+
+            hhea.CaretSlopeRise = 1;
+
+            hhea.NumberOfHMetrics = (ushort)glyf.Glyphs.Length;
 
             return hhea;
         }
@@ -447,6 +514,23 @@ namespace PdfToSvg.Fonts.OpenType
             }
         }
 
+        private void UpdateTrueTypeGlyphs(MaxpTableV10 maxpTable, GlyfTable glyfTable)
+        {
+            maxpTable.MaxPoints = glyfTable.Stats.MaxPoints;
+            maxpTable.MaxContours = glyfTable.Stats.MaxContours;
+            maxpTable.MaxComponentDepth = glyfTable.Stats.MaxComponentDepth;
+            maxpTable.MaxCompositePoints = glyfTable.Stats.MaxCompositePoints;
+            maxpTable.MaxCompositeContours = glyfTable.Stats.MaxCompositeContours;
+            maxpTable.MaxComponentElements = glyfTable.Stats.MaxComponentElements;
+            maxpTable.MaxSizeOfInstructions = glyfTable.Stats.MaxSizeOfInstructions;
+
+            // Apple says this should be 2. Microsoft says it should be 2 in most cases, if it is not 1.
+            if (maxpTable.MaxZones != 1)
+            {
+                maxpTable.MaxZones = 2;
+            }
+        }
+
         private void UpdateOS2(OS2Table os2, HeadTable head, CMapTable cmapTable, CompactFont? cff)
         {
             var cmap = cmapTable.EncodingRecords
@@ -526,6 +610,25 @@ namespace PdfToSvg.Fonts.OpenType
                 {
                     AdvanceWidth = (ushort)x.Width,
                     LeftSideBearing = 0,
+                })
+                .ToArray();
+
+            hmtx.LeftSideBearings = new short[0];
+
+            return hmtx;
+        }
+
+        private HmtxTable CreateHmtx(GlyfTable glyf)
+        {
+            var hmtx = new HmtxTable();
+
+            // These metrics are not correct, but they are better than nothing
+            hmtx.HorMetrics = glyf
+                .Glyphs
+                .Select(x => new LongHorMetricRecord
+                {
+                    AdvanceWidth = (ushort)x.XMax,
+                    LeftSideBearing = x.XMin,
                 })
                 .ToArray();
 

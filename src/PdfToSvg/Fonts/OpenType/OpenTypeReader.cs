@@ -60,6 +60,44 @@ namespace PdfToSvg.Fonts.OpenType
             return new OpenTypeReader(buffer, this.startIndex + offset, count);
         }
 
+        public void CopyBytesTo(OpenTypeWriter writer, int count)
+        {
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+            if (cursor + count > endIndex) throw new EndOfStreamException();
+
+            writer.WriteBytes(this.buffer, cursor, count);
+
+            cursor += count;
+        }
+
+        public void ConsumeBytes(int count)
+        {
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+            if (cursor + count > endIndex) throw new EndOfStreamException();
+
+            cursor += count;
+        }
+
+        public void ReadBytes(byte[] buffer, int offset, int count)
+        {
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+            if (cursor + count > endIndex) throw new EndOfStreamException();
+
+            Buffer.BlockCopy(this.buffer, cursor, buffer, offset, count);
+
+            cursor += count;
+        }
+
+        public ArraySegment<byte> ReadByteSegment(int count)
+        {
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+            if (cursor + count > endIndex) throw new EndOfStreamException();
+
+            var result = new ArraySegment<byte>(buffer, cursor, count);
+            cursor += count;
+            return result;
+        }
+
         public byte[] ReadBytes(int count)
         {
             if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));

@@ -47,6 +47,13 @@ namespace PdfToSvg.Parsing
 
             foreach (var content in contents)
             {
+                // According to ISO 32000-2-2020 Table 31, multiple content streams should be concatenated together as
+                // if they were separated with at least one white-space character.
+                if (combinedBuffer.Length > 0)
+                {
+                    combinedBuffer.WriteByte((byte)' ');
+                }
+
                 var stream = content.Stream;
                 if (stream != null)
                 {
@@ -73,6 +80,13 @@ namespace PdfToSvg.Parsing
 
             foreach (var content in contents)
             {
+                // According to ISO 32000-2-2020 Table 31, multiple content streams should be concatenated together as
+                // if they were separated with at least one white-space character.
+                if (combinedBuffer.Length > 0)
+                {
+                    combinedBuffer.WriteByte((byte)' ');
+                }
+
                 var stream = content.Stream;
                 if (stream != null)
                 {

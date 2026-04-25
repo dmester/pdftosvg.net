@@ -1846,6 +1846,7 @@ namespace PdfToSvg.Drawing
         {
             if (!markedContentVisible)
             {
+                currentPath = new PathData();
                 return;
             }
 

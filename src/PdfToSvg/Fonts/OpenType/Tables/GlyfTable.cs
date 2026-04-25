@@ -23,11 +23,20 @@ namespace PdfToSvg.Fonts.OpenType.Tables
 
         void IBaseTable.Write(OpenTypeWriter writer, IList<IBaseTable> tables)
         {
+            var startPosition = writer.Position;
             var glyphs = Glyphs;
 
             for (var glyphIndex = 0; glyphIndex < glyphs.Length; glyphIndex++)
             {
                 writer.WriteBytes(glyphs[glyphIndex].Data);
+            }
+
+            // Empty glyf tables, e.g. in fonts containing only space characters, are rejected by OTS Sanitizer.
+            // We will prevent this by stuffing the table with a zero byte.
+            // https://github.com/khaledhosny/ots/issues/52
+            if (startPosition == writer.Position)
+            {
+                writer.WriteUInt8(0);
             }
         }
 

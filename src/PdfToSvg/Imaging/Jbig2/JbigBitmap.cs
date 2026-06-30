@@ -75,6 +75,11 @@ namespace PdfToSvg.Imaging.Jbig2
                 destY = 0;
             }
 
+            if (width <= 0 || height <= 0)
+            {
+                return;
+            }
+
             var destRowDiff = this.Width;
             var srcRowDiff = otherBitmap.Width;
 

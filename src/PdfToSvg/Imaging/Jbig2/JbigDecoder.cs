@@ -904,7 +904,13 @@ namespace PdfToSvg.Imaging.Jbig2
                 segment.Type == JbigSegmentType.ImmediateLosslessGenericRegion ||
                 segment.Type == JbigSegmentType.ImmediateGenericRegion)
             {
-                return DetectGenericRegionLength(data, offset + segment.Offset, count - segment.Offset);
+                var detectedLength = DetectGenericRegionLength(data, offset + segment.Offset, count - segment.Offset);
+                if (detectedLength < 0)
+                {
+                    throw new JbigException("Could not detect the length of the unknown-length generic region in segment " + segment.SegmentNumber);
+                }
+
+                return detectedLength;
             }
 
             throw new JbigException("An explicit length must be specified on segments that are not generic regions.");

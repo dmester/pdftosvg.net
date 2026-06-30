@@ -833,7 +833,7 @@ namespace PdfToSvg.Imaging.Jbig2
 
             if (bitmapCodingContextUsed)
             {
-                for (var i = segment.ReferredSegments.Count - 1; i >= 0; i++)
+                for (var i = segment.ReferredSegments.Count - 1; i >= 0; i--)
                 {
                     var referredSegment = segment.ReferredSegments[i];
 

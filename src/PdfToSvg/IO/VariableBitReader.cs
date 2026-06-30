@@ -158,6 +158,9 @@ namespace PdfToSvg.IO
         public int ReadByte() => ReadByte(throwOnError: false);
         public int ReadByteOrThrow() => ReadByte(throwOnError: true);
 
+        public sbyte ReadSByte() => (sbyte)(byte)ReadByte(throwOnError: false);
+        public sbyte ReadSByteOrThrow() => (sbyte)(byte)ReadByte(throwOnError: true);
+
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         private int ReadByte(bool throwOnError)
         {

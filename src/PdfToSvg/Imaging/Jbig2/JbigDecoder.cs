@@ -334,8 +334,8 @@ namespace PdfToSvg.Imaging.Jbig2
 
                 for (var i = 0; i < numAt; i++)
                 {
-                    decoder.ATX[i] = (sbyte)(byte)reader.ReadByte();
-                    decoder.ATY[i] = (sbyte)(byte)reader.ReadByte();
+                    decoder.ATX[i] = reader.ReadSByte();
+                    decoder.ATY[i] = reader.ReadSByte();
                 }
             }
 
@@ -377,8 +377,8 @@ namespace PdfToSvg.Imaging.Jbig2
 
                 for (var i = 0; i < 2; i++)
                 {
-                    decoder.ATX[i] = (sbyte)(byte)reader.ReadByte();
-                    decoder.ATY[i] = (sbyte)(byte)reader.ReadByte();
+                    decoder.ATX[i] = reader.ReadSByte();
+                    decoder.ATY[i] = reader.ReadSByte();
                 }
             }
 
@@ -631,10 +631,10 @@ namespace PdfToSvg.Imaging.Jbig2
                 decoder.RefinementATX = new sbyte[2];
                 decoder.RefinementATY = new sbyte[2];
 
-                decoder.RefinementATX[0] = (sbyte)(byte)reader.ReadByte();
-                decoder.RefinementATY[0] = (sbyte)(byte)reader.ReadByte();
-                decoder.RefinementATX[1] = (sbyte)(byte)reader.ReadByte();
-                decoder.RefinementATY[1] = (sbyte)(byte)reader.ReadByte();
+                decoder.RefinementATX[0] = reader.ReadSByte();
+                decoder.RefinementATY[0] = reader.ReadSByte();
+                decoder.RefinementATX[1] = reader.ReadSByte();
+                decoder.RefinementATY[1] = reader.ReadSByte();
             }
 
             // SBNUMINSTANCES
@@ -788,22 +788,22 @@ namespace PdfToSvg.Imaging.Jbig2
                     decoder.ATX = new sbyte[4];
                     decoder.ATY = new sbyte[4];
 
-                    decoder.ATX[0] = (sbyte)(byte)reader.ReadByte();
-                    decoder.ATY[0] = (sbyte)(byte)reader.ReadByte();
-                    decoder.ATX[1] = (sbyte)(byte)reader.ReadByte();
-                    decoder.ATY[1] = (sbyte)(byte)reader.ReadByte();
-                    decoder.ATX[2] = (sbyte)(byte)reader.ReadByte();
-                    decoder.ATY[2] = (sbyte)(byte)reader.ReadByte();
-                    decoder.ATX[3] = (sbyte)(byte)reader.ReadByte();
-                    decoder.ATY[3] = (sbyte)(byte)reader.ReadByte();
+                    decoder.ATX[0] = reader.ReadSByte();
+                    decoder.ATY[0] = reader.ReadSByte();
+                    decoder.ATX[1] = reader.ReadSByte();
+                    decoder.ATY[1] = reader.ReadSByte();
+                    decoder.ATX[2] = reader.ReadSByte();
+                    decoder.ATY[2] = reader.ReadSByte();
+                    decoder.ATX[3] = reader.ReadSByte();
+                    decoder.ATY[3] = reader.ReadSByte();
                 }
                 else
                 {
                     decoder.ATX = new sbyte[1];
                     decoder.ATY = new sbyte[1];
 
-                    decoder.ATX[0] = (sbyte)(byte)reader.ReadByte();
-                    decoder.ATY[0] = (sbyte)(byte)reader.ReadByte();
+                    decoder.ATX[0] = reader.ReadSByte();
+                    decoder.ATY[0] = reader.ReadSByte();
                 }
             }
 
@@ -813,10 +813,10 @@ namespace PdfToSvg.Imaging.Jbig2
                 decoder.RefinementATX = new sbyte[2];
                 decoder.RefinementATY = new sbyte[2];
 
-                decoder.RefinementATX[0] = (sbyte)(byte)reader.ReadByte();
-                decoder.RefinementATY[0] = (sbyte)(byte)reader.ReadByte();
-                decoder.RefinementATX[1] = (sbyte)(byte)reader.ReadByte();
-                decoder.RefinementATY[1] = (sbyte)(byte)reader.ReadByte();
+                decoder.RefinementATX[0] = reader.ReadSByte();
+                decoder.RefinementATY[0] = reader.ReadSByte();
+                decoder.RefinementATX[1] = reader.ReadSByte();
+                decoder.RefinementATY[1] = reader.ReadSByte();
             }
 
             decoder.ExportedSymbolCount = reader.ReadBytesOrThrow(4);

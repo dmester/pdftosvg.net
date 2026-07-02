@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
+    <File Path="AGENTS.md" />
     <File Path="src/Directory.Build.props" />
   </Folder>
   <Project Path="src/PdfToSvg.Cli.NativeAot/PdfToSvg.Cli.NativeAot.csproj" />

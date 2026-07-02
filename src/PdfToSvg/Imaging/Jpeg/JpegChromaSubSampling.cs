@@ -35,5 +35,9 @@ namespace PdfToSvg.Imaging.Jpeg
         /// 4:1:1 sub sampling (Y 4x1, Cb 1x1, Cr 1x1)
         /// </summary>
         Ratio411 = 0x41,
+        /// <summary>
+        /// Another sub sampling scheme used.
+        /// </summary>
+        Custom = -1,
     }
 }

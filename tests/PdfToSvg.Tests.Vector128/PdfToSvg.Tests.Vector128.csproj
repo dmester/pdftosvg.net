@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Only net8.0 has the SIMD code paths. The runsettings constrain hardware acceleration to Vector128. -->
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <LangVersion>12.0</LangVersion>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
+    <RunSettingsFilePath>$(MSBuildProjectDirectory)\Vector128.runsettings</RunSettingsFilePath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(Configuration) == 'Release' And $(PdfToSvgKeyFile) != ''">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(PdfToSvgKeyFile)</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants>PDFTOSVG_VECTOR128;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\PdfToSvg.Tests\**\*.cs" Visible="false" />
+    <Compile Remove="..\PdfToSvg.Tests\bin\**\*.cs" />
+    <Compile Remove="..\PdfToSvg.Tests\obj\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\PdfToSvg\PdfToSvg.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\PdfToSvg.Tests\Common\UnicodeData.txt" Link="Common\UnicodeData.txt" CopyToOutputDirectory="Always" />
+    <None Include="..\PdfToSvg.Tests\Fonts\TestFiles\non-symbol.ttf" Link="Fonts\TestFiles\non-symbol.ttf" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\PdfToSvg.Tests\Fonts\TestFiles\symbol.ttf" Link="Fonts\TestFiles\symbol.ttf" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\PdfToSvg.Tests\IO\ZLib_Uncompressed.bmp" Link="IO\ZLib_Uncompressed.bmp" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\PdfToSvg.Tests\IO\ZLib_WindowBits15.bin" Link="IO\ZLib_WindowBits15.bin" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\PdfToSvg.Tests\IO\ZLib_WindowBits8.bin" Link="IO\ZLib_WindowBits8.bin" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\PdfToSvg.SourceGenerators\PdfToSvg.SourceGenerators.csproj" SetTargetFramework="TargetFramework=netstandard2.0" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+</Project>

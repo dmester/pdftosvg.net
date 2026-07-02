@@ -6,6 +6,8 @@ using PdfToSvg.ColorSpaces;
 using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Imaging.Jpeg;
+using PdfToSvg.Imaging.Png;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -138,17 +140,109 @@ namespace PdfToSvg.Imaging
                 return sourceJpegData;
             }
 
-            return FullTranscode(decoder, sourceColorSpace, cancellationToken);
+            if (IsFastTranscodePossible(decoder, sourceColorSpace))
+            {
+                return FastTranscode(decoder, sourceColorSpace, cancellationToken);
+            }
+            else
+            {
+                return RowTranscode(decoder, sourceColorSpace, cancellationToken);
+            }
         }
 
-        private byte[] FullTranscode(JpegDecoder decoder, JpegColorSpace sourceColorSpace, CancellationToken cancellationToken)
+        /// <summary>
+        /// Determines whether the de-interleaved fast block path can be used. It skips the upsampling/interleaving
+        /// done by <see cref="RowTranscode"/> and streams 8x8 blocks straight from the decoder through the color
+        /// transform to the encoder.
+        /// </summary>
+        private bool IsFastTranscodePossible(JpegDecoder decoder, JpegColorSpace sourceColorSpace)
         {
-            var encoder = new JpegEncoder();
+            // The fast color transforms only cover device CMYK -> YCbCr and YCCK -> YCbCr
+            if (sourceColorSpace != JpegColorSpace.Cmyk &&
+                sourceColorSpace != JpegColorSpace.Ycck)
+            {
+                return false;
+            }
 
-            encoder.Width = decoder.Width;
-            encoder.Height = decoder.Height;
-            encoder.ColorSpace = JpegColorSpace.YCbCr;
-            encoder.Quality = 90;
+            if (colorSpace is not DeviceCmykColorSpace)
+            {
+                return false;
+            }
+
+            // The fast path reads raw samples without applying a decode array
+            if (ImageHelper.HasCustomDecodeArray(imageDictionary, colorSpace))
+            {
+                return false;
+            }
+
+            // Block grouping assumes exactly one block per component per MCU
+            if (decoder.ChromaSubSampling != JpegChromaSubSampling.None &&
+                decoder.ChromaSubSampling != JpegChromaSubSampling.Ratio444)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private byte[] FastTranscode(JpegDecoder decoder, JpegColorSpace sourceColorSpace, CancellationToken cancellationToken)
+        {
+            const int BlockSize = 8 * 8;
+            const int BlockBatchCount = 1024;
+
+            var encoder = new JpegEncoder
+            {
+                Width = decoder.Width,
+                Height = decoder.Height,
+                ColorSpace = JpegColorSpace.YCbCr,
+                ChromaSubSampling = JpegChromaSubSampling.None,
+                Quality = decoder.Quality,
+            };
+
+            encoder.WriteMetadata();
+
+            // ReadBlocks keeps the block count a multiple of the source component count
+            var blocks = new short[BlockSize * BlockBatchCount];
+
+            foreach (var readBlockCount in decoder.ReadBlocks(blocks))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                int convertedBlocks;
+
+                switch (sourceColorSpace)
+                {
+                    case JpegColorSpace.Cmyk:
+                        convertedBlocks = JpegColorSpaceTransform.CmykBlocksToYcc(blocks, readBlockCount);
+                        break;
+
+                    case JpegColorSpace.Ycck:
+                        convertedBlocks = JpegColorSpaceTransform.YcckBlocksToYcc(blocks, readBlockCount);
+                        break;
+
+                    default:
+                        throw new PdfException(
+                            "Unexpected state. Color space should have been either CMYK or YCCK but was " + sourceColorSpace + ".");
+                }
+
+                encoder.WriteBlocks(blocks, convertedBlocks);
+            }
+
+            encoder.WriteEndImage();
+
+            return encoder.ToByteArray();
+        }
+
+        private byte[] RowTranscode(JpegDecoder decoder, JpegColorSpace sourceColorSpace, CancellationToken cancellationToken)
+        {
+            var encoder = new JpegEncoder
+            {
+                Width = decoder.Width,
+                Height = decoder.Height,
+                ColorSpace = JpegColorSpace.YCbCr,
+                ChromaSubSampling = decoder.ChromaSubSampling,
+                Quality = decoder.Quality,
+            };
 
             encoder.WriteMetadata();
 
@@ -166,11 +260,7 @@ namespace PdfToSvg.Imaging
                 {
                     floatScan = new float[scan.Length];
                 }
-
-                for (var i = 0; i < scan.Length; i++)
-                {
-                    floatScan[i] = scan[i];
-                }
+                JpegArrayUtils.Cast(floatScan, scan, scan.Length);
 
                 // Reverse DCTDecode implicit color transform
                 switch (sourceColorSpace)

@@ -19,7 +19,11 @@ namespace PdfToSvg.Tests
         private const string ExternalFontsDirName = "external-fonts";
         private const string ExpectedDirName = "expected";
 
-#if NET40
+#if PDFTOSVG_SCALAR
+        private const string TargetFramework = "scalar";
+#elif PDFTOSVG_VECTOR128
+        private const string TargetFramework = "vector128";
+#elif NET40
         private const string TargetFramework = "net40";
 #elif NET45
         private const string TargetFramework = "net45";

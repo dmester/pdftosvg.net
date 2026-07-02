@@ -100,6 +100,16 @@ namespace PdfToSvg.Common
             return (bits + 7) >> 3;
         }
 
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static short RoundToShort(float value)
+        {
+#if NET5_0_OR_GREATER
+            return (short)MathF.Round(value);
+#else
+            return (short)Math.Round(value);
+#endif
+        }
+
         public static int ModBE(byte[] dividend, byte divisor)
         {
             // Adapted from https://stackoverflow.com/a/10441333

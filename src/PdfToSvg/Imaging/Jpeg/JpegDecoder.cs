@@ -5,9 +5,17 @@
 using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+#if NET8_0_OR_GREATER
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+#endif
 
 namespace PdfToSvg.Imaging.Jpeg
 {
+    /// <threadsafety instance="false" />
     internal class JpegDecoder
     {
         private const int BlockSize = 8;
@@ -73,7 +81,7 @@ namespace PdfToSvg.Imaging.Jpeg
             get
             {
                 const int DefaultQuality = 90;
-                
+
                 if (frameComponents.Length < 1)
                 {
                     return DefaultQuality;
@@ -108,6 +116,15 @@ namespace PdfToSvg.Imaging.Jpeg
                         case JpegChromaSubSampling.Ratio420:
                         case JpegChromaSubSampling.Ratio411:
                             return factor;
+                    }
+                }
+
+                for (var i = 0; i < frameComponents.Length; i++)
+                {
+                    if (frameComponents[i].HorizontalSamplingFactor != 1 ||
+                        frameComponents[i].VerticalSamplingFactor != 1)
+                    {
+                        return JpegChromaSubSampling.Custom;
                     }
                 }
 
@@ -183,6 +200,20 @@ namespace PdfToSvg.Imaging.Jpeg
         private void ReadFrame(JpegSegmentReader reader)
         {
             samplePrecision = reader.ReadByte();
+
+            if (samplePrecision != 8)
+            {
+                if (samplePrecision == 12)
+                {
+                    throw new NotSupportedException(
+                        "JPEG frames with 12-bit sample precision are not supported by this library");
+                }
+                else
+                {
+                    throw new JpegException("Invalid JPEG frame sample precision " + samplePrecision);
+                }
+            }
+
             lineCount = reader.ReadUInt16();
             samplesPerLine = reader.ReadUInt16();
 
@@ -287,6 +318,9 @@ namespace PdfToSvg.Imaging.Jpeg
                 component.QuantizationTableId = frameComponent.QuantizationTableId;
                 component.QuantizationTable = quantizationTables[frameComponent.QuantizationTableId];
 
+                // Both the components and quantization tables should now be read
+                frameComponent.QuantizationTable = component.QuantizationTable;
+
                 component.HorizontalSamplingFactor = frameComponent.HorizontalSamplingFactor;
                 component.VerticalSamplingFactor = frameComponent.VerticalSamplingFactor;
 
@@ -300,11 +334,238 @@ namespace PdfToSvg.Imaging.Jpeg
             // Al = reader.ReadNibble();
         }
 
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        private void ReadBlock(JpegImageDataReader reader, JpegComponent component, short[] rawBlockBuffer, short[] output, int outputOffset)
+        {
+            if (outputOffset + BlockSize * BlockSize > output.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(outputOffset));
+            }
+
+            ref var pRawBlockBuffer = ref MemoryMarshal.GetArrayDataReference(rawBlockBuffer);
+
+            reader.ReadDataUnit(rawBlockBuffer, component.HuffmanDCTable, component.HuffmanACTable, out var zeroAc);
+
+            component.DCPredictor = pRawBlockBuffer = (short)(component.DCPredictor + pRawBlockBuffer);
+
+#if NET8_0_OR_GREATER
+            ref var pOutput = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(output), outputOffset);
+
+            if (Vector256.IsHardwareAccelerated && Avx2.IsSupported)
+            {
+                // AVX2
+                ref var pDecodedBlock = ref Unsafe.As<short, Vector256<short>>(ref pOutput);
+
+                if (zeroAc)
+                {
+                    // Solid block => full IDCT and dequantization can be skipped
+
+                    // Multiplied 128 in the nominator to ensure consistent rounding with IDCT. 4 to round to nearest integer.
+                    // Values must be clamped to the valid sample range according to T.81 Section A.3.1.
+                    var shiftedValue = (component.QuantizationTable.DCMultiplier * pRawBlockBuffer + 128 * 8 + 4) / 8;
+                    var clampedValue = (short)MathUtils.Clamp(shiftedValue, 0, 255);
+                    var valueVector = Vector256.Create(clampedValue);
+
+                    Unsafe.Add(ref pDecodedBlock, 0) = valueVector;
+                    Unsafe.Add(ref pDecodedBlock, 1) = valueVector;
+                    Unsafe.Add(ref pDecodedBlock, 2) = valueVector;
+                    Unsafe.Add(ref pDecodedBlock, 3) = valueVector;
+                }
+                else
+                {
+                    ref var pVectorBuffer = ref Unsafe.As<short, Vector256<short>>(ref pRawBlockBuffer);
+                    var srcRow01 = Unsafe.Add(ref pVectorBuffer, 0);
+                    var srcRow23 = Unsafe.Add(ref pVectorBuffer, 1);
+                    var srcRow45 = Unsafe.Add(ref pVectorBuffer, 2);
+                    var srcRow67 = Unsafe.Add(ref pVectorBuffer, 3);
+
+                    var (fRow0, fRow1) = JpegVectorUtils.ConvertToVector256Single(srcRow01);
+                    var (fRow2, fRow3) = JpegVectorUtils.ConvertToVector256Single(srcRow23);
+                    var (fRow4, fRow5) = JpegVectorUtils.ConvertToVector256Single(srcRow45);
+                    var (fRow6, fRow7) = JpegVectorUtils.ConvertToVector256Single(srcRow67);
+
+                    component.QuantizationTable.DequantizeTransposedZigZag256(
+                        ref fRow0, ref fRow1, ref fRow2, ref fRow3, ref fRow4, ref fRow5, ref fRow6, ref fRow7);
+
+                    JpegDct.InverseAvx(ref fRow0, ref fRow1, ref fRow2, ref fRow3, ref fRow4, ref fRow5, ref fRow6, ref fRow7);
+
+                    Unsafe.Add(ref pDecodedBlock, 0) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow0, fRow1);
+                    Unsafe.Add(ref pDecodedBlock, 1) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow2, fRow3);
+                    Unsafe.Add(ref pDecodedBlock, 2) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow4, fRow5);
+                    Unsafe.Add(ref pDecodedBlock, 3) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow6, fRow7);
+                }
+            }
+            else if (Vector128.IsHardwareAccelerated && Sse2.IsSupported)
+            {
+                // SSE2
+                ref var pDecodedBlock = ref Unsafe.As<short, Vector128<short>>(ref pOutput);
+
+                if (zeroAc)
+                {
+                    // Solid block => full IDCT and dequantization can be skipped
+
+                    // Multiplied 128 in the nominator to ensure consistent rounding with IDCT. 4 to round to nearest integer.
+                    // Values must be clamped to the valid sample range according to T.81 Section A.3.1.
+                    var shiftedValue = (component.QuantizationTable.DCMultiplier * pRawBlockBuffer + 128 * 8 + 4) / 8;
+                    var clampedValue = (short)MathUtils.Clamp(shiftedValue, 0, 255);
+                    var valueVector = Vector128.Create(clampedValue);
+
+                    Unsafe.Add(ref pDecodedBlock, 0) = valueVector;
+                    Unsafe.Add(ref pDecodedBlock, 1) = valueVector;
+                    Unsafe.Add(ref pDecodedBlock, 2) = valueVector;
+                    Unsafe.Add(ref pDecodedBlock, 3) = valueVector;
+                    Unsafe.Add(ref pDecodedBlock, 4) = valueVector;
+                    Unsafe.Add(ref pDecodedBlock, 5) = valueVector;
+                    Unsafe.Add(ref pDecodedBlock, 6) = valueVector;
+                    Unsafe.Add(ref pDecodedBlock, 7) = valueVector;
+                }
+                else
+                {
+                    ref var pVectorBuffer = ref Unsafe.As<short, Vector128<short>>(ref pRawBlockBuffer);
+                    var srcRow0 = Unsafe.Add(ref pVectorBuffer, 0);
+                    var srcRow1 = Unsafe.Add(ref pVectorBuffer, 1);
+                    var srcRow2 = Unsafe.Add(ref pVectorBuffer, 2);
+                    var srcRow3 = Unsafe.Add(ref pVectorBuffer, 3);
+                    var srcRow4 = Unsafe.Add(ref pVectorBuffer, 4);
+                    var srcRow5 = Unsafe.Add(ref pVectorBuffer, 5);
+                    var srcRow6 = Unsafe.Add(ref pVectorBuffer, 6);
+                    var srcRow7 = Unsafe.Add(ref pVectorBuffer, 7);
+
+                    var (row0_lo, row0_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow0);
+                    var (row1_lo, row1_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow1);
+                    var (row2_lo, row2_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow2);
+                    var (row3_lo, row3_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow3);
+                    var (row4_lo, row4_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow4);
+                    var (row5_lo, row5_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow5);
+                    var (row6_lo, row6_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow6);
+                    var (row7_lo, row7_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow7);
+
+                    component.QuantizationTable.DequantizeTransposedZigZag128(
+                        ref row0_lo, ref row0_hi,
+                        ref row1_lo, ref row1_hi,
+                        ref row2_lo, ref row2_hi,
+                        ref row3_lo, ref row3_hi,
+                        ref row4_lo, ref row4_hi,
+                        ref row5_lo, ref row5_hi,
+                        ref row6_lo, ref row6_hi,
+                        ref row7_lo, ref row7_hi
+                        );
+
+                    JpegDct.InverseSse(
+                        ref row0_lo, ref row0_hi,
+                        ref row1_lo, ref row1_hi,
+                        ref row2_lo, ref row2_hi,
+                        ref row3_lo, ref row3_hi,
+                        ref row4_lo, ref row4_hi,
+                        ref row5_lo, ref row5_hi,
+                        ref row6_lo, ref row6_hi,
+                        ref row7_lo, ref row7_hi);
+
+                    Unsafe.Add(ref pDecodedBlock, 0) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row0_lo, row0_hi);
+                    Unsafe.Add(ref pDecodedBlock, 1) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row1_lo, row1_hi);
+                    Unsafe.Add(ref pDecodedBlock, 2) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row2_lo, row2_hi);
+                    Unsafe.Add(ref pDecodedBlock, 3) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row3_lo, row3_hi);
+                    Unsafe.Add(ref pDecodedBlock, 4) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row4_lo, row4_hi);
+                    Unsafe.Add(ref pDecodedBlock, 5) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row5_lo, row5_hi);
+                    Unsafe.Add(ref pDecodedBlock, 6) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row6_lo, row6_hi);
+                    Unsafe.Add(ref pDecodedBlock, 7) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row7_lo, row7_hi);
+                }
+            }
+            else
+#endif
+            {
+                // Scalar
+                if (zeroAc)
+                {
+                    // Solid block => full IDCT and dequantization can be skipped
+
+                    // Multiplied 128 in the nominator to ensure consistent rounding with IDCT. 4 to round to nearest integer.
+                    // Values must be clamped to the valid sample range according to T.81 Section A.3.1.
+                    var shiftedValue = (component.QuantizationTable.DCMultiplier * pRawBlockBuffer + 128 * 8 + 4) / 8;
+                    var clampedValue = (short)MathUtils.Clamp(shiftedValue, 0, 255);
+
+                    for (var i = 0; i < BlockSize * BlockSize; i++)
+                    {
+                        output[outputOffset + i] = clampedValue;
+                    }
+                }
+                else
+                {
+                    component.QuantizationTable.DequantizeTransposedZigZagScalar(rawBlockBuffer);
+
+                    JpegDct.InverseScalar(rawBlockBuffer);
+
+                    Array.Copy(rawBlockBuffer, 0, output, outputOffset, BlockSize * BlockSize);
+                }
+            }
+        }
+
+        public IEnumerable<int> ReadBlocks(short[] outputBlocks)
+        {
+            // E.2.3 Control procedure for decoding a scan
+
+            var reader = new JpegImageDataReader(scanData);
+
+            var mcusV = (lineCount - 1) / mcuHeight / BlockSize + 1;
+            var mcusH = (samplesPerLine - 1) / mcuWidth / BlockSize + 1;
+
+            var rawDataUnit = new short[BlockSize * BlockSize];
+
+            var leftUntilRestart = restartInterval;
+
+            var outputCount = 0;
+            var maxBlockCount = (outputBlocks.Length / (BlockSize * BlockSize) / Components) * Components;
+
+            for (var mcuY = 0; mcuY < mcusV; mcuY++)
+            {
+                for (var mcuX = 0; mcuX < mcusH; mcuX++)
+                {
+                    if (restartInterval > 0 && leftUntilRestart-- <= 0)
+                    {
+                        leftUntilRestart += restartInterval;
+
+                        scanComponents.Restart();
+
+                        if (!reader.ReadRestartMarker())
+                        {
+                            throw new JpegException("Expected restart marker.");
+                        }
+                    }
+
+                    for (var c = 0; c < scanComponents.Length; c++)
+                    {
+                        var component = scanComponents[c];
+
+                        for (var duy = 0; duy < component.VerticalSamplingFactor; duy++)
+                        {
+                            for (var dux = 0; dux < component.HorizontalSamplingFactor; dux++)
+                            {
+                                ReadBlock(reader, component, rawDataUnit, outputBlocks, outputCount * BlockSize * BlockSize);
+
+                                outputCount++;
+
+                                if (outputCount == maxBlockCount)
+                                {
+                                    yield return outputCount;
+                                    outputCount = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (outputCount > 0)
+            {
+                yield return outputCount;
+            }
+        }
+
         public IEnumerable<short[]> ReadImageData()
         {
             // E.2.3 Control procedure for decoding a scan
 
-            var reader = new JpegImageDataReader(scanData.Array!, scanData.Offset, scanData.Count);
+            var reader = new JpegImageDataReader(scanData);
 
             var mcusV = (lineCount - 1) / mcuHeight / BlockSize + 1;
             var mcusH = (samplesPerLine - 1) / mcuWidth / BlockSize + 1;
@@ -313,7 +574,6 @@ namespace PdfToSvg.Imaging.Jpeg
             var dataUnitBitmap = new JpegBitmap(BlockSize, BlockSize, 1);
 
             var rawDataUnit = new short[BlockSize * BlockSize];
-            var deZigZaggedDataUnit = new short[BlockSize * BlockSize];
 
             var leftUntilRestart = restartInterval;
 
@@ -346,15 +606,7 @@ namespace PdfToSvg.Imaging.Jpeg
                         {
                             for (var dux = 0; dux < component.HorizontalSamplingFactor; dux++)
                             {
-                                reader.ReadDataUnit(rawDataUnit, component.HuffmanDCTable, component.HuffmanACTable);
-
-                                component.DCPredictor = rawDataUnit[0] = (short)(component.DCPredictor + rawDataUnit[0]);
-
-                                component.QuantizationTable.Dequantize(rawDataUnit);
-
-                                JpegZigZag.ReverseZigZag(rawDataUnit, dataUnitBitmap.Data);
-
-                                JpegDct.Inverse(dataUnitBitmap.Data);
+                                ReadBlock(reader, component, rawDataUnit, dataUnitBitmap.Data, 0);
 
                                 dataUnitBitmap.DrawNearestNeighbourClippedOnto(
                                     dest: mcuRowBitmap,

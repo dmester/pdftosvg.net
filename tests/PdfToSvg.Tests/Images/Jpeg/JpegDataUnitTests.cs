@@ -78,23 +78,50 @@ namespace PdfToSvg.Tests.Images.Jpeg
             DataUnitRoundtrip(block);
         }
 
-        private void DataUnitRoundtrip(short[] block)
+        [Test]
+        public void WriteDataUnit_WithZeroAc()
         {
+            // A block with only a DC coefficient can be written with the zero-AC shortcut and should decode back
+            // to the same DC-only block, with the zeroAc flag set.
+            const short dc = 42;
+
             var stream = new MemoryStream();
             var writer = new JpegImageDataWriter(stream);
 
-            writer.WriteDataUnit(block, JpegHuffmanTable.DefaultLuminanceDCTable, JpegHuffmanTable.DefaultLuminanceACTable);
+            writer.WriteDataUnitZeroAc(dc, JpegHuffmanTable.DefaultLuminanceDCTable, JpegHuffmanTable.DefaultLuminanceACTable);
             writer.Dispose();
 
             var buff = stream.ToArray();
 
-            var reader = new JpegImageDataReader(buff, 0, buff.Length);
+            var reader = new JpegImageDataReader(buff);
 
-            var block2 = new short[64];
+            var block = new short[64];
+            reader.ReadDataUnit(block, JpegHuffmanTable.DefaultLuminanceDCTable, JpegHuffmanTable.DefaultLuminanceACTable, out var zeroAc);
 
-            reader.ReadDataUnit(block2, JpegHuffmanTable.DefaultLuminanceDCTable, JpegHuffmanTable.DefaultLuminanceACTable);
+            Assert.IsTrue(zeroAc);
 
-            Assert.AreEqual(block, block2);
+            var expected = new short[64];
+            expected[0] = dc;
+            Assert.AreEqual(expected, block);
+        }
+
+        private void DataUnitRoundtrip(short[] originalBlock)
+        {
+            var stream = new MemoryStream();
+            var writer = new JpegImageDataWriter(stream);
+
+            writer.WriteDataUnitZigZag(originalBlock, JpegHuffmanTable.DefaultLuminanceDCTable, JpegHuffmanTable.DefaultLuminanceACTable);
+            writer.Dispose();
+
+            var encodedData = stream.ToArray();
+
+            var reader = new JpegImageDataReader(encodedData);
+
+            var decodedBlock = new short[64];
+
+            reader.ReadDataUnit(decodedBlock, JpegHuffmanTable.DefaultLuminanceDCTable, JpegHuffmanTable.DefaultLuminanceACTable, out var zeroAc);
+
+            Assert.AreEqual(originalBlock, decodedBlock);
         }
     }
 }

@@ -19,6 +19,8 @@ namespace PdfToSvg.Imaging.Jpeg
 
         public static JpegHuffmanCode Empty => new JpegHuffmanCode();
 
+        public bool IsEmpty => value == 0;
+
         public JpegHuffmanCode(int code, int codeLength)
         {
             value = (codeLength << 24) | code;

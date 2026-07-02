@@ -21,7 +21,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
 
             arr[0] = 1;
             arr[1] = 100;
-            arr[2] = 10000;
+            arr[2] = 200;
 
             table = new JpegQuantizationTable(arr);
         }
@@ -110,5 +110,191 @@ namespace PdfToSvg.Tests.Images.Jpeg
 
             Assert.AreEqual(100, quality100.EstimateQuality(table));
         }
+
+        [Test]
+        public void Quantize()
+        {
+            var block = new short[64];
+            block[0] = 100;
+            block[1] = 200;
+            block[2] = 200;
+            block[3] = 200;
+            block[4] = 200;
+            block[5] = 200;
+            block[6] = 200;
+            block[7] = 200;
+            block[8] = 200;
+            block[9] = 200;
+
+            var quantizers = new ushort[JpegQuantizationTable.Size];
+            quantizers[0] = 1;
+            quantizers[1] = 2;
+            quantizers[2] = 3;
+            quantizers[3] = 4;
+            quantizers[4] = 5;
+            quantizers[5] = 6;
+            quantizers[6] = 7;
+            quantizers[7] = 8;
+            quantizers[8] = 9;
+            quantizers[9] = 10;
+
+            var table = new JpegQuantizationTable(quantizers);
+            table.QuantizeScalar(block);
+
+            Assert.AreEqual(100, block[0]);
+            Assert.AreEqual(100, block[1]);
+            Assert.AreEqual(67, block[2]);
+            Assert.AreEqual(50, block[3]);
+            Assert.AreEqual(40, block[4]);
+            Assert.AreEqual(33, block[5]);
+            Assert.AreEqual(29, block[6]);
+            Assert.AreEqual(25, block[7]);
+            Assert.AreEqual(22, block[8]);
+            Assert.AreEqual(20, block[9]);
+        }
+
+        [Test]
+        public void Dequantize()
+        {
+            var block = new float[64];
+            block[0] = 100;
+            block[1] = 100;
+            block[2] = 67;
+            block[3] = 50;
+            block[4] = 40;
+            block[5] = 33;
+            block[6] = 29;
+            block[7] = 25;
+            block[8] = 22;
+            block[9] = 2000;
+
+            var quantizers = new ushort[JpegQuantizationTable.Size];
+            quantizers[0] = 1;
+            quantizers[1] = 2;
+            quantizers[2] = 3;
+            quantizers[3] = 4;
+            quantizers[4] = 5;
+            quantizers[5] = 6;
+            quantizers[6] = 7;
+            quantizers[7] = 8;
+            quantizers[8] = 9;
+            quantizers[9] = 10;
+
+            var table = new JpegQuantizationTable(quantizers);
+            table.DequantizeScalar(block);
+
+            Assert.AreEqual(100f, block[0]);
+            Assert.AreEqual(200f, block[1]);
+            Assert.AreEqual(201f, block[2]);
+            Assert.AreEqual(200f, block[3]);
+            Assert.AreEqual(200f, block[4]);
+            Assert.AreEqual(198f, block[5]);
+            Assert.AreEqual(203f, block[6]);
+            Assert.AreEqual(200f, block[7]);
+            Assert.AreEqual(198f, block[8]);
+            Assert.AreEqual(20000f, block[9]);
+        }
+
+#if NET7_0_OR_GREATER
+        private void QuantizeTransposedZigZag(Action<float[]> body)
+        {
+            var random = new Random(0);
+
+            var originalData = new short[64];
+            for (var i = 0; i < originalData.Length; i++)
+            {
+                originalData[i] = (short)random.Next(0, 512);
+            }
+
+            // Reference
+            var reference = new short[64];
+            {
+                var transposed = (short[])originalData.Clone();
+
+                // Transpose in DCT
+                JpegBlockUtils.TransposeScalar(transposed);
+
+                JpegZigZag.ZigZag(transposed, reference);
+
+                JpegQuantizationTable.Luminance.QuantizeScalar(reference);
+            }
+
+            // Actual
+            short[] actual;
+            {
+                var floatData = originalData.Select(x => (float)x).ToArray();
+
+                body(floatData);
+
+                actual = floatData.Select(x => (short)(0.5f + x)).ToArray();
+
+                // To make actual comparable with reference
+                JpegBlockUtils.TransposeScalar(actual);
+                JpegTestUtils.Apply(JpegZigZag.ZigZag, actual);
+            }
+
+            Assert.AreEqual(reference, actual);
+        }
+
+        [Test]
+        public void QuantizeTransposedZigZag128()
+        {
+            QuantizeTransposedZigZag(floatData =>
+                JpegTestUtils.Apply(JpegQuantizationTable.Luminance.QuantizeTransposedZigZag128, floatData));
+        }
+
+        [Test]
+        public void QuantizeTransposedZigZag256()
+        {
+            QuantizeTransposedZigZag(floatData =>
+                JpegTestUtils.Apply(JpegQuantizationTable.Luminance.QuantizeTransposedZigZag256, floatData));
+        }
+
+        private void DequantizeTransposedZigZag(Action<float[]> body)
+        {
+            var random = new Random(0);
+
+            var originalData = new float[64];
+            for (var i = 0; i < originalData.Length; i++)
+            {
+                originalData[i] = random.Next(-2048, 2048);
+            }
+
+            // Reference
+            var reference = (float[])originalData.Clone();
+            {
+                JpegQuantizationTable.Luminance.DequantizeScalar(reference);
+
+                // ZigZag and transpose after quantization
+                JpegTestUtils.Apply(JpegZigZag.ReverseZigZag, reference);
+                JpegBlockUtils.TransposeScalar(reference);
+            }
+
+            // Actual
+            var actual = (float[])originalData.Clone();
+            {
+                // Transpose and zigzag when reading from file
+                JpegTestUtils.Apply(JpegZigZag.ReverseZigZag, actual);
+                JpegBlockUtils.TransposeScalar(actual);
+
+                body(actual);
+            }
+
+            Assert.AreEqual(reference, actual);
+        }
+
+        [Test]
+        public void DequantizeTransposedZigZag128()
+        {
+            DequantizeTransposedZigZag(actual => JpegTestUtils.Apply(JpegQuantizationTable.Luminance.DequantizeTransposedZigZag128, actual));
+        }
+
+        [Test]
+        public void DequantizeTransposedZigZag256()
+        {
+            DequantizeTransposedZigZag(actual => JpegTestUtils.Apply(JpegQuantizationTable.Luminance.DequantizeTransposedZigZag256, actual));
+        }
+
+#endif
     }
 }

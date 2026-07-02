@@ -17,4 +17,6 @@
   <Project Path="tests/PdfToSvg.Driver/PdfToSvg.Driver.csproj" />
   <Project Path="tests/PdfToSvg.RealLifeTests/PdfToSvg.RealLifeTests.csproj" />
   <Project Path="tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj" />
+  <Project Path="tests/PdfToSvg.Tests.Vector128/PdfToSvg.Tests.Vector128.csproj" />
+  <Project Path="tests/PdfToSvg.Tests.Scalar/PdfToSvg.Tests.Scalar.csproj" />
 </Solution>

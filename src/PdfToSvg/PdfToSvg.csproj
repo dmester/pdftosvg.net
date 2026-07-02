@@ -33,7 +33,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="PdfToSvg.Tests$(PdfToSvgPublicKeySuffix)"/>
+    <InternalsVisibleTo Include="PdfToSvg.Tests$(PdfToSvgPublicKeySuffix)" />
+    <InternalsVisibleTo Include="PdfToSvg.Tests.Vector128$(PdfToSvgPublicKeySuffix)" />
+    <InternalsVisibleTo Include="PdfToSvg.Tests.Scalar$(PdfToSvgPublicKeySuffix)" />
   </ItemGroup>
 
   <ItemGroup>

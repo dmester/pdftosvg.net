@@ -33,6 +33,8 @@ namespace PdfToSvg.Imaging.Jpeg
             }
         }
 
+        public static int[] GetReverseOrder() => (int[])reverseOrder.Clone();
+
         public static void ZigZag<T>(T[] input, T[] output)
         {
             if (input.Length < order.Length) throw new ArgumentException("Too small input", nameof(input));

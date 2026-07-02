@@ -6,7 +6,13 @@ using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
+
+#if NET8_0_OR_GREATER
+using System.Runtime.Intrinsics;
+#endif
 
 namespace PdfToSvg.Imaging.Jpeg
 {
@@ -14,7 +20,17 @@ namespace PdfToSvg.Imaging.Jpeg
     {
         public const int Size = 64;
 
-        public ushort[] Quantizers { get; }
+        public IEnumerable<ushort> Quantizers { get; }
+
+        private ushort[] quantizers;
+        private float[] quantizerMultipliers;
+        private float[] quantizersTransposedZigZag;
+        private float[] quantizerMultipliersZigZag;
+        private float[] quantizerMultipliersTransposedZigZag;
+
+        public int DCMultiplier => quantizers[0];
+        public float DCReverseMultiplier => quantizerMultipliersZigZag[0];
+
 
         public JpegQuantizationTable(params ushort[] quantizers)
         {
@@ -24,6 +40,31 @@ namespace PdfToSvg.Imaging.Jpeg
             }
 
             Quantizers = quantizers;
+            this.quantizers = quantizers;
+
+            var quantizersFloat = new float[Size];
+            var quantizerMultipliers = new float[Size];
+            for (var i = 0; i < Size; i++)
+            {
+                quantizersFloat[i] = quantizers[i];
+                quantizerMultipliers[i] = quantizers[i] > 0 ? 1f / quantizers[i] : 0f;
+            }
+
+            quantizersTransposedZigZag = TransposedZigZag(quantizersFloat);
+            quantizerMultipliersTransposedZigZag = TransposedZigZag(quantizerMultipliers);
+
+            quantizerMultipliersZigZag = new float[Size];
+            JpegZigZag.ReverseZigZag(quantizerMultipliers, quantizerMultipliersZigZag);
+
+            this.quantizerMultipliers = quantizerMultipliers;
+        }
+
+        private static float[] TransposedZigZag(float[] source)
+        {
+            var result = new float[Size];
+            JpegZigZag.ReverseZigZag(source, result);
+            JpegBlockUtils.TransposeScalar(result);
+            return result;
         }
 
         public static JpegQuantizationTable Identity { get; } = new JpegQuantizationTable(
@@ -63,25 +104,180 @@ namespace PdfToSvg.Imaging.Jpeg
             99, 99, 99, 99, 99, 99, 99, 99
         );
 
-        public void Dequantize(short[] block)
+        public void DequantizeScalar(float[] block)
         {
-            var quantizers = Quantizers;
+            var quantizers = this.quantizers;
 
             for (var i = 0; i < block.Length; i++)
             {
-                block[i] = (short)(block[i] * quantizers[i]);
+                block[i] = block[i] * quantizers[i];
             }
         }
 
-        public void Quantize(short[] block)
+        public void DequantizeTransposedZigZagScalar(short[] block)
         {
-            var quantizers = Quantizers;
+            var quantizersTransposedZigZag = this.quantizersTransposedZigZag;
 
             for (var i = 0; i < block.Length; i++)
             {
-                block[i] = (short)(0.5f + (float)block[i] / quantizers[i]);
+                block[i] = (short)MathUtils.Clamp(block[i] * quantizersTransposedZigZag[i], short.MinValue, short.MaxValue);
             }
         }
+
+        public void QuantizeScalar(short[] block)
+        {
+            var quantizerMultipliers = this.quantizerMultipliers;
+
+            for (var i = 0; i < block.Length; i++)
+            {
+                block[i] = MathUtils.RoundToShort(block[i] * quantizerMultipliers[i]);
+            }
+        }
+
+        public void QuantizeTransposedZigZagScalar(float[] source, short[] destination)
+        {
+            var multipliers = quantizerMultipliersTransposedZigZag;
+
+            for (var i = 0; i < source.Length; i++)
+            {
+                // ITU T.81 section A.3.4 says we should round to nearest integer:
+                destination[i] = MathUtils.RoundToShort(source[i] * multipliers[i]);
+            }
+        }
+
+#if NET8_0_OR_GREATER
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public void DequantizeTransposedZigZag256(
+            ref Vector256<float> row0,
+            ref Vector256<float> row1,
+            ref Vector256<float> row2,
+            ref Vector256<float> row3,
+            ref Vector256<float> row4,
+            ref Vector256<float> row5,
+            ref Vector256<float> row6,
+            ref Vector256<float> row7
+            )
+        {
+            ref var pMultipliers = ref Unsafe.As<float, Vector256<float>>(
+                ref MemoryMarshal.GetArrayDataReference(quantizersTransposedZigZag));
+
+            row0 *= Unsafe.Add(ref pMultipliers, 0);
+            row1 *= Unsafe.Add(ref pMultipliers, 1);
+            row2 *= Unsafe.Add(ref pMultipliers, 2);
+            row3 *= Unsafe.Add(ref pMultipliers, 3);
+            row4 *= Unsafe.Add(ref pMultipliers, 4);
+            row5 *= Unsafe.Add(ref pMultipliers, 5);
+            row6 *= Unsafe.Add(ref pMultipliers, 6);
+            row7 *= Unsafe.Add(ref pMultipliers, 7);
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public void DequantizeTransposedZigZag128(
+            ref Vector128<float> row0_lo,
+            ref Vector128<float> row0_hi,
+            ref Vector128<float> row1_lo,
+            ref Vector128<float> row1_hi,
+            ref Vector128<float> row2_lo,
+            ref Vector128<float> row2_hi,
+            ref Vector128<float> row3_lo,
+            ref Vector128<float> row3_hi,
+            ref Vector128<float> row4_lo,
+            ref Vector128<float> row4_hi,
+            ref Vector128<float> row5_lo,
+            ref Vector128<float> row5_hi,
+            ref Vector128<float> row6_lo,
+            ref Vector128<float> row6_hi,
+            ref Vector128<float> row7_lo,
+            ref Vector128<float> row7_hi
+            )
+        {
+            ref var pMultipliers = ref Unsafe.As<float, Vector128<float>>(
+                ref MemoryMarshal.GetArrayDataReference(quantizersTransposedZigZag));
+
+            row0_lo *= Unsafe.Add(ref pMultipliers, 0);
+            row0_hi *= Unsafe.Add(ref pMultipliers, 1);
+            row1_lo *= Unsafe.Add(ref pMultipliers, 2);
+            row1_hi *= Unsafe.Add(ref pMultipliers, 3);
+            row2_lo *= Unsafe.Add(ref pMultipliers, 4);
+            row2_hi *= Unsafe.Add(ref pMultipliers, 5);
+            row3_lo *= Unsafe.Add(ref pMultipliers, 6);
+            row3_hi *= Unsafe.Add(ref pMultipliers, 7);
+            row4_lo *= Unsafe.Add(ref pMultipliers, 8);
+            row4_hi *= Unsafe.Add(ref pMultipliers, 9);
+            row5_lo *= Unsafe.Add(ref pMultipliers, 10);
+            row5_hi *= Unsafe.Add(ref pMultipliers, 11);
+            row6_lo *= Unsafe.Add(ref pMultipliers, 12);
+            row6_hi *= Unsafe.Add(ref pMultipliers, 13);
+            row7_lo *= Unsafe.Add(ref pMultipliers, 14);
+            row7_hi *= Unsafe.Add(ref pMultipliers, 15);
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public void QuantizeTransposedZigZag256(
+            ref Vector256<float> row0,
+            ref Vector256<float> row1,
+            ref Vector256<float> row2,
+            ref Vector256<float> row3,
+            ref Vector256<float> row4,
+            ref Vector256<float> row5,
+            ref Vector256<float> row6,
+            ref Vector256<float> row7
+            )
+        {
+            ref var pMultipliers = ref Unsafe.As<float, Vector256<float>>(
+                ref MemoryMarshal.GetArrayDataReference(quantizerMultipliersTransposedZigZag));
+
+            row0 *= Unsafe.Add(ref pMultipliers, 0);
+            row1 *= Unsafe.Add(ref pMultipliers, 1);
+            row2 *= Unsafe.Add(ref pMultipliers, 2);
+            row3 *= Unsafe.Add(ref pMultipliers, 3);
+            row4 *= Unsafe.Add(ref pMultipliers, 4);
+            row5 *= Unsafe.Add(ref pMultipliers, 5);
+            row6 *= Unsafe.Add(ref pMultipliers, 6);
+            row7 *= Unsafe.Add(ref pMultipliers, 7);
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public void QuantizeTransposedZigZag128(
+            ref Vector128<float> row0_lo,
+            ref Vector128<float> row0_hi,
+            ref Vector128<float> row1_lo,
+            ref Vector128<float> row1_hi,
+            ref Vector128<float> row2_lo,
+            ref Vector128<float> row2_hi,
+            ref Vector128<float> row3_lo,
+            ref Vector128<float> row3_hi,
+            ref Vector128<float> row4_lo,
+            ref Vector128<float> row4_hi,
+            ref Vector128<float> row5_lo,
+            ref Vector128<float> row5_hi,
+            ref Vector128<float> row6_lo,
+            ref Vector128<float> row6_hi,
+            ref Vector128<float> row7_lo,
+            ref Vector128<float> row7_hi
+            )
+        {
+            ref var pMultipliers = ref Unsafe.As<float, Vector128<float>>(
+                ref MemoryMarshal.GetArrayDataReference(quantizerMultipliersTransposedZigZag));
+
+            row0_lo *= Unsafe.Add(ref pMultipliers, 0);
+            row0_hi *= Unsafe.Add(ref pMultipliers, 1);
+            row1_lo *= Unsafe.Add(ref pMultipliers, 2);
+            row1_hi *= Unsafe.Add(ref pMultipliers, 3);
+            row2_lo *= Unsafe.Add(ref pMultipliers, 4);
+            row2_hi *= Unsafe.Add(ref pMultipliers, 5);
+            row3_lo *= Unsafe.Add(ref pMultipliers, 6);
+            row3_hi *= Unsafe.Add(ref pMultipliers, 7);
+            row4_lo *= Unsafe.Add(ref pMultipliers, 8);
+            row4_hi *= Unsafe.Add(ref pMultipliers, 9);
+            row5_lo *= Unsafe.Add(ref pMultipliers, 10);
+            row5_hi *= Unsafe.Add(ref pMultipliers, 11);
+            row6_lo *= Unsafe.Add(ref pMultipliers, 12);
+            row6_hi *= Unsafe.Add(ref pMultipliers, 13);
+            row7_lo *= Unsafe.Add(ref pMultipliers, 14);
+            row7_hi *= Unsafe.Add(ref pMultipliers, 15);
+        }
+#endif
 
         public JpegQuantizationTable Quality(int quality, bool forceBaseline = true)
         {
@@ -110,7 +306,7 @@ namespace PdfToSvg.Imaging.Jpeg
 
             for (var i = 0; i < Size; i++)
             {
-                result[i] = (ushort)MathUtils.Clamp((S * Quantizers[i] + 50) / 100, 1, maxQuantizer);
+                result[i] = (ushort)MathUtils.Clamp((S * quantizers[i] + 50) / 100, 1, maxQuantizer);
             }
 
             return new JpegQuantizationTable(result);
@@ -129,8 +325,8 @@ namespace PdfToSvg.Imaging.Jpeg
             {
                 for (var x = 0; x < HorizontalSamples; x++)
                 {
-                    sumCurrentTable += Quantizers[y * 8 + x];
-                    sumStandardTable += standardTable.Quantizers[y * 8 + x];
+                    sumCurrentTable += quantizers[y * 8 + x];
+                    sumStandardTable += standardTable.quantizers[y * 8 + x];
                 }
             }
 

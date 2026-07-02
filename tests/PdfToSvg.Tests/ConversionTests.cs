@@ -6,14 +6,15 @@ using NUnit.Framework;
 using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
+
+#if NET8_0_OR_GREATER
+using System.Runtime.Intrinsics.X86;
+#endif
 
 namespace PdfToSvg.Tests
 {
@@ -53,12 +54,36 @@ namespace PdfToSvg.Tests
 
         private static string GetExpectedFilePath(string fileName)
         {
-            return Path.Combine(TestFiles.ExpectedDirectory, Path.ChangeExtension(fileName, ".svg"));
+            return Path.Combine(TestFiles.ExpectedDirectory, GetSvgFileName(fileName));
         }
 
         private static string GetActualFilePath(string fileName, bool sync)
         {
-            return Path.Combine(TestFiles.OutputDirectory(sync), Path.ChangeExtension(fileName, ".svg"));
+            return Path.Combine(TestFiles.OutputDirectory(sync), GetSvgFileName(fileName));
+        }
+
+        private static string GetSvgFileName(string inputFileName)
+        {
+            var result = Path.ChangeExtension(inputFileName, null);
+
+#if NET8_0_OR_GREATER
+            // Vectorized algorithms are allowed to have slightly different implementations => output might differ
+            var possiblyVectorizedCode = inputFileName.StartsWith("images-jpeg-");
+            if (possiblyVectorizedCode)
+            {
+                if (Avx2.IsSupported)
+                {
+                    result = "avx2-" + result;
+                }
+                else if (Sse2.IsSupported)
+                {
+                    result = "sse2-" + result;
+                }
+            }
+#endif
+
+            return result + ".svg";
+
         }
 
         private void ConvertSync(string pdfName, string expectedSvgName,

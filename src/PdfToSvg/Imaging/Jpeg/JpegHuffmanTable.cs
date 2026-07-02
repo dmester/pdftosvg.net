@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace PdfToSvg.Imaging.Jpeg
@@ -18,12 +19,26 @@ namespace PdfToSvg.Imaging.Jpeg
 #endif
     internal class JpegHuffmanTable
     {
-        private readonly Dictionary<JpegHuffmanCode, byte> decodeTable = new();
         private readonly Dictionary<byte, JpegHuffmanCode> encodeTable = new();
+        private readonly JpegHuffmanCode[] encodeTableArr;
+        private readonly Node[] decodeTree;
 
         public ArraySegment<byte> Bits { get; }
         public ArraySegment<byte> Huffval { get; }
         public int MaxCodeLength { get; }
+
+        [DebuggerDisplay("{DebugView,nq}")]
+        private struct Node
+        {
+            public ushort Index0;
+            public ushort Index1;
+            public byte LeafValue;
+            public bool IsLeaf => Index0 == 0 && Index1 == 0;
+
+            public string DebugView => IsLeaf
+                ? "Leaf: " + LeafValue
+                : "Node: 0->" + Index0 + ", 1->" + Index1;
+        }
 
         public JpegHuffmanTable(byte[] bits, byte[] huffval) :
             this(new ArraySegment<byte>(bits), new ArraySegment<byte>(huffval))
@@ -35,11 +50,58 @@ namespace PdfToSvg.Imaging.Jpeg
             Bits = bits;
             Huffval = huffval;
 
+            encodeTableArr = new JpegHuffmanCode[byte.MaxValue + 1];
+
             if (bits.Array != null && huffval.Array != null)
             {
                 // ITU T.81
                 // B.2.4.2 Huffman table-specification syntax
                 // Annex C Huffman table specification
+
+                var nodeTree = new Node[10];
+                ushort nodeTreeSize = 1;
+
+                void AddNode(int code, int codeLength, byte value)
+                {
+                    ushort treeCursor = 0;
+
+                    for (var shift = codeLength - 1; shift >= 0; shift--)
+                    {
+                        var bit = (code >> shift) & 1;
+
+                        ref var node = ref nodeTree[treeCursor];
+                        ref var index = ref (bit == 0 ? ref node.Index0 : ref node.Index1);
+
+                        if (index == 0)
+                        {
+                            // Allocate new node
+                            if (nodeTreeSize == ushort.MaxValue)
+                            {
+                                throw new ArgumentException("Too many values in this Huffman table", nameof(huffval));
+                            }
+
+                            treeCursor = nodeTreeSize++;
+                            index = treeCursor;
+
+                            if (treeCursor >= nodeTree.Length)
+                            {
+                                Array.Resize(ref nodeTree, nodeTree.Length * 2);
+                            }
+                        }
+                        else
+                        {
+                            treeCursor = index;
+                        }
+                    }
+
+                    ref var leafNode = ref nodeTree[treeCursor];
+                    if (!leafNode.IsLeaf)
+                    {
+                        throw new ArgumentException("Leaf Huffman codes cannot also be a prefix of another code", nameof(huffval));
+                    }
+
+                    leafNode.LeafValue = value;
+                }
 
                 var k = 0;
                 var code = 0;
@@ -58,29 +120,56 @@ namespace PdfToSvg.Imaging.Jpeg
                         var value = huffval.Array[huffval.Offset + k];
                         var hcode = new JpegHuffmanCode(code, size);
                         encodeTable[value] = hcode;
-                        decodeTable[hcode] = huffval.Array[huffval.Offset + k];
+                        encodeTableArr[value] = hcode;
+                        AddNode(code, size, huffval.Array[huffval.Offset + k]);
                         code++;
                         k++;
                     }
 
                     code <<= 1;
                 }
+
+                this.decodeTree = nodeTree;
+            }
+            else
+            {
+                this.decodeTree = ArrayUtils.Empty<Node>();
             }
         }
 
-        public bool TryDecode(int code, int codeLength, out byte result)
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public int ReadValueFrom(JpegImageDataReader reader)
         {
-            return decodeTable.TryGetValue(new JpegHuffmanCode(code, codeLength), out result);
+            var node = decodeTree[0];
+
+            while (true)
+            {
+                var nextIndex = reader.ReadBit() == 0
+                    ? node.Index0
+                    : node.Index1;
+
+                if (nextIndex == 0)
+                {
+                    return -1; // Invalid code
+                }
+
+                node = decodeTree[nextIndex];
+                if (node.IsLeaf)
+                {
+                    return node.LeafValue;
+                }
+            }
         }
 
         public JpegHuffmanCode EncodeOrThrow(int value)
         {
-            if (encodeTable.TryGetValue((byte)value, out var code))
+            var code = encodeTableArr[(byte)value];
+            if (code.IsEmpty)
             {
-                return code;
+                throw new JpegException("Value " + value + " not included in this Huffman table.");
             }
 
-            throw new JpegException("Value " + value + " not included in this Huffman table.");
+            return code;
         }
 
         public static JpegHuffmanTable Empty { get; } = new JpegHuffmanTable(
@@ -167,14 +256,14 @@ namespace PdfToSvg.Imaging.Jpeg
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
             public object[] Items => table
-                .decodeTable
-                .OrderBy(entry => entry.Key.CodeLength)
-                .ThenBy(entry => entry.Key.Code)
+                .encodeTable
+                .OrderBy(entry => entry.Value.CodeLength)
+                .ThenBy(entry => entry.Value.Code)
                 .Select(entry =>
                 {
                     return new DebugProxyEntry
                     {
-                        Value = entry.Key.ToString() + " => " + entry.Value,
+                        Value = entry.Value.ToString() + " => " + entry.Key,
                     };
                 })
                 .ToArray();

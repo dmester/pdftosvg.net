@@ -2,11 +2,11 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
-using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace PdfToSvg.Imaging.Jpeg
@@ -19,10 +19,24 @@ namespace PdfToSvg.Imaging.Jpeg
         private readonly byte[] buffer;
         private readonly int offset;
         private readonly int count;
+        private int byteCursor;
 
-        private int byteValue;
-        private int cursor;
-        private int bitCursor;
+        private ulong bitIsMarker;
+        private ulong bitBuffer;
+        private int bitBufferSize;
+
+        private const int MaxBitBufferSize = 64;
+
+        public JpegImageDataReader(byte[] buffer)
+        {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
+            this.buffer = buffer;
+            this.count = buffer.Length;
+        }
 
         public JpegImageDataReader(byte[] buffer, int offset, int count)
         {
@@ -44,67 +58,41 @@ namespace PdfToSvg.Imaging.Jpeg
             this.count = count;
         }
 
-        public int Cursor => cursor;
+        public JpegImageDataReader(ArraySegment<byte> data)
+        {
+            if (data.Array == null)
+            {
+                throw new ArgumentNullException(nameof(data.Array));
+            }
+
+            this.buffer = data.Array;
+            this.offset = data.Offset;
+            this.count = data.Count;
+        }
 
         public bool ReadRestartMarker()
         {
-            if (bitCursor > 0)
+            // Byte align
+            bitBufferSize &= ~7;
+
+            var nextByte = ReadBits(8);
+
+            var cursorAtMarker = ((bitIsMarker >> bitBufferSize) & 1) == 1;
+            if (!cursorAtMarker)
             {
-                bitCursor = 0;
-                cursor++;
+                return false;
             }
 
-            if (cursor + 1 < count)
+            if (nextByte < 0xd0 || nextByte > 0xd7)
             {
-                var currentByte = buffer[offset + cursor];
-                var nextByte = buffer[offset + cursor + 1];
-
-                if (currentByte == 0xff &&
-                    nextByte >= 0xd0 && nextByte <= 0xd7)
-                {
-                    // Restart marker found
-                    cursor += 2;
-                    return true;
-                }
+                return false;
             }
 
-            return false;
+            // Restart marker found
+            return true;
         }
 
-        private void PopulateByteValue()
-        {
-            if (cursor >= count)
-            {
-                byteValue = -1;
-                return;
-            }
-
-            byteValue = buffer[offset + cursor];
-
-            if (byteValue != 0xff)
-            {
-                return;
-            }
-
-            cursor++;
-
-            if (cursor < count)
-            {
-                var nextByte = buffer[offset + cursor];
-                if (nextByte == 0x00) // Restart termination
-                {
-                    // Stuffed 0xff
-                    byteValue = 0xff;
-                    return;
-                }
-            }
-
-            cursor = count;
-            byteValue = -1;
-        }
-
-        public int ReadBit() => ReadBits(1);
-
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public int ReadValue(int ssss)
         {
             if (ssss == 0)
@@ -128,74 +116,90 @@ namespace PdfToSvg.Imaging.Jpeg
             return value;
         }
 
-        public int ReadBits(int bitCount)
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void PopulateBuffer()
         {
-            if (cursor < count)
+            bitIsMarker = 0;
+            bitBuffer = 0;
+            bitBufferSize = 0;
+
+            while (byteCursor < count && bitBufferSize < MaxBitBufferSize)
             {
-                var result = 0;
+                var byteValue = buffer[offset + byteCursor++];
+                var escapedBitsValue = 0UL;
 
-                while (bitCount > 0)
+                if (byteValue == 0xff)
                 {
-                    if (bitCursor == 0)
+                    // Byte stuffing
+                    if (byteCursor >= count)
                     {
-                        PopulateByteValue();
-
-                        if (byteValue < 0)
-                        {
-                            return -1;
-                        }
+                        break;
                     }
 
-                    var iterationBitCount = Math.Min(8 - bitCursor, bitCount);
-                    var iterationBitMask = (1 << iterationBitCount) - 1;
+                    byteValue = buffer[offset + byteCursor++];
 
-                    result <<= iterationBitCount;
-                    result |= (byteValue >> (8 - bitCursor - iterationBitCount)) & iterationBitMask;
-
-                    bitCursor += iterationBitCount;
-                    bitCount -= iterationBitCount;
-
-                    if (bitCursor >= 8)
+                    if (byteValue == 0x00)
                     {
-                        bitCursor = 0;
-                        cursor++;
+                        // Stuffed 0xff
+                        byteValue = 0xff;
+                    }
+                    else
+                    {
+                        // Other marker
+                        escapedBitsValue = 0xff;
                     }
                 }
 
-                return result;
-            }
-            else
-            {
-                return -1;
+                bitBuffer = (bitBuffer << 8) | byteValue;
+                bitIsMarker = (bitIsMarker << 8) | escapedBitsValue;
+                bitBufferSize += 8;
             }
         }
 
-        public int ReadHuffman(JpegHuffmanTable table)
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public int ReadBits(int bitCount)
         {
-            var code = 0;
+            var result = 0UL;
 
-            for (var codeLength = 1; codeLength <= table.MaxCodeLength; codeLength++)
+            while (bitCount > 0)
             {
-                var bit = ReadBit();
-                if (bit < 0)
+                if (bitBufferSize == 0)
+                {
+                    PopulateBuffer();
+
+                    if (bitBufferSize == 0)
+                    {
+                        return -1;
+                    }
+                }
+
+                var iterationBitCount = Math.Min(bitBufferSize, bitCount);
+                result <<= iterationBitCount;
+
+                var iterationBitMask = (1UL << iterationBitCount) - 1;
+                result |= (bitBuffer >> (bitBufferSize - iterationBitCount)) & iterationBitMask;
+
+                bitBufferSize -= iterationBitCount;
+                bitCount -= iterationBitCount;
+            }
+
+            return (int)result;
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public int ReadBit()
+        {
+            if (bitBufferSize == 0)
+            {
+                PopulateBuffer();
+
+                if (bitBufferSize == 0)
                 {
                     return -1;
                 }
-
-                code = (code << 1) | bit;
-
-                if (table.TryDecode(code, codeLength, out var result))
-                {
-                    return result;
-                }
             }
 
-            return -1;
+            return (int)((bitBuffer >> (bitBufferSize-- - 1)) & 1);
         }
-
-#if DEBUG
-        private string DebugView => BitReaderUtils.FormatDebugView(
-            new ArraySegment<byte>(buffer, offset, count), cursor, bitCursor, byteValue);
-#endif
     }
 }

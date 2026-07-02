@@ -4,10 +4,11 @@
 
 using PdfToSvg.Imaging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+
+#if NET8_0_OR_GREATER
+using System.Runtime.Intrinsics;
+#endif
 
 namespace PdfToSvg.ColorSpaces
 {
@@ -105,6 +106,160 @@ namespace PdfToSvg.ColorSpaces
                     k * (-0.1838f + k * -0.1004f)
                 );
         }
+
+#if NET8_0_OR_GREATER
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static void ToRgb(Vector256<float> c, Vector256<float> m, Vector256<float> y, Vector256<float> k, out Vector256<float> red, out Vector256<float> green, out Vector256<float> blue)
+        {
+            red = Vector256.Create(1f) +
+                c * (
+                    Vector256.Create(-1.0131f) +
+                    c * (Vector256.Create(-0.0474f) + c * -0.0701f) +
+                    m * 0.3576f +
+                    y * 0.0042f +
+                    k * 0.7488f
+                ) +
+                m * (
+                    Vector256.Create(0.0252f) +
+                    m * (Vector256.Create(-0.1693f) + m * 0.0704f) +
+                    y * -0.0409f +
+                    k * 0.0333f
+                ) +
+                y * (
+                    Vector256.Create(0.0388f) +
+                    y * (Vector256.Create(0.03f) + y * -0.0248f) +
+                    k * 0.0028f
+                ) +
+                k * (
+                    Vector256.Create(-0.7428f) +
+                    k * (Vector256.Create(-0.1789f) + k * -0.0285f)
+                );
+
+            green = Vector256.Create(1f) +
+                c * (
+                    Vector256.Create(-0.3344f) +
+                    c * (Vector256.Create(0.0548f) + c * -0.0408f) +
+                    m * 0.3254f +
+                    y * 0.0079f +
+                    k * 0.185f
+                ) +
+                m * (
+                    Vector256.Create(-0.6792f) +
+                    m * (Vector256.Create(-0.2034f) + m * 0.0367f) +
+                    y * 0.0646f +
+                    k * 0.5394f
+                ) +
+                y * (
+                    Vector256.Create(-0.0247f) +
+                    y * (Vector256.Create(-0.0727f) + y * 0.0328f) +
+                    k * 0.042f
+                ) +
+                k * (
+                    Vector256.Create(-0.6876f) +
+                    k * (Vector256.Create(-0.2106f) + k * -0.0134f)
+                );
+
+            blue = Vector256.Create(1f) +
+                c * (
+                    Vector256.Create(-0.1558f) +
+                    c * (Vector256.Create(0.0928f) + c * -0.0163f) +
+                    m * 0.0723f +
+                    y * 0.1612f +
+                    k * 0.0176f
+                ) +
+                m * (
+                    Vector256.Create(-0.4502f) +
+                    m * (Vector256.Create(-0.0255f) + m * 0.0337f) +
+                    y * 0.2973f +
+                    k * 0.2174f
+                ) +
+                y * (
+                    Vector256.Create(-0.6536f) +
+                    y * (Vector256.Create(-0.2041f) + y * 0.057f) +
+                    k * 0.4823f
+                ) +
+                k * (
+                    Vector256.Create(-0.6077f) +
+                    k * (Vector256.Create(-0.1838f) + k * -0.1004f)
+                );
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static void ToRgb(Vector128<float> c, Vector128<float> m, Vector128<float> y, Vector128<float> k, out Vector128<float> red, out Vector128<float> green, out Vector128<float> blue)
+        {
+            red = Vector128.Create(1f) +
+                c * (
+                    Vector128.Create(-1.0131f) +
+                    c * (Vector128.Create(-0.0474f) + c * -0.0701f) +
+                    m * 0.3576f +
+                    y * 0.0042f +
+                    k * 0.7488f
+                ) +
+                m * (
+                    Vector128.Create(0.0252f) +
+                    m * (Vector128.Create(-0.1693f) + m * 0.0704f) +
+                    y * -0.0409f +
+                    k * 0.0333f
+                ) +
+                y * (
+                    Vector128.Create(0.0388f) +
+                    y * (Vector128.Create(0.03f) + y * -0.0248f) +
+                    k * 0.0028f
+                ) +
+                k * (
+                    Vector128.Create(-0.7428f) +
+                    k * (Vector128.Create(-0.1789f) + k * -0.0285f)
+                );
+
+            green = Vector128.Create(1f) +
+                c * (
+                    Vector128.Create(-0.3344f) +
+                    c * (Vector128.Create(0.0548f) + c * -0.0408f) +
+                    m * 0.3254f +
+                    y * 0.0079f +
+                    k * 0.185f
+                ) +
+                m * (
+                    Vector128.Create(-0.6792f) +
+                    m * (Vector128.Create(-0.2034f) + m * 0.0367f) +
+                    y * 0.0646f +
+                    k * 0.5394f
+                ) +
+                y * (
+                    Vector128.Create(-0.0247f) +
+                    y * (Vector128.Create(-0.0727f) + y * 0.0328f) +
+                    k * 0.042f
+                ) +
+                k * (
+                    Vector128.Create(-0.6876f) +
+                    k * (Vector128.Create(-0.2106f) + k * -0.0134f)
+                );
+
+            blue = Vector128.Create(1f) +
+                c * (
+                    Vector128.Create(-0.1558f) +
+                    c * (Vector128.Create(0.0928f) + c * -0.0163f) +
+                    m * 0.0723f +
+                    y * 0.1612f +
+                    k * 0.0176f
+                ) +
+                m * (
+                    Vector128.Create(-0.4502f) +
+                    m * (Vector128.Create(-0.0255f) + m * 0.0337f) +
+                    y * 0.2973f +
+                    k * 0.2174f
+                ) +
+                y * (
+                    Vector128.Create(-0.6536f) +
+                    y * (Vector128.Create(-0.2041f) + y * 0.057f) +
+                    k * 0.4823f
+                ) +
+                k * (
+                    Vector128.Create(-0.6077f) +
+                    k * (Vector128.Create(-0.1838f) + k * -0.1004f)
+                );
+        }
+#endif
 
         public override DecodeArray GetDefaultDecodeArray(int bitsPerComponent)
         {

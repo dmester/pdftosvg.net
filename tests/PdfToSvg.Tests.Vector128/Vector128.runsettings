@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <EnvironmentVariables>
+      <!-- Force the Vector128 code paths. -->
+      <DOTNET_EnableAVX2>0</DOTNET_EnableAVX2>
+      <DOTNET_PreferredVectorBitWidth>128</DOTNET_PreferredVectorBitWidth>
+    </EnvironmentVariables>
+  </RunConfiguration>
+</RunSettings>

@@ -41,6 +41,12 @@ jobs:
     - name: Test
       run: dotnet test tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj --no-build -c Release --verbosity normal --collect "Code Coverage;Format=cobertura" --results-directory TestResults
 
+    - name: Test (scalar)
+      run: dotnet test tests/PdfToSvg.Tests.Scalar/PdfToSvg.Tests.Scalar.csproj --no-build -c Release --verbosity normal --collect "Code Coverage;Format=cobertura" --results-directory TestResults
+
+    - name: Test (Vector128)
+      run: dotnet test tests/PdfToSvg.Tests.Vector128/PdfToSvg.Tests.Vector128.csproj --no-build -c Release --verbosity normal --collect "Code Coverage;Format=cobertura" --results-directory TestResults
+
     - name: Test CLI
       if: ${{ matrix.os == 'windows-latest' }}
       run: dotnet test tests/PdfToSvg.Cli.Tests/PdfToSvg.Cli.Tests.csproj --no-build -c Release --verbosity normal --results-directory TestResults

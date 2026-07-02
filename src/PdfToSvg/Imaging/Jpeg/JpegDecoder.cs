@@ -68,6 +68,22 @@ namespace PdfToSvg.Imaging.Jpeg
             }
         }
 
+        public int Quality
+        {
+            get
+            {
+                const int DefaultQuality = 90;
+                
+                if (frameComponents.Length < 1)
+                {
+                    return DefaultQuality;
+                }
+
+                var luminanceTable = frameComponents[0].QuantizationTable;
+                return luminanceTable.EstimateQuality(JpegQuantizationTable.Luminance);
+            }
+        }
+
         public JpegChromaSubSampling ChromaSubSampling
         {
             get

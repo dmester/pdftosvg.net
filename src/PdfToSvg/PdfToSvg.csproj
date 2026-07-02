@@ -52,13 +52,20 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="SauceControl.InheritDoc" Version="2.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+    <!-- Work around Microsoft.SourceLink.GitHub 10.x leaking System.IO.Hashing's TFM warning -->
+    <PackageReference Include="System.IO.Hashing" Version="10.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>all</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
 

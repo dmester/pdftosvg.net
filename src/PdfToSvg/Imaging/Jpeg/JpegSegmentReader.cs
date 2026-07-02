@@ -48,8 +48,8 @@ namespace PdfToSvg.Imaging.Jpeg
             get => cursor;
             set
             {
-                if (cursor < 0) throw new ArgumentOutOfRangeException(nameof(Cursor));
-                if (cursor > length) throw new ArgumentOutOfRangeException(nameof(Cursor));
+                if (value < 0) throw new ArgumentOutOfRangeException(nameof(Cursor));
+                if (value > length) throw new ArgumentOutOfRangeException(nameof(Cursor));
                 cursor = value;
             }
         }

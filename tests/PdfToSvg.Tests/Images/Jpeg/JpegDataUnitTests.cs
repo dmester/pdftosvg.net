@@ -17,7 +17,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void DataUnit1()
         {
-            var block = new short[64];
+            var block = new int[64];
             block[0] = 122;
             block[1] = 13;
             block[2] = 14;
@@ -28,7 +28,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void DataUnit2()
         {
-            var block = new short[64];
+            var block = new int[64];
             block[0] = -12;
             block[1] = 13;
             block[2] = -14;
@@ -39,7 +39,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void DataUnit3()
         {
-            var block = new short[64];
+            var block = new int[64];
             block[0] = 12;
             block[1] = 13;
             block[2] = -140;
@@ -50,7 +50,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void DataUnit4()
         {
-            var block = new short[64];
+            var block = new int[64];
             block[0] = 12;
             DataUnitRoundtrip(block);
         }
@@ -58,7 +58,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void DataUnit5()
         {
-            var block = new short[64];
+            var block = new int[64];
             block[1] = 12;
             DataUnitRoundtrip(block);
         }
@@ -66,7 +66,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void DataUnit6()
         {
-            var block = new short[64];
+            var block = new int[64];
 
             var random = new Random(0);
 
@@ -95,17 +95,17 @@ namespace PdfToSvg.Tests.Images.Jpeg
 
             var reader = new JpegImageDataReader(buff);
 
-            var block = new short[64];
+            var block = new float[64];
             reader.ReadDataUnit(block, JpegHuffmanTable.DefaultLuminanceDCTable, JpegHuffmanTable.DefaultLuminanceACTable, out var zeroAc);
 
             Assert.IsTrue(zeroAc);
 
-            var expected = new short[64];
+            var expected = new float[64];
             expected[0] = dc;
             Assert.AreEqual(expected, block);
         }
 
-        private void DataUnitRoundtrip(short[] originalBlock)
+        private void DataUnitRoundtrip(int[] originalBlock)
         {
             var stream = new MemoryStream();
             var writer = new JpegImageDataWriter(stream);
@@ -117,11 +117,11 @@ namespace PdfToSvg.Tests.Images.Jpeg
 
             var reader = new JpegImageDataReader(encodedData);
 
-            var decodedBlock = new short[64];
+            var decodedBlock = new float[64];
 
             reader.ReadDataUnit(decodedBlock, JpegHuffmanTable.DefaultLuminanceDCTable, JpegHuffmanTable.DefaultLuminanceACTable, out var zeroAc);
 
-            Assert.AreEqual(originalBlock, decodedBlock);
+            Assert.AreEqual(originalBlock.Select(v => (float)v).ToArray(), decodedBlock);
         }
     }
 }

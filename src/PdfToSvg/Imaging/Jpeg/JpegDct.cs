@@ -150,7 +150,7 @@ namespace PdfToSvg.Imaging.Jpeg
 
 #if NET8_0_OR_GREATER
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void ForwardRowAvx(
+        private static void ForwardRow256(
             ref Vector256<float> x0,
             ref Vector256<float> x1,
             ref Vector256<float> x2,
@@ -206,7 +206,7 @@ namespace PdfToSvg.Imaging.Jpeg
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void ForwardRowSse(
+        private static void ForwardRow128(
             ref Vector128<float> x0,
             ref Vector128<float> x1,
             ref Vector128<float> x2,
@@ -262,7 +262,7 @@ namespace PdfToSvg.Imaging.Jpeg
         }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        private static void InverseRowAvx(
+        private static void InverseRow256(
             ref Vector256<float> x0,
             ref Vector256<float> x1,
             ref Vector256<float> x2,
@@ -329,7 +329,7 @@ namespace PdfToSvg.Imaging.Jpeg
         }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        private static void InverseRowSse(
+        private static void InverseRow128(
             ref Vector128<float> x0,
             ref Vector128<float> x1,
             ref Vector128<float> x2,
@@ -396,19 +396,9 @@ namespace PdfToSvg.Imaging.Jpeg
         }
 #endif
 
-        public static void ForwardScalar(short[] block)
-        {
-            var floatBlock = new float[block.Length];
+        public static void ForwardScalar(float[] block) => ForwardScalar(block, 0, block);
 
-            ForwardScalar(block, 0, floatBlock);
-
-            for (var i = 0; i < block.Length; i++)
-            {
-                block[i] = (short)floatBlock[i];
-            }
-        }
-
-        public static void ForwardScalar(short[] source, int sourceOffset, float[] block)
+        public static void ForwardScalar(float[] source, int sourceOffset, float[] destination)
         {
             static void ProcessRows(float[] block)
             {
@@ -429,22 +419,22 @@ namespace PdfToSvg.Imaging.Jpeg
                 }
             }
 
-            for (var i = 0; i < block.Length; i++)
+            for (var i = 0; i < destination.Length; i++)
             {
-                block[i] = source[sourceOffset + i] - 128f;
+                destination[i] = source[sourceOffset + i] - 128f;
             }
 
-            ProcessRows(block);
-            JpegBlockUtils.TransposeScalar(block);
-            ProcessRows(block);
+            ProcessRows(destination);
+            JpegBlockUtils.TransposeScalar(destination);
+            ProcessRows(destination);
 
-            for (var i = 0; i < block.Length; i++)
+            for (var i = 0; i < destination.Length; i++)
             {
-                block[i] *= 1f / 8;
+                destination[i] *= 1f / 8;
             }
         }
 
-        public static void InverseScalar(short[] block)
+        public static void InverseScalar(float[] block)
         {
             static void ProcessRows(float[] block)
             {
@@ -463,29 +453,18 @@ namespace PdfToSvg.Imaging.Jpeg
                 }
             }
 
-            var floatBlock = new float[block.Length];
-
-            for (var i = 0; i < block.Length; i++)
-            {
-                floatBlock[i] = block[i];
-            }
-
-            // Note we process rows followed by columns in the scalar implementation, in contrast from the opposite
-            // order in the vectorized variants. Th mathematicall output is the same, but the actual output can vary
-            // on a fractional level.
-
             // 1D IDCT on rows
-            ProcessRows(floatBlock);
+            ProcessRows(block);
 
             // 1D IDCT on columns
-            JpegBlockUtils.TransposeScalar(floatBlock);
-            ProcessRows(floatBlock);
+            JpegBlockUtils.TransposeScalar(block);
+            ProcessRows(block);
 
             for (var i = 0; i < block.Length; i++)
             {
                 // Values should be clamped to range [0, 255] according to T.81 Section A.3.1
-                var shiftedValue = floatBlock[i] * (1f / 8) + 128f;
-                block[i] = MathUtils.RoundToShort(MathUtils.Clamp(shiftedValue, 0f, 255f));
+                var shiftedValue = block[i] * (1f / 8) + 128f;
+                block[i] = MathUtils.Clamp(shiftedValue, 0f, 255f);
             }
         }
 
@@ -513,9 +492,9 @@ namespace PdfToSvg.Imaging.Jpeg
             row6 = row6 - f128;
             row7 = row7 - f128;
 
-            ForwardRowAvx(ref row0, ref row1, ref row2, ref row3, ref row4, ref row5, ref row6, ref row7);
+            ForwardRow256(ref row0, ref row1, ref row2, ref row3, ref row4, ref row5, ref row6, ref row7);
             JpegBlockUtils.TransposeAvx(ref row0, ref row1, ref row2, ref row3, ref row4, ref row5, ref row6, ref row7);
-            ForwardRowAvx(ref row0, ref row1, ref row2, ref row3, ref row4, ref row5, ref row6, ref row7);
+            ForwardRow256(ref row0, ref row1, ref row2, ref row3, ref row4, ref row5, ref row6, ref row7);
 
             var downscaler = Vector256.Create(1f / 8);
             row0 = row0 * downscaler;
@@ -566,8 +545,8 @@ namespace PdfToSvg.Imaging.Jpeg
             row7_lo = row7_lo - f128;
             row7_hi = row7_hi - f128;
 
-            ForwardRowSse(ref row0_lo, ref row1_lo, ref row2_lo, ref row3_lo, ref row4_lo, ref row5_lo, ref row6_lo, ref row7_lo);
-            ForwardRowSse(ref row0_hi, ref row1_hi, ref row2_hi, ref row3_hi, ref row4_hi, ref row5_hi, ref row6_hi, ref row7_hi);
+            ForwardRow128(ref row0_lo, ref row1_lo, ref row2_lo, ref row3_lo, ref row4_lo, ref row5_lo, ref row6_lo, ref row7_lo);
+            ForwardRow128(ref row0_hi, ref row1_hi, ref row2_hi, ref row3_hi, ref row4_hi, ref row5_hi, ref row6_hi, ref row7_hi);
 
             JpegBlockUtils.TransposeSse(
                 ref row0_lo, ref row0_hi,
@@ -579,8 +558,8 @@ namespace PdfToSvg.Imaging.Jpeg
                 ref row6_lo, ref row6_hi,
                 ref row7_lo, ref row7_hi);
 
-            ForwardRowSse(ref row0_lo, ref row1_lo, ref row2_lo, ref row3_lo, ref row4_lo, ref row5_lo, ref row6_lo, ref row7_lo);
-            ForwardRowSse(ref row0_hi, ref row1_hi, ref row2_hi, ref row3_hi, ref row4_hi, ref row5_hi, ref row6_hi, ref row7_hi);
+            ForwardRow128(ref row0_lo, ref row1_lo, ref row2_lo, ref row3_lo, ref row4_lo, ref row5_lo, ref row6_lo, ref row7_lo);
+            ForwardRow128(ref row0_hi, ref row1_hi, ref row2_hi, ref row3_hi, ref row4_hi, ref row5_hi, ref row6_hi, ref row7_hi);
 
             var multiplier = Vector128.Create(1f / 8);
             row0_lo = row0_lo * multiplier;
@@ -614,11 +593,11 @@ namespace PdfToSvg.Imaging.Jpeg
             )
         {
             // 1D IDCT on columns
-            InverseRowAvx(ref row0, ref row1, ref row2, ref row3, ref row4, ref row5, ref row6, ref row7);
+            InverseRow256(ref row0, ref row1, ref row2, ref row3, ref row4, ref row5, ref row6, ref row7);
 
             // 1D IDCT on rows
             JpegBlockUtils.TransposeAvx(ref row0, ref row1, ref row2, ref row3, ref row4, ref row5, ref row6, ref row7);
-            InverseRowAvx(ref row0, ref row1, ref row2, ref row3, ref row4, ref row5, ref row6, ref row7);
+            InverseRow256(ref row0, ref row1, ref row2, ref row3, ref row4, ref row5, ref row6, ref row7);
 
             // Level shifting from range [-0.5, 0.5] to clamped range [0, 255] (see T.81 Section A.3.1)
             var multiplier = Vector256.Create(1f / 8);
@@ -626,10 +605,11 @@ namespace PdfToSvg.Imaging.Jpeg
             var min = Vector256.Create(0f);
             var max = Vector256.Create(255f);
 
+            [MethodImpl(MethodInliningOptions.AggressiveInlining)]
             Vector256<float> LevelShift(Vector256<float> input)
             {
                 var mappedValue = input * multiplier + offset;
-                return JpegVectorUtils.ClampNative(mappedValue, min, max);
+                return VectorUtils.ClampNative(mappedValue, min, max);
             }
 
             row0 = LevelShift(row0);
@@ -663,8 +643,8 @@ namespace PdfToSvg.Imaging.Jpeg
             )
         {
             // 1D IDCT on columns
-            InverseRowSse(ref row0_lo, ref row1_lo, ref row2_lo, ref row3_lo, ref row4_lo, ref row5_lo, ref row6_lo, ref row7_lo);
-            InverseRowSse(ref row0_hi, ref row1_hi, ref row2_hi, ref row3_hi, ref row4_hi, ref row5_hi, ref row6_hi, ref row7_hi);
+            InverseRow128(ref row0_lo, ref row1_lo, ref row2_lo, ref row3_lo, ref row4_lo, ref row5_lo, ref row6_lo, ref row7_lo);
+            InverseRow128(ref row0_hi, ref row1_hi, ref row2_hi, ref row3_hi, ref row4_hi, ref row5_hi, ref row6_hi, ref row7_hi);
 
             // 1D IDCT on rows
             JpegBlockUtils.TransposeSse(
@@ -677,8 +657,8 @@ namespace PdfToSvg.Imaging.Jpeg
                 ref row6_lo, ref row6_hi,
                 ref row7_lo, ref row7_hi);
 
-            InverseRowSse(ref row0_lo, ref row1_lo, ref row2_lo, ref row3_lo, ref row4_lo, ref row5_lo, ref row6_lo, ref row7_lo);
-            InverseRowSse(ref row0_hi, ref row1_hi, ref row2_hi, ref row3_hi, ref row4_hi, ref row5_hi, ref row6_hi, ref row7_hi);
+            InverseRow128(ref row0_lo, ref row1_lo, ref row2_lo, ref row3_lo, ref row4_lo, ref row5_lo, ref row6_lo, ref row7_lo);
+            InverseRow128(ref row0_hi, ref row1_hi, ref row2_hi, ref row3_hi, ref row4_hi, ref row5_hi, ref row6_hi, ref row7_hi);
 
             // Level shifting from range [-0.5, 0.5] to clamped range [0, 255] (see T.81 Section A.3.1)
             var multiplier = Vector128.Create(1f / 8);
@@ -686,10 +666,11 @@ namespace PdfToSvg.Imaging.Jpeg
             var min = Vector128.Create(0f);
             var max = Vector128.Create(255f);
 
+            [MethodImpl(MethodInliningOptions.AggressiveInlining)]
             Vector128<float> LevelShift(Vector128<float> input)
             {
                 var mappedValue = input * multiplier + offset;
-                return JpegVectorUtils.ClampNative(mappedValue, min, max);
+                return VectorUtils.ClampNative(mappedValue, min, max);
             }
 
             row0_lo = LevelShift(row0_lo);

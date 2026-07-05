@@ -34,7 +34,7 @@ namespace PdfToSvg.ColorSpaces
             }
         }
 
-        public void ToRgb8(float[] input, int inputOffset, short[] rgbBuffer, int rgbBufferOffset, int count)
+        public void ToRgb8(float[] input, int inputOffset, float[] rgbBuffer, int rgbBufferOffset, int count)
         {
             float red, green, blue;
 
@@ -42,9 +42,9 @@ namespace PdfToSvg.ColorSpaces
             {
                 ToRgb(input, ref inputOffset, out red, out green, out blue);
 
-                rgbBuffer[rgbBufferOffset++] = ToRgb8Component(red);
-                rgbBuffer[rgbBufferOffset++] = ToRgb8Component(green);
-                rgbBuffer[rgbBufferOffset++] = ToRgb8Component(blue);
+                rgbBuffer[rgbBufferOffset++] = MathUtils.Clamp(red * 255f, 0f, 255f);
+                rgbBuffer[rgbBufferOffset++] = MathUtils.Clamp(green * 255f, 0f, 255f);
+                rgbBuffer[rgbBufferOffset++] = MathUtils.Clamp(blue * 255f, 0f, 255f);
             }
         }
 

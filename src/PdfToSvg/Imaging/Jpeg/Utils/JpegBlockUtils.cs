@@ -237,7 +237,7 @@ namespace PdfToSvg.Imaging.Jpeg
 #endif
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        public static bool IsSolidBlockScalar(short[] block, int offset)
+        public static bool IsSolidBlockScalar(float[] block, int offset)
         {
             if (offset < 0)
             {
@@ -263,48 +263,60 @@ namespace PdfToSvg.Imaging.Jpeg
 
 #if NET8_0_OR_GREATER
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        public static bool IsSolidBlock256Unsafe(ref short start)
+        public static bool IsSolidBlock256Unsafe(ref float start)
         {
             var comparison = Vector256.Create(start);
 
             return
-                comparison == Vector256.LoadUnsafe(ref start, 0 * 16) &&
-                comparison == Vector256.LoadUnsafe(ref start, 1 * 16) &&
-                comparison == Vector256.LoadUnsafe(ref start, 2 * 16) &&
-                comparison == Vector256.LoadUnsafe(ref start, 3 * 16);
+                comparison == Vector256.LoadUnsafe(ref start, (nuint)(0 * Vector256<float>.Count)) &&
+                comparison == Vector256.LoadUnsafe(ref start, (nuint)(1 * Vector256<float>.Count)) &&
+                comparison == Vector256.LoadUnsafe(ref start, (nuint)(2 * Vector256<float>.Count)) &&
+                comparison == Vector256.LoadUnsafe(ref start, (nuint)(3 * Vector256<float>.Count)) &&
+                comparison == Vector256.LoadUnsafe(ref start, (nuint)(4 * Vector256<float>.Count)) &&
+                comparison == Vector256.LoadUnsafe(ref start, (nuint)(5 * Vector256<float>.Count)) &&
+                comparison == Vector256.LoadUnsafe(ref start, (nuint)(6 * Vector256<float>.Count)) &&
+                comparison == Vector256.LoadUnsafe(ref start, (nuint)(7 * Vector256<float>.Count));
         }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        public static bool IsSolidBlock256Unsafe(ref Vector256<short> start)
+        public static bool IsSolidBlock256Unsafe(ref Vector256<float> start)
         {
-            return IsSolidBlock256Unsafe(ref Unsafe.As<Vector256<short>, short>(ref start));
+            return IsSolidBlock256Unsafe(ref Unsafe.As<Vector256<float>, float>(ref start));
         }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        public static bool IsSolidBlock128Unsafe(ref short start)
+        public static bool IsSolidBlock128Unsafe(ref float start)
         {
             var comparison = Vector128.Create(start);
 
             return
-                comparison == Vector128.LoadUnsafe(ref start, 0 * 8) &&
-                comparison == Vector128.LoadUnsafe(ref start, 1 * 8) &&
-                comparison == Vector128.LoadUnsafe(ref start, 2 * 8) &&
-                comparison == Vector128.LoadUnsafe(ref start, 3 * 8) &&
-                comparison == Vector128.LoadUnsafe(ref start, 4 * 8) &&
-                comparison == Vector128.LoadUnsafe(ref start, 5 * 8) &&
-                comparison == Vector128.LoadUnsafe(ref start, 6 * 8) &&
-                comparison == Vector128.LoadUnsafe(ref start, 7 * 8);
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(0 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(1 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(2 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(3 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(4 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(5 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(6 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(7 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(8 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(9 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(10 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(11 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(12 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(13 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(14 * Vector128<float>.Count)) &&
+                comparison == Vector128.LoadUnsafe(ref start, (nuint)(15 * Vector128<float>.Count));
         }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        public static bool IsSolidBlock128Unsafe(ref Vector128<short> start)
+        public static bool IsSolidBlock128Unsafe(ref Vector128<float> start)
         {
-            return IsSolidBlock128Unsafe(ref Unsafe.As<Vector128<short>, short>(ref start));
+            return IsSolidBlock128Unsafe(ref Unsafe.As<Vector128<float>, float>(ref start));
         }
 #endif
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        public static void FillSolidBlockScalar(short[] blocks, int blockBase, short value)
+        public static void FillSolidBlockScalar(float[] blocks, int blockBase, float value)
         {
             for (var i = 0; i < BlockSize; i++)
             {
@@ -314,25 +326,83 @@ namespace PdfToSvg.Imaging.Jpeg
 
 #if NET8_0_OR_GREATER
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        public static void FillSolidBlock128Unsafe(ref Vector128<short> pStart, short value)
+        public static void FillSolidBlock128Unsafe(ref Vector128<float> pStart, float value)
         {
-            const int RowsPerBlock = 8; // 64 shorts / 8 shorts per Vector128<short>
+            var rowsPerBlock = BlockSize / Vector128<float>.Count;
 
-            for (var row = 0; row < RowsPerBlock; row++)
+            for (var row = 0; row < rowsPerBlock; row++)
             {
                 Unsafe.Add(ref pStart, row) = Vector128.Create(value);
             }
         }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        public static void FillSolidBlock256Unsafe(ref Vector256<short> pStart, short value)
+        public static void FillSolidBlock256Unsafe(ref Vector256<float> pStart, float value)
         {
-            const int RowsPerBlock = 4; // 64 shorts / 16 shorts per Vector256<short>
+            var rowsPerBlock = BlockSize / Vector256<float>.Count;
 
-            for (var row = 0; row < RowsPerBlock; row++)
+            for (var row = 0; row < rowsPerBlock; row++)
             {
                 Unsafe.Add(ref pStart, row) = Vector256.Create(value);
             }
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static void FillBlock256Unsafe(
+            int[] pDestinationBlock,
+            Vector256<float> row0,
+            Vector256<float> row1,
+            Vector256<float> row2,
+            Vector256<float> row3,
+            Vector256<float> row4,
+            Vector256<float> row5,
+            Vector256<float> row6,
+            Vector256<float> row7
+            )
+        {
+            ref var pVector0 = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetArrayDataReference(pDestinationBlock));
+
+            Unsafe.Add(ref pVector0, 0) = Avx.ConvertToVector256Int32(row0);
+            Unsafe.Add(ref pVector0, 1) = Avx.ConvertToVector256Int32(row1);
+            Unsafe.Add(ref pVector0, 2) = Avx.ConvertToVector256Int32(row2);
+            Unsafe.Add(ref pVector0, 3) = Avx.ConvertToVector256Int32(row3);
+            Unsafe.Add(ref pVector0, 4) = Avx.ConvertToVector256Int32(row4);
+            Unsafe.Add(ref pVector0, 5) = Avx.ConvertToVector256Int32(row5);
+            Unsafe.Add(ref pVector0, 6) = Avx.ConvertToVector256Int32(row6);
+            Unsafe.Add(ref pVector0, 7) = Avx.ConvertToVector256Int32(row7);
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static void FillBlock128Unsafe(
+            int[] pDestinationBlock,
+            Vector128<float> row0_lo, Vector128<float> row0_hi,
+            Vector128<float> row1_lo, Vector128<float> row1_hi,
+            Vector128<float> row2_lo, Vector128<float> row2_hi,
+            Vector128<float> row3_lo, Vector128<float> row3_hi,
+            Vector128<float> row4_lo, Vector128<float> row4_hi,
+            Vector128<float> row5_lo, Vector128<float> row5_hi,
+            Vector128<float> row6_lo, Vector128<float> row6_hi,
+            Vector128<float> row7_lo, Vector128<float> row7_hi
+            )
+        {
+            ref var pVector0 = ref Unsafe.As<int, Vector128<int>>(ref MemoryMarshal.GetArrayDataReference(pDestinationBlock));
+
+            Unsafe.Add(ref pVector0, 0) = Sse2.ConvertToVector128Int32(row0_lo);
+            Unsafe.Add(ref pVector0, 1) = Sse2.ConvertToVector128Int32(row0_hi);
+            Unsafe.Add(ref pVector0, 2) = Sse2.ConvertToVector128Int32(row1_lo);
+            Unsafe.Add(ref pVector0, 3) = Sse2.ConvertToVector128Int32(row1_hi);
+            Unsafe.Add(ref pVector0, 4) = Sse2.ConvertToVector128Int32(row2_lo);
+            Unsafe.Add(ref pVector0, 5) = Sse2.ConvertToVector128Int32(row2_hi);
+            Unsafe.Add(ref pVector0, 6) = Sse2.ConvertToVector128Int32(row3_lo);
+            Unsafe.Add(ref pVector0, 7) = Sse2.ConvertToVector128Int32(row3_hi);
+            Unsafe.Add(ref pVector0, 8) = Sse2.ConvertToVector128Int32(row4_lo);
+            Unsafe.Add(ref pVector0, 9) = Sse2.ConvertToVector128Int32(row4_hi);
+            Unsafe.Add(ref pVector0, 10) = Sse2.ConvertToVector128Int32(row5_lo);
+            Unsafe.Add(ref pVector0, 11) = Sse2.ConvertToVector128Int32(row5_hi);
+            Unsafe.Add(ref pVector0, 12) = Sse2.ConvertToVector128Int32(row6_lo);
+            Unsafe.Add(ref pVector0, 13) = Sse2.ConvertToVector128Int32(row6_hi);
+            Unsafe.Add(ref pVector0, 14) = Sse2.ConvertToVector128Int32(row7_lo);
+            Unsafe.Add(ref pVector0, 15) = Sse2.ConvertToVector128Int32(row7_hi);
         }
 #endif
 

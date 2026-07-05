@@ -21,7 +21,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
             var loaded = new JpegTestData();
 
             var random = new Random(0);
-            original.Samples = new short[100];
+            original.Samples = new float[100];
             for (var i = 0; i < original.Samples.Length; i++)
             {
                 original.Samples[i] = unchecked((short)random.Next());

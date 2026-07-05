@@ -18,7 +18,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         public JpegColorSpace ColorSpace;
         public int Width;
         public int Height;
-        public short[] Samples;
+        public float[] Samples;
 
         public void Save(string path)
         {
@@ -31,13 +31,14 @@ namespace PdfToSvg.Tests.Images.Jpeg
             writer.Write(Height);
             writer.Write((int)ColorSpace);
 
-            var samples = Samples ?? ArrayUtils.Empty<short>();
+            var samples = Samples ?? ArrayUtils.Empty<float>();
 
             writer.Write(samples.Length);
 
             for (var i = 0; i < samples.Length; i++)
             {
-                writer.Write(samples[i]);
+                // On-disk format stores samples as 16-bit integers.
+                writer.Write((short)samples[i]);
             }
         }
 
@@ -52,7 +53,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
             ColorSpace = (JpegColorSpace)reader.ReadInt32();
 
             var sampleCount = reader.ReadInt32();
-            var samples = new short[sampleCount];
+            var samples = new float[sampleCount];
 
             for (var i = 0; i < samples.Length; i++)
             {

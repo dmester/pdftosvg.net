@@ -141,8 +141,8 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [TestCase(63)]
         public void IsSolidBlock256Unsafe_NotSolid(int diffIndex)
         {
-            var data = new short[64];
-            Array.Fill(data, (short)42);
+            var data = new float[64];
+            Array.Fill(data, 42f);
             data[diffIndex] = 43;
 
             Assert.IsFalse(JpegBlockUtils.IsSolidBlock256Unsafe(ref data[0]));
@@ -151,8 +151,8 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void IsSolidBlock256Unsafe_Solid()
         {
-            var data = new short[64];
-            Array.Fill(data, (short)42);
+            var data = new float[64];
+            Array.Fill(data, 42f);
 
             Assert.IsTrue(JpegBlockUtils.IsSolidBlock256Unsafe(ref data[0]));
         }
@@ -171,8 +171,8 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [TestCase(63)]
         public void IsSolidBlock128Unsafe_NotSolid(int diffIndex)
         {
-            var data = new short[64];
-            Array.Fill(data, (short)42);
+            var data = new float[64];
+            Array.Fill(data, 42f);
             data[diffIndex] = 43;
 
             Assert.IsFalse(JpegBlockUtils.IsSolidBlock128Unsafe(ref data[0]));
@@ -181,8 +181,8 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void IsSolidBlock128Unsafe_Solid()
         {
-            var data = new short[64];
-            Array.Fill(data, (short)42);
+            var data = new float[64];
+            Array.Fill(data, 42f);
 
             Assert.IsTrue(JpegBlockUtils.IsSolidBlock128Unsafe(ref data[0]));
         }

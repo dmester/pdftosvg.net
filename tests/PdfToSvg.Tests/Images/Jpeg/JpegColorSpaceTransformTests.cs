@@ -21,7 +21,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         public void CmykBlocksToYcc_ConvertsDeinterleavedBlocks()
         {
             var blocks = CreateVariedBlocks(componentCount: 4, mcuCount: 2, seed: 1);
-            var input = (short[])blocks.Clone();
+            var input = (float[])blocks.Clone();
 
             var outputBlocks = JpegColorSpaceTransform.CmykBlocksToYcc(blocks, blockCount: 4 * 2);
 
@@ -35,13 +35,13 @@ namespace PdfToSvg.Tests.Images.Jpeg
         public void CmykBlocksToYcc_HandlesSolidBlocks()
         {
             // One MCU where every block is a single (but different) value, exercising the solid-block fast path.
-            var blocks = new short[4 * BlockSize];
+            var blocks = new float[4 * BlockSize];
             FillBlock(blocks, 0, 200); // C
             FillBlock(blocks, 1, 30);  // M
             FillBlock(blocks, 2, 90);  // Y
             FillBlock(blocks, 3, 10);  // K
 
-            var input = (short[])blocks.Clone();
+            var input = (float[])blocks.Clone();
 
             var outputBlocks = JpegColorSpaceTransform.CmykBlocksToYcc(blocks, blockCount: 4);
 
@@ -53,7 +53,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         public void YcckBlocksToYcc_ConvertsDeinterleavedBlocks()
         {
             var blocks = CreateVariedBlocks(componentCount: 4, mcuCount: 2, seed: 2);
-            var input = (short[])blocks.Clone();
+            var input = (float[])blocks.Clone();
 
             var outputBlocks = JpegColorSpaceTransform.YcckBlocksToYcc(blocks, blockCount: 4 * 2);
 
@@ -62,7 +62,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
             AssertYcckMatchesReference(input, blocks, mcuCount: 2);
         }
 
-        private static void AssertCmykMatchesReference(short[] input, short[] output, int mcuCount)
+        private static void AssertCmykMatchesReference(float[] input, float[] output, int mcuCount)
         {
             for (var mcu = 0; mcu < mcuCount; mcu++)
             {
@@ -87,7 +87,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
             }
         }
 
-        private static void AssertYcckMatchesReference(short[] input, short[] output, int mcuCount)
+        private static void AssertYcckMatchesReference(float[] input, float[] output, int mcuCount)
         {
             for (var mcu = 0; mcu < mcuCount; mcu++)
             {
@@ -112,19 +112,19 @@ namespace PdfToSvg.Tests.Images.Jpeg
             }
         }
 
-        private static void CmykToYccReference(short c, short m, short y, short k, out short yccY, out short yccCb, out short yccCr)
+        private static void CmykToYccReference(float c, float m, float y, float k, out float yccY, out float yccCb, out float yccCr)
         {
             DeviceCmykColorSpace.ToRgb(c * (1f / 255), m * (1f / 255), y * (1f / 255), k * (1f / 255),
                 out var rgbR, out var rgbG, out var rgbB);
 
             JpegColorSpaceTransform.RgbToYcc(rgbR * 255, rgbG * 255, rgbB * 255, out var fy, out var fcb, out var fcr);
 
-            yccY = (short)MathUtils.Clamp(fy, 0f, 255f);
-            yccCb = (short)MathUtils.Clamp(fcb, 0f, 255f);
-            yccCr = (short)MathUtils.Clamp(fcr, 0f, 255f);
+            yccY = (float)MathUtils.Clamp(fy, 0f, 255f);
+            yccCb = (float)MathUtils.Clamp(fcb, 0f, 255f);
+            yccCr = (float)MathUtils.Clamp(fcr, 0f, 255f);
         }
 
-        private static void YcckToYccReference(short ycckY, short ycckCb, short ycckCr, short ycckK, out short yccY, out short yccCb, out short yccCr)
+        private static void YcckToYccReference(float ycckY, float ycckCb, float ycckCr, float ycckK, out float yccY, out float yccCb, out float yccCr)
         {
             JpegColorSpaceTransform.YccToRgb(ycckY, ycckCb, ycckCr, out var ycckR, out var ycckG, out var ycckB);
 
@@ -135,31 +135,31 @@ namespace PdfToSvg.Tests.Images.Jpeg
 
             JpegColorSpaceTransform.RgbToYcc(rgbR * 255, rgbG * 255, rgbB * 255, out var fy, out var fcb, out var fcr);
 
-            yccY = (short)MathUtils.Clamp(fy, 0f, 255f);
-            yccCb = (short)MathUtils.Clamp(fcb, 0f, 255f);
-            yccCr = (short)MathUtils.Clamp(fcr, 0f, 255f);
+            yccY = (float)MathUtils.Clamp(fy, 0f, 255f);
+            yccCb = (float)MathUtils.Clamp(fcb, 0f, 255f);
+            yccCr = (float)MathUtils.Clamp(fcr, 0f, 255f);
         }
 
-        private static void AssertClose(short expected, short actual, int mcu, int index, string component)
+        private static void AssertClose(float expected, float actual, int mcu, int index, string component)
         {
-            Assert.That(actual, Is.EqualTo((int)expected).Within(Tolerance),
+            Assert.That(actual, Is.EqualTo(expected).Within(Tolerance),
                 $"MCU {mcu}, sample {index}, component {component}");
         }
 
-        private static short[] CreateVariedBlocks(int componentCount, int mcuCount, int seed)
+        private static float[] CreateVariedBlocks(int componentCount, int mcuCount, int seed)
         {
-            var blocks = new short[componentCount * mcuCount * BlockSize];
+            var blocks = new float[componentCount * mcuCount * BlockSize];
             var random = new Random(seed);
 
             for (var i = 0; i < blocks.Length; i++)
             {
-                blocks[i] = (short)random.Next(0, 256);
+                blocks[i] = (float)random.Next(0, 256);
             }
 
             return blocks;
         }
 
-        private static void FillBlock(short[] blocks, int blockIndex, short value)
+        private static void FillBlock(float[] blocks, int blockIndex, float value)
         {
             var baseIndex = blockIndex * BlockSize;
             for (var i = 0; i < BlockSize; i++)

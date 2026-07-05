@@ -75,7 +75,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void WriteBlocks_NegativeBlockCount()
         {
-            var sourceBlocks = new short[64];
+            var sourceBlocks = new float[64];
             var encoder = new JpegEncoder { Width = 10, Height = 10 };
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
@@ -85,7 +85,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void WriteBlocks_TooManyBlockCount()
         {
-            var sourceBlocks = new short[127];
+            var sourceBlocks = new float[127];
             var encoder = new JpegEncoder { Width = 10, Height = 10 };
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
@@ -95,7 +95,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void WriteBlocks_BeforeMetadata()
         {
-            var sourceBlocks = new short[128];
+            var sourceBlocks = new float[128];
             var encoder = new JpegEncoder { Width = 10, Height = 10 };
 
             Assert.Throws<InvalidOperationException>(() =>

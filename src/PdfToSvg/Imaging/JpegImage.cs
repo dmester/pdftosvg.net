@@ -202,7 +202,7 @@ namespace PdfToSvg.Imaging
             encoder.WriteMetadata();
 
             // ReadBlocks keeps the block count a multiple of the source component count
-            var blocks = new short[BlockSize * BlockBatchCount];
+            var blocks = new float[BlockSize * BlockBatchCount];
 
             foreach (var readBlockCount in decoder.ReadBlocks(blocks))
             {
@@ -246,45 +246,36 @@ namespace PdfToSvg.Imaging
 
             encoder.WriteMetadata();
 
-            var floatScan = ArrayUtils.Empty<float>();
-            var convertedScan = ArrayUtils.Empty<short>();
+            var convertedScan = ArrayUtils.Empty<float>();
 
             foreach (var scan in decoder.ReadImageData())
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var sampleCount = scan.Length / decoder.Components;
-
-                // Convert to float
-                if (floatScan.Length != scan.Length)
-                {
-                    floatScan = new float[scan.Length];
-                }
-                JpegArrayUtils.Cast(floatScan, scan, scan.Length);
-
                 // Reverse DCTDecode implicit color transform
                 switch (sourceColorSpace)
                 {
                     case JpegColorSpace.YCbCr:
-                        JpegColorSpaceTransform.YccToRgb(floatScan, 0, floatScan.Length);
+                        JpegColorSpaceTransform.YccToRgb(scan, 0, scan.Length);
                         break;
 
                     case JpegColorSpace.Ycck:
-                        JpegColorSpaceTransform.YcckToCmyk(floatScan, 0, floatScan.Length);
+                        JpegColorSpaceTransform.YcckToCmyk(scan, 0, scan.Length);
                         break;
                 }
 
                 // Decode
-                decodeArray.Decode(floatScan, 0, floatScan.Length);
+                decodeArray.Decode(scan, 0, scan.Length);
 
                 // Convert to RGB
+                var sampleCount = scan.Length / decoder.Components;
                 var convertedLength = sampleCount * YccComponents;
                 if (convertedScan.Length != convertedLength)
                 {
-                    convertedScan = new short[convertedLength];
+                    convertedScan = new float[convertedLength];
                 }
 
-                colorSpace.ToRgb8(floatScan, 0, convertedScan, 0, sampleCount);
+                colorSpace.ToRgb8(scan, 0, convertedScan, 0, sampleCount);
 
                 // Convert to YCbCr
                 JpegColorSpaceTransform.RgbToYcc(convertedScan, 0, convertedScan.Length);

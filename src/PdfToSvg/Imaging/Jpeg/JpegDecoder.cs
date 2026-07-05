@@ -335,7 +335,7 @@ namespace PdfToSvg.Imaging.Jpeg
         }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        private void ReadBlock(JpegImageDataReader reader, JpegComponent component, short[] rawBlockBuffer, short[] output, int outputOffset)
+        private void ReadBlock(JpegImageDataReader reader, JpegComponent component, float[] rawBlockBuffer, float[] output, int outputOffset)
         {
             if (outputOffset + BlockSize * BlockSize > output.Length)
             {
@@ -346,7 +346,7 @@ namespace PdfToSvg.Imaging.Jpeg
 
             reader.ReadDataUnit(rawBlockBuffer, component.HuffmanDCTable, component.HuffmanACTable, out var zeroAc);
 
-            component.DCPredictor = pRawBlockBuffer = (short)(component.DCPredictor + pRawBlockBuffer);
+            component.DCPredictor = (int)(pRawBlockBuffer = component.DCPredictor + pRawBlockBuffer);
 
 #if NET8_0_OR_GREATER
             ref var pOutput = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(output), outputOffset);
@@ -354,61 +354,15 @@ namespace PdfToSvg.Imaging.Jpeg
             if (Vector256.IsHardwareAccelerated && Avx2.IsSupported)
             {
                 // AVX2
-                ref var pDecodedBlock = ref Unsafe.As<short, Vector256<short>>(ref pOutput);
+                ref var pDecodedBlock = ref Unsafe.As<float, Vector256<float>>(ref pOutput);
 
                 if (zeroAc)
                 {
                     // Solid block => full IDCT and dequantization can be skipped
-
-                    // Multiplied 128 in the nominator to ensure consistent rounding with IDCT. 4 to round to nearest integer.
-                    // Values must be clamped to the valid sample range according to T.81 Section A.3.1.
-                    var shiftedValue = (component.QuantizationTable.DCMultiplier * pRawBlockBuffer + 128 * 8 + 4) / 8;
-                    var clampedValue = (short)MathUtils.Clamp(shiftedValue, 0, 255);
+                    // T.81 A.3.1 Level shift needed
+                    var shiftedValue = component.QuantizationTable.DCMultiplier * pRawBlockBuffer / 8 + 128f;
+                    var clampedValue = MathUtils.Clamp(shiftedValue, 0f, 255f);
                     var valueVector = Vector256.Create(clampedValue);
-
-                    Unsafe.Add(ref pDecodedBlock, 0) = valueVector;
-                    Unsafe.Add(ref pDecodedBlock, 1) = valueVector;
-                    Unsafe.Add(ref pDecodedBlock, 2) = valueVector;
-                    Unsafe.Add(ref pDecodedBlock, 3) = valueVector;
-                }
-                else
-                {
-                    ref var pVectorBuffer = ref Unsafe.As<short, Vector256<short>>(ref pRawBlockBuffer);
-                    var srcRow01 = Unsafe.Add(ref pVectorBuffer, 0);
-                    var srcRow23 = Unsafe.Add(ref pVectorBuffer, 1);
-                    var srcRow45 = Unsafe.Add(ref pVectorBuffer, 2);
-                    var srcRow67 = Unsafe.Add(ref pVectorBuffer, 3);
-
-                    var (fRow0, fRow1) = JpegVectorUtils.ConvertToVector256Single(srcRow01);
-                    var (fRow2, fRow3) = JpegVectorUtils.ConvertToVector256Single(srcRow23);
-                    var (fRow4, fRow5) = JpegVectorUtils.ConvertToVector256Single(srcRow45);
-                    var (fRow6, fRow7) = JpegVectorUtils.ConvertToVector256Single(srcRow67);
-
-                    component.QuantizationTable.DequantizeTransposedZigZag256(
-                        ref fRow0, ref fRow1, ref fRow2, ref fRow3, ref fRow4, ref fRow5, ref fRow6, ref fRow7);
-
-                    JpegDct.InverseAvx(ref fRow0, ref fRow1, ref fRow2, ref fRow3, ref fRow4, ref fRow5, ref fRow6, ref fRow7);
-
-                    Unsafe.Add(ref pDecodedBlock, 0) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow0, fRow1);
-                    Unsafe.Add(ref pDecodedBlock, 1) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow2, fRow3);
-                    Unsafe.Add(ref pDecodedBlock, 2) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow4, fRow5);
-                    Unsafe.Add(ref pDecodedBlock, 3) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow6, fRow7);
-                }
-            }
-            else if (Vector128.IsHardwareAccelerated && Sse2.IsSupported)
-            {
-                // SSE2
-                ref var pDecodedBlock = ref Unsafe.As<short, Vector128<short>>(ref pOutput);
-
-                if (zeroAc)
-                {
-                    // Solid block => full IDCT and dequantization can be skipped
-
-                    // Multiplied 128 in the nominator to ensure consistent rounding with IDCT. 4 to round to nearest integer.
-                    // Values must be clamped to the valid sample range according to T.81 Section A.3.1.
-                    var shiftedValue = (component.QuantizationTable.DCMultiplier * pRawBlockBuffer + 128 * 8 + 4) / 8;
-                    var clampedValue = (short)MathUtils.Clamp(shiftedValue, 0, 255);
-                    var valueVector = Vector128.Create(clampedValue);
 
                     Unsafe.Add(ref pDecodedBlock, 0) = valueVector;
                     Unsafe.Add(ref pDecodedBlock, 1) = valueVector;
@@ -421,24 +375,68 @@ namespace PdfToSvg.Imaging.Jpeg
                 }
                 else
                 {
-                    ref var pVectorBuffer = ref Unsafe.As<short, Vector128<short>>(ref pRawBlockBuffer);
-                    var srcRow0 = Unsafe.Add(ref pVectorBuffer, 0);
-                    var srcRow1 = Unsafe.Add(ref pVectorBuffer, 1);
-                    var srcRow2 = Unsafe.Add(ref pVectorBuffer, 2);
-                    var srcRow3 = Unsafe.Add(ref pVectorBuffer, 3);
-                    var srcRow4 = Unsafe.Add(ref pVectorBuffer, 4);
-                    var srcRow5 = Unsafe.Add(ref pVectorBuffer, 5);
-                    var srcRow6 = Unsafe.Add(ref pVectorBuffer, 6);
-                    var srcRow7 = Unsafe.Add(ref pVectorBuffer, 7);
+                    ref var pVectorBuffer = ref Unsafe.As<float, Vector256<float>>(ref pRawBlockBuffer);
+                    var fRow0 = Unsafe.Add(ref pVectorBuffer, 0);
+                    var fRow1 = Unsafe.Add(ref pVectorBuffer, 1);
+                    var fRow2 = Unsafe.Add(ref pVectorBuffer, 2);
+                    var fRow3 = Unsafe.Add(ref pVectorBuffer, 3);
+                    var fRow4 = Unsafe.Add(ref pVectorBuffer, 4);
+                    var fRow5 = Unsafe.Add(ref pVectorBuffer, 5);
+                    var fRow6 = Unsafe.Add(ref pVectorBuffer, 6);
+                    var fRow7 = Unsafe.Add(ref pVectorBuffer, 7);
 
-                    var (row0_lo, row0_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow0);
-                    var (row1_lo, row1_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow1);
-                    var (row2_lo, row2_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow2);
-                    var (row3_lo, row3_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow3);
-                    var (row4_lo, row4_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow4);
-                    var (row5_lo, row5_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow5);
-                    var (row6_lo, row6_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow6);
-                    var (row7_lo, row7_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow7);
+                    component.QuantizationTable.DequantizeTransposedZigZag256(
+                        ref fRow0, ref fRow1, ref fRow2, ref fRow3, ref fRow4, ref fRow5, ref fRow6, ref fRow7);
+
+                    JpegDct.InverseAvx(ref fRow0, ref fRow1, ref fRow2, ref fRow3, ref fRow4, ref fRow5, ref fRow6, ref fRow7);
+
+                    Unsafe.Add(ref pDecodedBlock, 0) = fRow0;
+                    Unsafe.Add(ref pDecodedBlock, 1) = fRow1;
+                    Unsafe.Add(ref pDecodedBlock, 2) = fRow2;
+                    Unsafe.Add(ref pDecodedBlock, 3) = fRow3;
+                    Unsafe.Add(ref pDecodedBlock, 4) = fRow4;
+                    Unsafe.Add(ref pDecodedBlock, 5) = fRow5;
+                    Unsafe.Add(ref pDecodedBlock, 6) = fRow6;
+                    Unsafe.Add(ref pDecodedBlock, 7) = fRow7;
+                }
+            }
+            else if (Vector128.IsHardwareAccelerated && Sse2.IsSupported)
+            {
+                // SSE2
+                ref var pDecodedBlock = ref Unsafe.As<float, Vector128<float>>(ref pOutput);
+
+                if (zeroAc)
+                {
+                    // Solid block => full IDCT and dequantization can be skipped
+                    // T.81 A.3.1 Level shift needed
+                    var shiftedValue = component.QuantizationTable.DCMultiplier * pRawBlockBuffer / 8 + 128f;
+                    var clampedValue = MathUtils.Clamp(shiftedValue, 0f, 255f);
+                    var valueVector = Vector128.Create(clampedValue);
+
+                    for (var i = 0; i < 16; i++)
+                    {
+                        Unsafe.Add(ref pDecodedBlock, i) = valueVector;
+                    }
+                }
+                else
+                {
+                    ref var pVectorBuffer = ref Unsafe.As<float, Vector128<float>>(ref pRawBlockBuffer);
+                    var row0_lo = Unsafe.Add(ref pVectorBuffer, 0);
+                    var row0_hi = Unsafe.Add(ref pVectorBuffer, 1);
+                    var row1_lo = Unsafe.Add(ref pVectorBuffer, 2);
+                    var row1_hi = Unsafe.Add(ref pVectorBuffer, 3);
+                    var row2_lo = Unsafe.Add(ref pVectorBuffer, 4);
+                    var row2_hi = Unsafe.Add(ref pVectorBuffer, 5);
+                    var row3_lo = Unsafe.Add(ref pVectorBuffer, 6);
+                    var row3_hi = Unsafe.Add(ref pVectorBuffer, 7);
+                    var row4_lo = Unsafe.Add(ref pVectorBuffer, 8);
+                    var row4_hi = Unsafe.Add(ref pVectorBuffer, 9);
+                    var row5_lo = Unsafe.Add(ref pVectorBuffer, 10);
+                    var row5_hi = Unsafe.Add(ref pVectorBuffer, 11);
+                    var row6_lo = Unsafe.Add(ref pVectorBuffer, 12);
+                    var row6_hi = Unsafe.Add(ref pVectorBuffer, 13);
+                    var row7_lo = Unsafe.Add(ref pVectorBuffer, 14);
+                    var row7_hi = Unsafe.Add(ref pVectorBuffer, 15);
 
                     component.QuantizationTable.DequantizeTransposedZigZag128(
                         ref row0_lo, ref row0_hi,
@@ -461,14 +459,22 @@ namespace PdfToSvg.Imaging.Jpeg
                         ref row6_lo, ref row6_hi,
                         ref row7_lo, ref row7_hi);
 
-                    Unsafe.Add(ref pDecodedBlock, 0) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row0_lo, row0_hi);
-                    Unsafe.Add(ref pDecodedBlock, 1) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row1_lo, row1_hi);
-                    Unsafe.Add(ref pDecodedBlock, 2) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row2_lo, row2_hi);
-                    Unsafe.Add(ref pDecodedBlock, 3) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row3_lo, row3_hi);
-                    Unsafe.Add(ref pDecodedBlock, 4) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row4_lo, row4_hi);
-                    Unsafe.Add(ref pDecodedBlock, 5) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row5_lo, row5_hi);
-                    Unsafe.Add(ref pDecodedBlock, 6) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row6_lo, row6_hi);
-                    Unsafe.Add(ref pDecodedBlock, 7) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row7_lo, row7_hi);
+                    Unsafe.Add(ref pDecodedBlock, 0) = row0_lo;
+                    Unsafe.Add(ref pDecodedBlock, 1) = row0_hi;
+                    Unsafe.Add(ref pDecodedBlock, 2) = row1_lo;
+                    Unsafe.Add(ref pDecodedBlock, 3) = row1_hi;
+                    Unsafe.Add(ref pDecodedBlock, 4) = row2_lo;
+                    Unsafe.Add(ref pDecodedBlock, 5) = row2_hi;
+                    Unsafe.Add(ref pDecodedBlock, 6) = row3_lo;
+                    Unsafe.Add(ref pDecodedBlock, 7) = row3_hi;
+                    Unsafe.Add(ref pDecodedBlock, 8) = row4_lo;
+                    Unsafe.Add(ref pDecodedBlock, 9) = row4_hi;
+                    Unsafe.Add(ref pDecodedBlock, 10) = row5_lo;
+                    Unsafe.Add(ref pDecodedBlock, 11) = row5_hi;
+                    Unsafe.Add(ref pDecodedBlock, 12) = row6_lo;
+                    Unsafe.Add(ref pDecodedBlock, 13) = row6_hi;
+                    Unsafe.Add(ref pDecodedBlock, 14) = row7_lo;
+                    Unsafe.Add(ref pDecodedBlock, 15) = row7_hi;
                 }
             }
             else
@@ -478,11 +484,9 @@ namespace PdfToSvg.Imaging.Jpeg
                 if (zeroAc)
                 {
                     // Solid block => full IDCT and dequantization can be skipped
-
-                    // Multiplied 128 in the nominator to ensure consistent rounding with IDCT. 4 to round to nearest integer.
-                    // Values must be clamped to the valid sample range according to T.81 Section A.3.1.
-                    var shiftedValue = (component.QuantizationTable.DCMultiplier * pRawBlockBuffer + 128 * 8 + 4) / 8;
-                    var clampedValue = (short)MathUtils.Clamp(shiftedValue, 0, 255);
+                    // T.81 A.3.1 Level shift needed
+                    var shiftedValue = component.QuantizationTable.DCMultiplier * pRawBlockBuffer / 8 + 128f;
+                    var clampedValue = MathUtils.Clamp(shiftedValue, 0f, 255f);
 
                     for (var i = 0; i < BlockSize * BlockSize; i++)
                     {
@@ -500,7 +504,7 @@ namespace PdfToSvg.Imaging.Jpeg
             }
         }
 
-        public IEnumerable<int> ReadBlocks(short[] outputBlocks)
+        public IEnumerable<int> ReadBlocks(float[] outputBlocks)
         {
             // E.2.3 Control procedure for decoding a scan
 
@@ -509,7 +513,7 @@ namespace PdfToSvg.Imaging.Jpeg
             var mcusV = (lineCount - 1) / mcuHeight / BlockSize + 1;
             var mcusH = (samplesPerLine - 1) / mcuWidth / BlockSize + 1;
 
-            var rawDataUnit = new short[BlockSize * BlockSize];
+            var rawDataUnit = new float[BlockSize * BlockSize];
 
             var leftUntilRestart = restartInterval;
 
@@ -561,7 +565,7 @@ namespace PdfToSvg.Imaging.Jpeg
             }
         }
 
-        public IEnumerable<short[]> ReadImageData()
+        public IEnumerable<float[]> ReadImageData()
         {
             // E.2.3 Control procedure for decoding a scan
 
@@ -573,7 +577,7 @@ namespace PdfToSvg.Imaging.Jpeg
             var mcuRowBitmap = new JpegBitmap(samplesPerLine, mcuHeight * BlockSize, frameComponents.Length);
             var dataUnitBitmap = new JpegBitmap(BlockSize, BlockSize, 1);
 
-            var rawDataUnit = new short[BlockSize * BlockSize];
+            var rawDataUnit = new float[BlockSize * BlockSize];
 
             var leftUntilRestart = restartInterval;
 

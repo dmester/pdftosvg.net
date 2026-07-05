@@ -111,7 +111,7 @@ namespace PdfToSvg.Imaging.Jpeg
         }
 #endif
 
-        public static int RgbToYcc(short[] data, int offset, int count)
+        public static int RgbToYcc(float[] data, int offset, int count)
         {
             for (var inputCursor = 0; inputCursor + 2 < count; inputCursor += 3)
             {
@@ -134,7 +134,7 @@ namespace PdfToSvg.Imaging.Jpeg
         /// input blocks (C, M, Y, K) is replaced by 3 output blocks (Y', Cb', Cr'). This is safe to do in place, since
         /// the 3 output blocks per MCU never extend beyond the 4 input blocks. Returns the number of output blocks.
         /// </summary>
-        public static int CmykBlocksToYcc(short[] blocks, int blockCount)
+        public static int CmykBlocksToYcc(float[] blocks, int blockCount)
         {
             const int CmykComponents = 4;
             const int YccComponents = 3;
@@ -145,20 +145,23 @@ namespace PdfToSvg.Imaging.Jpeg
             if (Vector256.IsHardwareAccelerated && Avx2.IsSupported)
             {
                 // AVX2
-                const int RowsPerBlock = 4; // 64 shorts / 16 shorts per Vector256<short>
+                var rowsPerBlock = BlockSize / Vector256<float>.Count;
 
-                ref var pData = ref Unsafe.As<short, Vector256<short>>(ref MemoryMarshal.GetArrayDataReference(blocks));
+                var outputMin = Vector256<float>.Zero;
+                var outputMax = Vector256.Create(255f);
+
+                ref var pData = ref Unsafe.As<float, Vector256<float>>(ref MemoryMarshal.GetArrayDataReference(blocks));
 
                 for (var blockIndex = 0; blockIndex < blockCount; blockIndex += CmykComponents, outputBlockIndex += YccComponents)
                 {
-                    ref var pCmykC = ref Unsafe.Add(ref pData, RowsPerBlock * blockIndex);
-                    ref var pCmykM = ref Unsafe.Add(ref pCmykC, RowsPerBlock);
-                    ref var pCmykY = ref Unsafe.Add(ref pCmykC, RowsPerBlock * 2);
-                    ref var pCmykK = ref Unsafe.Add(ref pCmykC, RowsPerBlock * 3);
+                    ref var pCmykC = ref Unsafe.Add(ref pData, rowsPerBlock * blockIndex);
+                    ref var pCmykM = ref Unsafe.Add(ref pCmykC, rowsPerBlock);
+                    ref var pCmykY = ref Unsafe.Add(ref pCmykC, rowsPerBlock * 2);
+                    ref var pCmykK = ref Unsafe.Add(ref pCmykC, rowsPerBlock * 3);
 
-                    ref var pYccY = ref Unsafe.Add(ref pData, RowsPerBlock * outputBlockIndex);
-                    ref var pYccCb = ref Unsafe.Add(ref pYccY, RowsPerBlock);
-                    ref var pYccCr = ref Unsafe.Add(ref pYccY, RowsPerBlock * 2);
+                    ref var pYccY = ref Unsafe.Add(ref pData, rowsPerBlock * outputBlockIndex);
+                    ref var pYccCb = ref Unsafe.Add(ref pYccY, rowsPerBlock);
+                    ref var pYccCr = ref Unsafe.Add(ref pYccY, rowsPerBlock * 2);
 
                     if (JpegBlockUtils.IsSolidBlock256Unsafe(ref pCmykC) &&
                         JpegBlockUtils.IsSolidBlock256Unsafe(ref pCmykM) &&
@@ -178,38 +181,24 @@ namespace PdfToSvg.Imaging.Jpeg
                     }
                     else
                     {
-                        for (var row = 0; row < RowsPerBlock; row++)
+                        for (var row = 0; row < rowsPerBlock; row++)
                         {
-                            var (cmykC_lo, cmykC_hi) = Vector256.Widen(Unsafe.Add(ref pCmykC, row));
-                            var (cmykM_lo, cmykM_hi) = Vector256.Widen(Unsafe.Add(ref pCmykM, row));
-                            var (cmykY_lo, cmykY_hi) = Vector256.Widen(Unsafe.Add(ref pCmykY, row));
-                            var (cmykK_lo, cmykK_hi) = Vector256.Widen(Unsafe.Add(ref pCmykK, row));
+                            var cmykC = Unsafe.Add(ref pCmykC, row);
+                            var cmykM = Unsafe.Add(ref pCmykM, row);
+                            var cmykY = Unsafe.Add(ref pCmykY, row);
+                            var cmykK = Unsafe.Add(ref pCmykK, row);
 
                             DeviceCmykColorSpace.ToRgb(
-                                Vector256.ConvertToSingle(cmykC_lo) * (1f / 255),
-                                Vector256.ConvertToSingle(cmykM_lo) * (1f / 255),
-                                Vector256.ConvertToSingle(cmykY_lo) * (1f / 255),
-                                Vector256.ConvertToSingle(cmykK_lo) * (1f / 255),
-                                out var rgbR_lo, out var rgbG_lo, out var rgbB_lo);
+                                cmykC * (1f / 255), cmykM * (1f / 255),
+                                cmykY * (1f / 255), cmykK * (1f / 255),
+                                out var rgbR, out var rgbG, out var rgbB);
 
-                            RgbToYcc(rgbR_lo * 255f, rgbG_lo * 255f, rgbB_lo * 255f,
-                                out var yccY_lo, out var yccCb_lo, out var yccCr_lo);
+                            RgbToYcc(rgbR * 255f, rgbG * 255f, rgbB * 255f,
+                                out var yccY, out var yccCb, out var yccCr);
 
-                            DeviceCmykColorSpace.ToRgb(
-                                Vector256.ConvertToSingle(cmykC_hi) * (1f / 255),
-                                Vector256.ConvertToSingle(cmykM_hi) * (1f / 255),
-                                Vector256.ConvertToSingle(cmykY_hi) * (1f / 255),
-                                Vector256.ConvertToSingle(cmykK_hi) * (1f / 255),
-                                out var rgbR_hi, out var rgbG_hi, out var rgbB_hi);
-
-                            RgbToYcc(rgbR_hi * 255f, rgbG_hi * 255f, rgbB_hi * 255f,
-                                out var yccY_hi, out var yccCb_hi, out var yccCr_hi);
-
-                            ClampSamplesAvx2(
-                                ref Unsafe.Add(ref pYccY, row), yccY_lo, yccY_hi,
-                                ref Unsafe.Add(ref pYccCb, row), yccCb_lo, yccCb_hi,
-                                ref Unsafe.Add(ref pYccCr, row), yccCr_lo, yccCr_hi
-                                );
+                            Unsafe.Add(ref pYccY, row) = VectorUtils.ClampNative(yccY, outputMin, outputMax);
+                            Unsafe.Add(ref pYccCb, row) = VectorUtils.ClampNative(yccCb, outputMin, outputMax);
+                            Unsafe.Add(ref pYccCr, row) = VectorUtils.ClampNative(yccCr, outputMin, outputMax);
                         }
                     }
                 }
@@ -220,20 +209,23 @@ namespace PdfToSvg.Imaging.Jpeg
             if (Vector128.IsHardwareAccelerated && Sse2.IsSupported)
             {
                 // SSE2
-                const int RowsPerBlock = 8; // 64 shorts / 8 shorts per Vector128<short>
+                var rowsPerBlock = BlockSize / Vector128<float>.Count;
 
-                ref var pData = ref Unsafe.As<short, Vector128<short>>(ref MemoryMarshal.GetArrayDataReference(blocks));
+                var outputMin = Vector128<float>.Zero;
+                var outputMax = Vector128.Create(255f);
+
+                ref var pData = ref Unsafe.As<float, Vector128<float>>(ref MemoryMarshal.GetArrayDataReference(blocks));
 
                 for (var blockIndex = 0; blockIndex < blockCount; blockIndex += CmykComponents, outputBlockIndex += YccComponents)
                 {
-                    ref var pCmykC = ref Unsafe.Add(ref pData, RowsPerBlock * blockIndex);
-                    ref var pCmykM = ref Unsafe.Add(ref pCmykC, RowsPerBlock);
-                    ref var pCmykY = ref Unsafe.Add(ref pCmykC, RowsPerBlock * 2);
-                    ref var pCmykK = ref Unsafe.Add(ref pCmykC, RowsPerBlock * 3);
+                    ref var pCmykC = ref Unsafe.Add(ref pData, rowsPerBlock * blockIndex);
+                    ref var pCmykM = ref Unsafe.Add(ref pCmykC, rowsPerBlock);
+                    ref var pCmykY = ref Unsafe.Add(ref pCmykC, rowsPerBlock * 2);
+                    ref var pCmykK = ref Unsafe.Add(ref pCmykC, rowsPerBlock * 3);
 
-                    ref var pYccY = ref Unsafe.Add(ref pData, RowsPerBlock * outputBlockIndex);
-                    ref var pYccCb = ref Unsafe.Add(ref pYccY, RowsPerBlock);
-                    ref var pYccCr = ref Unsafe.Add(ref pYccY, RowsPerBlock * 2);
+                    ref var pYccY = ref Unsafe.Add(ref pData, rowsPerBlock * outputBlockIndex);
+                    ref var pYccCb = ref Unsafe.Add(ref pYccY, rowsPerBlock);
+                    ref var pYccCr = ref Unsafe.Add(ref pYccY, rowsPerBlock * 2);
 
                     if (JpegBlockUtils.IsSolidBlock128Unsafe(ref pCmykC) &&
                         JpegBlockUtils.IsSolidBlock128Unsafe(ref pCmykM) &&
@@ -253,34 +245,24 @@ namespace PdfToSvg.Imaging.Jpeg
                     }
                     else
                     {
-                        for (var row = 0; row < RowsPerBlock; row++)
+                        for (var row = 0; row < rowsPerBlock; row++)
                         {
-                            var (cmykC_lo, cmykC_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pCmykC, row));
-                            var (cmykM_lo, cmykM_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pCmykM, row));
-                            var (cmykY_lo, cmykY_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pCmykY, row));
-                            var (cmykK_lo, cmykK_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pCmykK, row));
+                            var cmykC = Unsafe.Add(ref pCmykC, row);
+                            var cmykM = Unsafe.Add(ref pCmykM, row);
+                            var cmykY = Unsafe.Add(ref pCmykY, row);
+                            var cmykK = Unsafe.Add(ref pCmykK, row);
 
                             DeviceCmykColorSpace.ToRgb(
-                                cmykC_lo * (1f / 255), cmykM_lo * (1f / 255),
-                                cmykY_lo * (1f / 255), cmykK_lo * (1f / 255),
-                                out var rgbR_lo, out var rgbG_lo, out var rgbB_lo);
+                                cmykC * (1f / 255), cmykM * (1f / 255),
+                                cmykY * (1f / 255), cmykK * (1f / 255),
+                                out var rgbR, out var rgbG, out var rgbB);
 
-                            RgbToYcc(rgbR_lo * 255f, rgbG_lo * 255f, rgbB_lo * 255f,
-                                out var yccY_lo, out var yccCb_lo, out var yccCr_lo);
+                            RgbToYcc(rgbR * 255f, rgbG * 255f, rgbB * 255f,
+                                out var yccY, out var yccCb, out var yccCr);
 
-                            DeviceCmykColorSpace.ToRgb(
-                                cmykC_hi * (1f / 255), cmykM_hi * (1f / 255),
-                                cmykY_hi * (1f / 255), cmykK_hi * (1f / 255),
-                                out var rgbR_hi, out var rgbG_hi, out var rgbB_hi);
-
-                            RgbToYcc(rgbR_hi * 255f, rgbG_hi * 255f, rgbB_hi * 255f,
-                                out var yccY_hi, out var yccCb_hi, out var yccCr_hi);
-
-                            ClampSamplesSse2(
-                                ref Unsafe.Add(ref pYccY, row), yccY_lo, yccY_hi,
-                                ref Unsafe.Add(ref pYccCb, row), yccCb_lo, yccCb_hi,
-                                ref Unsafe.Add(ref pYccCr, row), yccCr_lo, yccCr_hi
-                                );
+                            Unsafe.Add(ref pYccY, row) = VectorUtils.ClampNative(yccY, outputMin, outputMax);
+                            Unsafe.Add(ref pYccCb, row) = VectorUtils.ClampNative(yccCb, outputMin, outputMax);
+                            Unsafe.Add(ref pYccCr, row) = VectorUtils.ClampNative(yccCr, outputMin, outputMax);
                         }
                     }
                 }
@@ -343,7 +325,7 @@ namespace PdfToSvg.Imaging.Jpeg
         /// Converts de-interleaved YCCK blocks to de-interleaved YCbCr blocks in place. Each group of 4 consecutive
         /// input blocks (Y, Cb, Cr, K) is replaced by 3 output blocks (Y', Cb', Cr'). Returns the number of output blocks.
         /// </summary>
-        public static int YcckBlocksToYcc(short[] blocks, int blockCount)
+        public static int YcckBlocksToYcc(float[] blocks, int blockCount)
         {
             const int YcckComponents = 4;
             const int YccComponents = 3;
@@ -354,20 +336,23 @@ namespace PdfToSvg.Imaging.Jpeg
             if (Vector256.IsHardwareAccelerated && Avx2.IsSupported)
             {
                 // AVX2
-                const int RowsPerBlock = 4;
+                var rowsPerBlock = BlockSize / Vector256<float>.Count;
 
-                ref var pData = ref Unsafe.As<short, Vector256<short>>(ref MemoryMarshal.GetArrayDataReference(blocks));
+                var outputMin = Vector256<float>.Zero;
+                var outputMax = Vector256.Create(255f);
+
+                ref var pData = ref Unsafe.As<float, Vector256<float>>(ref MemoryMarshal.GetArrayDataReference(blocks));
 
                 for (var blockIndex = 0; blockIndex < blockCount; blockIndex += YcckComponents, outputBlockIndex += YccComponents)
                 {
-                    ref var pYcckY = ref Unsafe.Add(ref pData, RowsPerBlock * blockIndex);
-                    ref var pYcckCb = ref Unsafe.Add(ref pYcckY, RowsPerBlock);
-                    ref var pYcckCr = ref Unsafe.Add(ref pYcckY, RowsPerBlock * 2);
-                    ref var pYcckK = ref Unsafe.Add(ref pYcckY, RowsPerBlock * 3);
+                    ref var pYcckY = ref Unsafe.Add(ref pData, rowsPerBlock * blockIndex);
+                    ref var pYcckCb = ref Unsafe.Add(ref pYcckY, rowsPerBlock);
+                    ref var pYcckCr = ref Unsafe.Add(ref pYcckY, rowsPerBlock * 2);
+                    ref var pYcckK = ref Unsafe.Add(ref pYcckY, rowsPerBlock * 3);
 
-                    ref var pYccY = ref Unsafe.Add(ref pData, RowsPerBlock * outputBlockIndex);
-                    ref var pYccCb = ref Unsafe.Add(ref pYccY, RowsPerBlock);
-                    ref var pYccCr = ref Unsafe.Add(ref pYccY, RowsPerBlock * 2);
+                    ref var pYccY = ref Unsafe.Add(ref pData, rowsPerBlock * outputBlockIndex);
+                    ref var pYccCb = ref Unsafe.Add(ref pYccY, rowsPerBlock);
+                    ref var pYccCr = ref Unsafe.Add(ref pYccY, rowsPerBlock * 2);
 
                     if (JpegBlockUtils.IsSolidBlock256Unsafe(ref pYcckY) &&
                         JpegBlockUtils.IsSolidBlock256Unsafe(ref pYcckCb) &&
@@ -382,28 +367,18 @@ namespace PdfToSvg.Imaging.Jpeg
                     }
                     else
                     {
-                        for (var row = 0; row < RowsPerBlock; row++)
+                        for (var row = 0; row < rowsPerBlock; row++)
                         {
-                            var (ycckY_lo, ycckY_hi) = Vector256.Widen(Unsafe.Add(ref pYcckY, row));
-                            var (ycckCb_lo, ycckCb_hi) = Vector256.Widen(Unsafe.Add(ref pYcckCb, row));
-                            var (ycckCr_lo, ycckCr_hi) = Vector256.Widen(Unsafe.Add(ref pYcckCr, row));
-                            var (ycckK_lo, ycckK_hi) = Vector256.Widen(Unsafe.Add(ref pYcckK, row));
+                            var ycckY = Unsafe.Add(ref pYcckY, row);
+                            var ycckCb = Unsafe.Add(ref pYcckCb, row);
+                            var ycckCr = Unsafe.Add(ref pYcckCr, row);
+                            var ycckK = Unsafe.Add(ref pYcckK, row);
 
-                            YcckToYcc(
-                                Vector256.ConvertToSingle(ycckY_lo), Vector256.ConvertToSingle(ycckCb_lo),
-                                Vector256.ConvertToSingle(ycckCr_lo), Vector256.ConvertToSingle(ycckK_lo),
-                                out var yccY_lo, out var yccCb_lo, out var yccCr_lo);
+                            YcckToYcc(ycckY, ycckCb, ycckCr, ycckK, out var yccY, out var yccCb, out var yccCr);
 
-                            YcckToYcc(
-                                Vector256.ConvertToSingle(ycckY_hi), Vector256.ConvertToSingle(ycckCb_hi),
-                                Vector256.ConvertToSingle(ycckCr_hi), Vector256.ConvertToSingle(ycckK_hi),
-                                out var yccY_hi, out var yccCb_hi, out var yccCr_hi);
-
-                            ClampSamplesAvx2(
-                                ref Unsafe.Add(ref pYccY, row), yccY_lo, yccY_hi,
-                                ref Unsafe.Add(ref pYccCb, row), yccCb_lo, yccCb_hi,
-                                ref Unsafe.Add(ref pYccCr, row), yccCr_lo, yccCr_hi
-                                );
+                            Unsafe.Add(ref pYccY, row) = VectorUtils.ClampNative(yccY, outputMin, outputMax);
+                            Unsafe.Add(ref pYccCb, row) = VectorUtils.ClampNative(yccCb, outputMin, outputMax);
+                            Unsafe.Add(ref pYccCr, row) = VectorUtils.ClampNative(yccCr, outputMin, outputMax);
                         }
                     }
                 }
@@ -414,20 +389,23 @@ namespace PdfToSvg.Imaging.Jpeg
             if (Vector128.IsHardwareAccelerated && Sse2.IsSupported)
             {
                 // SSE2
-                const int RowsPerBlock = 8;
+                var rowsPerBlock = BlockSize / Vector128<float>.Count;
 
-                ref var pData = ref Unsafe.As<short, Vector128<short>>(ref MemoryMarshal.GetArrayDataReference(blocks));
+                var outputMin = Vector128<float>.Zero;
+                var outputMax = Vector128.Create(255f);
+
+                ref var pData = ref Unsafe.As<float, Vector128<float>>(ref MemoryMarshal.GetArrayDataReference(blocks));
 
                 for (var blockIndex = 0; blockIndex < blockCount; blockIndex += YcckComponents, outputBlockIndex += YccComponents)
                 {
-                    ref var pYcckY = ref Unsafe.Add(ref pData, RowsPerBlock * blockIndex);
-                    ref var pYcckCb = ref Unsafe.Add(ref pYcckY, RowsPerBlock);
-                    ref var pYcckCr = ref Unsafe.Add(ref pYcckY, RowsPerBlock * 2);
-                    ref var pYcckK = ref Unsafe.Add(ref pYcckY, RowsPerBlock * 3);
+                    ref var pYcckY = ref Unsafe.Add(ref pData, rowsPerBlock * blockIndex);
+                    ref var pYcckCb = ref Unsafe.Add(ref pYcckY, rowsPerBlock);
+                    ref var pYcckCr = ref Unsafe.Add(ref pYcckY, rowsPerBlock * 2);
+                    ref var pYcckK = ref Unsafe.Add(ref pYcckY, rowsPerBlock * 3);
 
-                    ref var pYccY = ref Unsafe.Add(ref pData, RowsPerBlock * outputBlockIndex);
-                    ref var pYccCb = ref Unsafe.Add(ref pYccY, RowsPerBlock);
-                    ref var pYccCr = ref Unsafe.Add(ref pYccY, RowsPerBlock * 2);
+                    ref var pYccY = ref Unsafe.Add(ref pData, rowsPerBlock * outputBlockIndex);
+                    ref var pYccCb = ref Unsafe.Add(ref pYccY, rowsPerBlock);
+                    ref var pYccCr = ref Unsafe.Add(ref pYccY, rowsPerBlock * 2);
 
                     if (JpegBlockUtils.IsSolidBlock128Unsafe(ref pYcckY) &&
                         JpegBlockUtils.IsSolidBlock128Unsafe(ref pYcckCb) &&
@@ -436,34 +414,24 @@ namespace PdfToSvg.Imaging.Jpeg
                     {
                         YcckToYcc(pYcckY[0], pYcckCb[0], pYcckCr[0], pYcckK[0], out var yccY, out var yccCb, out var yccCr);
 
-                        var vYccY = Vector128.Create(ClampSample(yccY));
-                        var vYccCb = Vector128.Create(ClampSample(yccCb));
-                        var vYccCr = Vector128.Create(ClampSample(yccCr));
-
                         JpegBlockUtils.FillSolidBlock128Unsafe(ref pYccY, ClampSample(yccY));
                         JpegBlockUtils.FillSolidBlock128Unsafe(ref pYccCb, ClampSample(yccCb));
                         JpegBlockUtils.FillSolidBlock128Unsafe(ref pYccCr, ClampSample(yccCr));
                     }
                     else
                     {
-                        for (var row = 0; row < RowsPerBlock; row++)
+                        for (var row = 0; row < rowsPerBlock; row++)
                         {
-                            var (ycckY_lo, ycckY_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pYcckY, row));
-                            var (ycckCb_lo, ycckCb_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pYcckCb, row));
-                            var (ycckCr_lo, ycckCr_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pYcckCr, row));
-                            var (ycckK_lo, ycckK_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pYcckK, row));
+                            var ycckY = Unsafe.Add(ref pYcckY, row);
+                            var ycckCb = Unsafe.Add(ref pYcckCb, row);
+                            var ycckCr = Unsafe.Add(ref pYcckCr, row);
+                            var ycckK = Unsafe.Add(ref pYcckK, row);
 
-                            YcckToYcc(ycckY_lo, ycckCb_lo, ycckCr_lo, ycckK_lo,
-                                out var yccY_lo, out var yccCb_lo, out var yccCr_lo);
+                            YcckToYcc(ycckY, ycckCb, ycckCr, ycckK, out var yccY, out var yccCb, out var yccCr);
 
-                            YcckToYcc(ycckY_hi, ycckCb_hi, ycckCr_hi, ycckK_hi,
-                                out var yccY_hi, out var yccCb_hi, out var yccCr_hi);
-
-                            ClampSamplesSse2(
-                                ref Unsafe.Add(ref pYccY, row), yccY_lo, yccY_hi,
-                                ref Unsafe.Add(ref pYccCb, row), yccCb_lo, yccCb_hi,
-                                ref Unsafe.Add(ref pYccCr, row), yccCr_lo, yccCr_hi
-                                );
+                            Unsafe.Add(ref pYccY, row) = VectorUtils.ClampNative(yccY, outputMin, outputMax);
+                            Unsafe.Add(ref pYccCb, row) = VectorUtils.ClampNative(yccCb, outputMin, outputMax);
+                            Unsafe.Add(ref pYccCr, row) = VectorUtils.ClampNative(yccCr, outputMin, outputMax);
                         }
                     }
                 }
@@ -618,57 +586,9 @@ namespace PdfToSvg.Imaging.Jpeg
         }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        private static short ClampSample(float value)
+        private static float ClampSample(float value)
         {
-            return MathUtils.RoundToShort(MathUtils.Clamp(value, 0f, 255f));
+            return MathUtils.Clamp(value, 0f, 255f);
         }
-
-#if NET8_0_OR_GREATER
-        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        private static void ClampSamplesAvx2(
-            ref Vector256<short> pYccY, Vector256<float> yccY_lo, Vector256<float> yccY_hi,
-            ref Vector256<short> pYccCb, Vector256<float> yccCb_lo, Vector256<float> yccCb_hi,
-            ref Vector256<short> pYccCr, Vector256<float> yccCr_lo, Vector256<float> yccCr_hi
-            )
-        {
-            var min = Vector256<float>.Zero;
-            var max = Vector256.Create(255f);
-
-            Vector256<short> Narrow(Vector256<float> lo, Vector256<float> hi)
-            {
-                return JpegVectorUtils.ConvertToVector256Int16_Avx2(
-                    JpegVectorUtils.ClampNative(lo, min, max),
-                    JpegVectorUtils.ClampNative(hi, min, max)
-                    );
-            }
-
-            pYccY = Narrow(yccY_lo, yccY_hi);
-            pYccCb = Narrow(yccCb_lo, yccCb_hi);
-            pYccCr = Narrow(yccCr_lo, yccCr_hi);
-        }
-
-        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        private static void ClampSamplesSse2(
-            ref Vector128<short> pYccY, Vector128<float> yccY_lo, Vector128<float> yccY_hi,
-            ref Vector128<short> pYccCb, Vector128<float> yccCb_lo, Vector128<float> yccCb_hi,
-            ref Vector128<short> pYccCr, Vector128<float> yccCr_lo, Vector128<float> yccCr_hi
-            )
-        {
-            var min = Vector128<float>.Zero;
-            var max = Vector128.Create(255f);
-
-            Vector128<short> Narrow(Vector128<float> lo, Vector128<float> hi)
-            {
-                return JpegVectorUtils.ConvertToVector128Int16_Sse2(
-                    JpegVectorUtils.ClampNative(lo, min, max),
-                    JpegVectorUtils.ClampNative(hi, min, max)
-                    );
-            }
-
-            pYccY = Narrow(yccY_lo, yccY_hi);
-            pYccCb = Narrow(yccCb_lo, yccCb_hi);
-            pYccCr = Narrow(yccCr_lo, yccCr_hi);
-        }
-#endif
     }
 }

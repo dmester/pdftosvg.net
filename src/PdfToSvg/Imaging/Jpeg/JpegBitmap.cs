@@ -16,7 +16,7 @@ namespace PdfToSvg.Imaging.Jpeg
 
         public static JpegBitmap Empty { get; } = new JpegBitmap(0, 0, 0);
 
-        public readonly short[] Data;
+        public readonly float[] Data;
         public readonly int Width;
         public readonly int Height;
         public readonly int Components;
@@ -27,7 +27,7 @@ namespace PdfToSvg.Imaging.Jpeg
             Width = width;
             Height = height;
             Components = components;
-            Data = new short[width * height * components];
+            Data = new float[width * height * components];
         }
 
         public void DrawNearestNeighbourClippedOnto(
@@ -57,7 +57,7 @@ namespace PdfToSvg.Imaging.Jpeg
             }
         }
 
-        public void GetBlock(short[] block,
+        public void GetBlock(float[] block,
             int x, int y, int componentIndex,
             int subSamplingX, int subSamplingY)
         {
@@ -79,7 +79,7 @@ namespace PdfToSvg.Imaging.Jpeg
                     ((y + iy * subSamplingY) * Width + x) * Components +
                     componentIndex;
 
-                var lastValue = (short)0;
+                var lastValue = 0f;
 
                 for (var ix = 0; ix < maxX; ix++)
                 {

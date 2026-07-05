@@ -114,7 +114,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void Quantize()
         {
-            var block = new short[64];
+            var block = new int[64];
             block[0] = 100;
             block[1] = 200;
             block[2] = 200;
@@ -200,16 +200,16 @@ namespace PdfToSvg.Tests.Images.Jpeg
         {
             var random = new Random(0);
 
-            var originalData = new short[64];
+            var originalData = new int[64];
             for (var i = 0; i < originalData.Length; i++)
             {
-                originalData[i] = (short)random.Next(0, 512);
+                originalData[i] = random.Next(0, 512);
             }
 
             // Reference
-            var reference = new short[64];
+            var reference = new int[64];
             {
-                var transposed = (short[])originalData.Clone();
+                var transposed = (int[])originalData.Clone();
 
                 // Transpose in DCT
                 JpegBlockUtils.TransposeScalar(transposed);
@@ -220,13 +220,13 @@ namespace PdfToSvg.Tests.Images.Jpeg
             }
 
             // Actual
-            short[] actual;
+            int[] actual;
             {
                 var floatData = originalData.Select(x => (float)x).ToArray();
 
                 body(floatData);
 
-                actual = floatData.Select(x => (short)(0.5f + x)).ToArray();
+                actual = floatData.Select(x => (int)(0.5f + x)).ToArray();
 
                 // To make actual comparable with reference
                 JpegBlockUtils.TransposeScalar(actual);

@@ -24,7 +24,7 @@ namespace PdfToSvg.Imaging.Jpeg
         private readonly MemoryStream stream = new MemoryStream();
 
         // To prevent reallocating these buffers on each call
-        private readonly short[] reusableShortBlock = new short[BlockSize * BlockSize];
+        private readonly int[] reusableIntBlock = new int[BlockSize * BlockSize];
         private readonly float[] reusableFloatBlock = new float[BlockSize * BlockSize];
 
         private readonly JpegQuantizationTable[] quantizationTables = new JpegQuantizationTable[4];
@@ -371,15 +371,15 @@ namespace PdfToSvg.Imaging.Jpeg
 
         /// <summary>
         /// Writes data to the JPEG image. The data should contain interleaved component samples in the destination
-        /// color space. No color space conversion is done by <see cref="WriteImageData(short[])"/>.
+        /// color space. No color space conversion is done by <see cref="WriteImageData(float[])"/>.
         /// </summary>
-        public void WriteImageData(short[] data) => WriteImageData(data, 0, data.Length);
+        public void WriteImageData(float[] data) => WriteImageData(data, 0, data.Length);
 
         /// <summary>
         /// Writes data to the JPEG image. The data should contain interleaved component samples in the destination
-        /// color space. No color space conversion is done by <see cref="WriteImageData(short[], int, int)"/>.
+        /// color space. No color space conversion is done by <see cref="WriteImageData(float[], int, int)"/>.
         /// </summary>
-        public void WriteImageData(short[] data, int offset, int count)
+        public void WriteImageData(float[] data, int offset, int count)
         {
             if (imageDataWriter == null)
             {
@@ -443,7 +443,7 @@ namespace PdfToSvg.Imaging.Jpeg
             WriteMarker(JpegMarkerCode.EOI);
         }
 
-        public void WriteBlocks(short[] sourceBlocks, int blockCount)
+        public void WriteBlocks(float[] sourceBlocks, int blockCount)
         {
             if (sourceBlocks == null)
             {
@@ -466,7 +466,7 @@ namespace PdfToSvg.Imaging.Jpeg
                     "Cannot write data before " + nameof(WriteMetadata) + " has been called.");
             }
 
-            var destBlock = reusableShortBlock;
+            var destBlock = reusableIntBlock;
             var scalarDctBlock = reusableFloatBlock;
 
             for (var blockIndex = 0; blockIndex < blockCount; blockIndex++)
@@ -489,20 +489,20 @@ namespace PdfToSvg.Imaging.Jpeg
                 {
                     // AVX2
                     ref var pSourceBlock = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(sourceBlocks), blockStartIndex);
-                    ref var srcRow0 = ref Unsafe.As<short, Vector128<short>>(ref pSourceBlock);
+                    ref var srcRow0 = ref Unsafe.As<float, Vector256<float>>(ref pSourceBlock);
 
                     isSolidBlock = JpegBlockUtils.IsSolidBlock256Unsafe(ref pSourceBlock);
 
                     if (!isSolidBlock)
                     {
-                        var row0 = JpegVectorUtils.ConvertToVector256Single(srcRow0);
-                        var row1 = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref srcRow0, 1));
-                        var row2 = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref srcRow0, 2));
-                        var row3 = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref srcRow0, 3));
-                        var row4 = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref srcRow0, 4));
-                        var row5 = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref srcRow0, 5));
-                        var row6 = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref srcRow0, 6));
-                        var row7 = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref srcRow0, 7));
+                        var row0 = srcRow0;
+                        var row1 = Unsafe.Add(ref srcRow0, 1);
+                        var row2 = Unsafe.Add(ref srcRow0, 2);
+                        var row3 = Unsafe.Add(ref srcRow0, 3);
+                        var row4 = Unsafe.Add(ref srcRow0, 4);
+                        var row5 = Unsafe.Add(ref srcRow0, 5);
+                        var row6 = Unsafe.Add(ref srcRow0, 6);
+                        var row7 = Unsafe.Add(ref srcRow0, 7);
 
                         JpegDct.ForwardAvx(
                             ref row0,
@@ -524,32 +524,44 @@ namespace PdfToSvg.Imaging.Jpeg
                             ref row6,
                             ref row7);
 
-                        ref var pDestRow0 = ref Unsafe.As<short, Vector256<short>>(ref MemoryMarshal.GetArrayDataReference(destBlock));
-
-                        Unsafe.Add(ref pDestRow0, 0) = JpegVectorUtils.ConvertToVector256Int16_Avx2(row0, row1);
-                        Unsafe.Add(ref pDestRow0, 1) = JpegVectorUtils.ConvertToVector256Int16_Avx2(row2, row3);
-                        Unsafe.Add(ref pDestRow0, 2) = JpegVectorUtils.ConvertToVector256Int16_Avx2(row4, row5);
-                        Unsafe.Add(ref pDestRow0, 3) = JpegVectorUtils.ConvertToVector256Int16_Avx2(row6, row7);
+                        JpegBlockUtils.FillBlock256Unsafe(
+                            destBlock,
+                            row0,
+                            row1,
+                            row2,
+                            row3,
+                            row4,
+                            row5,
+                            row6,
+                            row7);
                     }
                 }
                 else if (Sse2.IsSupported)
                 {
                     // SSE2
                     ref var pSourceBlock = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(sourceBlocks), blockStartIndex);
-                    ref var srcRow0 = ref Unsafe.As<short, Vector128<short>>(ref pSourceBlock);
+                    ref var srcRow0 = ref Unsafe.As<float, Vector128<float>>(ref pSourceBlock);
 
                     isSolidBlock = JpegBlockUtils.IsSolidBlock128Unsafe(ref pSourceBlock);
 
                     if (!isSolidBlock)
                     {
-                        var (row0_lo, row0_hi) = JpegVectorUtils.ConvertToVector128Single(srcRow0);
-                        var (row1_lo, row1_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref srcRow0, 1));
-                        var (row2_lo, row2_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref srcRow0, 2));
-                        var (row3_lo, row3_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref srcRow0, 3));
-                        var (row4_lo, row4_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref srcRow0, 4));
-                        var (row5_lo, row5_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref srcRow0, 5));
-                        var (row6_lo, row6_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref srcRow0, 6));
-                        var (row7_lo, row7_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref srcRow0, 7));
+                        var row0_lo = srcRow0;
+                        var row0_hi = Unsafe.Add(ref srcRow0, 1);
+                        var row1_lo = Unsafe.Add(ref srcRow0, 2);
+                        var row1_hi = Unsafe.Add(ref srcRow0, 3);
+                        var row2_lo = Unsafe.Add(ref srcRow0, 4);
+                        var row2_hi = Unsafe.Add(ref srcRow0, 5);
+                        var row3_lo = Unsafe.Add(ref srcRow0, 6);
+                        var row3_hi = Unsafe.Add(ref srcRow0, 7);
+                        var row4_lo = Unsafe.Add(ref srcRow0, 8);
+                        var row4_hi = Unsafe.Add(ref srcRow0, 9);
+                        var row5_lo = Unsafe.Add(ref srcRow0, 10);
+                        var row5_hi = Unsafe.Add(ref srcRow0, 11);
+                        var row6_lo = Unsafe.Add(ref srcRow0, 12);
+                        var row6_hi = Unsafe.Add(ref srcRow0, 13);
+                        var row7_lo = Unsafe.Add(ref srcRow0, 14);
+                        var row7_hi = Unsafe.Add(ref srcRow0, 15);
 
                         JpegDct.ForwardSse(
                             ref row0_lo, ref row0_hi,
@@ -571,25 +583,23 @@ namespace PdfToSvg.Imaging.Jpeg
                             ref row6_lo, ref row6_hi,
                             ref row7_lo, ref row7_hi);
 
-                        ref var pDestRow0 = ref Unsafe.As<short, Vector128<short>>(ref MemoryMarshal.GetArrayDataReference(destBlock));
-
-                        Unsafe.Add(ref pDestRow0, 0) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row0_lo, row0_hi);
-                        Unsafe.Add(ref pDestRow0, 1) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row1_lo, row1_hi);
-                        Unsafe.Add(ref pDestRow0, 2) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row2_lo, row2_hi);
-                        Unsafe.Add(ref pDestRow0, 3) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row3_lo, row3_hi);
-                        Unsafe.Add(ref pDestRow0, 4) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row4_lo, row4_hi);
-                        Unsafe.Add(ref pDestRow0, 5) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row5_lo, row5_hi);
-                        Unsafe.Add(ref pDestRow0, 6) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row6_lo, row6_hi);
-                        Unsafe.Add(ref pDestRow0, 7) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row7_lo, row7_hi);
+                        JpegBlockUtils.FillBlock128Unsafe(
+                            destBlock,
+                            row0_lo, row0_hi,
+                            row1_lo, row1_hi,
+                            row2_lo, row2_hi,
+                            row3_lo, row3_hi,
+                            row4_lo, row4_hi,
+                            row5_lo, row5_hi,
+                            row6_lo, row6_hi,
+                            row7_lo, row7_hi);
                     }
                 }
                 else
 #endif
                 {
                     // Scalar
-                    Array.Copy(sourceBlocks, blockStartIndex, destBlock, 0, BlockSize * BlockSize);
-
-                    isSolidBlock = JpegBlockUtils.IsSolidBlockScalar(destBlock, offset: 0);
+                    isSolidBlock = JpegBlockUtils.IsSolidBlockScalar(sourceBlocks, blockStartIndex);
 
                     if (!isSolidBlock)
                     {
@@ -613,9 +623,9 @@ namespace PdfToSvg.Imaging.Jpeg
                     //   [1...7]: 0
 
                     var value = sourceBlocks[blockStartIndex];
-                    var dc = (short)((value - 128) * 8 * component.QuantizationTable.DCReverseMultiplier);
+                    var dc = MathUtils.RoundToInt((value - 128) * 8 * component.QuantizationTable.DCReverseMultiplier);
 
-                    var diff = (short)(dc - component.DCPredictor);
+                    var diff = dc - component.DCPredictor;
                     component.DCPredictor = dc;
 
                     imageDataWriter.WriteDataUnitZeroAc(diff, component.HuffmanDCTable, component.HuffmanACTable);
@@ -623,7 +633,7 @@ namespace PdfToSvg.Imaging.Jpeg
                 else
                 {
                     var dc = destBlock[0];
-                    destBlock[0] = (short)(dc - component.DCPredictor);
+                    destBlock[0] = dc - component.DCPredictor;
                     component.DCPredictor = dc;
 
                     imageDataWriter.WriteDataUnitZigZag(destBlock, component.HuffmanDCTable, component.HuffmanACTable);
@@ -633,7 +643,7 @@ namespace PdfToSvg.Imaging.Jpeg
 
         private void WriteMcuRow(JpegImageDataWriter imageDataWriter)
         {
-            var inputBlock = new short[BlockSize * BlockSize];
+            var inputBlock = new float[BlockSize * BlockSize];
 
             for (var mcuX = 0; mcuX < mcuPerLine; mcuX++)
             {

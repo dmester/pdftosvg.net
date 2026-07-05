@@ -25,15 +25,15 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void TestReferenceDct()
         {
-            var input = new short[64];
-            var dcted = new short[64];
-            var output = new short[64];
+            var input = new float[64];
+            var dcted = new float[64];
+            var output = new float[64];
 
             var random = new Random(0);
 
             for (var i = 0; i < 64; i++)
             {
-                input[i] = (short)random.Next(0, 255);
+                input[i] = random.Next(0, 255);
             }
 
             ReferenceDct(input, dcted);
@@ -41,21 +41,21 @@ namespace PdfToSvg.Tests.Images.Jpeg
 
             for (var i = 0; i < 64; i++)
             {
-                Assert.AreEqual(input[i], output[i], 5d, "Index {0}", i);
+                Assert.AreEqual(input[i], output[i], 1d, "Index {0}", i);
             }
         }
 
         [Test]
         public void ForwardScalar()
         {
-            var data = new short[64];
-            var refdct = new short[64];
+            var data = new float[64];
+            var refdct = new float[64];
 
             var random = new Random(0);
 
             for (var i = 0; i < 64; i++)
             {
-                data[i] = (short)random.Next(-128, 128);
+                data[i] = random.Next(-128, 128);
             }
 
             ReferenceDct(data, refdct);
@@ -72,14 +72,14 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void InverseScalar()
         {
-            var data = new short[64];
-            var refidct = new short[64];
+            var data = new float[64];
+            var refidct = new float[64];
 
             var random = new Random(0);
 
             for (var i = 0; i < 64; i++)
             {
-                data[i] = (short)random.Next(-128, 128);
+                data[i] = random.Next(-128, 128);
             }
 
             ReferenceIdct(data, refidct);
@@ -103,15 +103,15 @@ namespace PdfToSvg.Tests.Images.Jpeg
                 Assert.Inconclusive("SSE2 not supported");
             }
 
-            var data = new short[64];
-            var refdct = new short[64];
-            var actual = new short[64];
+            var data = new float[64];
+            var refdct = new float[64];
+            var actual = new int[64];
 
             var random = new Random(0);
 
             for (var i = 0; i < 64; i++)
             {
-                data[i] = (short)random.Next(-128, 128);
+                data[i] = random.Next(-128, 128);
             }
 
             // Reference
@@ -119,15 +119,23 @@ namespace PdfToSvg.Tests.Images.Jpeg
 
             // SSE2
             {
-                ref var pSrc = ref Unsafe.As<short, Vector128<short>>(ref data[0]);
-                var (row0_lo, row0_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 0));
-                var (row1_lo, row1_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 1));
-                var (row2_lo, row2_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 2));
-                var (row3_lo, row3_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 3));
-                var (row4_lo, row4_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 4));
-                var (row5_lo, row5_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 5));
-                var (row6_lo, row6_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 6));
-                var (row7_lo, row7_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 7));
+                ref var pSrc = ref Unsafe.As<float, Vector128<float>>(ref data[0]);
+                var row0_lo = Unsafe.Add(ref pSrc, 0);
+                var row0_hi = Unsafe.Add(ref pSrc, 1);
+                var row1_lo = Unsafe.Add(ref pSrc, 2);
+                var row1_hi = Unsafe.Add(ref pSrc, 3);
+                var row2_lo = Unsafe.Add(ref pSrc, 4);
+                var row2_hi = Unsafe.Add(ref pSrc, 5);
+                var row3_lo = Unsafe.Add(ref pSrc, 6);
+                var row3_hi = Unsafe.Add(ref pSrc, 7);
+                var row4_lo = Unsafe.Add(ref pSrc, 8);
+                var row4_hi = Unsafe.Add(ref pSrc, 9);
+                var row5_lo = Unsafe.Add(ref pSrc, 10);
+                var row5_hi = Unsafe.Add(ref pSrc, 11);
+                var row6_lo = Unsafe.Add(ref pSrc, 12);
+                var row6_hi = Unsafe.Add(ref pSrc, 13);
+                var row7_lo = Unsafe.Add(ref pSrc, 14);
+                var row7_hi = Unsafe.Add(ref pSrc, 15);
 
                 JpegDct.ForwardSse(
                     ref row0_lo, ref row0_hi,
@@ -148,15 +156,16 @@ namespace PdfToSvg.Tests.Images.Jpeg
                     ref row6_lo, ref row6_hi,
                     ref row7_lo, ref row7_hi);
 
-                ref var pActual = ref Unsafe.As<short, Vector128<short>>(ref actual[0]);
-                Unsafe.Add(ref pActual, 0) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row0_lo, row0_hi);
-                Unsafe.Add(ref pActual, 1) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row1_lo, row1_hi);
-                Unsafe.Add(ref pActual, 2) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row2_lo, row2_hi);
-                Unsafe.Add(ref pActual, 3) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row3_lo, row3_hi);
-                Unsafe.Add(ref pActual, 4) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row4_lo, row4_hi);
-                Unsafe.Add(ref pActual, 5) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row5_lo, row5_hi);
-                Unsafe.Add(ref pActual, 6) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row6_lo, row6_hi);
-                Unsafe.Add(ref pActual, 7) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row7_lo, row7_hi);
+                JpegBlockUtils.FillBlock128Unsafe(
+                    actual,
+                    row0_lo, row0_hi,
+                    row1_lo, row1_hi,
+                    row2_lo, row2_hi,
+                    row3_lo, row3_hi,
+                    row4_lo, row4_hi,
+                    row5_lo, row5_hi,
+                    row6_lo, row6_hi,
+                    row7_lo, row7_hi);
             }
 
             for (var i = 0; i < 64; i++)
@@ -173,15 +182,15 @@ namespace PdfToSvg.Tests.Images.Jpeg
                 Assert.Inconclusive("SSE2 not supported");
             }
 
-            var data = new short[64];
-            var refidct = new short[64];
-            var actual = new short[64];
+            var data = new float[64];
+            var refidct = new float[64];
+            var actual = new int[64];
 
             var random = new Random(0);
 
             for (var i = 0; i < 64; i++)
             {
-                data[i] = (short)random.Next(-128, 128);
+                data[i] = random.Next(-128, 128);
             }
 
             // Reference
@@ -189,16 +198,24 @@ namespace PdfToSvg.Tests.Images.Jpeg
 
             // SSE2
             {
-                ref var pSrc = ref Unsafe.As<short, Vector128<short>>(ref data[0]);
+                ref var pSrc = ref Unsafe.As<float, Vector128<float>>(ref data[0]);
 
-                var (row0_lo, row0_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 0));
-                var (row1_lo, row1_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 1));
-                var (row2_lo, row2_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 2));
-                var (row3_lo, row3_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 3));
-                var (row4_lo, row4_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 4));
-                var (row5_lo, row5_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 5));
-                var (row6_lo, row6_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 6));
-                var (row7_lo, row7_hi) = JpegVectorUtils.ConvertToVector128Single(Unsafe.Add(ref pSrc, 7));
+                var row0_lo = Unsafe.Add(ref pSrc, 0);
+                var row0_hi = Unsafe.Add(ref pSrc, 1);
+                var row1_lo = Unsafe.Add(ref pSrc, 2);
+                var row1_hi = Unsafe.Add(ref pSrc, 3);
+                var row2_lo = Unsafe.Add(ref pSrc, 4);
+                var row2_hi = Unsafe.Add(ref pSrc, 5);
+                var row3_lo = Unsafe.Add(ref pSrc, 6);
+                var row3_hi = Unsafe.Add(ref pSrc, 7);
+                var row4_lo = Unsafe.Add(ref pSrc, 8);
+                var row4_hi = Unsafe.Add(ref pSrc, 9);
+                var row5_lo = Unsafe.Add(ref pSrc, 10);
+                var row5_hi = Unsafe.Add(ref pSrc, 11);
+                var row6_lo = Unsafe.Add(ref pSrc, 12);
+                var row6_hi = Unsafe.Add(ref pSrc, 13);
+                var row7_lo = Unsafe.Add(ref pSrc, 14);
+                var row7_hi = Unsafe.Add(ref pSrc, 15);
 
                 JpegBlockUtils.TransposeSse(
                     ref row0_lo, ref row0_hi,
@@ -219,15 +236,16 @@ namespace PdfToSvg.Tests.Images.Jpeg
                     ref row6_lo, ref row6_hi,
                     ref row7_lo, ref row7_hi);
 
-                ref var pActual = ref Unsafe.As<short, Vector128<short>>(ref actual[0]);
-                Unsafe.Add(ref pActual, 0) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row0_lo, row0_hi);
-                Unsafe.Add(ref pActual, 1) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row1_lo, row1_hi);
-                Unsafe.Add(ref pActual, 2) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row2_lo, row2_hi);
-                Unsafe.Add(ref pActual, 3) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row3_lo, row3_hi);
-                Unsafe.Add(ref pActual, 4) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row4_lo, row4_hi);
-                Unsafe.Add(ref pActual, 5) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row5_lo, row5_hi);
-                Unsafe.Add(ref pActual, 6) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row6_lo, row6_hi);
-                Unsafe.Add(ref pActual, 7) = JpegVectorUtils.ConvertToVector128Int16_Sse2(row7_lo, row7_hi);
+                JpegBlockUtils.FillBlock128Unsafe(
+                    actual,
+                    row0_lo, row0_hi,
+                    row1_lo, row1_hi,
+                    row2_lo, row2_hi,
+                    row3_lo, row3_hi,
+                    row4_lo, row4_hi,
+                    row5_lo, row5_hi,
+                    row6_lo, row6_hi,
+                    row7_lo, row7_hi);
             }
 
             for (var i = 0; i < 64; i++)
@@ -244,15 +262,15 @@ namespace PdfToSvg.Tests.Images.Jpeg
                 Assert.Inconclusive("AVX2 not supported");
             }
 
-            var data = new short[64];
-            var refdct = new short[64];
-            var actual = new short[64];
+            var data = new float[64];
+            var refdct = new float[64];
+            var actual = new int[64];
 
             var random = new Random(0);
 
             for (var i = 0; i < 64; i++)
             {
-                data[i] = (short)random.Next(-128, 128);
+                data[i] = random.Next(-128, 128);
             }
 
             // Reference
@@ -260,20 +278,19 @@ namespace PdfToSvg.Tests.Images.Jpeg
 
             // AVX2
             {
-                ref var pSrc = ref Unsafe.As<short, Vector256<short>>(ref data[0]);
-                var (fRow0, fRow1) = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref pSrc, 0));
-                var (fRow2, fRow3) = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref pSrc, 1));
-                var (fRow4, fRow5) = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref pSrc, 2));
-                var (fRow6, fRow7) = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref pSrc, 3));
+                ref var pSrc = ref Unsafe.As<float, Vector256<float>>(ref data[0]);
+                var fRow0 = Unsafe.Add(ref pSrc, 0);
+                var fRow1 = Unsafe.Add(ref pSrc, 1);
+                var fRow2 = Unsafe.Add(ref pSrc, 2);
+                var fRow3 = Unsafe.Add(ref pSrc, 3);
+                var fRow4 = Unsafe.Add(ref pSrc, 4);
+                var fRow5 = Unsafe.Add(ref pSrc, 5);
+                var fRow6 = Unsafe.Add(ref pSrc, 6);
+                var fRow7 = Unsafe.Add(ref pSrc, 7);
 
                 JpegDct.ForwardAvx(ref fRow0, ref fRow1, ref fRow2, ref fRow3, ref fRow4, ref fRow5, ref fRow6, ref fRow7);
                 JpegBlockUtils.TransposeAvx(ref fRow0, ref fRow1, ref fRow2, ref fRow3, ref fRow4, ref fRow5, ref fRow6, ref fRow7);
-
-                ref var pActual = ref Unsafe.As<short, Vector256<short>>(ref actual[0]);
-                Unsafe.Add(ref pActual, 0) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow0, fRow1);
-                Unsafe.Add(ref pActual, 1) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow2, fRow3);
-                Unsafe.Add(ref pActual, 2) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow4, fRow5);
-                Unsafe.Add(ref pActual, 3) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow6, fRow7);
+                JpegBlockUtils.FillBlock256Unsafe(actual, fRow0, fRow1, fRow2, fRow3, fRow4, fRow5, fRow6, fRow7);
             }
 
             for (var i = 0; i < 64; i++)
@@ -290,15 +307,15 @@ namespace PdfToSvg.Tests.Images.Jpeg
                 Assert.Inconclusive("AVX2 not supported");
             }
 
-            var data = new short[64];
-            var refidct = new short[64];
-            var actual = new short[64];
+            var data = new float[64];
+            var refidct = new float[64];
+            var actual = new int[64];
 
             var random = new Random(0);
 
             for (var i = 0; i < 64; i++)
             {
-                data[i] = (short)random.Next(-128, 128);
+                data[i] = random.Next(-128, 128);
             }
 
             // Reference
@@ -306,20 +323,19 @@ namespace PdfToSvg.Tests.Images.Jpeg
 
             // AVX2
             {
-                ref var pSrc = ref Unsafe.As<short, Vector256<short>>(ref data[0]);
-                var (fRow0, fRow1) = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref pSrc, 0));
-                var (fRow2, fRow3) = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref pSrc, 1));
-                var (fRow4, fRow5) = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref pSrc, 2));
-                var (fRow6, fRow7) = JpegVectorUtils.ConvertToVector256Single(Unsafe.Add(ref pSrc, 3));
+                ref var pSrc = ref Unsafe.As<float, Vector256<float>>(ref data[0]);
+                var fRow0 = Unsafe.Add(ref pSrc, 0);
+                var fRow1 = Unsafe.Add(ref pSrc, 1);
+                var fRow2 = Unsafe.Add(ref pSrc, 2);
+                var fRow3 = Unsafe.Add(ref pSrc, 3);
+                var fRow4 = Unsafe.Add(ref pSrc, 4);
+                var fRow5 = Unsafe.Add(ref pSrc, 5);
+                var fRow6 = Unsafe.Add(ref pSrc, 6);
+                var fRow7 = Unsafe.Add(ref pSrc, 7);
 
                 JpegBlockUtils.TransposeAvx(ref fRow0, ref fRow1, ref fRow2, ref fRow3, ref fRow4, ref fRow5, ref fRow6, ref fRow7);
                 JpegDct.InverseAvx(ref fRow0, ref fRow1, ref fRow2, ref fRow3, ref fRow4, ref fRow5, ref fRow6, ref fRow7);
-
-                ref var pActual = ref Unsafe.As<short, Vector256<short>>(ref actual[0]);
-                Unsafe.Add(ref pActual, 0) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow0, fRow1);
-                Unsafe.Add(ref pActual, 1) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow2, fRow3);
-                Unsafe.Add(ref pActual, 2) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow4, fRow5);
-                Unsafe.Add(ref pActual, 3) = JpegVectorUtils.ConvertToVector256Int16_Avx2(fRow6, fRow7);
+                JpegBlockUtils.FillBlock256Unsafe(actual, fRow0, fRow1, fRow2, fRow3, fRow4, fRow5, fRow6, fRow7);
             }
 
             for (var i = 0; i < 64; i++)
@@ -330,7 +346,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
 
 #endif
 
-        private static void ReferenceDct(short[] input, short[] output)
+        private static void ReferenceDct(float[] input, float[] output)
         {
             for (var o = 0; o < 64; o++)
             {
@@ -353,11 +369,11 @@ namespace PdfToSvg.Tests.Images.Jpeg
                         (input[i] - 128);
                 }
 
-                output[o] = (short)(sum / 4 * Cu * Cv);
+                output[o] = (float)(sum / 4 * Cu * Cv);
             }
         }
 
-        private static void ReferenceIdct(short[] input, short[] output)
+        private static void ReferenceIdct(float[] input, float[] output)
         {
             for (var o = 0; o < 64; o++)
             {
@@ -381,7 +397,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
                         input[i];
                 }
 
-                output[o] = (short)MathUtils.Clamp(sum / 4 + 128, 0d, 255d);
+                output[o] = (float)MathUtils.Clamp(sum / 4 + 128, 0d, 255d);
             }
         }
     }

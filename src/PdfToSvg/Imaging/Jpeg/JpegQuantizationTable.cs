@@ -114,34 +114,34 @@ namespace PdfToSvg.Imaging.Jpeg
             }
         }
 
-        public void DequantizeTransposedZigZagScalar(short[] block)
+        public void DequantizeTransposedZigZagScalar(float[] block)
         {
             var quantizersTransposedZigZag = this.quantizersTransposedZigZag;
 
             for (var i = 0; i < block.Length; i++)
             {
-                block[i] = (short)MathUtils.Clamp(block[i] * quantizersTransposedZigZag[i], short.MinValue, short.MaxValue);
+                block[i] = block[i] * quantizersTransposedZigZag[i];
             }
         }
 
-        public void QuantizeScalar(short[] block)
+        public void QuantizeScalar(int[] block)
         {
             var quantizerMultipliers = this.quantizerMultipliers;
 
             for (var i = 0; i < block.Length; i++)
             {
-                block[i] = MathUtils.RoundToShort(block[i] * quantizerMultipliers[i]);
+                block[i] = MathUtils.RoundToInt(block[i] * quantizerMultipliers[i]);
             }
         }
 
-        public void QuantizeTransposedZigZagScalar(float[] source, short[] destination)
+        public void QuantizeTransposedZigZagScalar(float[] source, int[] destination)
         {
             var multipliers = quantizerMultipliersTransposedZigZag;
 
             for (var i = 0; i < source.Length; i++)
             {
                 // ITU T.81 section A.3.4 says we should round to nearest integer:
-                destination[i] = MathUtils.RoundToShort(source[i] * multipliers[i]);
+                destination[i] = MathUtils.RoundToInt(source[i] * multipliers[i]);
             }
         }
 

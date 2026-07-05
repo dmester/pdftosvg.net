@@ -23,14 +23,14 @@ namespace PdfToSvg.Tests.Images.Jpeg
 
             for (var i = 0; i < bitmap.Data.Length; i++)
             {
-                bitmap.Data[i] = (short)i;
+                bitmap.Data[i] = i;
             }
         }
 
         [Test]
         public void GetBlock_Full()
         {
-            var block = new short[64];
+            var block = new float[64];
 
             bitmap.GetBlock(block,
                 x: 1, y: 1,
@@ -46,7 +46,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void GetBlock_Subsampling()
         {
-            var block = new short[64];
+            var block = new float[64];
 
             bitmap.GetBlock(block,
                 x: 0, y: 0,
@@ -63,7 +63,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void GetBlock_Partial()
         {
-            var block = new short[64];
+            var block = new float[64];
 
             bitmap.GetBlock(block,
                 x: 75, y: 75,
@@ -84,7 +84,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
         [Test]
         public void GetBlock_NoOverlap()
         {
-            var block = new short[64];
+            var block = new float[64];
 
             bitmap.GetBlock(block,
                 x: Size, y: Size,

@@ -101,12 +101,12 @@ namespace PdfToSvg.Common
         }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        public static short RoundToShort(float value)
+        public static int RoundToInt(float value)
         {
 #if NET5_0_OR_GREATER
-            return (short)MathF.Round(value);
+            return (int)MathF.Round(value);
 #else
-            return (short)Math.Round(value);
+            return (int)Math.Round(value);
 #endif
         }
 
@@ -148,6 +148,18 @@ namespace PdfToSvg.Common
             }
 
             return result;
+        }
+
+        public static uint FloorDiv(uint x, uint y)
+        {
+            return x / y;
+        }
+
+        public static uint CeilDiv(uint x, uint y)
+        {
+            return x == 0
+              ? 0
+              : 1 + (x - 1) / y;
         }
 
         public static int FloorDiv(int x, int y)

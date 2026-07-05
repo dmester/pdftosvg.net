@@ -38,7 +38,7 @@ namespace PdfToSvg.Imaging.Jpeg
         /// Writes a block containing a single value.
         /// </summary>
         public static void WriteDataUnitZeroAc(this JpegImageDataWriter writer,
-            short diff, JpegHuffmanTable dcTable, JpegHuffmanTable acTable)
+            int diff, JpegHuffmanTable dcTable, JpegHuffmanTable acTable)
         {
             var diffSize = writer.GetSsss(diff);
 
@@ -52,7 +52,7 @@ namespace PdfToSvg.Imaging.Jpeg
         /// the input block.
         /// </summary>
         public static void WriteDataUnitZigZag(this JpegImageDataWriter writer,
-            short[] block, JpegHuffmanTable dcTable, JpegHuffmanTable acTable)
+            int[] block, JpegHuffmanTable dcTable, JpegHuffmanTable acTable)
         {
             var order = reverseOrder;
 
@@ -114,7 +114,7 @@ namespace PdfToSvg.Imaging.Jpeg
         /// <c>true</c> if the block only contains a single value, making further optimizations possible.
         /// </param>
         public static void ReadDataUnit(this JpegImageDataReader reader,
-            short[] data, JpegHuffmanTable dcTable, JpegHuffmanTable acTable, out bool zeroAc)
+            float[] data, JpegHuffmanTable dcTable, JpegHuffmanTable acTable, out bool zeroAc)
         {
             var order = reverseOrder;
             const int EndOfBlock = 0;
@@ -137,7 +137,7 @@ namespace PdfToSvg.Imaging.Jpeg
                 return;
             }
 
-            data[order[0]] = (short)reader.ReadValue(diffSize);
+            data[order[0]] = reader.ReadValue(diffSize);
 
             var cursor = 1;
 
@@ -165,7 +165,7 @@ namespace PdfToSvg.Imaging.Jpeg
 
                 if (cursor < data.Length)
                 {
-                    data[order[cursor++]] = (short)value;
+                    data[order[cursor++]] = value;
                 }
             }
 

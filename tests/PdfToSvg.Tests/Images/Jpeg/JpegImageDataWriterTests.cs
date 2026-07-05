@@ -15,60 +15,11 @@ namespace PdfToSvg.Tests.Images.Jpeg
     internal class JpegImageDataWriterTests
     {
         [Test]
-        public void WriteBit_Partial()
-        {
-            TestWriter(new byte[] { 0b11001111 }, writer =>
-            {
-                writer.WriteBit(1);
-                writer.WriteBit(1);
-                writer.WriteBit(0);
-                writer.WriteBit(0);
-            });
-        }
-
-        [Test]
-        public void WriteBit_SpanTwoBytes()
-        {
-            TestWriter(new byte[] { 0b11001010, 0b11100101 }, writer =>
-            {
-                writer.WriteBit(1);
-                writer.WriteBit(1);
-                writer.WriteBit(0);
-                writer.WriteBit(0);
-
-                writer.WriteBit(1);
-                writer.WriteBit(0);
-                writer.WriteBit(1);
-                writer.WriteBit(0);
-
-                writer.WriteBit(1);
-                writer.WriteBit(1);
-                writer.WriteBit(1);
-                writer.WriteBit(0);
-
-                writer.WriteBit(0);
-                writer.WriteBit(1);
-                writer.WriteBit(0);
-                writer.WriteBit(1);
-            });
-        }
-
-        [Test]
-        public void WriteBit_ByteStuffing()
+        public void WriteBits_ByteStuffing()
         {
             TestWriter(new byte[] { 0b11111111, 0, 0b01111111 }, writer =>
             {
-                writer.WriteBit(1);
-                writer.WriteBit(1);
-                writer.WriteBit(1);
-                writer.WriteBit(1);
-
-                writer.WriteBit(1);
-                writer.WriteBit(1);
-                writer.WriteBit(1);
-                writer.WriteBit(1);
-
-                writer.WriteBit(0);
+                writer.WriteBits(0b111111110, 9);
             });
         }
 
@@ -142,7 +93,37 @@ namespace PdfToSvg.Tests.Images.Jpeg
             });
         }
 
+        [TestCase(0b101, 3, 0, 0)]
+        [TestCase(0b101, 3, 1, -1)]
+        [TestCase(0b101, 3, 1, 1)]
+        [TestCase(0b101, 3, 4, -15)]
+        [TestCase(0b101, 3, 4, 8)]
+        [TestCase(0b1, 1, 11, 2047)]
+        [TestCase(0xffff, 16, 11, -2047)]
+        public void WriteSymbol_MatchesCodePlusValue(int code, int codeLength, int ssss, int value)
+        {
+            var huffmanCode = new JpegHuffmanCode(code, codeLength);
+
+            var combined = Write(writer =>
+            {
+                writer.WriteSymbol(huffmanCode, ssss, value);
+            });
+
+            var separate = Write(writer =>
+            {
+                writer.WriteCode(huffmanCode);
+                writer.WriteValue(ssss, value);
+            });
+
+            Assert.AreEqual(separate, combined);
+        }
+
         private void TestWriter(byte[] expectedResult, Action<JpegImageDataWriter> callback)
+        {
+            Assert.AreEqual(expectedResult, Write(callback));
+        }
+
+        private byte[] Write(Action<JpegImageDataWriter> callback)
         {
             var stream = new MemoryStream();
 
@@ -151,8 +132,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
                 callback(writer);
             }
 
-            var arr = stream.ToArray();
-            Assert.AreEqual(expectedResult, arr);
+            return stream.ToArray();
         }
     }
 }

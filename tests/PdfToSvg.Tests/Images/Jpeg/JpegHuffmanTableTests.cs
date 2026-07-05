@@ -99,7 +99,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
                 foreach (var b in expectedBytes)
                 {
                     var code = table.EncodeOrThrow(b);
-                    writer.WriteBits(code.Code, code.CodeLength);
+                    writer.WriteCode(code);
                 }
             }
 

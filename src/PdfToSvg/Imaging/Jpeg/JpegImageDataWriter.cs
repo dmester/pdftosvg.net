@@ -3,20 +3,26 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace PdfToSvg.Imaging.Jpeg
 {
     internal class JpegImageDataWriter : IDisposable
     {
+        // The writer adds incoming bits to `accumulator`.
+        // `accumulator` is flushed to `buffer`.
+        // `buffer` is flushed to `stream`.
+
+        private const int BufferSize = 4096;
+
         private readonly MemoryStream stream;
 
-        private int byteValue;
-        private int bitCursor;
+        private readonly byte[] buffer = new byte[BufferSize];
+        private int bufferByteCount;
+
+        private ulong accumulator; // MSB order
+        private int accumulatorBitCount;
 
         private int restartMarkerCount;
 
@@ -25,50 +31,84 @@ namespace PdfToSvg.Imaging.Jpeg
             this.stream = stream;
         }
 
-        private void FlushPendingByte()
+        private void FlushBuffer()
         {
-            if (bitCursor > 0)
+            if (bufferByteCount > 0)
             {
-                if (bitCursor < 8)
-                {
-                    byteValue |= (1 << (8 - bitCursor)) - 1;
-                }
-
-                stream.WriteByte((byte)byteValue);
-
-                if (byteValue == 0xff)
-                {
-                    // Byte stuffing
-                    stream.WriteByte(0x00);
-                }
-
-                bitCursor = 0;
-                byteValue = 0;
+                stream.Write(buffer, 0, bufferByteCount);
+                bufferByteCount = 0;
             }
         }
 
-        public void WriteBit(int bit) => WriteBits(bit, 1);
-
-        public void WriteCode(JpegHuffmanCode code) => WriteBits(code.Code, code.CodeLength);
-
-        public void WriteBits(int value, int bitCount)
+        private void Emit(byte value)
         {
-            while (bitCount > 0)
+            // Ensure room for the byte plus a potential stuffing byte.
+            if (bufferByteCount + 2 > buffer.Length)
             {
-                var iterationBitCount = Math.Min(8 - bitCursor, bitCount);
-                var iterationBitMask = (1 << iterationBitCount) - 1;
-                var iterationValue = (value >> (bitCount - iterationBitCount)) & iterationBitMask;
-
-                byteValue |= iterationValue << (8 - bitCursor - iterationBitCount);
-
-                bitCount -= iterationBitCount;
-                bitCursor += iterationBitCount;
-
-                if (bitCursor >= 8)
-                {
-                    FlushPendingByte();
-                }
+                FlushBuffer();
             }
+
+            buffer[bufferByteCount++] = value;
+
+            if (value == 0xff)
+            {
+                // Byte stuffing
+                buffer[bufferByteCount++] = 0x00;
+            }
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        private void FlushWholeBytes()
+        {
+            while (accumulatorBitCount >= 8)
+            {
+                Emit((byte)(accumulator >> 56));
+                accumulator <<= 8;
+                accumulatorBitCount -= 8;
+            }
+        }
+
+        private void FlushPendingBits()
+        {
+            if (accumulatorBitCount > 0)
+            {
+                // Pad the remaining low bits of the last byte with 1s.
+                Emit((byte)((accumulator >> 56) | (uint)((1 << (8 - accumulatorBitCount)) - 1)));
+
+                accumulator = 0;
+                accumulatorBitCount = 0;
+            }
+        }
+
+        public void WriteCode(JpegHuffmanCode code) => WriteBits((uint)code.Code, code.CodeLength);
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public void WriteBits(ulong value, int bitCount)
+        {
+            if (bitCount == 0)
+            {
+                return;
+            }
+
+            // Only the low bitCount bits of value are appended, MSB-first. heldBitCount is always
+            // < 8 here, so bitCount can be up to 57 without overflowing the accumulator.
+            var mask = bitCount >= 64 ? ulong.MaxValue : (1u << bitCount) - 1;
+            accumulator |= (ulong)(value & mask) << (64 - accumulatorBitCount - bitCount);
+            accumulatorBitCount += bitCount;
+
+            FlushWholeBytes();
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public void WriteSymbol(JpegHuffmanCode code, int ssss, int value)
+        {
+            // F.1.2.1.1
+            var diffMask = (1 << ssss) - 1;
+            var diff = value >= 0 ? value : value + diffMask;
+
+            var bits = ((ulong)code.Code << ssss) | (uint)(diff & diffMask);
+            var bitCount = code.CodeLength + ssss;
+            WriteBits(bits, bitCount);
         }
 
         public void WriteValue(int ssss, int value)
@@ -78,34 +118,32 @@ namespace PdfToSvg.Imaging.Jpeg
                 return;
             }
 
-            if (value < 0)
-            {
-                WriteBit(0);
+            // F.1.2.1.1
+            var diffMask = (1 << ssss) - 1;
+            var diff = value >= 0 ? value : value + diffMask;
 
-                var lowerBound = ((-1) << ssss) + 1;
-                value -= lowerBound;
-            }
-            else
-            {
-                WriteBit(1);
-            }
-
-            WriteBits(value, ssss - 1);
+            WriteBits((uint)(diff & diffMask), ssss);
         }
 
         public void WriteRestartMarker()
         {
-            FlushPendingByte();
+            FlushPendingBits();
 
-            stream.WriteByte(0xff);
-            stream.WriteByte((byte)(0xd0 + (restartMarkerCount & 7)));
+            if (bufferByteCount + 2 > buffer.Length)
+            {
+                FlushBuffer();
+            }
+
+            buffer[bufferByteCount++] = 0xff;
+            buffer[bufferByteCount++] = (byte)(0xd0 + (restartMarkerCount & 7));
 
             restartMarkerCount++;
         }
 
         public void Dispose()
         {
-            FlushPendingByte();
+            FlushPendingBits();
+            FlushBuffer();
         }
     }
 }

@@ -42,8 +42,7 @@ namespace PdfToSvg.Imaging.Jpeg
         {
             var diffSize = JpegHuffmanCoding.GetSsss(diff);
 
-            writer.WriteCode(dcTable.EncodeOrThrow(diffSize));
-            writer.WriteValue(diffSize, diff);
+            writer.WriteSymbol(dcTable.EncodeOrThrow(diffSize), diffSize, diff);
             writer.WriteCode(acTable.EncodeOrThrow(0));
         }
 
@@ -59,8 +58,7 @@ namespace PdfToSvg.Imaging.Jpeg
             var diff = block[0];
             var diffSize = JpegHuffmanCoding.GetSsss(diff);
 
-            writer.WriteCode(dcTable.EncodeOrThrow(diffSize));
-            writer.WriteValue(diffSize, diff);
+            writer.WriteSymbol(dcTable.EncodeOrThrow(diffSize), diffSize, diff);
 
             var lastNonZero = 63;
             while (lastNonZero > 0 && block[order[lastNonZero]] == 0)
@@ -90,9 +88,7 @@ namespace PdfToSvg.Imaging.Jpeg
                 var valueSize = JpegHuffmanCoding.GetSsss(value);
 
                 var zeroesAndSize = (zeroCount << 4) | valueSize;
-                writer.WriteCode(acTable.EncodeOrThrow(zeroesAndSize));
-
-                writer.WriteValue(valueSize, value);
+                writer.WriteSymbol(acTable.EncodeOrThrow(zeroesAndSize), valueSize, value);
             }
 
             if (lastNonZero < 63)

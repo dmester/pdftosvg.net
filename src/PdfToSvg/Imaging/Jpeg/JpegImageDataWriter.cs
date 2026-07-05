@@ -93,66 +93,6 @@ namespace PdfToSvg.Imaging.Jpeg
             WriteBits(value, ssss - 1);
         }
 
-        public int GetSsss(int value)
-        {
-            if (value == 0)
-            {
-                return 0;
-            }
-
-            if (value >= -1 && value <= 1)
-            {
-                return 1;
-            }
-
-            if (value >= -3 && value <= 3)
-            {
-                return 2;
-            }
-
-            if (value >= -7 && value <= 7)
-            {
-                return 3;
-            }
-
-            if (value >= -15 && value <= 15)
-            {
-                return 4;
-            }
-
-            if (value >= -31 && value <= 31)
-            {
-                return 5;
-            }
-
-            if (value >= -63 && value <= 63)
-            {
-                return 6;
-            }
-
-            if (value >= -127 && value <= 127)
-            {
-                return 7;
-            }
-
-            if (value >= -255 && value <= 255)
-            {
-                return 8;
-            }
-
-            if (value >= -511 && value <= 511)
-            {
-                return 9;
-            }
-
-            if (value >= -1023 && value <= 1023)
-            {
-                return 10;
-            }
-
-            return 11;
-        }
-
         public void WriteRestartMarker()
         {
             FlushPendingByte();

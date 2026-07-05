@@ -40,7 +40,7 @@ namespace PdfToSvg.Imaging.Jpeg
         public static void WriteDataUnitZeroAc(this JpegImageDataWriter writer,
             int diff, JpegHuffmanTable dcTable, JpegHuffmanTable acTable)
         {
-            var diffSize = writer.GetSsss(diff);
+            var diffSize = JpegHuffmanCoding.GetSsss(diff);
 
             writer.WriteCode(dcTable.EncodeOrThrow(diffSize));
             writer.WriteValue(diffSize, diff);
@@ -57,7 +57,7 @@ namespace PdfToSvg.Imaging.Jpeg
             var order = reverseOrder;
 
             var diff = block[0];
-            var diffSize = writer.GetSsss(diff);
+            var diffSize = JpegHuffmanCoding.GetSsss(diff);
 
             writer.WriteCode(dcTable.EncodeOrThrow(diffSize));
             writer.WriteValue(diffSize, diff);
@@ -87,7 +87,7 @@ namespace PdfToSvg.Imaging.Jpeg
                 }
 
                 var value = block[order[cursor++]];
-                var valueSize = writer.GetSsss(value);
+                var valueSize = JpegHuffmanCoding.GetSsss(value);
 
                 var zeroesAndSize = (zeroCount << 4) | valueSize;
                 writer.WriteCode(acTable.EncodeOrThrow(zeroesAndSize));

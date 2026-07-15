@@ -17,6 +17,27 @@ namespace PdfToSvg.Imaging
     {
         public static Image? Create(PdfDictionary imageDictionary, ColorSpace colorSpace)
         {
+            var result = CreateInstance(imageDictionary, colorSpace);
+            result?.Initialize();
+            return result;
+        }
+
+#if HAVE_ASYNC
+        public static async Task<Image?> CreateAsync(PdfDictionary imageDictionary, ColorSpace colorSpace)
+        {
+            var result = CreateInstance(imageDictionary, colorSpace);
+
+            if (result != null)
+            {
+                await result.InitializeAsync().ConfigureAwait(false);
+            }
+
+            return result;
+        }
+#endif
+
+        private static Image? CreateInstance(PdfDictionary imageDictionary, ColorSpace colorSpace)
+        {
             var stream = imageDictionary.Stream;
             if (stream == null)
             {

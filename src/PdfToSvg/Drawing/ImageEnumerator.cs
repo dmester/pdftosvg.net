@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.ColorSpaces;
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Drawing.Patterns;
 using PdfToSvg.Imaging;
@@ -117,9 +118,13 @@ namespace PdfToSvg.Drawing
                             {
                                 await VisitObjectAsync(images, xobjectDict, depth + 1).ConfigureAwait(false);
                             }
-                            else if (subtype == Names.Image && TryCreateImage(xobjectDict, ownerDict, out var image))
+                            else if (subtype == Names.Image)
                             {
-                                images.Add(image);
+                                var image = await CreateImageAsync(xobjectDict, ownerDict).ConfigureAwait(false);
+                                if (image != null)
+                                {
+                                    images.Add(image);
+                                }
                             }
                         }
                         break;
@@ -133,13 +138,50 @@ namespace PdfToSvg.Drawing
                         break;
 
                     case "BI":
-                        if (TryCreateImage(ownerDict, op, out var inlineImage))
+                        var inlineImage = await CreateImageAsync(ownerDict, op).ConfigureAwait(false);
+                        if (inlineImage != null)
                         {
                             images.Add(inlineImage);
                         }
                         break;
                 }
             }
+        }
+
+        private Task<Image?> CreateImageAsync(PdfDictionary ownerDict, ContentOperation op)
+        {
+            if (op.Operands.Length == 1 &&
+                op.Operands[0] is PdfDictionary imageDict)
+            {
+                imageDict[Names.Subtype] = Names.Image;
+
+                return CreateImageAsync(imageDict, ownerDict);
+            }
+
+            return Task.FromResult<Image?>(null);
+        }
+
+        private async Task<Image?> CreateImageAsync(PdfDictionary imageDict, PdfDictionary ownerDict)
+        {
+            var colorSpace = GetColorSpace(imageDict, ownerDict);
+            
+            Image? image = null;
+
+            try
+            {
+                image = await ImageFactory.CreateAsync(imageDict, colorSpace).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Log.WriteLine("Initializing image failed with exception: " + ex);
+            }
+
+            if (image != null)
+            {
+                image = new AccessControlledImage(image, permissionAssert);
+            }
+
+            return image;
         }
 #endif
 
@@ -203,9 +245,13 @@ namespace PdfToSvg.Drawing
                                     yield return image;
                                 }
                             }
-                            else if (subtype == Names.Image && TryCreateImage(xobjectDict, ownerDict, out var image))
+                            else if (subtype == Names.Image)
                             {
-                                yield return image;
+                                var image = await CreateImageAsync(xobjectDict, ownerDict).ConfigureAwait(false);
+                                if (image != null)
+                                {
+                                    yield return image;
+                                }
                             }
                         }
                         break;
@@ -222,7 +268,8 @@ namespace PdfToSvg.Drawing
                         break;
 
                     case "BI":
-                        if (TryCreateImage(ownerDict, op, out var inlineImage))
+                    var inlineImage = await CreateImageAsync(ownerDict, op).ConfigureAwait(false);
+                        if (inlineImage != null)
                         {
                             yield return inlineImage;
                         }
@@ -291,9 +338,13 @@ namespace PdfToSvg.Drawing
                                     yield return image;
                                 }
                             }
-                            else if (subtype == Names.Image && TryCreateImage(xobjectDict, ownerDict, out var image))
+                            else if (subtype == Names.Image)
                             {
-                                yield return image;
+                                var image = CreateImage(xobjectDict, ownerDict);
+                                if (image != null)
+                                {
+                                    yield return image;
+                                }
                             }
                         }
                         break;
@@ -310,7 +361,8 @@ namespace PdfToSvg.Drawing
                         break;
 
                     case "BI":
-                        if (TryCreateImage(ownerDict, op, out var inlineImage))
+                        var inlineImage = CreateImage(ownerDict, op);
+                        if (inlineImage != null)
                         {
                             yield return inlineImage;
                         }
@@ -319,30 +371,45 @@ namespace PdfToSvg.Drawing
             }
         }
 
-        private bool TryCreateImage(PdfDictionary ownerDict, ContentOperation op, [NotNullWhen(true)] out Image? image)
+        private Image? CreateImage(PdfDictionary ownerDict, ContentOperation op)
         {
             if (op.Operands.Length == 1 &&
                 op.Operands[0] is PdfDictionary imageDict)
             {
                 imageDict[Names.Subtype] = Names.Image;
-
-                if (TryCreateImage(imageDict, ownerDict, out image))
-                {
-                    return true;
-                }
+                return CreateImage(imageDict, ownerDict);
             }
 
-            image = null;
-            return false;
+            return null;
         }
 
-        private bool TryCreateImage(PdfDictionary imageDict, PdfDictionary ownerDict, [NotNullWhen(true)] out Image? image)
+        private Image? CreateImage(PdfDictionary imageDict, PdfDictionary ownerDict)
         {
-            ColorSpace colorSpace;
+            var colorSpace = GetColorSpace(imageDict, ownerDict);
 
+            Image? image = null;
+            try
+            {
+                image = ImageFactory.Create(imageDict, colorSpace);
+            }
+            catch (Exception ex)
+            {
+                Log.WriteLine("Initializing image failed with exception: " + ex);
+            }
+
+            if (image != null)
+            {
+                image = new AccessControlledImage(image, permissionAssert);
+            }
+
+            return image;
+        }
+
+        private ColorSpace GetColorSpace(PdfDictionary imageDict, PdfDictionary ownerDict)
+        {
             if (imageDict.GetValueOrDefault(Names.ImageMask, false))
             {
-                colorSpace = new IndexedColorSpace(new DeviceRgbColorSpace(),
+                return new IndexedColorSpace(new DeviceRgbColorSpace(),
                 [
                     /* 0 */ 255, 255, 255,
                     /* 1 */ 0, 0, 0,
@@ -350,21 +417,11 @@ namespace PdfToSvg.Drawing
             }
             else
             {
-                colorSpace = ColorSpaceParser.Parse(
+                return ColorSpaceParser.Parse(
                     imageDict[Names.ColorSpace],
                     ownerDict.GetDictionaryOrEmpty(Names.Resources / Names.ColorSpace),
                     cancellationToken);
             }
-
-            image = ImageFactory.Create(imageDict, colorSpace);
-
-            if (image == null)
-            {
-                return false;
-            }
-
-            image = new AccessControlledImage(image, permissionAssert);
-            return true;
         }
 
         private bool TryGetGState(PdfDictionary ownerDict, ContentOperation op, HashSet<PdfName> handledGStates,

@@ -329,5 +329,20 @@ namespace PdfToSvg
             return "data:" + ContentType + ";base64," + Convert.ToBase64String(await GetContentAsync(cancellationToken).ConfigureAwait(false));
         }
 #endif
+
+        internal virtual void Initialize(CancellationToken cancellationToken = default)
+        {
+        }
+
+#if HAVE_ASYNC
+        internal virtual Task InitializeAsync(CancellationToken cancellationToken = default)
+        {
+#if NET45
+            return Task.FromResult(true);
+#else
+            return Task.CompletedTask;
+#endif
+        }
+#endif
     }
 }

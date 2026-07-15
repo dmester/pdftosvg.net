@@ -115,14 +115,22 @@ namespace PdfToSvg.Common
 
         public static int IntLog2(int value)
         {
-            var result = 0;
+            // Validation is important for the fallback loop below, which would hang on negative values
+            if (value < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value));
+            }
 
+#if NET5_0_OR_GREATER
+            return System.Numerics.BitOperations.Log2(unchecked((uint)value));
+#else
+            var result = 0;
             while ((value >>= 1) != 0)
             {
                 result++;
             }
-
             return result;
+#endif
         }
 
         public static int IntLog2Ceil(int value)
@@ -140,48 +148,72 @@ namespace PdfToSvg.Common
             return result;
         }
 
-        public static uint FloorDiv(uint x, uint y)
+        public static uint FloorDiv(uint dividend, uint divisor)
         {
-            return x / y;
+            return dividend / divisor;
         }
 
-        public static uint CeilDiv(uint x, uint y)
+        public static uint CeilDiv(uint dividend, uint divisor)
         {
-            return x == 0
+            return dividend == 0
               ? 0
-              : 1 + (x - 1) / y;
+              : 1 + (dividend - 1) / divisor;
         }
 
-        public static int FloorDiv(int x, int y)
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static int FloorDiv(int dividend, int divisor)
         {
-            var neg = false;
+            // See example here:
+            // https://stackoverflow.com/questions/46265403/fast-floor-of-a-signed-integer-division-in-c-c
 
-            if (x < 0)
+            var quotient = dividend / divisor;
+
+            // (x ^ y) is negative when one of the inputs are negative
+            if ((dividend ^ divisor) < 0 && quotient * divisor != dividend)
             {
-                neg = true;
-                x = -x;
-            }
-
-            if (y < 0)
-            {
-                neg ^= true;
-                y = -y;
-            }
-
-            if (neg)
-            {
-                x += y - 1;
-            }
-
-            var result = x / y;
-
-            if (neg)
-            {
-                return -result;
+                return quotient - 1;
             }
             else
             {
-                return result;
+                return quotient;
+            }
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static int CeilDiv(int dividend, int divisor)
+        {
+            var quotient = dividend / divisor;
+
+            // (x ^ y) is negative when one of the inputs are negative
+            if ((dividend ^ divisor) > 0 && quotient * divisor != dividend)
+            {
+                return quotient + 1;
+            }
+            else
+            {
+                return quotient;
+            }
+        }
+
+        /// <summary>
+        /// Computes <c>ceil(<paramref name="dividend"/> / (2 ^ (<paramref name="divisorPow2"/>)))</c>.
+        /// </summary>
+        public static int CeilDivPow2(long dividend, int divisorPow2)
+        {
+            if (divisorPow2 < 0 || divisorPow2 > 62)
+            {
+                throw new ArgumentOutOfRangeException(nameof(divisorPow2));
+            }
+
+            var divisor = 1L << divisorPow2;
+
+            if (dividend >= 0)
+            {
+                return (int)((dividend + divisor - 1) >> divisorPow2);
+            }
+            else
+            {
+                return -(int)((-dividend) >> divisorPow2);
             }
         }
     }

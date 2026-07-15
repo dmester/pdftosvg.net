@@ -82,9 +82,55 @@ namespace PdfToSvg.Tests.Common
         [TestCase(1, -3, -1)]
         [TestCase(2, -3, -1)]
         [TestCase(3, -3, -1)]
-        public void FloorDiv(int x, int y, int result)
+        [TestCase(int.MaxValue, 2, int.MaxValue / 2)]
+        [TestCase(int.MinValue, 2, int.MinValue / 2)]
+        public void FloorDiv(int dividend, int divisor, int result)
         {
-            var actual = MathUtils.FloorDiv(x, y);
+            var actual = MathUtils.FloorDiv(dividend, divisor);
+            Assert.AreEqual(result, actual);
+        }
+
+        [TestCase(-3, 3, -1)]
+        [TestCase(-2, 3, 0)]
+        [TestCase(-1, 3, 0)]
+        [TestCase(0, 3, 0)]
+        [TestCase(1, 3, 1)]
+        [TestCase(2, 3, 1)]
+        [TestCase(3, 3, 1)]
+        [TestCase(-3, -3, 1)]
+        [TestCase(-2, -3, 1)]
+        [TestCase(-1, -3, 1)]
+        [TestCase(0, -3, 0)]
+        [TestCase(1, -3, 0)]
+        [TestCase(2, -3, 0)]
+        [TestCase(3, -3, -1)]
+        [TestCase(int.MaxValue, 2, int.MaxValue / 2 + 1)]
+        [TestCase(int.MinValue, 2, int.MinValue / 2)]
+        public void CeilDiv(int dividend, int divisor, int result)
+        {
+            var actual = MathUtils.CeilDiv(dividend, divisor);
+            Assert.AreEqual(result, actual);
+        }
+
+        [TestCase(-3, 1, -1)]
+        [TestCase(-2, 1, -1)]
+        [TestCase(-1, 1, 0)]
+        [TestCase(0, 1, 0)]
+        [TestCase(1, 1, 1)]
+        [TestCase(2, 1, 1)]
+        [TestCase(3, 1, 2)]
+        [TestCase(7, 3, 1)]
+        [TestCase(8, 3, 1)]
+        [TestCase(9, 3, 2)]
+        [TestCase(int.MaxValue + 0L, 31, 1)]
+        [TestCase(int.MaxValue + 1L, 31, 1)]
+        [TestCase(int.MaxValue + 2L, 31, 2)]
+        [TestCase(int.MinValue - 1L, 31, -1)]
+        [TestCase(int.MinValue + 0L, 31, -1)]
+        [TestCase(int.MinValue + 1L, 31, 0)]
+        public void CeilDivPow2(long dividend, int divisorPow2, int result)
+        {
+            var actual = MathUtils.CeilDivPow2(dividend, divisorPow2);
             Assert.AreEqual(result, actual);
         }
 

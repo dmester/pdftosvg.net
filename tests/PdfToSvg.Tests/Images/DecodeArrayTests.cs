@@ -37,6 +37,26 @@ namespace PdfToSvg.Tests.Images
         }
 
         [Test]
+        public void Indexer_ReturnsRange()
+        {
+            var decodeArray = new DecodeArray(4, new[] { .2f, .8f, 0f, 2f });
+
+            Assert.AreEqual(2, decodeArray.Count);
+
+            Assert.AreEqual(.8f, decodeArray[0].Decode(15), 0.00001f);
+            Assert.AreEqual(2f, decodeArray[1].Decode(15), 0.00001f);
+        }
+
+        [Test]
+        public void Indexer_InvalidIndexThrows()
+        {
+            var decodeArray = new DecodeArray(4, new[] { .2f, .8f, 0f, 2f });
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => _ = decodeArray[-1]);
+            Assert.Throws<ArgumentOutOfRangeException>(() => _ = decodeArray[2]);
+        }
+
+        [Test]
         public void Equal()
         {
             var decodeArray1 = new DecodeArray(4, new[] { .2f, .8f, 0f, 2.00001f });

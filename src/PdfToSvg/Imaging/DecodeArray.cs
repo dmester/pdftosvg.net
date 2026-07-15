@@ -44,6 +44,21 @@ namespace PdfToSvg.Imaging
             }
         }
 
+        public int Count => ranges.Length;
+
+        public DecodeRange this[int componentIndex]
+        {
+            get
+            {
+                if ((uint)componentIndex >= (uint)ranges.Length)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(componentIndex));
+                }
+
+                return ranges[componentIndex];
+            }
+        }
+
         public void Decode(float[] values) => Decode(values, 0, values.Length);
 
         public void Decode(float[] values, int offset, int count)

@@ -35,11 +35,10 @@ namespace PdfToSvg.Imaging
 
         public static bool HasCustomDecodeArray(PdfDictionary imageDictionary, ColorSpace colorSpace)
         {
-            if (imageDictionary.TryGetArray<double>(Names.Decode, out var decodeValues))
+            if (imageDictionary.ContainsKey(Names.Decode))
             {
                 var bitsPerComponent = GetBitsPerComponent(imageDictionary);
-
-                var decodeArray = new DecodeArray(bitsPerComponent, decodeValues);
+                var decodeArray = GetDecodeArray(imageDictionary, colorSpace);
                 var defaultDecodeArray = colorSpace.GetDefaultDecodeArray(bitsPerComponent);
 
                 return !decodeArray.Equals(defaultDecodeArray);
@@ -56,7 +55,45 @@ namespace PdfToSvg.Imaging
 
             if (imageDictionary.TryGetArray<double>(Names.Decode, out var decodeValues))
             {
-                result = new DecodeArray(bitsPerComponent, decodeValues);
+                var expectedLength = colorSpace.ComponentsPerSample * 2;
+
+                if (decodeValues.Length == expectedLength)
+                {
+                    result = new DecodeArray(bitsPerComponent, decodeValues);
+                }
+                else if (decodeValues.Length < expectedLength)
+                {
+                    // Pad with default ranges
+                    var defaultDecodeArray = colorSpace.GetDefaultDecodeArray(bitsPerComponent);
+                    var newDecodeValues = new float[expectedLength];
+
+                    var i = 0;
+
+                    for (; i < decodeValues.Length; i++)
+                    {
+                        newDecodeValues[i] = (float)decodeValues[i];
+                    }
+
+                    i &= ~1; // Skip partial range
+
+                    for (; i + 1 < newDecodeValues.Length; i += 2)
+                    {
+                        var range = defaultDecodeArray[i / 2];
+
+                        newDecodeValues[i + 0] = range.Dmin;
+                        newDecodeValues[i + 1] = range.Dmax;
+                    }
+
+                    result = new DecodeArray(bitsPerComponent, newDecodeValues);
+                }
+                else
+                {
+                    var newDecodeValues = new double[expectedLength];
+
+                    Array.Copy(decodeValues, newDecodeValues, newDecodeValues.Length);
+
+                    result = new DecodeArray(bitsPerComponent, newDecodeValues);
+                }
             }
             else
             {
@@ -92,9 +129,9 @@ namespace PdfToSvg.Imaging
         {
             var memoryStream = new MemoryStream();
 
-            using (var jpegStream = GetImageStream(imageDictionaryStream, cancellationToken))
+            using (var imageStream = GetImageStream(imageDictionaryStream, cancellationToken))
             {
-                jpegStream.CopyTo(memoryStream, cancellationToken);
+                imageStream.CopyTo(memoryStream, cancellationToken);
             }
 
             return memoryStream.ToArray();
@@ -105,9 +142,9 @@ namespace PdfToSvg.Imaging
         {
             var memoryStream = new MemoryStream();
 
-            using (var jpegStream = GetImageStream(imageDictionaryStream, cancellationToken))
+            using (var imageStream = GetImageStream(imageDictionaryStream, cancellationToken))
             {
-                await jpegStream.CopyToAsync(memoryStream, cancellationToken).ConfigureAwait(false);
+                await imageStream.CopyToAsync(memoryStream, cancellationToken).ConfigureAwait(false);
             }
 
             return memoryStream.ToArray();

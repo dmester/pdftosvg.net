@@ -17,6 +17,7 @@ namespace PdfToSvg.Imaging
         private const float EqualityTolerance = 1f / 65536;
 
         private readonly float dmin;
+        private readonly float dmax;
         private readonly float multiplier;
 
         public DecodeRange(float dmin, float dmax, int bitsPerComponent)
@@ -27,10 +28,26 @@ namespace PdfToSvg.Imaging
             }
 
             this.dmin = dmin;
+            this.dmax = dmax;
 
             var maxValue = bitsPerComponent == 32 ? (float)uint.MaxValue : (float)((1u << bitsPerComponent) - 1);
             multiplier = (dmax - dmin) / maxValue;
         }
+
+        /// <summary>
+        /// Lower bound of the decoded output range (D<sub>min</sub> in ISO 32000-2:2020 Table 87).
+        /// </summary>
+        public float Dmin => dmin;
+
+        /// <summary>
+        /// Upper bound of the decoded output range (D<sub>max</sub> in ISO 32000-2:2020 Table 87).
+        /// </summary>
+        public float Dmax => dmax;
+
+        /// <summary>
+        /// Scale factor from a raw sample value in [0, 2^bpc - 1] to the decoded output range.
+        /// </summary>
+        public float Multiplier => multiplier;
 
         public float Decode(float value)
         {

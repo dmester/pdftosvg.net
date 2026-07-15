@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 
 #if NET7_0_OR_GREATER
+using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 #endif
 
@@ -90,13 +91,8 @@ namespace PdfToSvg.Tests.Images.Jpeg
         }
 
         [Test]
-        public void TransposeSse()
+        public void Transpose128()
         {
-            if (!Sse.IsSupported)
-            {
-                Assert.Inconclusive("SSE not supported");
-            }
-
             var source = new float[64]
             {
                 00, 01, 02, 03, 04, 05, 06, 07,
@@ -122,7 +118,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
             };
 
             var actual = (float[])source.Clone();
-            JpegBlockUtils.TransposeSse(actual);
+            JpegBlockUtils.Transpose128(actual);
 
             Assert.AreEqual(expected, actual);
         }

@@ -15,6 +15,7 @@ using System.Text;
 
 #if NET7_0_OR_GREATER
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 #endif
 
@@ -96,11 +97,11 @@ namespace PdfToSvg.Tests.Images.Jpeg
 #if NET7_0_OR_GREATER
 
         [Test]
-        public void ForwardSse()
+        public void Forward128()
         {
-            if (!Sse2.IsSupported)
+            if (!Sse2.IsSupported && !AdvSimd.Arm64.IsSupported)
             {
-                Assert.Inconclusive("SSE2 not supported");
+                Assert.Inconclusive("Neither SSE2 nor AdvSimd supported");
             }
 
             var data = new float[64];
@@ -117,7 +118,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
             // Reference
             ReferenceDct(data, refdct);
 
-            // SSE2
+            // Vector128
             {
                 ref var pSrc = ref Unsafe.As<float, Vector128<float>>(ref data[0]);
                 var row0_lo = Unsafe.Add(ref pSrc, 0);
@@ -137,7 +138,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
                 var row7_lo = Unsafe.Add(ref pSrc, 14);
                 var row7_hi = Unsafe.Add(ref pSrc, 15);
 
-                JpegDct.ForwardSse(
+                JpegDct.Forward128(
                     ref row0_lo, ref row0_hi,
                     ref row1_lo, ref row1_hi,
                     ref row2_lo, ref row2_hi,
@@ -146,7 +147,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
                     ref row5_lo, ref row5_hi,
                     ref row6_lo, ref row6_hi,
                     ref row7_lo, ref row7_hi);
-                JpegBlockUtils.TransposeSse(
+                JpegBlockUtils.Transpose128(
                     ref row0_lo, ref row0_hi,
                     ref row1_lo, ref row1_hi,
                     ref row2_lo, ref row2_hi,
@@ -175,11 +176,11 @@ namespace PdfToSvg.Tests.Images.Jpeg
         }
 
         [Test]
-        public void InverseSse()
+        public void Inverse128()
         {
-            if (!Sse2.IsSupported)
+            if (!Sse2.IsSupported && !AdvSimd.Arm64.IsSupported)
             {
-                Assert.Inconclusive("SSE2 not supported");
+                Assert.Inconclusive("Neither SSE2 nor AdvSimd supported");
             }
 
             var data = new float[64];
@@ -196,7 +197,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
             // Reference
             ReferenceIdct(data, refidct);
 
-            // SSE2
+            // Vector128
             {
                 ref var pSrc = ref Unsafe.As<float, Vector128<float>>(ref data[0]);
 
@@ -217,7 +218,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
                 var row7_lo = Unsafe.Add(ref pSrc, 14);
                 var row7_hi = Unsafe.Add(ref pSrc, 15);
 
-                JpegBlockUtils.TransposeSse(
+                JpegBlockUtils.Transpose128(
                     ref row0_lo, ref row0_hi,
                     ref row1_lo, ref row1_hi,
                     ref row2_lo, ref row2_hi,
@@ -226,7 +227,7 @@ namespace PdfToSvg.Tests.Images.Jpeg
                     ref row5_lo, ref row5_hi,
                     ref row6_lo, ref row6_hi,
                     ref row7_lo, ref row7_hi);
-                JpegDct.InverseSse(
+                JpegDct.Inverse128(
                     ref row0_lo, ref row0_hi,
                     ref row1_lo, ref row1_hi,
                     ref row2_lo, ref row2_hi,

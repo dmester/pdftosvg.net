@@ -11,6 +11,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 #endif
 
@@ -523,11 +524,12 @@ namespace PdfToSvg.Imaging.Jpeg
             }
         }
 
-        private void WriteBlocksUnsafeSse2(ref Vector128<float> blocks, int blockCount)
+        private void WriteBlocksUnsafe128(ref Vector128<float> blocks, int blockCount)
         {
-            if (!Sse2.IsSupported)
+            if (!Sse2.IsSupported && !AdvSimd.Arm64.IsSupported)
             {
-                throw new PlatformNotSupportedException("WriteBlocksSse2 must be called in a Sse2.IsSupported scope");
+                throw new PlatformNotSupportedException(
+                    "WriteBlocksUnsafe128 must be called in a Sse2.IsSupported or AdvSimd.Arm64.IsSupported scope");
             }
 
             var imageDataWriter = this.imageDataWriter;
@@ -576,7 +578,7 @@ namespace PdfToSvg.Imaging.Jpeg
                 var row7_lo = Unsafe.Add(ref pSourceBlock, 14);
                 var row7_hi = Unsafe.Add(ref pSourceBlock, 15);
 
-                JpegDct.ForwardSse(
+                JpegDct.Forward128(
                     ref row0_lo, ref row0_hi,
                     ref row1_lo, ref row1_hi,
                     ref row2_lo, ref row2_hi,
@@ -674,9 +676,9 @@ namespace PdfToSvg.Imaging.Jpeg
                     ref Unsafe.As<float, Vector256<float>>(ref MemoryMarshal.GetArrayDataReference(sourceBlocks)),
                     blockCount);
             }
-            else if (Sse2.IsSupported)
+            else if (Sse2.IsSupported || AdvSimd.Arm64.IsSupported)
             {
-                WriteBlocksUnsafeSse2(
+                WriteBlocksUnsafe128(
                     ref Unsafe.As<float, Vector128<float>>(ref MemoryMarshal.GetArrayDataReference(sourceBlocks)),
                     blockCount);
             }

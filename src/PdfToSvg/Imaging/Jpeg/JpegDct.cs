@@ -509,7 +509,7 @@ namespace PdfToSvg.Imaging.Jpeg
         }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        public static void ForwardSse(
+        public static void Forward128(
             ref Vector128<float> row0_lo,
             ref Vector128<float> row0_hi,
             ref Vector128<float> row1_lo,
@@ -549,7 +549,7 @@ namespace PdfToSvg.Imaging.Jpeg
             ForwardRow128(ref row0_lo, ref row1_lo, ref row2_lo, ref row3_lo, ref row4_lo, ref row5_lo, ref row6_lo, ref row7_lo);
             ForwardRow128(ref row0_hi, ref row1_hi, ref row2_hi, ref row3_hi, ref row4_hi, ref row5_hi, ref row6_hi, ref row7_hi);
 
-            JpegBlockUtils.TransposeSse(
+            JpegBlockUtils.Transpose128(
                 ref row0_lo, ref row0_hi,
                 ref row1_lo, ref row1_hi,
                 ref row2_lo, ref row2_hi,
@@ -624,7 +624,7 @@ namespace PdfToSvg.Imaging.Jpeg
         }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        public static void InverseSse(
+        public static void Inverse128(
             ref Vector128<float> row0_lo,
             ref Vector128<float> row0_hi,
             ref Vector128<float> row1_lo,
@@ -648,7 +648,7 @@ namespace PdfToSvg.Imaging.Jpeg
             InverseRow128(ref row0_hi, ref row1_hi, ref row2_hi, ref row3_hi, ref row4_hi, ref row5_hi, ref row6_hi, ref row7_hi);
 
             // 1D IDCT on rows
-            JpegBlockUtils.TransposeSse(
+            JpegBlockUtils.Transpose128(
                 ref row0_lo, ref row0_hi,
                 ref row1_lo, ref row1_hi,
                 ref row2_lo, ref row2_hi,

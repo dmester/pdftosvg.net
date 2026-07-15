@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.Imaging.Jpx.ImageModel;
 using System;
 using System.Runtime.CompilerServices;
@@ -9,6 +10,7 @@ using System.Runtime.CompilerServices;
 #if NET8_0_OR_GREATER
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 #endif
 
@@ -262,7 +264,7 @@ namespace PdfToSvg.Imaging.Jpx.Transforms
                     permutedHigh.StoreUnsafe(ref bufferRef, (nuint)((i << 1) + Vector256<float>.Count));
                 }
             }
-            else if (Vector128.IsHardwareAccelerated && Sse.IsSupported)
+            else if (Vector128.IsHardwareAccelerated && (Sse.IsSupported || AdvSimd.Arm64.IsSupported))
             {
                 var pairCount = Math.Min(lowCount, highCount);
                 ref var samplesRef = ref MemoryMarshal.GetArrayDataReference(samples);
@@ -277,8 +279,8 @@ namespace PdfToSvg.Imaging.Jpx.Transforms
                     var second = parity == 0 ? high : low;
 
                     // (f0, s0, f1, s1) and (f2, s2, f3, s3)
-                    var unpackedLow = Sse.UnpackLow(first, second);
-                    var unpackedHigh = Sse.UnpackHigh(first, second);
+                    var unpackedLow = VectorUtils.InterleaveLow(first, second);
+                    var unpackedHigh = VectorUtils.InterleaveHigh(first, second);
 
                     unpackedLow.StoreUnsafe(ref bufferRef, (nuint)(i << 1));
                     unpackedHigh.StoreUnsafe(ref bufferRef, (nuint)((i << 1) + Vector128<float>.Count));

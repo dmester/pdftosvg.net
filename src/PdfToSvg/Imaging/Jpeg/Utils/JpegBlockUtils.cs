@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Text;
 
 #if NET8_0_OR_GREATER
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 #endif
 
@@ -102,7 +104,7 @@ namespace PdfToSvg.Imaging.Jpeg
             row7 = Avx.Permute2x128(tt3, tt7, 0x31);
         }
 
-        public static void TransposeSse(float[] block)
+        public static void Transpose128(float[] block)
         {
             if (block.Length != 64)
             {
@@ -111,7 +113,7 @@ namespace PdfToSvg.Imaging.Jpeg
 
             ref var start = ref Unsafe.As<float, Vector128<float>>(ref MemoryMarshal.GetArrayDataReference(block));
 
-            TransposeSse(
+            Transpose128(
                 ref Unsafe.Add(ref start, 0),
                 ref Unsafe.Add(ref start, 1),
                 ref Unsafe.Add(ref start, 2),
@@ -132,7 +134,7 @@ namespace PdfToSvg.Imaging.Jpeg
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void TransposeSse(
+        public static void Transpose128(
             ref Vector128<float> row0_lo,
             ref Vector128<float> row0_hi,
             ref Vector128<float> row1_lo,
@@ -164,7 +166,7 @@ namespace PdfToSvg.Imaging.Jpeg
             var row6_lo_copy = row6_lo;
             var row7_lo_copy = row7_lo;
 
-            Transpose4x4Sse(
+            Transpose4x4(
                 row0_lo,
                 row1_lo,
                 row2_lo,
@@ -175,7 +177,7 @@ namespace PdfToSvg.Imaging.Jpeg
                 out row3_lo
                 );
 
-            Transpose4x4Sse(
+            Transpose4x4(
                 row4_hi,
                 row5_hi,
                 row6_hi,
@@ -186,7 +188,7 @@ namespace PdfToSvg.Imaging.Jpeg
                 out row7_hi
                 );
 
-            Transpose4x4Sse(
+            Transpose4x4(
                 row0_hi,
                 row1_hi,
                 row2_hi,
@@ -197,7 +199,7 @@ namespace PdfToSvg.Imaging.Jpeg
                 out row7_lo
                 );
 
-            Transpose4x4Sse(
+            Transpose4x4(
                 row4_lo_copy,
                 row5_lo_copy,
                 row6_lo_copy,
@@ -210,29 +212,52 @@ namespace PdfToSvg.Imaging.Jpeg
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void Transpose4x4Sse(
-            in Vector128<float> input0,
-            in Vector128<float> input1,
-            in Vector128<float> input2,
-            in Vector128<float> input3,
+        private static void Transpose4x4(
+            Vector128<float> input0,
+            Vector128<float> input1,
+            Vector128<float> input2,
+            Vector128<float> input3,
             out Vector128<float> output0,
             out Vector128<float> output1,
             out Vector128<float> output2,
             out Vector128<float> output3
             )
         {
-            // Based on example here:
-            // https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#text=_MM_TRANSPOSE4_PS&ig_expand=6889
+            if (Sse.IsSupported)
+            {
+                // Based on example here:
+                // https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#text=_MM_TRANSPOSE4_PS&ig_expand=6889
 
-            var t0 = Sse.UnpackLow(input0, input1);
-            var t2 = Sse.UnpackLow(input2, input3);
-            var t1 = Sse.UnpackHigh(input0, input1);
-            var t3 = Sse.UnpackHigh(input2, input3);
+                var t0 = Sse.UnpackLow(input0, input1);
+                var t2 = Sse.UnpackLow(input2, input3);
+                var t1 = Sse.UnpackHigh(input0, input1);
+                var t3 = Sse.UnpackHigh(input2, input3);
 
-            output0 = Sse.MoveLowToHigh(t0, t2);
-            output1 = Sse.MoveHighToLow(t2, t0);
-            output2 = Sse.MoveLowToHigh(t1, t3);
-            output3 = Sse.MoveHighToLow(t3, t1);
+                output0 = Sse.MoveLowToHigh(t0, t2);
+                output1 = Sse.MoveHighToLow(t2, t0);
+                output2 = Sse.MoveLowToHigh(t1, t3);
+                output3 = Sse.MoveHighToLow(t3, t1);
+            }
+            else if (AdvSimd.Arm64.IsSupported)
+            {
+                var t0 = AdvSimd.Arm64.ZipLow(input0, input1);
+                var t2 = AdvSimd.Arm64.ZipLow(input2, input3);
+                var t1 = AdvSimd.Arm64.ZipHigh(input0, input1);
+                var t3 = AdvSimd.Arm64.ZipHigh(input2, input3);
+
+                // AsDouble is used to not separate pairs of float during the zip. No actual casting is done.
+                output0 = AdvSimd.Arm64.ZipLow(t0.AsDouble(), t2.AsDouble()).AsSingle();
+                output1 = AdvSimd.Arm64.ZipHigh(t0.AsDouble(), t2.AsDouble()).AsSingle();
+                output2 = AdvSimd.Arm64.ZipLow(t1.AsDouble(), t3.AsDouble()).AsSingle();
+                output3 = AdvSimd.Arm64.ZipHigh(t1.AsDouble(), t3.AsDouble()).AsSingle();
+            }
+            else
+            {
+                output0 = Vector128.Create(input0[0], input1[0], input2[0], input3[0]);
+                output1 = Vector128.Create(input0[1], input1[1], input2[1], input3[1]);
+                output2 = Vector128.Create(input0[2], input1[2], input2[2], input3[2]);
+                output3 = Vector128.Create(input0[3], input1[3], input2[3], input3[3]);
+            }
         }
 #endif
 
@@ -362,14 +387,14 @@ namespace PdfToSvg.Imaging.Jpeg
         {
             ref var pVector0 = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetArrayDataReference(pDestinationBlock));
 
-            Unsafe.Add(ref pVector0, 0) = Avx.ConvertToVector256Int32(row0);
-            Unsafe.Add(ref pVector0, 1) = Avx.ConvertToVector256Int32(row1);
-            Unsafe.Add(ref pVector0, 2) = Avx.ConvertToVector256Int32(row2);
-            Unsafe.Add(ref pVector0, 3) = Avx.ConvertToVector256Int32(row3);
-            Unsafe.Add(ref pVector0, 4) = Avx.ConvertToVector256Int32(row4);
-            Unsafe.Add(ref pVector0, 5) = Avx.ConvertToVector256Int32(row5);
-            Unsafe.Add(ref pVector0, 6) = Avx.ConvertToVector256Int32(row6);
-            Unsafe.Add(ref pVector0, 7) = Avx.ConvertToVector256Int32(row7);
+            Unsafe.Add(ref pVector0, 0) = VectorUtils.ConvertToInt32RoundToEven(row0);
+            Unsafe.Add(ref pVector0, 1) = VectorUtils.ConvertToInt32RoundToEven(row1);
+            Unsafe.Add(ref pVector0, 2) = VectorUtils.ConvertToInt32RoundToEven(row2);
+            Unsafe.Add(ref pVector0, 3) = VectorUtils.ConvertToInt32RoundToEven(row3);
+            Unsafe.Add(ref pVector0, 4) = VectorUtils.ConvertToInt32RoundToEven(row4);
+            Unsafe.Add(ref pVector0, 5) = VectorUtils.ConvertToInt32RoundToEven(row5);
+            Unsafe.Add(ref pVector0, 6) = VectorUtils.ConvertToInt32RoundToEven(row6);
+            Unsafe.Add(ref pVector0, 7) = VectorUtils.ConvertToInt32RoundToEven(row7);
         }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
@@ -387,22 +412,22 @@ namespace PdfToSvg.Imaging.Jpeg
         {
             ref var pVector0 = ref Unsafe.As<int, Vector128<int>>(ref MemoryMarshal.GetArrayDataReference(pDestinationBlock));
 
-            Unsafe.Add(ref pVector0, 0) = Sse2.ConvertToVector128Int32(row0_lo);
-            Unsafe.Add(ref pVector0, 1) = Sse2.ConvertToVector128Int32(row0_hi);
-            Unsafe.Add(ref pVector0, 2) = Sse2.ConvertToVector128Int32(row1_lo);
-            Unsafe.Add(ref pVector0, 3) = Sse2.ConvertToVector128Int32(row1_hi);
-            Unsafe.Add(ref pVector0, 4) = Sse2.ConvertToVector128Int32(row2_lo);
-            Unsafe.Add(ref pVector0, 5) = Sse2.ConvertToVector128Int32(row2_hi);
-            Unsafe.Add(ref pVector0, 6) = Sse2.ConvertToVector128Int32(row3_lo);
-            Unsafe.Add(ref pVector0, 7) = Sse2.ConvertToVector128Int32(row3_hi);
-            Unsafe.Add(ref pVector0, 8) = Sse2.ConvertToVector128Int32(row4_lo);
-            Unsafe.Add(ref pVector0, 9) = Sse2.ConvertToVector128Int32(row4_hi);
-            Unsafe.Add(ref pVector0, 10) = Sse2.ConvertToVector128Int32(row5_lo);
-            Unsafe.Add(ref pVector0, 11) = Sse2.ConvertToVector128Int32(row5_hi);
-            Unsafe.Add(ref pVector0, 12) = Sse2.ConvertToVector128Int32(row6_lo);
-            Unsafe.Add(ref pVector0, 13) = Sse2.ConvertToVector128Int32(row6_hi);
-            Unsafe.Add(ref pVector0, 14) = Sse2.ConvertToVector128Int32(row7_lo);
-            Unsafe.Add(ref pVector0, 15) = Sse2.ConvertToVector128Int32(row7_hi);
+            Unsafe.Add(ref pVector0, 0) = VectorUtils.ConvertToInt32RoundToEven(row0_lo);
+            Unsafe.Add(ref pVector0, 1) = VectorUtils.ConvertToInt32RoundToEven(row0_hi);
+            Unsafe.Add(ref pVector0, 2) = VectorUtils.ConvertToInt32RoundToEven(row1_lo);
+            Unsafe.Add(ref pVector0, 3) = VectorUtils.ConvertToInt32RoundToEven(row1_hi);
+            Unsafe.Add(ref pVector0, 4) = VectorUtils.ConvertToInt32RoundToEven(row2_lo);
+            Unsafe.Add(ref pVector0, 5) = VectorUtils.ConvertToInt32RoundToEven(row2_hi);
+            Unsafe.Add(ref pVector0, 6) = VectorUtils.ConvertToInt32RoundToEven(row3_lo);
+            Unsafe.Add(ref pVector0, 7) = VectorUtils.ConvertToInt32RoundToEven(row3_hi);
+            Unsafe.Add(ref pVector0, 8) = VectorUtils.ConvertToInt32RoundToEven(row4_lo);
+            Unsafe.Add(ref pVector0, 9) = VectorUtils.ConvertToInt32RoundToEven(row4_hi);
+            Unsafe.Add(ref pVector0, 10) = VectorUtils.ConvertToInt32RoundToEven(row5_lo);
+            Unsafe.Add(ref pVector0, 11) = VectorUtils.ConvertToInt32RoundToEven(row5_hi);
+            Unsafe.Add(ref pVector0, 12) = VectorUtils.ConvertToInt32RoundToEven(row6_lo);
+            Unsafe.Add(ref pVector0, 13) = VectorUtils.ConvertToInt32RoundToEven(row6_hi);
+            Unsafe.Add(ref pVector0, 14) = VectorUtils.ConvertToInt32RoundToEven(row7_lo);
+            Unsafe.Add(ref pVector0, 15) = VectorUtils.ConvertToInt32RoundToEven(row7_hi);
         }
 #endif
 

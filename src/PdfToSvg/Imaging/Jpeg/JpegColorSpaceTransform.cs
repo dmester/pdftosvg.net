@@ -171,9 +171,9 @@ namespace PdfToSvg.Imaging.Jpeg
                 return blockCount;
             }
 
-            if (Vector128.IsHardwareAccelerated && Sse2.IsSupported)
+            if (Vector128.IsHardwareAccelerated)
             {
-                // SSE2
+                // Vector128
                 var rowsPerBlock = BlockSize / Vector128<float>.Count;
 
                 var outputMin = Vector128<float>.Zero;
@@ -303,9 +303,9 @@ namespace PdfToSvg.Imaging.Jpeg
                 return outputBlockIndex;
             }
 
-            if (Vector128.IsHardwareAccelerated && Sse2.IsSupported)
+            if (Vector128.IsHardwareAccelerated)
             {
-                // SSE2
+                // Vector128
                 var rowsPerBlock = BlockSize / Vector128<float>.Count;
 
                 var outputMin = Vector128<float>.Zero;
@@ -483,9 +483,9 @@ namespace PdfToSvg.Imaging.Jpeg
                 return outputBlockIndex;
             }
 
-            if (Vector128.IsHardwareAccelerated && Sse2.IsSupported)
+            if (Vector128.IsHardwareAccelerated)
             {
-                // SSE2
+                // Vector128
                 var rowsPerBlock = BlockSize / Vector128<float>.Count;
 
                 var outputMin = Vector128<float>.Zero;

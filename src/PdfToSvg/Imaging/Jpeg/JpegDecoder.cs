@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 
 #if NET8_0_OR_GREATER
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 #endif
 
@@ -400,9 +401,9 @@ namespace PdfToSvg.Imaging.Jpeg
                     Unsafe.Add(ref pDecodedBlock, 7) = fRow7;
                 }
             }
-            else if (Vector128.IsHardwareAccelerated && Sse2.IsSupported)
+            else if (Vector128.IsHardwareAccelerated && (Sse2.IsSupported || AdvSimd.Arm64.IsSupported))
             {
-                // SSE2
+                // SSE2 / AdvSimd
                 ref var pDecodedBlock = ref Unsafe.As<float, Vector128<float>>(ref pOutput);
 
                 if (zeroAc)
@@ -449,7 +450,7 @@ namespace PdfToSvg.Imaging.Jpeg
                         ref row7_lo, ref row7_hi
                         );
 
-                    JpegDct.InverseSse(
+                    JpegDct.Inverse128(
                         ref row0_lo, ref row0_hi,
                         ref row1_lo, ref row1_hi,
                         ref row2_lo, ref row2_hi,

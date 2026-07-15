@@ -60,6 +60,31 @@ namespace PdfToSvg.Common
             return result;
         }
 
+        public static T[] Concat<T>(List<ArraySegment<T>> segments)
+        {
+            var totalLength = 0;
+
+            for (var i = 0; i < segments.Count; i++)
+            {
+                totalLength += segments[i].Count;
+            }
+
+            var result = new T[totalLength];
+            var cursor = 0;
+
+            for (var i = 0; i < segments.Count; i++)
+            {
+                var segment = segments[i];
+                if (segment.Count > 0 && segment.Array != null)
+                {
+                    Array.Copy(segment.Array, segment.Offset, result, cursor, segment.Count);
+                    cursor += segment.Count;
+                }
+            }
+
+            return result;
+        }
+
         public static bool StartsWith(byte[] data, int offset, int count, byte[] lookFor)
         {
             if (lookFor.Length > count)
@@ -78,6 +103,21 @@ namespace PdfToSvg.Common
             return true;
         }
 
+#if (NETFRAMEWORK || NETSTANDARD)
+        public static void Fill<T>(T[] array, T value) where T : struct
+        {
+            for (var i = 0; i < array.Length; i++)
+            {
+                array[i] = value;
+            }
+        }
+#else
+        public static void Fill<T>(T[] array, T value) where T : struct
+        {
+            new Span<T>(array).Fill(value);
+        }
+#endif
+
 #if (NET40 || NET45)
         private class EmptyArrayHolder<T>
         {
@@ -92,6 +132,23 @@ namespace PdfToSvg.Common
         public static T[] Empty<T>()
         {
             return Array.Empty<T>();
+        }
+#endif
+
+#if (NETFRAMEWORK || NETSTANDARD)
+        private class EmptyArraySegmentHolder<T>
+        {
+            public static readonly ArraySegment<T> Empty = new ArraySegment<T>(new T[0]);
+        }
+
+        public static ArraySegment<T> EmptySegment<T>()
+        {
+            return EmptyArraySegmentHolder<T>.Empty;
+        }
+#else
+        public static ArraySegment<T> EmptySegment<T>()
+        {
+            return ArraySegment<T>.Empty;
         }
 #endif
     }

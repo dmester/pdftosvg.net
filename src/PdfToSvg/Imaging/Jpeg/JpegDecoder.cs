@@ -32,7 +32,7 @@ namespace PdfToSvg.Imaging.Jpeg
         private JpegComponent[] frameComponents = ArrayUtils.Empty<JpegComponent>();
         private JpegComponent[] scanComponents = ArrayUtils.Empty<JpegComponent>();
 
-        private ArraySegment<byte> scanData = new ArraySegment<byte>();
+        private ArraySegment<byte> scanData = ArrayUtils.EmptySegment<byte>();
 
         private int restartInterval;
 

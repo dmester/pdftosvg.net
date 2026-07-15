@@ -14,7 +14,7 @@ namespace PdfToSvg.Tests.Common
     public class ArrayUtilsTests
     {
         [Test]
-        public void Concat()
+        public void Concat_Array()
         {
             var actual = ArrayUtils.Concat<byte>(
                 null,
@@ -24,6 +24,23 @@ namespace PdfToSvg.Tests.Common
                 new byte[] { 6, 7, 8, 9 },
                 new byte[0],
                 null);
+
+            Assert.AreEqual(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, actual);
+        }
+
+        [Test]
+        public void Concat_ArraySegment()
+        {
+            var actual = ArrayUtils.Concat<byte>(new List<ArraySegment<byte>>
+            {
+                default(ArraySegment<byte>),
+                new ArraySegment<byte>(new byte[0]),
+                new ArraySegment<byte>(new byte[] { 1, 2, 3, 4, 5 }),
+                default(ArraySegment<byte>),
+                new ArraySegment<byte>(new byte[] { 4, 5, 6, 7 ,8, 9, 10 }, 2, 4),
+                new ArraySegment<byte>(new byte[0]),
+                default(ArraySegment<byte>)
+            });
 
             Assert.AreEqual(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, actual);
         }

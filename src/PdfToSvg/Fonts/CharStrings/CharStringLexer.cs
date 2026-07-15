@@ -27,7 +27,7 @@ namespace PdfToSvg.Fonts.CharStrings
 
         public static CharStringLexer EmptyLexer { get; } = new CharStringLexer(
             CharStringType.Type2,
-            new ArraySegment<byte>(ArrayUtils.Empty<byte>(), 0, 0));
+            ArrayUtils.EmptySegment<byte>());
 
         public int Position => cursor;
 

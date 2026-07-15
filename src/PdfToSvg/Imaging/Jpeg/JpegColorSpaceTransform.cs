@@ -130,6 +130,103 @@ namespace PdfToSvg.Imaging.Jpeg
         }
 
         /// <summary>
+        /// Converts de-interleaved RGB blocks to de-interleaved YCbCr blocks in place. Each group of 3 consecutive
+        /// input blocks (R, G, B) is replaced by 3 output blocks (Y', Cb', Cr'). Returns the number of output blocks.
+        /// </summary>
+        public static int RgbBlocksToYcc(float[] blocks, int blockCount)
+        {
+            const int RgbComponents = 3;
+
+#if NET8_0_OR_GREATER
+            if (Vector256.IsHardwareAccelerated && Avx2.IsSupported)
+            {
+                // AVX2
+                var rowsPerBlock = BlockSize / Vector256<float>.Count;
+
+                var outputMin = Vector256<float>.Zero;
+                var outputMax = Vector256.Create(255f);
+
+                ref var pData = ref Unsafe.As<float, Vector256<float>>(ref MemoryMarshal.GetArrayDataReference(blocks));
+
+                for (var blockIndex = 0; blockIndex < blockCount; blockIndex += RgbComponents)
+                {
+                    ref var pRgbR = ref Unsafe.Add(ref pData, rowsPerBlock * blockIndex);
+                    ref var pRgbG = ref Unsafe.Add(ref pRgbR, rowsPerBlock);
+                    ref var pRgbB = ref Unsafe.Add(ref pRgbR, rowsPerBlock * 2);
+
+                    for (var row = 0; row < rowsPerBlock; row++)
+                    {
+                        var rgbR = Unsafe.Add(ref pRgbR, row);
+                        var rgbG = Unsafe.Add(ref pRgbG, row);
+                        var rgbB = Unsafe.Add(ref pRgbB, row);
+
+                        RgbToYcc(rgbR, rgbG, rgbB, out var yccY, out var yccCb, out var yccCr);
+
+                        Unsafe.Add(ref pRgbR, row) = VectorUtils.ClampNative(yccY, outputMin, outputMax);
+                        Unsafe.Add(ref pRgbG, row) = VectorUtils.ClampNative(yccCb, outputMin, outputMax);
+                        Unsafe.Add(ref pRgbB, row) = VectorUtils.ClampNative(yccCr, outputMin, outputMax);
+                    }
+                }
+
+                return blockCount;
+            }
+
+            if (Vector128.IsHardwareAccelerated && Sse2.IsSupported)
+            {
+                // SSE2
+                var rowsPerBlock = BlockSize / Vector128<float>.Count;
+
+                var outputMin = Vector128<float>.Zero;
+                var outputMax = Vector128.Create(255f);
+
+                ref var pData = ref Unsafe.As<float, Vector128<float>>(ref MemoryMarshal.GetArrayDataReference(blocks));
+
+                for (var blockIndex = 0; blockIndex < blockCount; blockIndex += RgbComponents)
+                {
+                    ref var pRgbR = ref Unsafe.Add(ref pData, rowsPerBlock * blockIndex);
+                    ref var pRgbG = ref Unsafe.Add(ref pRgbR, rowsPerBlock);
+                    ref var pRgbB = ref Unsafe.Add(ref pRgbR, rowsPerBlock * 2);
+
+                    for (var row = 0; row < rowsPerBlock; row++)
+                    {
+                        var rgbR = Unsafe.Add(ref pRgbR, row);
+                        var rgbG = Unsafe.Add(ref pRgbG, row);
+                        var rgbB = Unsafe.Add(ref pRgbB, row);
+
+                        RgbToYcc(rgbR, rgbG, rgbB, out var yccY, out var yccCb, out var yccCr);
+
+                        Unsafe.Add(ref pRgbR, row) = VectorUtils.ClampNative(yccY, outputMin, outputMax);
+                        Unsafe.Add(ref pRgbG, row) = VectorUtils.ClampNative(yccCb, outputMin, outputMax);
+                        Unsafe.Add(ref pRgbB, row) = VectorUtils.ClampNative(yccCr, outputMin, outputMax);
+                    }
+                }
+
+                return blockCount;
+            }
+#endif
+
+            // Scalar
+            for (var blockIndex = 0; blockIndex < blockCount; blockIndex += RgbComponents)
+            {
+                var rBase = blockIndex * BlockSize;
+                var gBase = (blockIndex + 1) * BlockSize;
+                var bBase = (blockIndex + 2) * BlockSize;
+
+                for (var i = 0; i < BlockSize; i++)
+                {
+                    RgbToYcc(blocks[rBase + i], blocks[gBase + i], blocks[bBase + i],
+                        out var yccY, out var yccCb, out var yccCr);
+
+                    blocks[rBase + i] = ClampSample(yccY);
+                    blocks[gBase + i] = ClampSample(yccCb);
+                    blocks[bBase + i] = ClampSample(yccCr);
+                }
+            }
+
+            return blockCount;
+        }
+
+        /// <summary>
         /// Converts de-interleaved CMYK blocks to de-interleaved YCbCr blocks in place. Each group of 4 consecutive
         /// input blocks (C, M, Y, K) is replaced by 3 output blocks (Y', Cb', Cr'). This is safe to do in place, since
         /// the 3 output blocks per MCU never extend beyond the 4 input blocks. Returns the number of output blocks.

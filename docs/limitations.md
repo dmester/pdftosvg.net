@@ -11,7 +11,6 @@ progressive CMYK or YCCK images.
 
 The following image formats are not supported:
 
-* JPEG 2000
 * Progressive CMYK or YCCK JPEG
 
 ## Color spaces

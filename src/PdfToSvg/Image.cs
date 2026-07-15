@@ -65,12 +65,12 @@ namespace PdfToSvg
         ///     <item>image/jpeg</item>
         /// </list>
         /// </remarks>
-        public string ContentType { get; }
+        public string ContentType { get; protected set; }
 
         /// <summary>
         /// Recommended file name extension (including leading ".") for this image.
         /// </summary>
-        public string Extension { get; }
+        public string Extension { get; protected set; }
 
         /// <summary>
         /// Gets the width of the image in pixels as specified in the PDF metadata.

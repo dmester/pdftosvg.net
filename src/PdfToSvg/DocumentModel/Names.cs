@@ -162,6 +162,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName Width { get; } = new PdfName("Width");
         public static PdfName Height { get; } = new PdfName("Height");
         public static PdfName SMask { get; } = new PdfName("SMask");
+        public static PdfName SMaskInData { get; } = new PdfName("SMaskInData");
         public static PdfName Mask { get; } = new PdfName("Mask");
         public static PdfName ImageMask { get; } = new PdfName("ImageMask");
         public static PdfName Group { get; } = new PdfName("Group");
@@ -193,6 +194,7 @@ namespace PdfToSvg.DocumentModel
         public static PdfName CCITTFaxDecode { get; } = new PdfName("CCITTFaxDecode");
         public static PdfName RunLengthDecode { get; } = new PdfName("RunLengthDecode");
         public static PdfName JBIG2Decode { get; } = new PdfName("JBIG2Decode");
+        public static PdfName JPXDecode { get; } = new PdfName("JPXDecode");
 
         public static PdfName DecodeParms { get; } = new PdfName("DecodeParms");
         public static PdfName EarlyChange { get; } = new PdfName("EarlyChange");

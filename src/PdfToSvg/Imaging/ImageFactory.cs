@@ -51,6 +51,16 @@ namespace PdfToSvg.Imaging
             }
 
             var lastFilter = stream.Filters.LastOrDefault();
+
+            // Color space is required, except for JPXDecode encoded images (ISO 32000-2:2020 Table 87)
+            if (colorSpace is UnsupportedColorSpace)
+            {
+                if (lastFilter?.Filter != Filter.JpxDecode)
+                {
+                    return null;
+                }
+            }
+
             if (lastFilter != null)
             {
                 if (lastFilter.Filter == Filter.DctDecode)
@@ -71,6 +81,11 @@ namespace PdfToSvg.Imaging
                 if (lastFilter.Filter == Filter.Jbig2Decode)
                 {
                     return new Jbig2Image(imageDictionary, lastFilter.DecodeParms, colorSpace);
+                }
+
+                if (lastFilter.Filter == Filter.JpxDecode)
+                {
+                    return new JpxImage(imageDictionary, colorSpace);
                 }
             }
 

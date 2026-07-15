@@ -9,7 +9,7 @@
 
   <!-- Code -->
   <PropertyGroup>
-    <LangVersion>13.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   

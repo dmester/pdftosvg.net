@@ -22,6 +22,14 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
+    - name: Get JPEG 2000 conformance test files
+      if: vars.ITU_T803_CONFORMANCE_REPO != ''
+      uses: actions/checkout@v6
+      with:
+        repository: ${{ vars.ITU_T803_CONFORMANCE_REPO }}
+        token: ${{ secrets.ITU_T803_CONFORMANCE_TOKEN }}
+        path: tests/TestFiles/T.803-JPEG2000-conformance
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:

@@ -50,6 +50,37 @@ namespace PdfToSvg.Tests.Images.Jpeg
         }
 
         [Test]
+        public void RgbBlocksToYcc_ConvertsDeinterleavedBlocks()
+        {
+            var blocks = CreateVariedBlocks(componentCount: 3, mcuCount: 2, seed: 3);
+            var input = (float[])blocks.Clone();
+
+            var outputBlocks = JpegColorSpaceTransform.RgbBlocksToYcc(blocks, blockCount: 3 * 2);
+
+            // The conversion is 3 blocks to 3 blocks in place.
+            Assert.AreEqual(3 * 2, outputBlocks);
+
+            AssertRgbMatchesReference(input, blocks, mcuCount: 2);
+        }
+
+        [Test]
+        public void RgbBlocksToYcc_HandlesSolidBlocks()
+        {
+            // One MCU where every block is a single (but different) value, exercising the solid-block fast path.
+            var blocks = new float[3 * BlockSize];
+            FillBlock(blocks, 0, 200); // R
+            FillBlock(blocks, 1, 30);  // G
+            FillBlock(blocks, 2, 90);  // B
+
+            var input = (float[])blocks.Clone();
+
+            var outputBlocks = JpegColorSpaceTransform.RgbBlocksToYcc(blocks, blockCount: 3);
+
+            Assert.AreEqual(3, outputBlocks);
+            AssertRgbMatchesReference(input, blocks, mcuCount: 1);
+        }
+
+        [Test]
         public void YcckBlocksToYcc_ConvertsDeinterleavedBlocks()
         {
             var blocks = CreateVariedBlocks(componentCount: 4, mcuCount: 2, seed: 2);
@@ -83,6 +114,26 @@ namespace PdfToSvg.Tests.Images.Jpeg
                     AssertClose(expectedY, output[yccYBase + i], mcu, i, "Y");
                     AssertClose(expectedCb, output[yccCbBase + i], mcu, i, "Cb");
                     AssertClose(expectedCr, output[yccCrBase + i], mcu, i, "Cr");
+                }
+            }
+        }
+
+        private static void AssertRgbMatchesReference(float[] input, float[] output, int mcuCount)
+        {
+            for (var mcu = 0; mcu < mcuCount; mcu++)
+            {
+                var rBase = (mcu * 3 + 0) * BlockSize;
+                var gBase = (mcu * 3 + 1) * BlockSize;
+                var bBase = (mcu * 3 + 2) * BlockSize;
+
+                for (var i = 0; i < BlockSize; i++)
+                {
+                    JpegColorSpaceTransform.RgbToYcc(input[rBase + i], input[gBase + i], input[bBase + i],
+                        out var expectedY, out var expectedCb, out var expectedCr);
+
+                    AssertClose(MathUtils.Clamp(expectedY, 0f, 255f), output[rBase + i], mcu, i, "Y");
+                    AssertClose(MathUtils.Clamp(expectedCb, 0f, 255f), output[gBase + i], mcu, i, "Cb");
+                    AssertClose(MathUtils.Clamp(expectedCr, 0f, 255f), output[bBase + i], mcu, i, "Cr");
                 }
             }
         }

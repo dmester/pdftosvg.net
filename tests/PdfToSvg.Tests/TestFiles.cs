@@ -71,6 +71,8 @@ namespace PdfToSvg.Tests
 
         public static string InputDirectory => Path.Combine(TestFilesPath, OwnTestFilesDirName, InputDirName);
 
+        public static string Jpeg2000ConformanceDirectory => Path.Combine(TestFilesPath, "T.803-JPEG2000-conformance");
+
         public static string ExternalFontsDirectory => Path.Combine(TestFilesPath, OwnTestFilesDirName, ExternalFontsDirName);
 
         public static string ExpectedDirectory => Path.Combine(TestFilesPath, OwnTestFilesDirName, ExpectedDirName);

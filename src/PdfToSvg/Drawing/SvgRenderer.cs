@@ -801,11 +801,6 @@ namespace PdfToSvg.Drawing
                 else
                 {
                     colorSpace = GetColorSpace(imageObject[Names.ColorSpace]);
-
-                    if (colorSpace is UnsupportedColorSpace)
-                    {
-                        return null;
-                    }
                 }
 
                 var image = ImageFactory.Create(imageObject, colorSpace);

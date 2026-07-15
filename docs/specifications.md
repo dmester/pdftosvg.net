@@ -59,6 +59,17 @@ ITU-T Rec. T.88 - ISO/IEC 14492 – Lossy/lossless coding of bi-level images
 
 https://www.itu.int/ITU-T/recommendations/rec.aspx?rec=13688&lang=en
 
+### JPEG 2000
+T.800 : Information technology - JPEG 2000 image coding system: Core coding system
+
+The latest edition is behind paywall, but the 2019 edition is still free.
+
+https://www.itu.int/rec/T-REC-T.800/
+
+Conformance test suite:
+
+https://www.itu.int/rec/T-REC-T.803/
+
 
 ## Fonts
 

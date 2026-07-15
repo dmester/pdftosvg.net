@@ -22,6 +22,7 @@ namespace PdfToSvg.Filters
         public static Filter LzwDecode { get; } = new LzwDecodeFilter();
         public static Filter RunLengthDecode { get; } = new RunLengthDecodeFilter();
         public static Filter Jbig2Decode { get; } = new DctDecodeFilter();
+        public static Filter JpxDecode { get; } = new JpxDecodeFilter();
         public static Filter CcittFaxDecode { get; } = new CcittFaxDecodeFilter();
 
         private static readonly Dictionary<PdfName, Filter> filters = new Dictionary<PdfName, Filter>
@@ -42,6 +43,7 @@ namespace PdfToSvg.Filters
             { Names.RunLengthDecode, RunLengthDecode },
             { AbbreviatedNames.RL, RunLengthDecode },
             { Names.JBIG2Decode, Jbig2Decode },
+            { Names.JPXDecode, JpxDecode },
         };
 
         public abstract Stream Decode(Stream encodedStream, PdfDictionary? decodeParms);

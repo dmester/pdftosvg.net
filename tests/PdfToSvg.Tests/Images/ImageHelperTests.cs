@@ -124,6 +124,25 @@ namespace PdfToSvg.Tests.Images
         }
 
         [Test]
+        public void GetDecodeArray_ShouldBeIgnoredForJpxIfColorSpaceIsMissing()
+        {
+            var imageDictionary = new PdfDictionary
+            {
+                { Names.BitsPerComponent, 8 },
+                { Names.Filter, Names.JPXDecode },
+                { Names.Decode, new object[] { 0, 1, 1, 0, 0, 1 } },
+            };
+            imageDictionary.MakeIndirectObject(default, new PdfMemoryStream(imageDictionary, [], 0));
+
+            var decodeArray = ImageHelper.GetDecodeArray(imageDictionary, RgbColorSpace);
+
+            Assert.AreEqual(3, decodeArray.Count);
+            AssertRange(decodeArray, 0, 0f, 1f);
+            AssertRange(decodeArray, 1, 0f, 1f);
+            AssertRange(decodeArray, 2, 0f, 1f);
+        }
+
+        [Test]
         public void HasCustomDecodeArray_MissingReturnsFalse()
         {
             var imageDictionary = new PdfDictionary { { Names.BitsPerComponent, 8 } };

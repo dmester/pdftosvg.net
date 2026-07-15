@@ -22,6 +22,24 @@ namespace PdfToSvg
             Array.Copy(segment.Array!, segment.Offset, array, 0, segment.Count);
             return array;
         }
+
+        public static void CopyTo<T>(this ArraySegment<T> segment, T[] destination)
+        {
+            if (segment.Array == null)
+            {
+                throw new InvalidOperationException();
+            }
+            Array.Copy(segment.Array, segment.Offset, destination, 0, segment.Count);
+        }
+
+        public static void CopyTo<T>(this ArraySegment<T> segment, T[] destination, int destinationIndex)
+        {
+            if (segment.Array == null)
+            {
+                throw new InvalidOperationException();
+            }
+            Array.Copy(segment.Array, segment.Offset, destination, destinationIndex, segment.Count);
+        }
     }
 }
 #endif

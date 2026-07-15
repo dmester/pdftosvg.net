@@ -4,6 +4,7 @@
 
 using PdfToSvg.ColorSpaces;
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Filters;
 using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
@@ -19,18 +20,24 @@ namespace PdfToSvg.Imaging
     {
         public static int GetBitsPerComponent(PdfDictionary imageDictionary)
         {
-            var isStencilMask = imageDictionary.GetValueOrDefault(Names.ImageMask, false);
+            const int DefaultBitsPerComponent = 8;
 
+            var isStencilMask = imageDictionary.GetValueOrDefault(Names.ImageMask, false);
             if (isStencilMask)
             {
                 // ISO 32000-2:2020 section 8.9.6.2
                 // For stencil masks, BitsPerComponent is always 1
                 return 1;
             }
-            else
+
+            if (IsJpxImage(imageDictionary))
             {
-                return imageDictionary.GetValueOrDefault(Names.BitsPerComponent, 8);
+                // ISO 32000-2:2020 table 87
+                // BitsPerComponent shall be ignored for JPXDecode images
+                return DefaultBitsPerComponent;
             }
+
+            return imageDictionary.GetValueOrDefault(Names.BitsPerComponent, DefaultBitsPerComponent);
         }
 
         public static bool HasCustomDecodeArray(PdfDictionary imageDictionary, ColorSpace colorSpace)
@@ -53,7 +60,15 @@ namespace PdfToSvg.Imaging
 
             var bitsPerComponent = GetBitsPerComponent(imageDictionary);
 
-            if (imageDictionary.TryGetArray<double>(Names.Decode, out var decodeValues))
+            if (imageDictionary.TryGetArray<double>(Names.Decode, out var decodeValues) &&
+
+                // ISO 32000-2:2020 table 87:
+                // Decode array should be ignored for JPX images if the color space is absent and its not a image mask
+                !(
+                    IsJpxImage(imageDictionary) &&
+                    !imageDictionary.ContainsKey(Names.ColorSpace) &&
+                    !imageDictionary.GetValueOrDefault(Names.ImageMask, false)
+                ))
             {
                 var expectedLength = colorSpace.ComponentsPerSample * 2;
 
@@ -101,6 +116,11 @@ namespace PdfToSvg.Imaging
             }
 
             return result;
+        }
+
+        private static bool IsJpxImage(PdfDictionary imageDictionary)
+        {
+            return imageDictionary.Stream?.Filters.LastOrDefault()?.Filter == Filter.JpxDecode;
         }
 
         private static Stream GetImageStream(PdfStream imageDictionaryStream, CancellationToken cancellationToken)

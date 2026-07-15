@@ -19,5 +19,27 @@ namespace PdfToSvg.Tests.Shims
             var array = segment.ToArray();
             Assert.AreEqual(new[] { 2, 3, 4 }, array);
         }
+
+        [Test]
+        public void CopyTo_ArrayIndex()
+        {
+            var segment = new ArraySegment<int>(new[] { 1, 2, 3, 4, 5 }, 1, 3);
+            var destination = new int[7];
+
+            segment.CopyTo(destination, 2);
+
+            Assert.AreEqual(new[] { 0, 0, 2, 3, 4, 0, 0 }, destination);
+        }
+
+        [Test]
+        public void CopyTo_Array()
+        {
+            var segment = new ArraySegment<int>(new[] { 1, 2, 3, 4, 5 }, 1, 3);
+            var destination = new int[7];
+
+            segment.CopyTo(destination);
+
+            Assert.AreEqual(new[] { 2, 3, 4, 0, 0, 0, 0 }, destination);
+        }
     }
 }

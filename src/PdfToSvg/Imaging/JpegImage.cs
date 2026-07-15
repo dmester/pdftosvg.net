@@ -188,7 +188,7 @@ namespace PdfToSvg.Imaging
         private byte[] FastTranscode(JpegDecoder decoder, JpegColorSpace sourceColorSpace, CancellationToken cancellationToken)
         {
             const int BlockSize = 8 * 8;
-            const int BlockBatchCount = 1024;
+            const int BlockBatchCount = 256;
 
             var encoder = new JpegEncoder
             {

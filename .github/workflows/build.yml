@@ -17,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ 'ubuntu-22.04', 'windows-latest' ]
+        os: [ 'ubuntu-22.04', 'ubuntu-22.04-arm', 'windows-latest' ]
 
     steps:
     - uses: actions/checkout@v6
@@ -47,7 +47,12 @@ jobs:
       run: dotnet build --no-restore -c Release
 
     - name: Test
+      if: matrix.os != 'ubuntu-22.04-arm'
       run: dotnet test tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj --no-build -c Release --verbosity normal --collect "Code Coverage;Format=cobertura" --results-directory TestResults
+
+    - name: Test (.NET 8 ARM)
+      if: matrix.os == 'ubuntu-22.04-arm'
+      run: dotnet test tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj --no-build -c Release -f net8.0 --verbosity normal --collect "Code Coverage;Format=cobertura" --results-directory TestResults
 
     - name: Test (scalar)
       run: dotnet test tests/PdfToSvg.Tests.Scalar/PdfToSvg.Tests.Scalar.csproj --no-build -c Release --verbosity normal --collect "Code Coverage;Format=cobertura" --results-directory TestResults

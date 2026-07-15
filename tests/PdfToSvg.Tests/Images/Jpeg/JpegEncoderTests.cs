@@ -10,10 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-#if NET8_0_OR_GREATER
-using System.Runtime.Intrinsics.X86;
-#endif
-
 namespace PdfToSvg.Tests.Images.Jpeg
 {
     [Parallelizable(ParallelScope.Children)]
@@ -104,17 +100,6 @@ namespace PdfToSvg.Tests.Images.Jpeg
 
         private void Encode(string filename, Action<JpegEncoder> setup)
         {
-#if NET8_0_OR_GREATER
-            if (Avx2.IsSupported)
-            {
-                filename = "avx2-" + filename;
-            }
-            else if (Sse2.IsSupported)
-            {
-                filename = "sse2-" + filename;
-            }
-#endif
-
             var testData = new JpegTestData();
             testData.Load(Path.Combine(TestFiles.InputDirectory, "jpegsamples-ycc.raw"));
 

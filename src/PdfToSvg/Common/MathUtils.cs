@@ -100,16 +100,6 @@ namespace PdfToSvg.Common
             return (bits + 7) >> 3;
         }
 
-        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        public static int RoundToInt(float value)
-        {
-#if NET5_0_OR_GREATER
-            return (int)MathF.Round(value);
-#else
-            return (int)Math.Round(value);
-#endif
-        }
-
         public static int ModBE(byte[] dividend, byte divisor)
         {
             // Adapted from https://stackoverflow.com/a/10441333

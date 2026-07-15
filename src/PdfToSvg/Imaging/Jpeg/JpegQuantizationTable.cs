@@ -130,7 +130,7 @@ namespace PdfToSvg.Imaging.Jpeg
 
             for (var i = 0; i < block.Length; i++)
             {
-                block[i] = MathUtils.RoundToInt(block[i] * quantizerMultipliers[i]);
+                block[i] = (int)MathF.Round(block[i] * quantizerMultipliers[i]);
             }
         }
 
@@ -141,7 +141,7 @@ namespace PdfToSvg.Imaging.Jpeg
             for (var i = 0; i < source.Length; i++)
             {
                 // ITU T.81 section A.3.4 says we should round to nearest integer:
-                destination[i] = MathUtils.RoundToInt(source[i] * multipliers[i]);
+                destination[i] = (int)MathF.Round(source[i] * multipliers[i]);
             }
         }
 

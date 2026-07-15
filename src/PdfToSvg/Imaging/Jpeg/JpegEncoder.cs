@@ -443,22 +443,178 @@ namespace PdfToSvg.Imaging.Jpeg
             WriteMarker(JpegMarkerCode.EOI);
         }
 
-        public void WriteBlocks(float[] sourceBlocks, int blockCount)
+#if NET8_0_OR_GREATER
+        private void WriteBlocksUnsafeAvx2(ref Vector256<float> blocks, int blockCount)
         {
-            if (sourceBlocks == null)
+            if (!Avx2.IsSupported)
             {
-                throw new ArgumentNullException(nameof(sourceBlocks));
-            }
-            if (blockCount < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockCount), "Block count cannot be negative");
-            }
-            if (blockCount * (BlockSize * BlockSize) > sourceBlocks.Length)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockCount),
-                    "The source block buffer does not contain enough data for " + blockCount + "blocks");
+                throw new PlatformNotSupportedException("WriteBlocksAvx2 must be called in a Avx2.IsSupported scope");
             }
 
+            var imageDataWriter = this.imageDataWriter;
+            if (imageDataWriter == null)
+            {
+                throw new InvalidOperationException(
+                    "Cannot write data before " + nameof(WriteMetadata) + " has been called.");
+            }
+
+            var destBlock = reusableIntBlock;
+
+            for (var blockIndex = 0; blockIndex < blockCount; blockIndex++)
+            {
+                blockEnumerator.MoveNext();
+
+                if (blockEnumerator.ShouldRestart)
+                {
+                    imageDataWriter.WriteRestartMarker();
+                    components.Restart();
+                }
+
+                var component = blockEnumerator.Component;
+                ref var pSourceBlock = ref Unsafe.Add(ref blocks, blockIndex * BlockSize);
+
+                if (JpegBlockUtils.IsSolidBlock256Unsafe(ref pSourceBlock))
+                {
+                    WriteSolidDataUnit(imageDataWriter, component, pSourceBlock[0]);
+                    continue;
+                }
+                
+                var row0 = pSourceBlock;
+                var row1 = Unsafe.Add(ref pSourceBlock, 1);
+                var row2 = Unsafe.Add(ref pSourceBlock, 2);
+                var row3 = Unsafe.Add(ref pSourceBlock, 3);
+                var row4 = Unsafe.Add(ref pSourceBlock, 4);
+                var row5 = Unsafe.Add(ref pSourceBlock, 5);
+                var row6 = Unsafe.Add(ref pSourceBlock, 6);
+                var row7 = Unsafe.Add(ref pSourceBlock, 7);
+
+                JpegDct.ForwardAvx(
+                    ref row0,
+                    ref row1,
+                    ref row2,
+                    ref row3,
+                    ref row4,
+                    ref row5,
+                    ref row6,
+                    ref row7);
+
+                component.QuantizationTable.QuantizeTransposedZigZag256(
+                    ref row0,
+                    ref row1,
+                    ref row2,
+                    ref row3,
+                    ref row4,
+                    ref row5,
+                    ref row6,
+                    ref row7);
+
+                JpegBlockUtils.FillBlock256Unsafe(
+                    destBlock,
+                    row0,
+                    row1,
+                    row2,
+                    row3,
+                    row4,
+                    row5,
+                    row6,
+                    row7);
+
+                WriteDataUnit(imageDataWriter, component, destBlock);
+            }
+        }
+
+        private void WriteBlocksUnsafeSse2(ref Vector128<float> blocks, int blockCount)
+        {
+            if (!Sse2.IsSupported)
+            {
+                throw new PlatformNotSupportedException("WriteBlocksSse2 must be called in a Sse2.IsSupported scope");
+            }
+
+            var imageDataWriter = this.imageDataWriter;
+            if (imageDataWriter == null)
+            {
+                throw new InvalidOperationException(
+                    "Cannot write data before " + nameof(WriteMetadata) + " has been called.");
+            }
+
+            var destBlock = reusableIntBlock;
+
+            for (var blockIndex = 0; blockIndex < blockCount; blockIndex++)
+            {
+                blockEnumerator.MoveNext();
+
+                if (blockEnumerator.ShouldRestart)
+                {
+                    imageDataWriter.WriteRestartMarker();
+                    components.Restart();
+                }
+
+                const int VectorsPerRow = 2;
+                var component = blockEnumerator.Component;
+                ref var pSourceBlock = ref Unsafe.Add(ref blocks, blockIndex * (BlockSize * VectorsPerRow));
+
+                if (JpegBlockUtils.IsSolidBlock128Unsafe(ref pSourceBlock))
+                {
+                    WriteSolidDataUnit(imageDataWriter, component, pSourceBlock[0]);
+                    continue;
+                }
+
+                var row0_lo = pSourceBlock;
+                var row0_hi = Unsafe.Add(ref pSourceBlock, 1);
+                var row1_lo = Unsafe.Add(ref pSourceBlock, 2);
+                var row1_hi = Unsafe.Add(ref pSourceBlock, 3);
+                var row2_lo = Unsafe.Add(ref pSourceBlock, 4);
+                var row2_hi = Unsafe.Add(ref pSourceBlock, 5);
+                var row3_lo = Unsafe.Add(ref pSourceBlock, 6);
+                var row3_hi = Unsafe.Add(ref pSourceBlock, 7);
+                var row4_lo = Unsafe.Add(ref pSourceBlock, 8);
+                var row4_hi = Unsafe.Add(ref pSourceBlock, 9);
+                var row5_lo = Unsafe.Add(ref pSourceBlock, 10);
+                var row5_hi = Unsafe.Add(ref pSourceBlock, 11);
+                var row6_lo = Unsafe.Add(ref pSourceBlock, 12);
+                var row6_hi = Unsafe.Add(ref pSourceBlock, 13);
+                var row7_lo = Unsafe.Add(ref pSourceBlock, 14);
+                var row7_hi = Unsafe.Add(ref pSourceBlock, 15);
+
+                JpegDct.ForwardSse(
+                    ref row0_lo, ref row0_hi,
+                    ref row1_lo, ref row1_hi,
+                    ref row2_lo, ref row2_hi,
+                    ref row3_lo, ref row3_hi,
+                    ref row4_lo, ref row4_hi,
+                    ref row5_lo, ref row5_hi,
+                    ref row6_lo, ref row6_hi,
+                    ref row7_lo, ref row7_hi);
+
+                component.QuantizationTable.QuantizeTransposedZigZag128(
+                    ref row0_lo, ref row0_hi,
+                    ref row1_lo, ref row1_hi,
+                    ref row2_lo, ref row2_hi,
+                    ref row3_lo, ref row3_hi,
+                    ref row4_lo, ref row4_hi,
+                    ref row5_lo, ref row5_hi,
+                    ref row6_lo, ref row6_hi,
+                    ref row7_lo, ref row7_hi);
+
+                JpegBlockUtils.FillBlock128Unsafe(
+                    destBlock,
+                    row0_lo, row0_hi,
+                    row1_lo, row1_hi,
+                    row2_lo, row2_hi,
+                    row3_lo, row3_hi,
+                    row4_lo, row4_hi,
+                    row5_lo, row5_hi,
+                    row6_lo, row6_hi,
+                    row7_lo, row7_hi);
+
+                WriteDataUnit(imageDataWriter, component, destBlock);
+            }
+        }
+
+#endif
+
+        private void WriteBlocksScalar(float[] sourceBlocks, int blockCount)
+        {
             var imageDataWriter = this.imageDataWriter;
             if (imageDataWriter == null)
             {
@@ -480,165 +636,86 @@ namespace PdfToSvg.Imaging.Jpeg
                 }
 
                 var component = blockEnumerator.Component;
-                var isSolidBlock = false;
-
                 var blockStartIndex = blockIndex * (BlockSize * BlockSize);
 
-#if NET8_0_OR_GREATER
-                if (Avx2.IsSupported)
+                if (JpegBlockUtils.IsSolidBlockScalar(sourceBlocks, blockStartIndex))
                 {
-                    // AVX2
-                    ref var pSourceBlock = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(sourceBlocks), blockStartIndex);
-                    ref var srcRow0 = ref Unsafe.As<float, Vector256<float>>(ref pSourceBlock);
-
-                    isSolidBlock = JpegBlockUtils.IsSolidBlock256Unsafe(ref pSourceBlock);
-
-                    if (!isSolidBlock)
-                    {
-                        var row0 = srcRow0;
-                        var row1 = Unsafe.Add(ref srcRow0, 1);
-                        var row2 = Unsafe.Add(ref srcRow0, 2);
-                        var row3 = Unsafe.Add(ref srcRow0, 3);
-                        var row4 = Unsafe.Add(ref srcRow0, 4);
-                        var row5 = Unsafe.Add(ref srcRow0, 5);
-                        var row6 = Unsafe.Add(ref srcRow0, 6);
-                        var row7 = Unsafe.Add(ref srcRow0, 7);
-
-                        JpegDct.ForwardAvx(
-                            ref row0,
-                            ref row1,
-                            ref row2,
-                            ref row3,
-                            ref row4,
-                            ref row5,
-                            ref row6,
-                            ref row7);
-
-                        component.QuantizationTable.QuantizeTransposedZigZag256(
-                            ref row0,
-                            ref row1,
-                            ref row2,
-                            ref row3,
-                            ref row4,
-                            ref row5,
-                            ref row6,
-                            ref row7);
-
-                        JpegBlockUtils.FillBlock256Unsafe(
-                            destBlock,
-                            row0,
-                            row1,
-                            row2,
-                            row3,
-                            row4,
-                            row5,
-                            row6,
-                            row7);
-                    }
-                }
-                else if (Sse2.IsSupported)
-                {
-                    // SSE2
-                    ref var pSourceBlock = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(sourceBlocks), blockStartIndex);
-                    ref var srcRow0 = ref Unsafe.As<float, Vector128<float>>(ref pSourceBlock);
-
-                    isSolidBlock = JpegBlockUtils.IsSolidBlock128Unsafe(ref pSourceBlock);
-
-                    if (!isSolidBlock)
-                    {
-                        var row0_lo = srcRow0;
-                        var row0_hi = Unsafe.Add(ref srcRow0, 1);
-                        var row1_lo = Unsafe.Add(ref srcRow0, 2);
-                        var row1_hi = Unsafe.Add(ref srcRow0, 3);
-                        var row2_lo = Unsafe.Add(ref srcRow0, 4);
-                        var row2_hi = Unsafe.Add(ref srcRow0, 5);
-                        var row3_lo = Unsafe.Add(ref srcRow0, 6);
-                        var row3_hi = Unsafe.Add(ref srcRow0, 7);
-                        var row4_lo = Unsafe.Add(ref srcRow0, 8);
-                        var row4_hi = Unsafe.Add(ref srcRow0, 9);
-                        var row5_lo = Unsafe.Add(ref srcRow0, 10);
-                        var row5_hi = Unsafe.Add(ref srcRow0, 11);
-                        var row6_lo = Unsafe.Add(ref srcRow0, 12);
-                        var row6_hi = Unsafe.Add(ref srcRow0, 13);
-                        var row7_lo = Unsafe.Add(ref srcRow0, 14);
-                        var row7_hi = Unsafe.Add(ref srcRow0, 15);
-
-                        JpegDct.ForwardSse(
-                            ref row0_lo, ref row0_hi,
-                            ref row1_lo, ref row1_hi,
-                            ref row2_lo, ref row2_hi,
-                            ref row3_lo, ref row3_hi,
-                            ref row4_lo, ref row4_hi,
-                            ref row5_lo, ref row5_hi,
-                            ref row6_lo, ref row6_hi,
-                            ref row7_lo, ref row7_hi);
-
-                        component.QuantizationTable.QuantizeTransposedZigZag128(
-                            ref row0_lo, ref row0_hi,
-                            ref row1_lo, ref row1_hi,
-                            ref row2_lo, ref row2_hi,
-                            ref row3_lo, ref row3_hi,
-                            ref row4_lo, ref row4_hi,
-                            ref row5_lo, ref row5_hi,
-                            ref row6_lo, ref row6_hi,
-                            ref row7_lo, ref row7_hi);
-
-                        JpegBlockUtils.FillBlock128Unsafe(
-                            destBlock,
-                            row0_lo, row0_hi,
-                            row1_lo, row1_hi,
-                            row2_lo, row2_hi,
-                            row3_lo, row3_hi,
-                            row4_lo, row4_hi,
-                            row5_lo, row5_hi,
-                            row6_lo, row6_hi,
-                            row7_lo, row7_hi);
-                    }
-                }
-                else
-#endif
-                {
-                    // Scalar
-                    isSolidBlock = JpegBlockUtils.IsSolidBlockScalar(sourceBlocks, blockStartIndex);
-
-                    if (!isSolidBlock)
-                    {
-                        JpegDct.ForwardScalar(sourceBlocks, blockStartIndex, scalarDctBlock);
-                        component.QuantizationTable.QuantizeTransposedZigZagScalar(scalarDctBlock, destBlock);
-                    }
-                }
-
-                if (isSolidBlock)
-                {
-                    // ForwardRow when all elements are equal:
-                    //       [0]: x0 + x7 + x3 + x4 + x1 + x6 + x2 + x5 = 8 * (firstElement - 128)
-                    //   [1...7]: 0
-                    //
-                    // After second pass:
-                    //       [0]: 8 * (8 * (firstElement - 128))
-                    //   [1...7]: 0
-                    // 
-                    // After downscale:
-                    //       [0]: 8 * (firstElement - 128)
-                    //   [1...7]: 0
-
-                    var value = sourceBlocks[blockStartIndex];
-                    var dc = MathUtils.RoundToInt((value - 128) * 8 * component.QuantizationTable.DCReverseMultiplier);
-
-                    var diff = dc - component.DCPredictor;
-                    component.DCPredictor = dc;
-
-                    imageDataWriter.WriteDataUnitZeroAc(diff, component.HuffmanDCTable, component.HuffmanACTable);
+                    WriteSolidDataUnit(imageDataWriter, component, sourceBlocks[blockStartIndex]);
                 }
                 else
                 {
-                    var dc = destBlock[0];
-                    destBlock[0] = dc - component.DCPredictor;
-                    component.DCPredictor = dc;
-
-                    imageDataWriter.WriteDataUnitZigZag(destBlock, component.HuffmanDCTable, component.HuffmanACTable);
+                    JpegDct.ForwardScalar(sourceBlocks, blockStartIndex, scalarDctBlock);
+                    component.QuantizationTable.QuantizeTransposedZigZagScalar(scalarDctBlock, destBlock);
+                    WriteDataUnit(imageDataWriter, component, destBlock);
                 }
             }
+        }
+
+        public void WriteBlocks(float[] sourceBlocks, int blockCount)
+        {
+            if (sourceBlocks == null)
+            {
+                throw new ArgumentNullException(nameof(sourceBlocks));
+            }
+            if (blockCount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(blockCount), "Block count cannot be negative");
+            }
+            if (blockCount * (BlockSize * BlockSize) > sourceBlocks.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(blockCount),
+                    "The source block buffer does not contain enough data for " + blockCount + "blocks");
+            }
+
+#if NET8_0_OR_GREATER
+            if (Avx2.IsSupported)
+            {
+                WriteBlocksUnsafeAvx2(
+                    ref Unsafe.As<float, Vector256<float>>(ref MemoryMarshal.GetArrayDataReference(sourceBlocks)),
+                    blockCount);
+            }
+            else if (Sse2.IsSupported)
+            {
+                WriteBlocksUnsafeSse2(
+                    ref Unsafe.As<float, Vector128<float>>(ref MemoryMarshal.GetArrayDataReference(sourceBlocks)),
+                    blockCount);
+            }
+            else
+#endif
+            {
+                WriteBlocksScalar(sourceBlocks, blockCount);
+            }
+        }
+
+        private static void WriteDataUnit(JpegImageDataWriter imageDataWriter, JpegComponent component, int[] destBlock)
+        {
+            var dc = destBlock[0];
+            destBlock[0] = dc - component.DCPredictor;
+            component.DCPredictor = dc;
+
+            imageDataWriter.WriteDataUnitZigZag(destBlock, component.HuffmanDCTable, component.HuffmanACTable);
+        }
+
+        private static void WriteSolidDataUnit(JpegImageDataWriter imageDataWriter, JpegComponent component, float value)
+        {
+            // ForwardRow when all elements are equal:
+            //       [0]: x0 + x7 + x3 + x4 + x1 + x6 + x2 + x5 = 8 * (firstElement - 128)
+            //   [1...7]: 0
+            //
+            // After second pass:
+            //       [0]: 8 * (8 * (firstElement - 128))
+            //   [1...7]: 0
+            // 
+            // After downscale:
+            //       [0]: 8 * (firstElement - 128)
+            //   [1...7]: 0
+
+            var dc = (int)MathF.Round((value - 128) * 8 * component.QuantizationTable.DCReverseMultiplier);
+
+            var diff = dc - component.DCPredictor;
+            component.DCPredictor = dc;
+
+            imageDataWriter.WriteDataUnitZeroAc(diff, component.HuffmanDCTable, component.HuffmanACTable);
         }
 
         private void WriteMcuRow(JpegImageDataWriter imageDataWriter)

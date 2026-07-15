@@ -48,6 +48,8 @@ namespace PdfToSvg.Imaging.Jpeg
         // √2 * cos( 6π / 16 )
         private const float c6cos = 0.5411961001f;
 
+        private const int BlockSide = 8;
+
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         private static void ForwardRow(
             ref float x0, ref float x1, ref float x2, ref float x3,
@@ -400,21 +402,21 @@ namespace PdfToSvg.Imaging.Jpeg
 
         public static void ForwardScalar(float[] source, int sourceOffset, float[] destination)
         {
-            static void ProcessRows(float[] block)
+            // Columns are transformed before rows, in the same order as the vectorized implementations, so that all
+            // implementations produce bit identical output
+            static void ProcessColumns(float[] block)
             {
-                for (var y = 0; y < 8; y++)
+                for (var x = 0; x < BlockSide; x++)
                 {
-                    var rowStartIndex = y * 8;
-
                     ForwardRow(
-                        ref block[rowStartIndex + 0],
-                        ref block[rowStartIndex + 1],
-                        ref block[rowStartIndex + 2],
-                        ref block[rowStartIndex + 3],
-                        ref block[rowStartIndex + 4],
-                        ref block[rowStartIndex + 5],
-                        ref block[rowStartIndex + 6],
-                        ref block[rowStartIndex + 7]
+                        ref block[0 * BlockSide + x],
+                        ref block[1 * BlockSide + x],
+                        ref block[2 * BlockSide + x],
+                        ref block[3 * BlockSide + x],
+                        ref block[4 * BlockSide + x],
+                        ref block[5 * BlockSide + x],
+                        ref block[6 * BlockSide + x],
+                        ref block[7 * BlockSide + x]
                         );
                 }
             }
@@ -424,9 +426,9 @@ namespace PdfToSvg.Imaging.Jpeg
                 destination[i] = source[sourceOffset + i] - 128f;
             }
 
-            ProcessRows(destination);
+            ProcessColumns(destination);
             JpegBlockUtils.TransposeScalar(destination);
-            ProcessRows(destination);
+            ProcessColumns(destination);
 
             for (var i = 0; i < destination.Length; i++)
             {
@@ -436,29 +438,28 @@ namespace PdfToSvg.Imaging.Jpeg
 
         public static void InverseScalar(float[] block)
         {
-            static void ProcessRows(float[] block)
+            // Columns are transformed before rows, in the same order as the vectorized implementations, so that all
+            // implementations produce bit identical output
+            static void ProcessColumns(float[] block)
             {
-                for (var y = 0; y < 8; y++)
+                for (var x = 0; x < BlockSide; x++)
                 {
                     InverseRow(
-                        ref block[8 * y + 0],
-                        ref block[8 * y + 1],
-                        ref block[8 * y + 2],
-                        ref block[8 * y + 3],
-                        ref block[8 * y + 4],
-                        ref block[8 * y + 5],
-                        ref block[8 * y + 6],
-                        ref block[8 * y + 7]
+                        ref block[0 * BlockSide + x],
+                        ref block[1 * BlockSide + x],
+                        ref block[2 * BlockSide + x],
+                        ref block[3 * BlockSide + x],
+                        ref block[4 * BlockSide + x],
+                        ref block[5 * BlockSide + x],
+                        ref block[6 * BlockSide + x],
+                        ref block[7 * BlockSide + x]
                         );
                 }
             }
 
-            // 1D IDCT on rows
-            ProcessRows(block);
-
-            // 1D IDCT on columns
+            ProcessColumns(block);
             JpegBlockUtils.TransposeScalar(block);
-            ProcessRows(block);
+            ProcessColumns(block);
 
             for (var i = 0; i < block.Length; i++)
             {

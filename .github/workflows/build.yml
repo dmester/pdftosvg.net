@@ -10,6 +10,7 @@ env:
   PdfToSvgSkipSigning: true
   DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
   SatelliteResourceLanguages: en  # See https://github.com/dotnet/sdk/issues/37636
+  TestArguments: --no-build -c Release --verbosity normal --results-directory TestResults
 
 jobs:
   build:
@@ -46,27 +47,42 @@ jobs:
     - name: Build
       run: dotnet build --no-restore -c Release
 
-    - name: Test
+    - name: Test (.NET Framework 4.0)
+      if: matrix.os == 'windows-latest'
+      run: dotnet test tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj ${{ env.TestArguments }} -f net40
+
+    - name: Test (.NET Framework 4.5)
+      if: matrix.os == 'windows-latest'
+      run: dotnet test tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj ${{ env.TestArguments }} -f net45
+
+    - name: Test (.NET Core 3.1)
       if: matrix.os != 'ubuntu-22.04-arm'
-      run: dotnet test tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj --no-build -c Release --verbosity normal --collect "Code Coverage;Format=cobertura" --results-directory TestResults
+      run: dotnet test tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj ${{ env.TestArguments }} -f netcoreapp3.1
 
-    - name: Test (.NET 8 ARM)
-      if: matrix.os == 'ubuntu-22.04-arm'
-      run: dotnet test tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj --no-build -c Release -f net8.0 --verbosity normal --collect "Code Coverage;Format=cobertura" --results-directory TestResults
+    - name: Test (.NET 5)
+      if: matrix.os != 'ubuntu-22.04-arm'
+      run: dotnet test tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj ${{ env.TestArguments }} -f net5.0
 
-    - name: Test (scalar)
-      run: dotnet test tests/PdfToSvg.Tests.Scalar/PdfToSvg.Tests.Scalar.csproj --no-build -c Release --verbosity normal --collect "Code Coverage;Format=cobertura" --results-directory TestResults
+    - name: Test (.NET 6)
+      if: matrix.os != 'ubuntu-22.04-arm'
+      run: dotnet test tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj ${{ env.TestArguments }} -f net6.0
 
-    - name: Test (Vector128)
-      run: dotnet test tests/PdfToSvg.Tests.Vector128/PdfToSvg.Tests.Vector128.csproj --no-build -c Release --verbosity normal --collect "Code Coverage;Format=cobertura" --results-directory TestResults
+    - name: Test (.NET 8 Vector256)
+      run: dotnet test tests/PdfToSvg.Tests/PdfToSvg.Tests.csproj ${{ env.TestArguments }} -f net8.0 --collect "Code Coverage;Format=cobertura"
+
+    - name: Test (.NET 8 Scalar)
+      run: dotnet test tests/PdfToSvg.Tests.Scalar/PdfToSvg.Tests.Scalar.csproj ${{ env.TestArguments }}
+
+    - name: Test (.NET 8 Vector128)
+      run: dotnet test tests/PdfToSvg.Tests.Vector128/PdfToSvg.Tests.Vector128.csproj ${{ env.TestArguments }}
 
     - name: Test CLI
       if: ${{ matrix.os == 'windows-latest' }}
-      run: dotnet test tests/PdfToSvg.Cli.Tests/PdfToSvg.Cli.Tests.csproj --no-build -c Release --verbosity normal --results-directory TestResults
+      run: dotnet test tests/PdfToSvg.Cli.Tests/PdfToSvg.Cli.Tests.csproj ${{ env.TestArguments }}
 
     - name: Test CLI Native AOT
       if: ${{ matrix.os == 'windows-latest' }}
-      run: dotnet test tests/PdfToSvg.Cli.NativeAot.Tests/PdfToSvg.Cli.NativeAot.Tests.csproj --no-build -c Release --verbosity normal --results-directory TestResults
+      run: dotnet test tests/PdfToSvg.Cli.NativeAot.Tests/PdfToSvg.Cli.NativeAot.Tests.csproj ${{ env.TestArguments }}
 
     - name: Code coverage report
       uses: danielpalme/ReportGenerator-GitHub-Action@v5

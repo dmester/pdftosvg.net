@@ -294,6 +294,11 @@ namespace PdfToSvg.ColorSpaces
                 return new UnsupportedColorSpace(colorSpaceName);
             }
 
+            if (definition is null)
+            {
+                return new NullColorSpace();
+            }
+
             Log.WriteLine("Unexpected color space definition type: {0}.", Log.TypeOf(definition));
             return new UnsupportedColorSpace(new PdfName("Undefined"));
         }

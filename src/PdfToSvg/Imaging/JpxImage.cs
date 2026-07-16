@@ -117,7 +117,8 @@ namespace PdfToSvg.Imaging
         private ColorSpace DetermineEffectiveColorSpace(JpxChannelInfo channelInfo)
         {
             // ISO 32000-2:2020 Section 7.4.9 says PDF color space has precedence over JPEG 2000 color space
-            if (!(colorSpace is UnsupportedColorSpace))
+            if (colorSpace is not NullColorSpace &&
+                colorSpace is not UnsupportedColorSpace)
             {
                 return colorSpace;
             }
@@ -604,7 +605,7 @@ namespace PdfToSvg.Imaging
         {
             return
                 channelCount == 3 &&
-                colorSpace is UnsupportedColorSpace &&
+                colorSpace is NullColorSpace &&
                 decoder.EnumeratedColorSpace == JpxEnumeratedColorSpace.SYcc;
         }
 

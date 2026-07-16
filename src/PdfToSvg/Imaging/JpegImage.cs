@@ -100,7 +100,7 @@ namespace PdfToSvg.Imaging
                 return false;
             }
 
-            if (colorSpace is UnsupportedColorSpace &&
+            if ((colorSpace is NullColorSpace || colorSpace is UnsupportedColorSpace) &&
                 (sourceColorSpace == JpegColorSpace.Gray || sourceColorSpace == JpegColorSpace.YCbCr || sourceColorSpace == JpegColorSpace.Unknown))
             {
                 return true;

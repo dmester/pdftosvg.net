@@ -20,12 +20,12 @@ namespace PdfToSvg.Tests.Fonts
             var formatted = new StringBuilder();
             foreach (var cmap in font.CMaps)
             {
-                formatted.AppendLine();
-                formatted.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0} {1}", cmap.PlatformID, cmap.EncodingID));
+                formatted.AppendUnixLine();
+                formatted.AppendInvariantUnixLine("{0} {1}", cmap.PlatformID, cmap.EncodingID);
 
                 foreach (var range in cmap.Ranges.OrderBy(x => x.StartUnicode))
                 {
-                    formatted.AppendLine(range.ToString());
+                    formatted.AppendUnixLine(range.ToString());
                 }
             }
 

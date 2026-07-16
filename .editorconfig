@@ -2,6 +2,7 @@
 
 [*]
 indent_style = space
+end_of_line = lf
 
 [*.csproj]
 indent_size = 2

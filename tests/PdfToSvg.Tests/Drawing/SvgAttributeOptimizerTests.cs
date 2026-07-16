@@ -64,7 +64,7 @@ namespace PdfToSvg.Tests.Drawing
   </g>
 </svg>";
 
-            var actual = svg.ToString();
+            var actual = svg.ToUnixString();
 
             Assert.AreEqual(expected, actual);
         }

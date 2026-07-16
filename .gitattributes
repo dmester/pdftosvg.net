@@ -1,0 +1,7 @@
+
+*.pdf -text
+*.slnx text eol=lf
+*.cs text eol=lf
+*.csproj text eol=lf
+*.md text eol=lf
+LICENSE text eol=lf

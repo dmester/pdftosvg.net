@@ -1,0 +1,24 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID4{font-family:Helvetica,Arial,sans-serif;font-size:12px;}
+.ID5{font-family:Helvetica,Arial,sans-serif;font-size:60px;}
+</style>
+<defs class="ID1">
+<image id="ID2" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAABGdBTUEAALGPC/xhBQAAAAxJREFUeJxjYGBgAAAABAAB9hc4VQAAAABJRU5ErkJggg==" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
+<image id="ID3" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANFJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT0P1ockZCAHQphsuCXgoCBew3oNoh0DQ2RoQHUSJvo+G81JR1PgfBlBBgcNhvoAhvkpIDQ5hsFHn0GCn+HzTJiGoykowQqU2F7MUOHNkGADQhmODMszGd5PQwtWIDiSQJQHgMqgMf3rM1FJA6gMkfiAHDz2AKXAqpE0wJM3MAyQkzeQi5q8ATfh0sy8wXdXAAAAAElFTkSuQmCC" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
+</defs>
+<g class="ID1">
+<g transform="matrix(150 0 0 150 205 151.92)">
+<g>
+<use href="#ID2" />
+</g>
+<g>
+<use href="#ID3" />
+</g>
+</g>
+<text x="180" y="111.92" class="ID4">File with a zero length deflate stream</text>
+<text x="231.08" y="381.92" class="ID5">OK!</text>
+</g>
+</svg>

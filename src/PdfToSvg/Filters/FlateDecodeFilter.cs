@@ -31,6 +31,7 @@ namespace PdfToSvg.Filters
 
             if (cmf < 0 || flg < 0)
             {
+                stream.Dispose();
                 return Stream.Null;
             }
             else

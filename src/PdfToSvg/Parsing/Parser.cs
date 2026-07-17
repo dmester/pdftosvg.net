@@ -66,7 +66,7 @@ namespace PdfToSvg.Parsing
                 }
                 else
                 {
-                    throw new Exception();
+                    throw ParserExceptions.UnexpectedToken(lexer.Stream, nextLexeme);
                 }
 
                 nextLexeme = lexer.Peek();
@@ -108,7 +108,7 @@ namespace PdfToSvg.Parsing
                 }
                 else
                 {
-                    throw new Exception();
+                    throw new ParserException("Unclosed inline image dictionary", lexer.Stream.Position);
                 }
 
                 nextLexeme = lexer.Peek();

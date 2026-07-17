@@ -1,0 +1,21 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID3{font-family:Helvetica,Arial,sans-serif;font-size:12px;}
+</style>
+<defs class="ID1">
+<image id="ID2" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABGdBTUEAALGPC/xhBQAAANFJREFUeJxj+I8M3p7/fzzj/3qN/wsZQAjIAHKBgkiAAUr/+Q6Sg6jDREApoAKEBiBnuw1O1RAEVADWA9aAx2w0e0AagE4kRjUEvT0P1ockZCAHQphsuCXgoCBew3oNoh0DQ2RoQHUSJvo+G81JR1PgfBlBBgcNhvoAhvkpIDQ5hsFHn0GCn+HzTJiGoykowQqU2F7MUOHNkGADQhmODMszGd5PQwtWIDiSQJQHgMqgMf3rM1FJA6gMkfiAHDz2AKXAqpE0wJM3MAyQkzeQi5q8ATfh0sy8wXdXAAAAAElFTkSuQmCC" width="1" height="1" preserveAspectRatio="none" image-rendering="pixelated" />
+</defs>
+<g class="ID1">
+<g transform="matrix(150 0 0 150 105 211.92)">
+<use href="#ID2" />
+</g>
+<g class="ID3">
+<text x="80" y="101.92">File using real numbers instead of integers in object references.</text>
+<text x="80" y="121.92">The image below uses inexact real number as reference.</text>
+<text x="80" y="141.92">None are allowed according to the spec, but we are handling large</text>
+<text x="80" y="161.92">numbers as doubles, and other readers seem to tolerate them.</text>
+</g>
+</g>
+</svg>

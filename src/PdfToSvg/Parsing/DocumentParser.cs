@@ -145,8 +145,9 @@ namespace PdfToSvg.Parsing
 
         public PdfObjectId? ReadIndirectObjectId()
         {
-            if (!TryReadInteger(out var objectNumber) ||
-                !TryReadInteger(out var generation) ||
+
+            if (!TryReadIntegerRelaxed(out var objectNumber) ||
+                !TryReadIntegerRelaxed(out var generation) ||
                 !TryReadToken(Token.Obj))
             {
                 // Not a valid object
@@ -240,11 +241,11 @@ namespace PdfToSvg.Parsing
         {
             lexer.Read(Token.Xref);
 
-            while (TryReadInteger(out var startObjectNumber) && TryReadInteger(out var entryCount))
+            while (TryReadIntegerRelaxed(out var startObjectNumber) && TryReadIntegerRelaxed(out var entryCount))
             {
                 for (var i = 0; i < entryCount; i++)
                 {
-                    if (!TryReadInteger(out var byteOffset) || !TryReadInteger(out var generation))
+                    if (!TryReadIntegerRelaxed(out var byteOffset) || !TryReadIntegerRelaxed(out var generation))
                     {
                         break;
                     }

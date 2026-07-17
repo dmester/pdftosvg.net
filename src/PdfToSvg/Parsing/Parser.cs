@@ -157,14 +157,58 @@ namespace PdfToSvg.Parsing
             return dictionary;
         }
 
-        protected object ReadIntegerOrRef()
+        protected static PdfRef? ParseRef(Lexeme objectNumberLexeme, Lexeme generationLexeme)
+        {
+            static int? ParseNumber(Lexeme lexeme)
+            {
+                if (lexeme.Token == Token.Integer)
+                {
+                    return lexeme.IntValue;
+                }
+                
+                //
+                // Real numbers are not allowed in the spec, but we need to support them because:
+                //
+                // * We parse large numbers as doubles
+                // * Other readers tolerates real object references
+                //
+                if (lexeme.Token == Token.Real)
+                {
+                    var fObjectNumber = double.Parse(lexeme.Value.ToString(), CultureInfo.InvariantCulture);
+
+                    if (!double.IsNaN(fObjectNumber) &&
+                        fObjectNumber >= 0 &&
+                        fObjectNumber < int.MaxValue)
+                    {
+                        return (int)fObjectNumber;
+                    }
+                }
+                
+                return null;
+            }
+            
+            var objectNumber = ParseNumber(objectNumberLexeme);
+            if (objectNumber == null)
+            {
+                return null;
+            }
+
+            var generation = ParseNumber(generationLexeme);
+            if (generation == null)
+            {
+                return null;
+            }
+
+            return new PdfRef(objectNumber.Value, generation.Value);
+        }
+
+        protected object? ReadNumberOrRef()
         {
             var value1Lexeme = lexer.Read();
-            var value1 = value1Lexeme.IntValue;
 
             var next1Lexeme = lexer.Peek(1);
-
-            if (next1Lexeme.Token == Token.Integer)
+            if (next1Lexeme.Token == Token.Integer ||
+                next1Lexeme.Token == Token.Real)
             {
                 var next2Lexeme = lexer.Peek(2);
                 if (next2Lexeme.Token == Token.Ref)
@@ -172,12 +216,18 @@ namespace PdfToSvg.Parsing
                     lexer.Read();
                     lexer.Read();
 
-                    var value2 = next1Lexeme.IntValue;
-                    return new PdfRef(value1, value2);
+                    return ParseRef(value1Lexeme, next1Lexeme);
                 }
             }
 
-            return value1;
+            if (value1Lexeme.Token == Token.Integer)
+            {
+                return value1Lexeme.IntValue;
+            }
+            else
+            {
+                return double.Parse(value1Lexeme.Value.ToString(), CultureInfo.InvariantCulture);
+            }
         }
 
         protected bool TryReadToken(Token token)
@@ -202,7 +252,7 @@ namespace PdfToSvg.Parsing
             return true;
         }
 
-        protected bool TryReadInteger(out int result)
+        protected bool TryReadIntegerRelaxed(out int result)
         {
             Lexeme nextLexeme;
 
@@ -216,16 +266,38 @@ namespace PdfToSvg.Parsing
                 return false;
             }
 
-            if (nextLexeme.Token != Token.Integer)
+            if (nextLexeme.Token == Token.Integer)
             {
-                result = 0;
-                return false;
+                lexer.Read();
+
+                result = nextLexeme.IntValue;
+                return true;
             }
 
-            lexer.Read();
+            // Relaxed parsing:
+            // Other readers are quite tolerant accepting real numbers where there should be integers
+            if (nextLexeme.Token == Token.Real)
+            {
+                if (double.TryParse(
+                        nextLexeme.Value.ToString(),
+                        NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint,
+                        CultureInfo.InvariantCulture,
+                        out var realValue) &&
+                    // Do not allow saturation
+                    realValue >= int.MinValue && realValue <= int.MaxValue)
+                {
+                    // Do not allow conversion if it alters the value
+                    result = (int)realValue;
+                    if (result == realValue)
+                    {
+                        lexer.Read();
+                        return true;
+                    }
+                }
+            }
 
-            result = nextLexeme.IntValue;
-            return true;
+            result = 0;
+            return false;
         }
 
         protected object? ReadValue(int depth = 0)
@@ -258,11 +330,8 @@ namespace PdfToSvg.Parsing
                     return null;
 
                 case Token.Real:
-                    lexer.Read();
-                    return double.Parse(nextLexeme.Value.ToString(), CultureInfo.InvariantCulture);
-
                 case Token.Integer:
-                    return ReadIntegerOrRef();
+                    return ReadNumberOrRef();
 
                 case Token.HexString:
                 case Token.LiteralString:

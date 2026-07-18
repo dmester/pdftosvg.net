@@ -462,6 +462,10 @@ namespace PdfToSvg.Fonts
                 return;
             }
 
+            // Operand value range in Type2 char strings is –32768 to +32767
+            const int MinWidth = 0;
+            const int MaxWidth = 32767;
+
             // Expand hmtx table with one entry per glyph
             var originalMetrics = hmtx.HorMetrics;
             var originalLsb = hmtx.LeftSideBearings;
@@ -492,6 +496,11 @@ namespace PdfToSvg.Fonts
                         metric.LeftSideBearing = originalLsb[lsbIndex];
                     }
                 }
+
+                if (metric.AdvanceWidth > MaxWidth)
+                {
+                    metric.AdvanceWidth = MaxWidth;
+                }
             }
 
             // Update hmtx metrics (it is used by Firefox)
@@ -506,9 +515,7 @@ namespace PdfToSvg.Fonts
                 if (width != 0)
                 {
                     hmtx.HorMetrics[(int)ch.GlyphIndex].AdvanceWidth =
-                        width <= ushort.MinValue ? ushort.MinValue :
-                        width >= ushort.MaxValue ? ushort.MaxValue :
-                        (ushort)width;
+                        (ushort)MathUtils.Clamp(width, MinWidth, MaxWidth);
                 }
             }
 

@@ -123,7 +123,7 @@ namespace PdfToSvg.Fonts
 
             IEnumerable<CharInfo?> glyphNames;
 
-            if (cmap.PlatformID == OpenTypePlatformID.Windows)
+            if (cmap.PlatformID != OpenTypePlatformID.Macintosh)
             {
                 // Glyph name -> AGL -> Unicode -> CMap -> Glyph index
                 glyphNames = cmap.Chars
@@ -223,8 +223,9 @@ namespace PdfToSvg.Fonts
             {
                 // Symbolic font
                 var cmap =
-                    cmaps.FirstOrDefault(cmap => cmap.PlatformID == OpenTypePlatformID.Windows && cmap.EncodingID == 0) ??
-                    cmaps.FirstOrDefault(cmap => cmap.PlatformID == OpenTypePlatformID.Macintosh && cmap.EncodingID == 0);
+                    // Standardized candidates (ISO 32000-2:2020 9.6.5.4 Encodings for TrueType fonts)
+                    GetCMap(cmaps, CMapID.WindowsSymbol) ??
+                    GetCMap(cmaps, CMapID.MacintoshRoman);
 
                 if (cmap != null)
                 {
@@ -234,8 +235,14 @@ namespace PdfToSvg.Fonts
             else
             {
                 var cmap =
-                    cmaps.FirstOrDefault(cmap => cmap.PlatformID == OpenTypePlatformID.Windows && cmap.EncodingID == 1) ??
-                    cmaps.FirstOrDefault(cmap => cmap.PlatformID == OpenTypePlatformID.Macintosh && cmap.EncodingID == 0);
+                    // Standardized candidates (ISO 32000-2:2020 9.6.5.4 Encodings for TrueType fonts)
+                    GetCMap(cmaps, CMapID.WindowsUnicodeBMP) ??
+                    GetCMap(cmaps, CMapID.MacintoshRoman) ??
+
+                    // Fallbacks (e.g. for SafeDocs corpus #1008077)
+                    GetCMap(cmaps, CMapID.WindowsUnicodeFullRepertoire) ??
+                    GetCMap(cmaps, CMapID.Unicode20FullRepertoire) ??
+                    GetCMap(cmaps, CMapID.Unicode20BMP);
 
                 if (cmap != null)
                 {
@@ -244,6 +251,31 @@ namespace PdfToSvg.Fonts
             }
 
             return Enumerable.Empty<CharInfo>();
+        }
+
+
+        private static OpenTypeCMap? GetCMap(IList<OpenTypeCMap> cmaps, CMapID id)
+        {
+            return cmaps.FirstOrDefault(cmap => cmap.PlatformID == id.PlatformID && cmap.EncodingID == id.EncodingID);
+        }
+
+        private readonly struct CMapID(OpenTypePlatformID platformID, int encodingID)
+        {
+            public readonly OpenTypePlatformID PlatformID = platformID;
+            public readonly int EncodingID = encodingID;
+
+            // See https://learn.microsoft.com/en-us/typography/opentype/spec/cmap
+            public static CMapID Unicode10 => new(OpenTypePlatformID.Unicode, 0);
+            public static CMapID Unicode11 => new(OpenTypePlatformID.Unicode, 1);
+            public static CMapID Unicode20BMP => new(OpenTypePlatformID.Unicode, 3);
+            public static CMapID Unicode20FullRepertoire => new(OpenTypePlatformID.Unicode, 4);
+            public static CMapID UnicodeFullRepertoireFormat13 => new(OpenTypePlatformID.Unicode, 6);
+
+            public static CMapID WindowsSymbol => new(OpenTypePlatformID.Windows, 0);
+            public static CMapID WindowsUnicodeBMP => new(OpenTypePlatformID.Windows, 1);
+            public static CMapID WindowsUnicodeFullRepertoire => new(OpenTypePlatformID.Windows, 10);
+
+            public static CMapID MacintoshRoman => new(OpenTypePlatformID.Macintosh, 0);
         }
 
         public override string ToString() => base.ToString() + "; TrueType";

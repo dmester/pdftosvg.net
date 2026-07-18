@@ -472,7 +472,7 @@ namespace PdfToSvg.Fonts
 
             for (var i = 0; i < hmtx.HorMetrics.Length; i++)
             {
-                var metric = hmtx.HorMetrics[i] = new LongHorMetricRecord();
+                ref var metric = ref hmtx.HorMetrics[i];
 
                 if (i < originalMetrics.Length)
                 {

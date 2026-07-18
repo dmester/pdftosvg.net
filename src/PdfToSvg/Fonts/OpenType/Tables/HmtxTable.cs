@@ -44,15 +44,16 @@ namespace PdfToSvg.Fonts.OpenType.Tables
 
             var table = new HmtxTable();
 
-            table.HorMetrics = new LongHorMetricRecord[numberOfHMetrics];
+            var horMetrics = new LongHorMetricRecord[numberOfHMetrics];
 
-            for (var i = 0; i < table.HorMetrics.Length; i++)
+            for (var i = 0; i < horMetrics.Length; i++)
             {
-                var record = table.HorMetrics[i] = new LongHorMetricRecord();
+                ref var record = ref horMetrics[i];
                 record.AdvanceWidth = reader.ReadUInt16();
                 record.LeftSideBearing = reader.ReadInt16();
             }
 
+            table.HorMetrics = horMetrics;
             table.LeftSideBearings = new short[(reader.Length - reader.Position) / 2];
 
             for (var i = 0; i < table.LeftSideBearings.Length; i++)
@@ -65,7 +66,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
     }
 
     [DebuggerDisplay("LSB {LeftSideBearing}, AW {AdvanceWidth}")]
-    internal class LongHorMetricRecord
+    internal struct LongHorMetricRecord
     {
         public ushort AdvanceWidth;
         public short LeftSideBearing;

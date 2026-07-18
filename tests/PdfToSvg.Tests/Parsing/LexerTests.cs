@@ -6,6 +6,7 @@ using NUnit.Framework;
 using PdfToSvg;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Parsing;
+using PdfToSvg.Tests.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,14 +28,22 @@ namespace PdfToSvg.Tests.Parsing
             { "d1d1", Token.Keyword },
         };
 
+        private Lexer CreateLexer(string content)
+        {
+            var bytes = Encoding.ASCII.GetBytes(content);
+            var stream = new NoSeekMemoryStream(bytes);
+            return new Lexer(stream, basicKeywords);
+        }
+             
+
         [Test]
         public void Stream()
         {
-            var lexerLF = new Lexer("  stream\nhello", basicKeywords);
+            var lexerLF = CreateLexer("  stream\nhello");
             Assert.AreEqual(new Lexeme(Token.Stream), lexerLF.Read());
             Assert.AreEqual(9, lexerLF.Stream.Position);
 
-            var lexerCRLF = new Lexer("   stream\r\nhello", basicKeywords);
+            var lexerCRLF = CreateLexer("   stream\r\nhello");
             Assert.AreEqual(new Lexeme(Token.Stream), lexerCRLF.Read());
             Assert.AreEqual(11, lexerCRLF.Stream.Position);
         }
@@ -42,15 +51,15 @@ namespace PdfToSvg.Tests.Parsing
         [Test]
         public void UnknownToken()
         {
-            var lexerLF = new Lexer("  &&&&&&&&&&&& ", basicKeywords);
-            Assert.AreEqual(new Lexeme(Token.UnexpectedCharacter), lexerLF.Read());
-            Assert.AreEqual(new Lexeme(Token.EndOfInput), lexerLF.Read());
+            var lexerLF = CreateLexer("  &&&&&&&&&&&& ");
+            Assert.AreEqual(new Lexeme(Token.UnexpectedCharacter, position: 2), lexerLF.Read());
+            Assert.AreEqual(new Lexeme(Token.EndOfInput, position: 3), lexerLF.Read());
         }
 
         [Test]
         public void Commands()
         {
-            var lexer = new Lexer("ET\nT* 0 0 1 rg /Ti Tj12 d0 d1d12 (T*)", basicKeywords);
+            var lexer = CreateLexer("ET\nT* 0 0 1 rg /Ti Tj12 d0 d1d12 (T*)");
 
             Assert.AreEqual(new Lexeme(Token.Keyword, "ET"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Keyword, "T*"), lexer.Read());
@@ -73,7 +82,7 @@ namespace PdfToSvg.Tests.Parsing
         [Test]
         public void Dictionary()
         {
-            var lexer = new Lexer("  <</Type/Font/Width 5/NestedEmpty<<>>>> ", basicKeywords);
+            var lexer = CreateLexer("  <</Type/Font/Width 5/NestedEmpty<<>>>> ");
 
             Assert.AreEqual(new Lexeme(Token.BeginDictionary), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Name, "Type"), lexer.Read());
@@ -92,7 +101,7 @@ namespace PdfToSvg.Tests.Parsing
         [Test]
         public void Array()
         {
-            var lexer = new Lexer(" [ 1R/Name[ (R]R)]] ", basicKeywords);
+            var lexer = CreateLexer(" [ 1R/Name[ (R]R)]] ");
 
             Assert.AreEqual(new Lexeme(Token.BeginArray), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Integer, "1"), lexer.Read());
@@ -111,7 +120,7 @@ namespace PdfToSvg.Tests.Parsing
         public void Boolean()
         {
             // Uppercase booleans are technically not legal, but we will be nice to malformed input
-            var lexer = new Lexer(" true false True TRUE False FALSE ", basicKeywords);
+            var lexer = CreateLexer(" true false True TRUE False FALSE ");
 
             Assert.AreEqual(new Lexeme(Token.True), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.False), lexer.Read());
@@ -127,7 +136,7 @@ namespace PdfToSvg.Tests.Parsing
         [Test]
         public void Integer()
         {
-            var lexer = new Lexer(" 0  +42-55 1234567890 -1234567890 ", basicKeywords);
+            var lexer = CreateLexer(" 0  +42-55 1234567890 -1234567890 ");
 
             Assert.AreEqual(new Lexeme(Token.Integer, "0"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Integer, "+42"), lexer.Read());
@@ -142,7 +151,7 @@ namespace PdfToSvg.Tests.Parsing
         [Test]
         public void Real()
         {
-            var lexer = new Lexer(" 0.0  .12345 42.0+.4567 -.4567 +23.4567 -23.4567 4. 77777777777777777777  ", basicKeywords);
+            var lexer = CreateLexer(" 0.0  .12345 42.0+.4567 -.4567 +23.4567 -23.4567 4. 77777777777777777777  ");
 
             Assert.AreEqual(new Lexeme(Token.Real, "0.0"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Real, ".12345"), lexer.Read());
@@ -163,7 +172,7 @@ namespace PdfToSvg.Tests.Parsing
         [Test]
         public void LiteralString()
         {
-            var lexer = new Lexer(
+            var lexer = CreateLexer(
                 "(abc) " +
                 "(string()with parentheses)" +
                 "()" +
@@ -171,7 +180,7 @@ namespace PdfToSvg.Tests.Parsing
                 @"(esc\\\n\r\t\)\(\W)" +
                 "(no\\\n line \\\r\nbreaks)" +
                 "(normalized\r\nline\rbreaks\n)" +
-                @"(octal \53\053 \53a \0053)", basicKeywords);
+                @"(octal \53\053 \53a \0053)");
 
             Assert.AreEqual(new Lexeme(Token.LiteralString, "abc"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.LiteralString, "string()with parentheses"), lexer.Read());
@@ -193,10 +202,10 @@ namespace PdfToSvg.Tests.Parsing
         [Test]
         public void HexString()
         {
-            var lexer = new Lexer(
+            var lexer = CreateLexer(
                 "<>" +
                 "<414a4A50>" +
-                "< 4 14  \na  \t \f 4A 5  >", basicKeywords);
+                "< 4 14  \na  \t \f 4A 5  >");
 
             Assert.AreEqual(new Lexeme(Token.HexString, 0, ""), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.HexString, 2, "AJJP"), lexer.Read());
@@ -207,6 +216,7 @@ namespace PdfToSvg.Tests.Parsing
 
             var lexerInvalidChars = new Lexer("< 4XXX 14 ### \0 \na  \t \f 4A 5  >");
             Assert.AreEqual(new Lexeme(Token.UnexpectedCharacter, 3), lexerInvalidChars.Read());
+            Assert.AreEqual(new Lexeme(Token.EndOfInput, 4), lexerInvalidChars.Read());
 
             var lexerUnclosed = new Lexer("<414a4A50");
             Assert.AreEqual(new Lexeme(Token.UnexpectedCharacter, 9), lexerUnclosed.Read());
@@ -215,7 +225,7 @@ namespace PdfToSvg.Tests.Parsing
         [Test]
         public void RD()
         {
-            var lexer = new Lexer(" -| ", basicKeywords);
+            var lexer = CreateLexer(" -| ");
 
             Assert.AreEqual(new Lexeme(Token.RD), lexer.Read());
 
@@ -226,7 +236,7 @@ namespace PdfToSvg.Tests.Parsing
         [Test]
         public void ND()
         {
-            var lexer = new Lexer(" |- ", basicKeywords);
+            var lexer = CreateLexer(" |- ");
 
             Assert.AreEqual(new Lexeme(Token.ND), lexer.Read());
 
@@ -237,7 +247,7 @@ namespace PdfToSvg.Tests.Parsing
         [Test]
         public void NP()
         {
-            var lexer = new Lexer(" | ", basicKeywords);
+            var lexer = CreateLexer(" | ");
 
             Assert.AreEqual(new Lexeme(Token.NP), lexer.Read());
 
@@ -249,7 +259,7 @@ namespace PdfToSvg.Tests.Parsing
         public void Name()
         {
             // Examples from Table 4 in PDF spec 1.7
-            var lexer = new Lexer(
+            var lexer = CreateLexer(
                 "/Name1" +
                 "/ASomewhatLongerName " +
                 "/A;Name_With-Various***Characters?\n" +
@@ -260,7 +270,7 @@ namespace PdfToSvg.Tests.Parsing
                 "/lime#20green " +
                 "/paired#28#29parentheses " +
                 "/The_Key_of_F#23_Minor " +
-                "/A#42", basicKeywords);
+                "/A#42");
 
             Assert.AreEqual(new Lexeme(Token.Name, "Name1"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Name, "ASomewhatLongerName"), lexer.Read());

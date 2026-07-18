@@ -18,6 +18,7 @@ namespace PdfToSvg.Parsing
         private ForwardReadBuffer<Lexeme> forwardLexemeBuffer;
         private Dictionary<string, Token> keywords;
         private Dictionary<string, int> keywordPrefixesAndMaxLengths;
+        private bool isFaulted;
 
         public Lexer(ArraySegment<byte> source, Dictionary<string, Token>? keywords = null) : this(
             stream: new BufferedMemoryReader(source),
@@ -69,6 +70,13 @@ namespace PdfToSvg.Parsing
         {
             forwardLexemeBuffer.Clear();
             stringBuffer.SetLength(0);
+            isFaulted = false;
+        }
+
+        protected void SetFaulted()
+        {
+            Reset();
+            isFaulted = true;
         }
 
         protected Lexeme CreateLexeme(Token token, long position)
@@ -481,7 +489,8 @@ namespace PdfToSvg.Parsing
                 else
                 {
                     var errorPosition = Stream.Position;
-                    Seek(0, SeekOrigin.End);
+                    Stream.Skip();
+                    SetFaulted();
                     return CreateLexeme(Token.UnexpectedCharacter, errorPosition);
                 }
 
@@ -544,6 +553,11 @@ namespace PdfToSvg.Parsing
 
         private Lexeme ReadLexeme()
         {
+            if (isFaulted)
+            {
+                return new Lexeme(Token.EndOfInput, Stream.Position);
+            }
+
             var result = default(Lexeme);
 
             do
@@ -633,9 +647,9 @@ namespace PdfToSvg.Parsing
                         break;
 
                     default:
-                        var errorPosition = Stream.Position;
-                        Seek(0, SeekOrigin.End);
-                        result = CreateLexeme(Token.UnexpectedCharacter, errorPosition);
+                        result = CreateLexeme(Token.UnexpectedCharacter, Stream.Position);
+                        Stream.Skip();
+                        SetFaulted();
                         break;
                 }
             }

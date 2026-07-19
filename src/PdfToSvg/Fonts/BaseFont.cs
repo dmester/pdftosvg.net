@@ -606,10 +606,17 @@ namespace PdfToSvg.Fonts
 
             if (cffTable != null && cffTable.Content != null)
             {
-                var glyphs = cffTable.Content.Fonts[0].Glyphs;
+                var cffFont = cffTable.Content.Fonts[0];
+                var glyphs = cffFont.Glyphs;
                 if (glyphs.Count > 0)
                 {
                     glyphs.Add(glyphs[0]);
+
+                    // FDSelect must cover the duplicated glyph, or the font will be rejected by OTS
+                    if (cffFont.FDSelect.Count > 0)
+                    {
+                        cffFont.FDSelect.Add(cffFont.FDSelect[0]);
+                    }
 
                     if (maxpTable != null)
                     {

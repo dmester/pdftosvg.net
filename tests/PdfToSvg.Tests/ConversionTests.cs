@@ -11,6 +11,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+#if HAVE_SKIA
+using SkiaSharp;
+using Svg.Skia;
+#endif
 
 namespace PdfToSvg.Tests
 {
@@ -63,6 +68,141 @@ namespace PdfToSvg.Tests
             return Path.ChangeExtension(inputFileName, null) + ".svg";
         }
 
+        private static void AssertSvgEqual(string expected, string actual)
+        {
+            if (expected == actual)
+            {
+                Assert.Pass();
+                return;
+            }
+
+            if (expected == null || actual == null)
+            {
+                Assert.Multiple(() => Assert.AreEqual(expected, actual));
+                return;
+            }
+
+            Assert.Multiple(() =>
+            {
+                var expectedText = ExtractSvgText(expected);
+                var actualText = ExtractSvgText(actual);
+                var textEqual = expectedText.SequenceEqual(actualText);
+
+                Assert.AreEqual(expectedText, actualText, "SVG text differs.");
+
+                var imageEqual = true;
+#if HAVE_SKIA
+                imageEqual = AssertSvgImagesEqual(expected, actual);
+#endif
+
+                if (textEqual && imageEqual)
+                {
+                    Assert.AreEqual(expected, actual);
+                }
+            });
+        }
+
+        private static string[] ExtractSvgText(string svg)
+        {
+            return XDocument.Parse(svg)
+                .Descendants()
+                .Where(element => element.Name.LocalName == "text")
+                .Select(element => element.Value)
+                .ToArray();
+        }
+
+#if HAVE_SKIA
+        private static bool AssertSvgImagesEqual(string expected, string actual)
+        {
+            try
+            {
+                using var expectedImage = RenderSvg(expected);
+                using var actualImage = RenderSvg(actual);
+
+                if (expectedImage.Width != actualImage.Width || expectedImage.Height != actualImage.Height)
+                {
+                    Assert.Fail(
+                        $"SVG renderings have different dimensions. " +
+                        $"Expected: {expectedImage.Width}x{expectedImage.Height}. " +
+                        $"Actual: {actualImage.Width}x{actualImage.Height}.");
+                    return false;
+                }
+
+                var expectedPixels = expectedImage.Pixels;
+                var actualPixels = actualImage.Pixels;
+                var differentPixelCount = 0;
+                var minX = expectedImage.Width;
+                var minY = expectedImage.Height;
+                var maxX = -1;
+                var maxY = -1;
+
+                for (var y = 0; y < expectedImage.Height; y++)
+                {
+                    for (var x = 0; x < expectedImage.Width; x++)
+                    {
+                        var index = y * expectedImage.Width + x;
+                        if (expectedPixels[index] != actualPixels[index])
+                        {
+                            differentPixelCount++;
+                            minX = Math.Min(minX, x);
+                            minY = Math.Min(minY, y);
+                            maxX = Math.Max(maxX, x);
+                            maxY = Math.Max(maxY, y);
+                        }
+                    }
+                }
+
+                if (differentPixelCount > 0)
+                {
+                    var totalPixelCount = expectedImage.Width * expectedImage.Height;
+                    var differentPercent = differentPixelCount * 100d / totalPixelCount;
+                    Assert.Fail(
+                        $"SVG renderings differ in {differentPixelCount} of {totalPixelCount} pixels " +
+                        $"({differentPercent:0.####}%). Difference bounds: x={minX}, y={minY}, " +
+                        $"width={maxX - minX + 1}, height={maxY - minY + 1}.");
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Failed to render SVGs with SkiaSharp: {ex.Message}");
+                return false;
+            }
+        }
+
+        private static SKBitmap RenderSvg(string svg)
+        {
+            using var svgDocument = new SKSvg();
+
+            // We embed OpenType fonts, not SVG <font> elements. Disable the SVG font parser, whose regex
+            // is very slow on large base64 font URLs in Svg.Skia 5.1.1, especially on older runtimes.
+            svgDocument.Settings.EnableSvgFonts = false;
+
+            var picture = svgDocument.FromSvg(svg);
+            if (picture == null)
+            {
+                throw new InvalidOperationException("Svg.Skia did not produce a picture.");
+            }
+
+            var bounds = picture.CullRect;
+            var width = Math.Max(1, (int)Math.Ceiling(bounds.Width));
+            var height = Math.Max(1, (int)Math.Ceiling(bounds.Height));
+            var bitmap = new SKBitmap(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            bitmap.Erase(SKColors.Transparent);
+
+            using (var canvas = new SKCanvas(bitmap))
+            {
+                canvas.Translate(-bounds.Left, -bounds.Top);
+                canvas.DrawPicture(picture);
+                canvas.Flush();
+            }
+
+            return bitmap;
+        }
+#endif
+
         private void ConvertSync(string pdfName, string expectedSvgName,
             SvgConversionOptions conversionOptions = null,
             Action<PdfDocument> documentSetup = null)
@@ -85,7 +225,7 @@ namespace PdfToSvg.Tests
 
             var expected = File.Exists(expectedSvgPath) ? PngTestUtils.RecompressPngsInSvg(File.ReadAllText(expectedSvgPath, Encoding.UTF8)) : null;
 
-            Assert.AreEqual(expected, actual);
+            AssertSvgEqual(expected, actual);
         }
 
 #if !NET40
@@ -108,7 +248,7 @@ namespace PdfToSvg.Tests
 
             var expected = File.Exists(expectedSvgPath) ? PngTestUtils.RecompressPngsInSvg(File.ReadAllText(expectedSvgPath, Encoding.UTF8)) : null;
 
-            Assert.AreEqual(expected, actual);
+            AssertSvgEqual(expected, actual);
         }
 
         [TestCaseSource(nameof(TestCases))]

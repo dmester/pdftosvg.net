@@ -9,6 +9,10 @@
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net40' And '$(TargetFramework)' != 'net45'">
+    <DefineConstants>HAVE_SKIA;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.3" Condition="'$(TargetFramework)' == 'net40'">
       <PrivateAssets>all</PrivateAssets>
@@ -20,6 +24,7 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="Svg.Skia" Version="5.1.1" Condition="'$(TargetFramework)' != 'net40' And '$(TargetFramework)' != 'net45'" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
   </ItemGroup>

@@ -13,7 +13,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Text;
 
 namespace PdfToSvg.Fonts.OpenType
@@ -51,7 +50,14 @@ namespace PdfToSvg.Fonts.OpenType
             PostTable post;
             MaxpTable maxp;
             OS2Table os2;
+
+            // TrueType tables
             GlyfTable? glyf = null;
+            IBaseTable? cvt = null;
+            IBaseTable? fpgm = null;
+            IBaseTable? prep = null;
+            IBaseTable? gasp = null;
+            LocaTable? loca = null;
 
             if (cffSet == null || cff == null)
             {
@@ -63,10 +69,15 @@ namespace PdfToSvg.Fonts.OpenType
                 hmtx = GetOrCreate(() => CreateHmtx(glyf));
                 head = GetOrCreate(() => CreateHead(glyf));
                 hhea = GetOrCreate(() => CreateHhea(head, glyf));
+                loca = GetOrCreate(() => new LocaTable()); // Populated when the font is serialized
 
                 var maxpV10 = GetOrCreate(() => new MaxpTableV10());
                 maxp = maxpV10;
-                // `loca` table is created when the font is serialized
+
+                cvt = GetOrNull("cvt ");
+                fpgm = GetOrNull("fpgm");
+                prep = GetOrNull("prep");
+                gasp = GetOrNull("gasp");
 
                 UpdateTrueTypeGlyphs(maxpV10, glyf);
             }
@@ -87,7 +98,7 @@ namespace PdfToSvg.Fonts.OpenType
 
             post = GetOrCreate(() => CreatePost(head, cff));
             os2 = GetOrCreate(() => CreateOS2(head, hmtx, cff));
-            name = Replace(CreateName(head, cmap, font.Names, cff));
+            name = CreateName(head, cmap, font.Names, cff);
 
             UpdateOS2(os2, head, cmap, cff);
             UpdateHmtx(hmtx, maxp);
@@ -96,6 +107,41 @@ namespace PdfToSvg.Fonts.OpenType
             {
                 UpdateHhea(hhea, hmtx);
             }
+
+            //
+            // Reconstruct font with only essential tables. Other tables are removed since:
+            //
+            //   * They can cause the entire font being rejected by OTS Sanitizer unless we have an explicit sanitizer
+            //     for each of them.
+            //
+            //   * They can influence the layout and appearance of the rendered SVG in a way they did not in the PDF
+            //     (e.g. GPOS, GSUB).
+            //
+            //   * DSIG will contain an invalid signature if it is left after modifying the font.
+            //
+
+            font.Tables.Clear();
+
+            // Required tables
+            AddIfNotNull(cmap);
+            AddIfNotNull(head);
+            AddIfNotNull(hhea);
+            AddIfNotNull(hmtx);
+            AddIfNotNull(maxp);
+            AddIfNotNull(name);
+            AddIfNotNull(os2);
+            AddIfNotNull(post);
+
+            // For TrueType outlines
+            AddIfNotNull(cvt);
+            AddIfNotNull(fpgm);
+            AddIfNotNull(glyf);
+            AddIfNotNull(loca);
+            AddIfNotNull(prep);
+            AddIfNotNull(gasp);
+
+            // For CFF outlines
+            AddIfNotNull(cffTable);
         }
 
         private List<CompactFontGlyph> GetGlyphs(CompactFont cff)
@@ -116,38 +162,26 @@ namespace PdfToSvg.Fonts.OpenType
 
         private T GetOrThrow<T>() where T : IBaseTable
         {
-            var table = font.Tables.OfType<T>().FirstOrDefault();
-            if (table == null)
-            {
+            return font.Tables.OfType<T>().FirstOrDefault() ??
                 throw new OpenTypeException(nameof(T) + " missing in font and cannot be generated.");
-            }
-
-            return table;
         }
 
         private T GetOrCreate<T>(Func<T> factory) where T : IBaseTable
         {
-            var table = font.Tables.OfType<T>().FirstOrDefault();
+            return font.Tables.OfType<T>().FirstOrDefault() ?? factory();
+        }
 
-            if (table == null)
+        private IBaseTable? GetOrNull(string tag)
+        {
+            return font.Tables.FirstOrDefault(x => x.Tag == tag);
+        }
+
+        private void AddIfNotNull(IBaseTable? table)
+        {
+            if (table != null)
             {
-                table = factory();
                 font.Tables.Add(table);
             }
-
-            return table;
-        }
-
-        private T? GetOrNull<T>() where T : IBaseTable
-        {
-            return font.Tables.OfType<T>().FirstOrDefault();
-        }
-
-        private T Replace<T>(T newTable) where T : IBaseTable
-        {
-            font.Tables.Remove<T>();
-            font.Tables.Add(newTable);
-            return newTable;
         }
 
         private HeadTable CreateHead(CompactFont cff, List<CompactFontGlyph> glyphs)

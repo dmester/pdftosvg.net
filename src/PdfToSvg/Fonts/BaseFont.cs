@@ -64,9 +64,6 @@ namespace PdfToSvg.Fonts
         public override string? PostScriptName => openTypeFont?.Names.PostScriptName;
         public override string? FullFontName => openTypeFont?.Names.FullFontName;
 
-
-        public bool HasGlyphSubstitutions { get; private set; }
-
         public Font SubstituteFont { get; private set; } = fallbackSubstituteFont;
 
         public override bool CanBeExtracted => openTypeFont != null;
@@ -97,7 +94,6 @@ namespace PdfToSvg.Fonts
                 else
                 {
                     OpenTypeSanitizer.Sanitize(openTypeFont);
-                    HasGlyphSubstitutions = openTypeFont.Tables.Any(t => t.Tag == "GSUB");
                 }
             }
             catch (Exception ex)

@@ -15,7 +15,33 @@ namespace PdfToSvg.Fonts.CompactFonts
         public static void Sanitize(CompactFont compactFont)
         {
             compactFont.Name ??= "Untitled";
+
             Sanitize(compactFont.PrivateDict);
+
+            var defaultValues = new CompactFontDict();
+
+            // OTS Sanitizer rejects non-CID fonts having the following operators specified.
+            // See https://github.com/khaledhosny/ots/blob/v9.2.0/src/cff.cc#L756
+            if (!compactFont.IsCIDFont)
+            {
+                ResetCIDOperators(compactFont.TopDict, defaultValues);
+            }
+
+            // Only Top DICT should be marked with ROS
+            foreach (var subFont in compactFont.FDArray)
+            {
+                ResetCIDOperators(subFont.FontDict, defaultValues);
+            }
+        }
+
+        private static void ResetCIDOperators(CompactFontDict fontDict, CompactFontDict defaultValues)
+        {
+            fontDict.ROS = ArrayUtils.Empty<double>();
+            fontDict.CIDFontVersion = defaultValues.CIDFontVersion;
+            fontDict.CIDFontRevision = defaultValues.CIDFontRevision;
+            fontDict.CIDFontType = defaultValues.CIDFontType;
+            fontDict.CIDCount = defaultValues.CIDCount;
+            fontDict.UIDBase = defaultValues.UIDBase;
         }
 
         public static void Sanitize(CompactFontSet compactFontSet)

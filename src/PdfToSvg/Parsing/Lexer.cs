@@ -197,10 +197,21 @@ namespace PdfToSvg.Parsing
                 if (keyword == Token.Stream)
                 {
                     // According to ISO 32000-2-2020 section 7.3.8, the `stream` keyword must be followed by either
-                    // CR+LF or LF, but not CR alone. In #60 it was however followed by only CR. The PDF works fine in
-                    // other PDF readers, so we need to handle this as well.
+                    // CR+LF or LF, but not CR alone. In #60 it was however followed by only CR.
+                    //
+                    // Some PDFs (e.g. SafeDocs corpus 1008550, 2048842, 7931219) also have spaces between the keyword
+                    // and the line break.
+                    //
+                    // Both cases are accepted by other readers, including MuPDF and PDF.js, so we need to handle them
+                    // as well.
 
                     nextChar = Stream.PeekChar();
+
+                    while (nextChar == ' ' || nextChar == '\t' || nextChar == '\f')
+                    {
+                        Stream.Skip();
+                        nextChar = Stream.PeekChar();
+                    }
 
                     if (nextChar == '\r')
                     {

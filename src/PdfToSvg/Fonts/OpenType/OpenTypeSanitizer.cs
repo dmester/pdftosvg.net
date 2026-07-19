@@ -15,6 +15,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
+
 namespace PdfToSvg.Fonts.OpenType
 {
     internal class OpenTypeSanitizer
@@ -102,6 +104,7 @@ namespace PdfToSvg.Fonts.OpenType
 
             UpdateOS2(os2, head, cmap, cff);
             UpdateHmtx(hmtx, maxp);
+            UpdatePost(post, maxp);
 
             if (hhea != null)
             {
@@ -515,6 +518,36 @@ namespace PdfToSvg.Fonts.OpenType
                     .Concat(Enumerable.Repeat((short)0, maxpTable.NumGlyphs))
                     .Take(expectedLeftSideBearings)
                     .ToArray();
+            }
+        }
+
+        private void UpdatePost(PostTable post, MaxpTable maxp)
+        {
+            if (post is PostTableV2 || post is PostTableV25)
+            {
+                // The number of glyph names must match maxp, or the font is rejected by OTS
+                // https://github.com/khaledhosny/ots/blob/v9.2.0/src/post.cc#L72
+                if (post.GlyphNames.Length != maxp.NumGlyphs)
+                {
+                    var newGlyphNames = new string[maxp.NumGlyphs];
+
+                    for (var i = 0; i < newGlyphNames.Length; i++)
+                    {
+                        if (i < post.GlyphNames.Length)
+                        {
+                            newGlyphNames[i] = post.GlyphNames[i];
+                        }
+                        else
+                        {
+                            // If a glyph should not be associated with a PostScript name,
+                            // it should be mapped to .notdef:
+                            // https://learn.microsoft.com/en-us/typography/opentype/spec/post
+                            newGlyphNames[i] = ".notdef";
+                        }
+                    }
+
+                    post.GlyphNames = newGlyphNames;
+                }
             }
         }
 

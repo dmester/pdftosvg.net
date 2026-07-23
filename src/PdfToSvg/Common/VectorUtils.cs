@@ -60,6 +60,46 @@ namespace PdfToSvg.Common
         }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static Vector128<int> ClampNative(Vector128<int> input, Vector128<int> min, Vector128<int> max)
+        {
+#if NET9_0_OR_GREATER
+            return Vector128.ClampNative(input, min, max);
+#else
+            return Vector128.Min(Vector128.Max(input, min), max);
+#endif
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static Vector256<int> ClampNative(Vector256<int> input, Vector256<int> min, Vector256<int> max)
+        {
+#if NET9_0_OR_GREATER
+            return Vector256.ClampNative(input, min, max);
+#else
+            return Vector256.Min(Vector256.Max(input, min), max);
+#endif
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static Vector128<short> ClampNative(Vector128<short> input, Vector128<short> min, Vector128<short> max)
+        {
+#if NET9_0_OR_GREATER
+            return Vector128.ClampNative(input, min, max);
+#else
+            return Vector128.Min(Vector128.Max(input, min), max);
+#endif
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static Vector256<short> ClampNative(Vector256<short> input, Vector256<short> min, Vector256<short> max)
+        {
+#if NET9_0_OR_GREATER
+            return Vector256.ClampNative(input, min, max);
+#else
+            return Vector256.Min(Vector256.Max(input, min), max);
+#endif
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public static Vector128<int> ConvertToInt32RoundToEven(Vector128<float> value)
         {
             if (Sse2.IsSupported)
@@ -110,6 +150,126 @@ namespace PdfToSvg.Common
                     (int)MathF.Round(value[5]),
                     (int)MathF.Round(value[6]),
                     (int)MathF.Round(value[7]));
+            }
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static Vector128<int> ConvertToInt32Truncate(Vector128<float> value)
+        {
+            if (Sse2.IsSupported)
+            {
+                return Sse2.ConvertToVector128Int32WithTruncation(value);
+            }
+            else if (AdvSimd.IsSupported)
+            {
+                return AdvSimd.ConvertToInt32RoundToZero(value);
+            }
+            else
+            {
+                return Vector128.Create((int)value[0], (int)value[1], (int)value[2], (int)value[3]);
+            }
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static Vector256<int> ConvertToInt32Truncate(Vector256<float> value)
+        {
+            if (Avx.IsSupported)
+            {
+                return Avx.ConvertToVector256Int32WithTruncation(value);
+            }
+            else
+            {
+                return Vector256.Create(
+                    ConvertToInt32Truncate(value.GetLower()),
+                    ConvertToInt32Truncate(value.GetUpper()));
+            }
+        }
+
+        public static Vector256<short> NarrowWithSaturation(Vector256<int> lower, Vector256<int> upper)
+        {
+#if NET10_0_OR_GREATER
+            return Vector256.NarrowWithSaturation(lower, upper);
+#else
+            if (Avx2.IsSupported)
+            {
+                return Avx2.Permute4x64(
+                    Avx2.PackSignedSaturate(lower, upper).AsInt64(),
+                    0b_11_01_10_00
+                    ).AsInt16();
+            }
+            else
+            {
+                return Vector256.Narrow(
+                    ClampNative(lower, Vector256.Create<int>(short.MinValue), Vector256.Create<int>(short.MaxValue)),
+                    ClampNative(upper, Vector256.Create<int>(short.MinValue), Vector256.Create<int>(short.MaxValue))
+                    );
+            }
+#endif
+        }
+
+        public static Vector128<short> NarrowWithSaturation(Vector128<int> lower, Vector128<int> upper)
+        {
+#if NET10_0_OR_GREATER
+            return Vector128.NarrowWithSaturation(lower, upper);
+#else
+            if (Sse2.IsSupported)
+            {
+                return Sse2.PackSignedSaturate(lower, upper);
+            }
+            else
+            {
+                return Vector128.Narrow(
+                    ClampNative(lower, Vector128.Create<int>(short.MinValue), Vector128.Create<int>(short.MaxValue)),
+                    ClampNative(upper, Vector128.Create<int>(short.MinValue), Vector128.Create<int>(short.MaxValue))
+                    );
+            }
+#endif
+        }
+
+        public static Vector256<byte> NarrowWithSaturationToByte(
+            Vector256<int> a, Vector256<int> b, Vector256<int> c, Vector256<int> d)
+        {
+            if (Avx2.IsSupported)
+            {
+                var ab = Avx2.PackSignedSaturate(a, b);
+                var cd = Avx2.PackSignedSaturate(c, d);
+                var bytes = Avx2.PackUnsignedSaturate(ab, cd);
+
+                var order = Vector256.Create(0, 4, 1, 5, 2, 6, 3, 7);
+
+                return Avx2.PermuteVar8x32(bytes.AsInt32(), order).AsByte();
+            }
+            else
+            {
+                var min = Vector256.Create<int>(byte.MinValue);
+                var max = Vector256.Create<int>(byte.MaxValue);
+
+                var ab = Vector256.Narrow(ClampNative(a, min, max), ClampNative(b, min, max)).AsUInt16();
+                var cd = Vector256.Narrow(ClampNative(c, min, max), ClampNative(d, min, max)).AsUInt16();
+
+                return Vector256.Narrow(ab, cd);
+            }
+        }
+
+        public static Vector128<byte> NarrowWithSaturationToByte(
+            Vector128<int> a, Vector128<int> b, Vector128<int> c, Vector128<int> d)
+        {
+            if (Sse2.IsSupported)
+            {
+                var ab = Sse2.PackSignedSaturate(a, b);
+                var cd = Sse2.PackSignedSaturate(c, d);
+
+                return Sse2.PackUnsignedSaturate(ab, cd);
+            }
+            else
+            {
+                var min = Vector128.Create<int>(byte.MinValue);
+                var max = Vector128.Create<int>(byte.MaxValue);
+
+                var ab = Vector128.Narrow(ClampNative(a, min, max), ClampNative(b, min, max)).AsUInt16();
+                var cd = Vector128.Narrow(ClampNative(c, min, max), ClampNative(d, min, max)).AsUInt16();
+
+                return Vector128.Narrow(ab, cd);
             }
         }
 

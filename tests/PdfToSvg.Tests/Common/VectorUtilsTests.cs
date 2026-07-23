@@ -83,6 +83,65 @@ namespace PdfToSvg.Tests.Common
 
             Assert.AreEqual(expectedOutput, actualOutput);
         }
+
+        [Test]
+        public void NarrowWithSaturation128()
+        {
+            var expectedOutput = Vector128.Create(short.MinValue, 1, 2, 3, 4, 5, 6, short.MaxValue);
+
+            var actualOutput = VectorUtils.NarrowWithSaturation(
+                Vector128.Create(int.MinValue, 1, 2, 3),
+                Vector128.Create(4, 5, 6, int.MaxValue)
+                );
+
+            Assert.AreEqual(expectedOutput, actualOutput);
+        }
+
+        [Test]
+        public void NarrowWithSaturation256()
+        {
+            var expectedOutput = Vector256.Create(
+                short.MinValue, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, short.MaxValue);
+
+            var actualOutput = VectorUtils.NarrowWithSaturation(
+                Vector256.Create(int.MinValue, 1, 2, 3, 4, 5, 6, 7),
+                Vector256.Create(8, 9, 10, 11, 12, 13, 14, int.MaxValue)
+                );
+
+            Assert.AreEqual(expectedOutput, actualOutput);
+        }
+
+        [Test]
+        public void NarrowWithSaturationToByte128()
+        {
+            var expectedOutput = Vector128.Create(0, 0, 0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 255, 255, 255);
+
+            var actualOutput = VectorUtils.NarrowWithSaturationToByte(
+                Vector128.Create(int.MinValue, -1, 0, 1),
+                Vector128.Create(3, 4, 5, 6),
+                Vector128.Create(7, 8, 9, 10),
+                Vector128.Create(11, 255, 256, int.MaxValue)
+                );
+
+            Assert.AreEqual(expectedOutput, actualOutput);
+        }
+
+        [Test]
+        public void NarrowWithSaturationToByte256()
+        {
+            var expectedOutput = Vector256.Create(
+                0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+                15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 255, 255, 255);
+
+            var actualOutput = VectorUtils.NarrowWithSaturationToByte(
+                Vector256.Create(int.MinValue, -1, 0, 1, 2, 3, 4, 5),
+                Vector256.Create(6, 7, 8, 9, 10, 11, 12, 13),
+                Vector256.Create(14, 15, 16, 17, 18, 19, 20, 21),
+                Vector256.Create(22, 23, 24, 25, 26, 255, 256, int.MaxValue)
+                );
+
+            Assert.AreEqual(expectedOutput, actualOutput);
+        }
     }
 }
 

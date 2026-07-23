@@ -4,12 +4,6 @@
 
 using PdfToSvg.Functions;
 using PdfToSvg.Imaging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PdfToSvg.ColorSpaces
 {
@@ -39,6 +33,13 @@ namespace PdfToSvg.ColorSpaces
         public override DecodeArray GetDefaultDecodeArray(int bitsPerComponent)
         {
             return new DecodeArray(bitsPerComponent, new[] { 0f, 1f });
+        }
+
+        public override ColorConversionContext CreateConversionContext(
+            int bitsPerComponent,
+            DecodeArray decodeArray)
+        {
+            return ColorConversionContext.Create(this, bitsPerComponent, decodeArray);
         }
 
         public override int ComponentsPerSample => 1;

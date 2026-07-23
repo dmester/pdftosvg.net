@@ -52,6 +52,13 @@ namespace PdfToSvg.ColorSpaces
             return new DecodeArray(bitsPerComponent, decodeArray);
         }
 
+        public override ColorConversionContext CreateConversionContext(
+            int bitsPerComponent,
+            DecodeArray decodeArray)
+        {
+            return ColorConversionContext.Create(this, bitsPerComponent, decodeArray);
+        }
+
         public override int ComponentsPerSample { get; }
 
         public ColorSpace AlternateSpace { get; }

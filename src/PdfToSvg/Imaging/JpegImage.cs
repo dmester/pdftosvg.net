@@ -246,6 +246,9 @@ namespace PdfToSvg.Imaging
 
             encoder.WriteMetadata();
 
+            // We currently only support 8 bit images
+            var conversionContext = colorSpace.CreateConversionContext(bitsPerComponent: 8, decodeArray);
+
             var convertedScan = ArrayUtils.Empty<float>();
 
             foreach (var scan in decoder.ReadImageData())
@@ -264,9 +267,6 @@ namespace PdfToSvg.Imaging
                         break;
                 }
 
-                // Decode
-                decodeArray.Decode(scan, 0, scan.Length);
-
                 // Convert to RGB
                 var sampleCount = scan.Length / decoder.Components;
                 var convertedLength = sampleCount * YccComponents;
@@ -275,7 +275,7 @@ namespace PdfToSvg.Imaging
                     convertedScan = new float[convertedLength];
                 }
 
-                colorSpace.ToRgb8(scan, 0, convertedScan, 0, sampleCount);
+                conversionContext.DecodeToRgb8(scan, 0, convertedScan, 0, sampleCount);
 
                 // Convert to YCbCr
                 JpegColorSpaceTransform.RgbToYcc(convertedScan, 0, convertedScan.Length);

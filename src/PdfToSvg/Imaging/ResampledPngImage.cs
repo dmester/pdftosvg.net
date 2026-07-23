@@ -110,9 +110,9 @@ namespace PdfToSvg.Imaging
 
         private void WriteUnmaskedImage(BitReader componentReader, Stream outputStream, CancellationToken cancellationToken)
         {
-            var componentBuffer = new float[colorSpace.ComponentsPerSample * width];
-
             var decodeArray = ImageHelper.GetDecodeArray(imageDictionary, colorSpace);
+            var conversionContext = colorSpace.CreateConversionContext(bitsPerComponent, decodeArray);
+            var componentBuffer = new float[conversionContext.ComponentsPerSample * width];
             var pngRgbRow = new byte[1 + width * ColorsRgb];
 
             for (var y = 0; y < height; y++)
@@ -120,9 +120,7 @@ namespace PdfToSvg.Imaging
                 componentReader.Read(componentBuffer, 0, componentBuffer.Length);
                 componentReader.SkipPartialByte();
 
-                decodeArray.Decode(componentBuffer, 0, componentBuffer.Length);
-
-                colorSpace.ToRgb8(componentBuffer, 0, pngRgbRow, 1, width);
+                conversionContext.DecodeToRgb8(componentBuffer, 0, pngRgbRow, 1, width);
 
                 outputStream.Write(pngRgbRow);
 
@@ -135,9 +133,9 @@ namespace PdfToSvg.Imaging
 
         private void WriteColorKeyMaskedImage(BitReader componentReader, Stream outputStream, CancellationToken cancellationToken)
         {
-            var componentBuffer = new float[colorSpace.ComponentsPerSample * width];
-
             var decodeArray = ImageHelper.GetDecodeArray(imageDictionary, colorSpace);
+            var conversionContext = colorSpace.CreateConversionContext(bitsPerComponent, decodeArray);
+            var componentBuffer = new float[conversionContext.ComponentsPerSample * width];
 
             var pngRgbRow = new byte[1 + width * ColorsRgba];
 
@@ -152,9 +150,9 @@ namespace PdfToSvg.Imaging
                 {
                     transparent[x] = true;
 
-                    for (var componentIndex = 0; componentIndex < colorSpace.ComponentsPerSample; componentIndex++)
+                    for (var componentIndex = 0; componentIndex < conversionContext.ComponentsPerSample; componentIndex++)
                     {
-                        var component = (int)componentBuffer[x * colorSpace.ComponentsPerSample + componentIndex];
+                        var component = (int)componentBuffer[x * conversionContext.ComponentsPerSample + componentIndex];
 
                         if (component < colorKey[componentIndex * 2] ||
                             component > colorKey[componentIndex * 2 + 1])
@@ -165,9 +163,7 @@ namespace PdfToSvg.Imaging
                     }
                 }
 
-                decodeArray.Decode(componentBuffer, 0, componentBuffer.Length);
-
-                colorSpace.ToRgba8(componentBuffer, 0, pngRgbRow, 1, width);
+                conversionContext.DecodeToRgba8(componentBuffer, 0, pngRgbRow, 1, width);
 
                 for (var x = 0; x < width; x++)
                 {

@@ -79,6 +79,13 @@ namespace PdfToSvg.ColorSpaces
 
         public abstract DecodeArray GetDefaultDecodeArray(int bitsPerComponent);
 
+        public virtual ColorConversionContext CreateConversionContext(
+            int bitsPerComponent,
+            DecodeArray decodeArray)
+        {
+            return new ColorConversionContext(this, decodeArray);
+        }
+
         public abstract int ComponentsPerSample { get; }
 
         public abstract float[] DefaultColor { get; }

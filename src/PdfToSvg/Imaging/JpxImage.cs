@@ -423,7 +423,10 @@ namespace PdfToSvg.Imaging
 
             encoder.WriteMetadata();
 
+            // We currently don't care about the actual per component precisions
+            var assumedBitsPerComponent = ImageHelper.GetBitsPerComponent(imageDictionary);
             var decodeArray = ImageHelper.GetDecodeArray(imageDictionary, effectiveColorSpace);
+            var conversionContext = effectiveColorSpace.CreateConversionContext(assumedBitsPerComponent, decodeArray);
 
             var channelCount = image.ColorChannels.Length;
             var bandSamples = new float[image.Width * BandHeight * channelCount];
@@ -438,8 +441,7 @@ namespace PdfToSvg.Imaging
                 ScaledInterleave(
                     image.ColorChannels, bandStart * image.Width, bandPixelCount, bandSamples, maxSourceValue);
 
-                decodeArray.Decode(bandSamples, 0, bandPixelCount * channelCount);
-                effectiveColorSpace.ToRgb8(bandSamples, 0, bandYcc, 0, bandPixelCount);
+                conversionContext.DecodeToRgb8(bandSamples, 0, bandYcc, 0, bandPixelCount);
                 JpegColorSpaceTransform.RgbToYcc(bandYcc, 0, bandPixelCount * YccComponents);
 
                 encoder.WriteImageData(bandYcc, 0, bandPixelCount * YccComponents);
@@ -468,8 +470,12 @@ namespace PdfToSvg.Imaging
                 JpxColorSpaceTransform.YccToRgb(channels, pixelCount);
             }
 
+            // We currently don't care about the actual per component precisions
+            var assumedBitsPerComponent = ImageHelper.GetBitsPerComponent(imageDictionary);
+
             // The /Decode array applies only to color values (ISO 32000-2:2020 Table 87); opacity is used as decoded
             var decodeArray = ImageHelper.GetDecodeArray(imageDictionary, effectiveColorSpace);
+            var conversionContext = effectiveColorSpace.CreateConversionContext(assumedBitsPerComponent, decodeArray);
 
             const int BandHeight = 8;
             const int RgbaComponents = 4;
@@ -500,8 +506,6 @@ namespace PdfToSvg.Imaging
                     var bandCursor = 0;
 
                     ScaledInterleave(channels, bandPixelOffset, bandPixelCount, bandSamples, maxSourceValue);
-                    decodeArray.Decode(bandSamples, 0, bandPixelCount * channels.Length);
-
                     // Sub filter is easy to perform without keeping track of the previous row
                     for (var row = 0; row < bandRowCount; row++)
                     {
@@ -511,7 +515,7 @@ namespace PdfToSvg.Imaging
                         var filterStartIndex = bandCursor + RgbaComponents;
                         var filterEndIndex = filterStartIndex + (width - 1) * RgbaComponents;
 
-                        effectiveColorSpace.ToRgba8(
+                        conversionContext.DecodeToRgba8(
                             // Input
                             bandSamples,
                             row * width * channels.Length,

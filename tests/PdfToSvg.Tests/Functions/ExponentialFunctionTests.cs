@@ -26,7 +26,7 @@ namespace PdfToSvg.Tests.Functions
                 { Names.N, 2d },
             });
 
-            Assert.AreEqual(new[] { -0.5d, 5.25d }, function.Evaluate(0.5d));
+            Assert.AreEqual(new[] { -0.5f, 5.25f }, function.EvaluateForTest(0.5f));
         }
 
         [Test]
@@ -40,9 +40,9 @@ namespace PdfToSvg.Tests.Functions
                 { Names.N, 1 },
             });
 
-            Assert.AreEqual(new[] { 1.8d, 1.8d }, function.Evaluate(1));
-            Assert.AreEqual(new[] { 1.5d, 1.5d }, function.Evaluate(0.5));
-            Assert.AreEqual(new[] { 1.1d, 1.1d }, function.Evaluate(0));
+            Assert.AreEqual(new[] { 1.8f, 1.8f }, function.EvaluateForTest(1));
+            Assert.AreEqual(new[] { 1.5f, 1.5f }, function.EvaluateForTest(0.5f));
+            Assert.AreEqual(new[] { 1.1f, 1.1f }, function.EvaluateForTest(0));
         }
 
         [Test]
@@ -57,9 +57,9 @@ namespace PdfToSvg.Tests.Functions
                 { Names.N, 1 },
             });
 
-            Assert.AreEqual(new[] { 1.1d }, function.Evaluate(0));
-            Assert.AreEqual(new[] { 1.5d }, function.Evaluate(0.5));
-            Assert.AreEqual(new[] { 1.8d }, function.Evaluate(1));
+            Assert.AreEqual(new[] { 1.1f }, function.EvaluateForTest(0));
+            Assert.AreEqual(new[] { 1.5f }, function.EvaluateForTest(0.5f));
+            Assert.AreEqual(new[] { 1.8f }, function.EvaluateForTest(1));
         }
     }
 }

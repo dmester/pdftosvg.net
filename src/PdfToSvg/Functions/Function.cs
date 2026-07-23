@@ -17,6 +17,10 @@ namespace PdfToSvg.Functions
     {
         private const int MaxRecursion = 100;
 
+        public abstract int InputCount { get; }
+
+        public abstract int OutputCount { get; }
+
         public static Function Parse(object? functionDefinition, CancellationToken cancellationToken)
         {
             return Parse(functionDefinition, depth: 0, cancellationToken);
@@ -83,10 +87,41 @@ namespace PdfToSvg.Functions
             return values;
         }
 
-        protected static double[] ImmutableClip(double[]? range, double[] values)
+        protected static void Clip(double[]? range, float[] values, int valueOffset)
         {
-            var clipped = (double[])values.Clone();
-            return Clip(range, clipped);
+            if (range != null)
+            {
+                for (var i = 0; i < values.Length - valueOffset && i * 2 < range.Length; i++)
+                {
+                    var min = range[i * 2];
+                    if (values[valueOffset + i] <= min)
+                    {
+                        values[valueOffset + i] = (float)min;
+                    }
+                    else if (i * 2 + 1 < range.Length)
+                    {
+                        var max = range[i * 2 + 1];
+                        if (values[valueOffset + i] >= max)
+                        {
+                            values[valueOffset + i] = (float)max;
+                        }
+                    }
+                }
+            }
+        }
+
+        protected static float[] ImmutableClip(double[]? range, float[] values, int valueOffset, int valueCount)
+        {
+            var floatValues = new float[valueCount];
+
+            for (var i = 0; i < floatValues.Length; i++)
+            {
+                floatValues[i] = values[valueOffset + i];
+            }
+
+            Clip(range, floatValues, 0);
+
+            return floatValues;
         }
 
         protected double[] EnsureArrayLength(double[] input, int expectedLength)
@@ -106,6 +141,6 @@ namespace PdfToSvg.Functions
             return input;
         }
 
-        public abstract double[] Evaluate(params double[] arguments);
+        public abstract void Evaluate(float[] input, int inputOffset, float[] output, int outputOffset);
     }
 }

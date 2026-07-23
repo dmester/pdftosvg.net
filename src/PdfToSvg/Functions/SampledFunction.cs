@@ -25,10 +25,11 @@ namespace PdfToSvg.Functions
         private readonly double[] encode;
         private readonly double[] decode;
 
-        private readonly int outputCount;
-
         private readonly uint[] samples;
         private readonly uint maxSampleValue;
+
+        public override int InputCount { get; }
+        public override int OutputCount { get; }
 
         public SampledFunction(PdfDictionary dictionary, CancellationToken cancellationToken = default)
         {
@@ -42,9 +43,9 @@ namespace PdfToSvg.Functions
                 throw new ArgumentException($"Missing {Names.Range}");
             }
 
-            outputCount = range.Length / 2;
+            OutputCount = range.Length / 2;
 
-            if (outputCount < 1)
+            if (OutputCount < 1)
             {
                 throw new ArgumentException($"At least two elements expected in {Names.Range}");
             }
@@ -57,6 +58,7 @@ namespace PdfToSvg.Functions
             {
                 throw new ArgumentException($"{Names.Size} cannot be empty.");
             }
+            InputCount = size.Length;
 
             if (!dictionary.TryGetInteger(Names.BitsPerSample, out var bitsPerSample))
             {
@@ -78,7 +80,7 @@ namespace PdfToSvg.Functions
                 decode = range;
             }
 
-            var sampleCount = outputCount;
+            var sampleCount = OutputCount;
             for (var i = 0; i < size.Length; i++)
             {
                 sampleCount *= size[i];
@@ -99,17 +101,16 @@ namespace PdfToSvg.Functions
 
             domain = EnsureArrayLength(domain, size.Length * 2);
             encode = EnsureArrayLength(encode, size.Length * 2);
-            decode = EnsureArrayLength(decode, outputCount * 2);
+            decode = EnsureArrayLength(decode, OutputCount * 2);
         }
 
-        public override double[] Evaluate(params double[] arguments)
+        public override void Evaluate(float[] input, int inputOffset, float[] output, int outputOffset)
         {
-            var input = new double[size.Length];
-            var output = new double[outputCount];
+            var clippedInput = new float[size.Length];
 
-            for (var i = 0; i < size.Length && i < arguments.Length; i++)
+            for (var i = 0; i < size.Length; i++)
             {
-                var value = arguments[i];
+                var value = (double)input[inputOffset + i];
 
                 // Clip to Domain
                 value = MathUtils.Clamp(value, domain[i * 2], domain[i * 2 + 1]);
@@ -120,7 +121,7 @@ namespace PdfToSvg.Functions
                 // Clip to Size
                 value = MathUtils.Clamp(value, 0, size[i] - 1);
 
-                input[i] = value;
+                clippedInput[i] = (float)value;
             }
 
             // PDF specification does not say anything about how multilinear interpolation should be implemented.
@@ -133,7 +134,7 @@ namespace PdfToSvg.Functions
             // 
             // Cubic spline interpolation is not implemented (none of PDF.js, PDFBox and Pdfium seems to have implemented it)
 
-            var sampleCount = 1 << input.Length;
+            var sampleCount = 1 << clippedInput.Length;
             var sampleIndexes = new int[sampleCount];
 
             var partitionMultiplier = new double[sampleCount]; // N in the paper
@@ -143,11 +144,11 @@ namespace PdfToSvg.Functions
                 partitionMultiplier[partitionIndex] = 1d;
             }
 
-            var sampleOffset = outputCount;
+            var sampleOffset = OutputCount;
 
-            for (var inputIndex = 0; inputIndex < input.Length; inputIndex++)
+            for (var inputIndex = 0; inputIndex < clippedInput.Length; inputIndex++)
             {
-                var xn2 = input[inputIndex];
+                var xn2 = clippedInput[inputIndex];
                 var xn0 = (int)xn2;
 
                 if (xn0 >= size[inputIndex] - 1)
@@ -174,7 +175,7 @@ namespace PdfToSvg.Functions
                 sampleOffset *= size[inputIndex];
             }
 
-            for (var outputIndex = 0; outputIndex < outputCount; outputIndex++)
+            for (var outputIndex = 0; outputIndex < OutputCount; outputIndex++)
             {
                 var value = 0d;
 
@@ -187,10 +188,9 @@ namespace PdfToSvg.Functions
                 value = MathUtils.Interpolate(value, 0, maxSampleValue, decode[outputIndex * 2], decode[outputIndex * 2 + 1]);
 
                 // Clip
-                output[outputIndex] = MathUtils.Clamp(value, range[outputIndex * 2], range[outputIndex * 2 + 1]);
+                output[outputOffset + outputIndex] =
+                    (float)MathUtils.Clamp(value, range[outputIndex * 2], range[outputIndex * 2 + 1]);
             }
-
-            return output;
         }
     }
 }

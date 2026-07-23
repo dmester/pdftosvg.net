@@ -1,4 +1,4 @@
-// Copyright (c) PdfToSvg.NET contributors.
+﻿// Copyright (c) PdfToSvg.NET contributors.
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
@@ -15,12 +15,12 @@ namespace PdfToSvg.Tests.Functions
 {
     public class SampledFunctionTests
     {
-        [TestCase(0d, 0d)]
-        [TestCase(0.25d, 0.5d)]
-        [TestCase(0.5d, 1d)]
-        [TestCase(0.75d, 0.5d)]
-        [TestCase(1d, 0d)]
-        public void MissingSamples(double input, double expectedOutput)
+        [TestCase(0f, 0f)]
+        [TestCase(0.25f, 0.5f)]
+        [TestCase(0.5f, 1f)]
+        [TestCase(0.75f, 0.5f)]
+        [TestCase(1f, 0f)]
+        public void MissingSamples(float input, float expectedOutput)
         {
             var dict = new PdfDictionary
             {
@@ -39,17 +39,17 @@ namespace PdfToSvg.Tests.Functions
 
             var function = new SampledFunction(dict);
 
-            Assert.That(function.Evaluate(input), Is.EqualTo(new[] { expectedOutput }).Within(0.01d));
+            Assert.That(function.EvaluateForTest(input), Is.EqualTo(new[] { expectedOutput }).Within(0.01d));
         }
 
-        [TestCase(0.000d, /* -> */ 0d)]
-        [TestCase(0.001d, /* -> */ 0d)]
-        [TestCase(0.500d, /* -> */ 0d)]
-        [TestCase(0.750d, /* -> */ 0.5d)]
-        [TestCase(0.875d, /* -> */ 0.75d)]
-        [TestCase(1.000d, /* -> */ 1d)]
-        [TestCase(2.000d, /* -> */ 1d)]
-        public void Linear(double input1, params double[] expectedOutput)
+        [TestCase(0.000f, /* -> */ 0f)]
+        [TestCase(0.001f, /* -> */ 0f)]
+        [TestCase(0.500f, /* -> */ 0f)]
+        [TestCase(0.750f, /* -> */ 0.5f)]
+        [TestCase(0.875f, /* -> */ 0.75f)]
+        [TestCase(1.000f, /* -> */ 1f)]
+        [TestCase(2.000f, /* -> */ 1f)]
+        public void Linear(float input1, params float[] expectedOutput)
         {
             var dict = new PdfDictionary
             {
@@ -68,19 +68,19 @@ namespace PdfToSvg.Tests.Functions
 
             var function = new SampledFunction(dict);
 
-            Assert.That(function.Evaluate(input1), Is.EqualTo(expectedOutput).Within(0.01d));
+            Assert.That(function.EvaluateForTest(input1), Is.EqualTo(expectedOutput).Within(0.01d));
         }
 
-        [TestCase(0.000d, 0d, /* -> */ 0d / 255, 197d / 255, 1d)]
-        [TestCase(0.999d, 0d, /* -> */ 210d / 255, 1d, 1d)]
-        [TestCase(1.001d, 0d, /* -> */ 210d / 255, 1d, 1d)]
-        [TestCase(0d, 0.499d, /* -> */ 0.5d, 0.5d, 1d)]
-        [TestCase(0d, 0.500d, /* -> */ 0.5d, 0.5d, 1d)]
-        [TestCase(0d, 0.501d, /* -> */ 0.5d, 0.5d, 1d)]
-        [TestCase(1d, 0.501d, /* -> */ 0d, 53d / 255, 152d / 255)]
-        [TestCase(0.5d, 0.75d, /* -> */ 368d / 255 / 4, 533d / 255 / 4, 482d / 255 / 4)]
-        [TestCase(1.0d, 1.00d, /* -> */ 241d / 255, 98d / 255, 75d / 255)]
-        public void Bilinear(double input1, double input2, params double[] expectedOutput)
+        [TestCase(0.000f, 0f, /* -> */ 0f / 255, 197f / 255, 1f)]
+        [TestCase(0.999f, 0f, /* -> */ 210f / 255, 1f, 1f)]
+        [TestCase(1.001f, 0f, /* -> */ 210f / 255, 1f, 1f)]
+        [TestCase(0f, 0.499f, /* -> */ 0.5f, 0.5f, 1f)]
+        [TestCase(0f, 0.500f, /* -> */ 0.5f, 0.5f, 1f)]
+        [TestCase(0f, 0.501f, /* -> */ 0.5f, 0.5f, 1f)]
+        [TestCase(1f, 0.501f, /* -> */ 0f, 53f / 255, 152f / 255)]
+        [TestCase(0.5f, 0.75f, /* -> */ 368f / 255 / 4, 533f / 255 / 4, 482f / 255 / 4)]
+        [TestCase(1.0f, 1.00f, /* -> */ 241f / 255, 98f / 255, 75f / 255)]
+        public void Bilinear(float input1, float input2, params float[] expectedOutput)
         {
             var dict = new PdfDictionary
             {
@@ -107,13 +107,13 @@ namespace PdfToSvg.Tests.Functions
 
             var function = new SampledFunction(dict);
 
-            Assert.That(function.Evaluate(input1, input2), Is.EqualTo(expectedOutput).Within(0.01d));
+            Assert.That(function.EvaluateForTest(input1, input2), Is.EqualTo(expectedOutput).Within(0.01d));
         }
 
-        [TestCase(-2d, /* -> */ 0.5d, 0d, 1d)]
-        [TestCase(+0d, /* -> */ 0.5d, 0d, 1d)]
-        [TestCase(+2d, /* -> */ 0.5d, 0d, 1d)]
-        public void SingleValue(double input, params double[] expectedOutput)
+        [TestCase(-2f, /* -> */ 0.5f, 0f, 1f)]
+        [TestCase(+0f, /* -> */ 0.5f, 0f, 1f)]
+        [TestCase(+2f, /* -> */ 0.5f, 0f, 1f)]
+        public void SingleValue(float input, params float[] expectedOutput)
         {
             var dict = new PdfDictionary
             {
@@ -134,7 +134,7 @@ namespace PdfToSvg.Tests.Functions
 
             var function = new SampledFunction(dict);
 
-            Assert.That(function.Evaluate(input), Is.EqualTo(expectedOutput).Within(0.01d));
+            Assert.That(function.EvaluateForTest(input), Is.EqualTo(expectedOutput).Within(0.01d));
         }
     }
 }

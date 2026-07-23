@@ -28,17 +28,12 @@ namespace PdfToSvg.ColorSpaces
 
         public override void ToRgb(float[] input, ref int inputOffset, out float red, out float green, out float blue)
         {
-            var tint = input[inputOffset++];
+            var output = new float[tintTransform.OutputCount];
 
-            var output = tintTransform.Evaluate(tint);
-            var floatOutput = new float[output.Length];
+            tintTransform.Evaluate(input, inputOffset, output, 0);
+            AlternateSpace.ToRgb(output, out red, out green, out blue);
 
-            for (var i = 0; i < output.Length; i++)
-            {
-                floatOutput[i] = (float)output[i];
-            }
-
-            AlternateSpace.ToRgb(floatOutput, out red, out green, out blue);
+            inputOffset++;
         }
 
         public override DecodeArray GetDefaultDecodeArray(int bitsPerComponent)

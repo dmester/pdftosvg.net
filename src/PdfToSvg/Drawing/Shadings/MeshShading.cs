@@ -344,15 +344,11 @@ namespace PdfToSvg.Drawing.Shadings
 
         private RgbColor GetPolygonColor(float[] components)
         {
-            if (!(function is IdentityFunction))
+            if (function is not IdentityFunction)
             {
-                var doubleComponents = function.Evaluate(components[0]);
-
-                components = new float[doubleComponents.Length];
-                for (var i = 0; i < doubleComponents.Length; i++)
-                {
-                    components[i] = (float)doubleComponents[i];
-                }
+                var transformedComponents = new float[function.OutputCount];
+                function.Evaluate(components, 0, transformedComponents, 0);
+                components = transformedComponents;
             }
 
             return new RgbColor(ColorSpace, components);

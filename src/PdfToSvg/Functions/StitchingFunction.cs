@@ -22,6 +22,8 @@ namespace PdfToSvg.Functions
         public readonly double[] Bounds;
         public readonly double[] Encode;
 
+        public override int InputCount { get; }
+        public override int OutputCount { get; }
 
         public StitchingFunction(PdfDictionary dictionary, int depth = 0, CancellationToken cancellationToken = default)
         {
@@ -57,11 +59,14 @@ namespace PdfToSvg.Functions
             this.Domain = EnsureArrayLength(this.Domain, 2);
             this.Bounds = EnsureArrayLength(this.Bounds, this.Functions.Length - 1);
             this.Encode = EnsureArrayLength(this.Encode, this.Functions.Length * 2);
+
+            InputCount = this.Functions[0].InputCount;
+            OutputCount = this.Functions[0].OutputCount;
         }
 
-        public override double[] Evaluate(params double[] arguments)
+        public override void Evaluate(float[] input, int inputOffset, float[] output, int outputOffset)
         {
-            arguments = ImmutableClip(Domain, arguments);
+            var arguments = ImmutableClip(Domain, input, inputOffset, InputCount);
 
             var value = arguments.Length < 1 ? 0d : arguments[0];
 
@@ -89,9 +94,11 @@ namespace PdfToSvg.Functions
             var bounds1 = funcIndex < Bounds.Length ? Bounds[funcIndex] : Domain[1];
 
             var encoded = MathUtils.Interpolate(value, bounds0, bounds1, Encode[2 * funcIndex], Encode[2 * funcIndex + 1]);
-            var output = Functions[funcIndex].Evaluate(encoded);
 
-            return Clip(Range, output);
+            var funcInput = new float[1] { (float)encoded };
+            Functions[funcIndex].Evaluate(funcInput, 0, output, outputOffset);
+
+            Clip(Range, output, outputOffset);
         }
     }
 }

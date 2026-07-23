@@ -13,9 +13,12 @@ namespace PdfToSvg.Functions
 {
     internal class IdentityFunction : Function
     {
-        public override double[] Evaluate(params double[] arguments)
+        public override int InputCount { get; } = 1;
+        public override int OutputCount { get; } = 1;
+
+        public override void Evaluate(float[] input, int inputOffset, float[] output, int outputOffset)
         {
-            return arguments;
+            output[outputOffset] = input[inputOffset];
         }
     }
 }

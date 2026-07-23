@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,10 @@ namespace PdfToSvg.Functions
 
         public readonly double[] C0;
         public readonly double[] C1;
-        public readonly int OutputCount;
         public readonly double N;
+
+        public override int InputCount { get; }
+        public override int OutputCount { get; }
 
         public ExponentialFunction(PdfDictionary dictionary)
         {
@@ -45,24 +48,21 @@ namespace PdfToSvg.Functions
                 N = 1;
             }
 
+            InputCount = Domain.Length / 2;
             OutputCount = Math.Min(C0.Length, C1.Length);
         }
 
-        public override double[] Evaluate(params double[] arguments)
+        public override void Evaluate(float[] input, int inputOffset, float[] output, int outputOffset)
         {
-            arguments = ImmutableClip(Domain, arguments);
-
-            var value = arguments.Length < 1 ? 0d : arguments[0];
+            var value = MathUtils.Clamp(input[inputOffset], Domain[0], Domain[1]);
             var raisedValue = Math.Pow(value, N);
 
-            var output = new double[OutputCount];
-
-            for (var i = 0; i < output.Length; i++)
+            for (var i = 0; i < OutputCount; i++)
             {
-                output[i] = C0[i] + raisedValue * (C1[i] - C0[i]);
+                output[outputOffset + i] = (float)(C0[i] + raisedValue * (C1[i] - C0[i]));
             }
 
-            return Clip(Range, output);
+            Clip(Range, output, outputOffset);
         }
     }
 }

@@ -2,15 +2,10 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
-using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Functions.PostScript;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace PdfToSvg.Functions
 {
@@ -19,6 +14,9 @@ namespace PdfToSvg.Functions
         private readonly double[] domain;
         private readonly double[] range;
         private readonly PostScriptExpression expression;
+
+        public override int InputCount { get; }
+        public override int OutputCount { get; }
 
         public PostScriptFunction(PdfDictionary dictionary, CancellationToken cancellationToken = default)
         {
@@ -31,6 +29,9 @@ namespace PdfToSvg.Functions
             {
                 throw new ArgumentException($"Missing {Names.Range}");
             }
+
+            InputCount = domain.Length / 2;
+            OutputCount = range.Length / 2;
 
             if (dictionary.Stream != null)
             {
@@ -51,15 +52,15 @@ namespace PdfToSvg.Functions
             }
         }
 
-        public override double[] Evaluate(params double[] arguments)
+        public override void Evaluate(float[] input, int inputOffset, float[] output, int outputOffset)
         {
-            arguments = ImmutableClip(domain, arguments);
+            var arguments = ImmutableClip(domain, input, inputOffset, InputCount);
 
             var stack = new PostScriptStack();
 
             for (var i = 0; i < arguments.Length; i++)
             {
-                stack.Push(arguments[i]);
+                stack.Push((double)arguments[i]);
             }
 
             expression.Execute(stack);
@@ -70,8 +71,8 @@ namespace PdfToSvg.Functions
                     $"Expected a resulting PostScript stack of {range.Length / 2} elements but found {stack.Count}.");
             }
 
-            var result = stack.ToDoubleArray();
-            return Clip(range, result);
+            stack.CopyTo(output, outputOffset, OutputCount);
+            Clip(range, output, outputOffset);
         }
     }
 }

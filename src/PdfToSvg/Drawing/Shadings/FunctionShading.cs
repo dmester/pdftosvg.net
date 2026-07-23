@@ -69,6 +69,7 @@ namespace PdfToSvg.Drawing.Shadings
             using (var pngDataStream = pngWriter.GetImageDataStream())
             {
                 var row = new byte[1 + width * OutputComponentsPerSample];
+                var input = new float[2];
                 var colorFloatComponents = new float[ColorSpace.ComponentsPerSample];
 
                 // The Sub filter is likely a good candidate for most shadings
@@ -78,14 +79,9 @@ namespace PdfToSvg.Drawing.Shadings
                 {
                     for (var x = 0; x < width; x++)
                     {
-                        var colorDoubleComponents = function.Evaluate(
-                            minX + x * xMultiplier,
-                            minY + y * yMultiplier);
-
-                        for (var i = 0; i < colorDoubleComponents.Length && i < colorFloatComponents.Length; i++)
-                        {
-                            colorFloatComponents[i] = (float)colorDoubleComponents[i];
-                        }
+                        input[0] = (float)(minX + x * xMultiplier);
+                        input[1] = (float)(minY + y * yMultiplier);
+                        function.Evaluate(input, 0, colorFloatComponents, 0);
 
                         ColorSpace.ToRgb8(colorFloatComponents, 0, row, 1 + x * OutputComponentsPerSample, count: 1);
                     }

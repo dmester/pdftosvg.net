@@ -15,20 +15,20 @@ namespace PdfToSvg.Tests.Functions
 {
     public class StitchingFunctionTests
     {
-        [TestCase(-2d, 8d)]
-        [TestCase(0.2d, 10d)]
-        [TestCase(0.4d, 42.8d, 43.8d)]
-        [TestCase(0.5d, 44d, 45d)]
-        [TestCase(0.6d, 102d)]
-        [TestCase(0.7d, 102.5d)]
-        [TestCase(0.8d, 103d)]
-        [TestCase(1.1d, 103d)]
-        public void ValidDefinition(double input, params double[] expectedOutput)
+        [TestCase(-2f, 8f, 9f)]
+        [TestCase(0.2f, 10f, 11f)]
+        [TestCase(0.4f, 42.8f, 43.8f)]
+        [TestCase(0.5f, 44f, 45f)]
+        [TestCase(0.6f, 102f, 103f)]
+        [TestCase(0.7f, 102.5f, 103.5f)]
+        [TestCase(0.8f, 103f, 104f)]
+        [TestCase(1.1f, 103f, 104f)]
+        public void ValidDefinition(float input, params float[] expectedOutput)
         {
             var function = new StitchingFunction(new PdfDictionary
             {
                 { Names.Domain, new object[] { 0d, 1d } },
-                { Names.Range, new object[] { 0d, 103d } },
+                { Names.Range, new object[] { 0d, 103d, 0d, 104d } },
                 { Names.Bounds, new object[] { 0.4d, 0.6d } },
                 { Names.Encode, new object[] { 0d, 1d, 0.2d, 0.8d, 0d, 1d } },
                 { Names.Functions, new object[]
@@ -37,8 +37,8 @@ namespace PdfToSvg.Tests.Functions
                     {
                         { Names.FunctionType, 2 },
                         { Names.Domain, new object[] { 0, 1 } },
-                        { Names.C0, new object[] { 8 } },
-                        { Names.C1, new object[] { 12 } },
+                        { Names.C0, new object[] { 8, 9 } },
+                        { Names.C1, new object[] { 12, 13 } },
                     },
                     new PdfDictionary
                     {
@@ -51,13 +51,13 @@ namespace PdfToSvg.Tests.Functions
                     {
                         { Names.FunctionType, 2 },
                         { Names.Domain, new object[] { 0, 1 } },
-                        { Names.C0, new object[] { 102 } },
-                        { Names.C1, new object[] { 104 } },
+                        { Names.C0, new object[] { 102, 103 } },
+                        { Names.C1, new object[] { 104, 105 } },
                     },
                 } },
             });
 
-            Assert.AreEqual(expectedOutput, function.Evaluate(input));
+            Assert.AreEqual(expectedOutput, function.EvaluateForTest(input));
         }
 
         [Test]

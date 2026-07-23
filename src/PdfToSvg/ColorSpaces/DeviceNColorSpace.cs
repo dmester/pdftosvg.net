@@ -2,14 +2,8 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
-using PdfToSvg.Common;
 using PdfToSvg.Functions;
 using PdfToSvg.Imaging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PdfToSvg.ColorSpaces
 {
@@ -35,21 +29,13 @@ namespace PdfToSvg.ColorSpaces
 
         public override void ToRgb(float[] input, ref int inputOffset, out float red, out float green, out float blue)
         {
-            var components = new double[ComponentsPerSample];
-            for (var i = 0; i < components.Length; i++)
-            {
-                components[i] = input[inputOffset++];
-            }
+            var output = new float[tintTransform.OutputCount];
+            tintTransform.Evaluate(input, inputOffset, output, outputOffset: 0);
+            inputOffset += ComponentsPerSample;
 
-            var output = tintTransform.Evaluate(components);
-            var floatOutput = new float[output.Length];
+            var cursor = 0;
+            AlternateSpace.ToRgb(output, ref cursor, out red, out green, out blue);
 
-            for (var i = 0; i < output.Length; i++)
-            {
-                floatOutput[i] = (float)output[i];
-            }
-
-            AlternateSpace.ToRgb(floatOutput, out red, out green, out blue);
         }
 
         public override DecodeArray GetDefaultDecodeArray(int bitsPerComponent)

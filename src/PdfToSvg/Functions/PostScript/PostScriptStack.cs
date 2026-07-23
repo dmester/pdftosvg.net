@@ -49,21 +49,17 @@ namespace PdfToSvg.Functions.PostScript
             }
         }
 
-        public double[] ToDoubleArray()
+        public void CopyTo(float[] output, int offset, int count)
         {
-            var result = new double[stack.Count];
-
-            for (var i = 0; i < result.Length; i++)
+            for (var i = 0; i < count; i++)
             {
                 var value = stack[i];
 
-                result[i] =
+                output[offset + i] =
                     value is int iValue ? iValue :
-                    value is double dblValue ? dblValue :
-                    0d;
+                    value is double dblValue ? (float)dblValue :
+                    0f;
             }
-
-            return result;
         }
 
         public void Roll(int windowSize, int shiftAmount)

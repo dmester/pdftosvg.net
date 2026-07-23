@@ -18,7 +18,7 @@ namespace PdfToSvg.Drawing.Shadings
     {
         private static readonly XNamespace ns = "http://www.w3.org/2000/svg";
 
-        private delegate void Adder(double offset, double[] color);
+        private delegate void Adder(double offset, float[] color);
 
         // The shading will leave some room for an additional transparent stop if Extend is false.
         private const double StopOffsetStart = 0.00001;
@@ -56,16 +56,10 @@ namespace PdfToSvg.Drawing.Shadings
 
             var stops = new List<ShadingStop>();
             var previousStop = default(ShadingStop);
-            var floatColor = new float[ColorSpace.ComponentsPerSample];
 
-            void AddStop(double offset, double[] color)
+            void AddStop(double offset, float[] color)
             {
-                for (var j = 0; j < floatColor.Length && j < color.Length; j++)
-                {
-                    floatColor[j] = (float)color[j];
-                }
-
-                var stop = new ShadingStop(offset, new RgbColor(ColorSpace, floatColor));
+                var stop = new ShadingStop(offset, new RgbColor(ColorSpace, color));
 
                 if (previousStop.Color != stop.Color || previousStop.Offset != stop.Offset)
                 {
@@ -137,9 +131,16 @@ namespace PdfToSvg.Drawing.Shadings
             if (function is ExponentialFunction exponential && exponential.N == 1)
             {
                 // For linear functions, it is enough to add two stops
+                var input = new float[1];
+                var output = new float[function.OutputCount];
 
-                adder(offsetRangeFrom, exponential.Evaluate(domainFrom));
-                adder(offsetRangeTo, exponential.Evaluate(domainTo));
+                input[0] = (float)domainFrom;
+                exponential.Evaluate(input, 0, output, 0);
+                adder(offsetRangeFrom, output);
+
+                input[0] = (float)domainTo;
+                exponential.Evaluate(input, 0, output, 0);
+                adder(offsetRangeTo, output);
             }
             else if (function is StitchingFunction stitching)
             {
@@ -175,11 +176,15 @@ namespace PdfToSvg.Drawing.Shadings
 
                 var domainMultiplier = (domainTo - domainFrom) / (Samples - 1);
 
+                var input = new float[1];
+                var output = new float[function.OutputCount];
+
                 for (var i = 0; i < Samples; i++)
                 {
-                    var color = function.Evaluate(domainFrom + i * domainMultiplier);
+                    input[0] = (float)(domainFrom + i * domainMultiplier);
+                    function.Evaluate(input, 0, output, 0);
+                    adder(offset, output);
 
-                    adder(offset, color);
                     offset += deltaOffset;
                 }
             }

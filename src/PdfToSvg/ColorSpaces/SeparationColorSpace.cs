@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.Functions;
 using PdfToSvg.Imaging;
 
@@ -28,6 +29,61 @@ namespace PdfToSvg.ColorSpaces
             AlternateSpace.ToRgb(output, out red, out green, out blue);
 
             inputOffset++;
+        }
+
+        public override void ToRgb8(float[] input, int inputOffset, byte[] rgbBuffer, int rgbBufferOffset, int sampleCount)
+        {
+            var output = new float[tintTransform.OutputCount];
+
+            for (var i = 0; i < sampleCount; i++)
+            {
+                tintTransform.Evaluate(input, inputOffset, output, 0);
+                AlternateSpace.ToRgb(output, out var red, out var green, out var blue);
+
+                rgbBuffer[rgbBufferOffset + 0] = ToRgb8Component(red);
+                rgbBuffer[rgbBufferOffset + 1] = ToRgb8Component(green);
+                rgbBuffer[rgbBufferOffset + 2] = ToRgb8Component(blue);
+
+                rgbBufferOffset += 3;
+                inputOffset++;
+            }
+        }
+
+        public override void ToRgb8(float[] input, int inputOffset, float[] rgbBuffer, int rgbBufferOffset, int sampleCount)
+        {
+            var output = new float[tintTransform.OutputCount];
+
+            for (var i = 0; i < sampleCount; i++)
+            {
+                tintTransform.Evaluate(input, inputOffset, output, 0);
+                AlternateSpace.ToRgb(output, out var red, out var green, out var blue);
+
+                rgbBuffer[rgbBufferOffset + 0] = MathUtils.Clamp(red * 255f, 0f, 255f);
+                rgbBuffer[rgbBufferOffset + 1] = MathUtils.Clamp(green * 255f, 0f, 255f);
+                rgbBuffer[rgbBufferOffset + 2] = MathUtils.Clamp(blue * 255f, 0f, 255f);
+
+                rgbBufferOffset += 3;
+                inputOffset++;
+            }
+        }
+
+        public override void ToRgba8(float[] input, int inputOffset, byte[] rgbaBuffer, int rgbaBufferOffset, int sampleCount)
+        {
+            var output = new float[tintTransform.OutputCount];
+
+            for (var i = 0; i < sampleCount; i++)
+            {
+                tintTransform.Evaluate(input, inputOffset, output, 0);
+                AlternateSpace.ToRgb(output, out var red, out var green, out var blue);
+
+                rgbaBuffer[rgbaBufferOffset + 0] = ToRgb8Component(red);
+                rgbaBuffer[rgbaBufferOffset + 1] = ToRgb8Component(green);
+                rgbaBuffer[rgbaBufferOffset + 2] = ToRgb8Component(blue);
+                rgbaBuffer[rgbaBufferOffset + 3] = 0;
+
+                rgbaBufferOffset += 4;
+                inputOffset++;
+            }
         }
 
         public override DecodeArray GetDefaultDecodeArray(int bitsPerComponent)

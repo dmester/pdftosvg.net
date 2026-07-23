@@ -20,46 +20,52 @@ namespace PdfToSvg.ColorSpaces
 {
     internal abstract class ColorSpace
     {
-        public void ToRgb8(float[] input, int inputOffset, byte[] rgbBuffer, int rgbBufferOffset, int count)
+        public virtual void ToRgb8(float[] input, int inputOffset, byte[] rgbBuffer, int rgbBufferOffset, int sampleCount)
         {
             float red, green, blue;
 
-            for (var i = 0; i < count; i++)
+            for (var i = 0; i < sampleCount; i++)
             {
                 ToRgb(input, ref inputOffset, out red, out green, out blue);
 
-                rgbBuffer[rgbBufferOffset++] = ToRgb8Component(red);
-                rgbBuffer[rgbBufferOffset++] = ToRgb8Component(green);
-                rgbBuffer[rgbBufferOffset++] = ToRgb8Component(blue);
+                rgbBuffer[rgbBufferOffset + 0] = ToRgb8Component(red);
+                rgbBuffer[rgbBufferOffset + 1] = ToRgb8Component(green);
+                rgbBuffer[rgbBufferOffset + 2] = ToRgb8Component(blue);
+
+                rgbBufferOffset += 3;
             }
         }
 
-        public void ToRgb8(float[] input, int inputOffset, float[] rgbBuffer, int rgbBufferOffset, int count)
+        public virtual void ToRgb8(float[] input, int inputOffset, float[] rgbBuffer, int rgbBufferOffset, int sampleCount)
         {
             float red, green, blue;
 
-            for (var i = 0; i < count; i++)
+            for (var i = 0; i < sampleCount; i++)
             {
                 ToRgb(input, ref inputOffset, out red, out green, out blue);
 
-                rgbBuffer[rgbBufferOffset++] = MathUtils.Clamp(red * 255f, 0f, 255f);
-                rgbBuffer[rgbBufferOffset++] = MathUtils.Clamp(green * 255f, 0f, 255f);
-                rgbBuffer[rgbBufferOffset++] = MathUtils.Clamp(blue * 255f, 0f, 255f);
+                rgbBuffer[rgbBufferOffset + 0] = MathUtils.Clamp(red * 255f, 0f, 255f);
+                rgbBuffer[rgbBufferOffset + 1] = MathUtils.Clamp(green * 255f, 0f, 255f);
+                rgbBuffer[rgbBufferOffset + 2] = MathUtils.Clamp(blue * 255f, 0f, 255f);
+
+                rgbBufferOffset += 3;
             }
         }
 
-        public void ToRgba8(float[] input, int inputOffset, byte[] rgbBuffer, int rgbBufferOffset, int count)
+        public virtual void ToRgba8(float[] input, int inputOffset, byte[] rgbaBuffer, int rgbaBufferOffset, int sampleCount)
         {
             float red, green, blue;
 
-            for (var i = 0; i < count; i++)
+            for (var i = 0; i < sampleCount; i++)
             {
                 ToRgb(input, ref inputOffset, out red, out green, out blue);
 
-                rgbBuffer[rgbBufferOffset++] = ToRgb8Component(red);
-                rgbBuffer[rgbBufferOffset++] = ToRgb8Component(green);
-                rgbBuffer[rgbBufferOffset++] = ToRgb8Component(blue);
-                rgbBuffer[rgbBufferOffset++] = 0;
+                rgbaBuffer[rgbaBufferOffset + 0] = ToRgb8Component(red);
+                rgbaBuffer[rgbaBufferOffset + 1] = ToRgb8Component(green);
+                rgbaBuffer[rgbaBufferOffset + 2] = ToRgb8Component(blue);
+                rgbaBuffer[rgbaBufferOffset + 3] = 0;
+
+                rgbaBufferOffset += 4;
             }
         }
 
@@ -78,7 +84,7 @@ namespace PdfToSvg.ColorSpaces
         public abstract float[] DefaultColor { get; }
 
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
-        private static byte ToRgb8Component(float value)
+        protected static byte ToRgb8Component(float value)
         {
             var intValue = unchecked((int)(value * 255f + 0.5f));
 

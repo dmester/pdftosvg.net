@@ -238,7 +238,7 @@ namespace PdfToSvg.Imaging
                 indexedColorSpace.ToRgb8(
                     indexedColorValue, inputOffset: 0,
                     palette,
-                    rgbBufferOffset: i * 3, count: 1);
+                    rgbBufferOffset: i * 3, sampleCount: 1);
             }
 
             return WriteIndexedPng(palette, colorCount, decoder.GetComponentIndices(0, cancellationToken),

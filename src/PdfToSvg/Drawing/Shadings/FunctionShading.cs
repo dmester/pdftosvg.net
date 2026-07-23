@@ -83,7 +83,7 @@ namespace PdfToSvg.Drawing.Shadings
                         input[1] = (float)(minY + y * yMultiplier);
                         function.Evaluate(input, 0, colorFloatComponents, 0);
 
-                        ColorSpace.ToRgb8(colorFloatComponents, 0, row, 1 + x * OutputComponentsPerSample, count: 1);
+                        ColorSpace.ToRgb8(colorFloatComponents, 0, row, 1 + x * OutputComponentsPerSample, sampleCount: 1);
                     }
 
                     for (var i = row.Length - OutputComponentsPerSample; i > 1; i -= OutputComponentsPerSample)

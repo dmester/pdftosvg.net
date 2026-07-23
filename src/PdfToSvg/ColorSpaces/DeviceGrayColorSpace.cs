@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.Imaging;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,52 @@ namespace PdfToSvg.ColorSpaces
             red = value;
             green = value;
             blue = value;
+        }
+
+        public override void ToRgb8(float[] input, int inputOffset, byte[] rgbBuffer, int rgbBufferOffset, int sampleCount)
+        {
+            for (var i = 0; i < sampleCount; i++)
+            {
+                var gray = input[inputOffset++];
+                var scaled = ToRgb8Component(gray);
+
+                rgbBuffer[rgbBufferOffset + 0] = scaled;
+                rgbBuffer[rgbBufferOffset + 1] = scaled;
+                rgbBuffer[rgbBufferOffset + 2] = scaled;
+
+                rgbBufferOffset += 3;
+            }
+        }
+
+        public override void ToRgb8(float[] input, int inputOffset, float[] rgbBuffer, int rgbBufferOffset, int sampleCount)
+        {
+            for (var i = 0; i < sampleCount; i++)
+            {
+                var gray = input[inputOffset++];
+                var scaled = MathUtils.Clamp(gray * 255f, 0f, 255f);
+
+                rgbBuffer[rgbBufferOffset + 0] = scaled;
+                rgbBuffer[rgbBufferOffset + 1] = scaled;
+                rgbBuffer[rgbBufferOffset + 2] = scaled;
+
+                rgbBufferOffset += 3;
+            }
+        }
+
+        public override void ToRgba8(float[] input, int inputOffset, byte[] rgbaBuffer, int rgbaBufferOffset, int sampleCount)
+        {
+            for (var i = 0; i < sampleCount; i++)
+            {
+                var gray = input[inputOffset++];
+                var scaled = ToRgb8Component(gray);
+
+                rgbaBuffer[rgbaBufferOffset + 0] = scaled;
+                rgbaBuffer[rgbaBufferOffset + 1] = scaled;
+                rgbaBuffer[rgbaBufferOffset + 2] = scaled;
+                rgbaBuffer[rgbaBufferOffset + 3] = 0;
+
+                rgbaBufferOffset += 4;
+            }
         }
 
         public override DecodeArray GetDefaultDecodeArray(int bitsPerComponent)

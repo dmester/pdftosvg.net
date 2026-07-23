@@ -2,12 +2,10 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.Imaging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace PdfToSvg.ColorSpaces
 {
@@ -16,7 +14,7 @@ namespace PdfToSvg.ColorSpaces
         private const int RgbComponents = 3;
 
         private readonly ColorSpace baseSpace;
-        private readonly float[] rgbLookup;
+        private readonly byte[] rgbLookup; // 0..255
 
         public IndexedColorSpace(ColorSpace baseSpace, byte[] lookup) : this(baseSpace, lookup, lookup.Length) { }
 
@@ -41,7 +39,7 @@ namespace PdfToSvg.ColorSpaces
             decodeArray.Decode(mappedColors);
 
             // Map to RGB
-            var rgbLookup = new float[colors * RgbComponents];
+            var rgbLookup = new byte[colors * RgbComponents];
             var mappedColorIndex = 0;
 
             for (var i = 0; i < colors; i++)
@@ -50,9 +48,11 @@ namespace PdfToSvg.ColorSpaces
 
                 baseSpace.ToRgb(
                     mappedColors, ref mappedColorIndex,
-                    out rgbLookup[redIndex + 0],
-                    out rgbLookup[redIndex + 1],
-                    out rgbLookup[redIndex + 2]);
+                    out var red, out var green, out var blue);
+
+                rgbLookup[redIndex + 0] = (byte)MathUtils.Clamp(red * 255f + 0.5f, 0f, 255f);
+                rgbLookup[redIndex + 1] = (byte)MathUtils.Clamp(green * 255f + 0.5f, 0f, 255f);
+                rgbLookup[redIndex + 2] = (byte)MathUtils.Clamp(blue * 255f + 0.5f, 0f, 255f);
             }
 
             this.baseSpace = baseSpace;
@@ -63,6 +63,67 @@ namespace PdfToSvg.ColorSpaces
         public override void ToRgb(float[] input, ref int inputOffset, out float red, out float green, out float blue)
         {
             var index = (int)(input[inputOffset++] + 0.5f);
+            var rgbStartIndex = index * RgbComponents;
+
+            if (rgbStartIndex + RgbComponents <= rgbLookup.Length)
+            {
+                red = rgbLookup[rgbStartIndex + 0] * (1f / 255f);
+                green = rgbLookup[rgbStartIndex + 1] * (1f / 255f);
+                blue = rgbLookup[rgbStartIndex + 2] * (1f / 255f);
+            }
+            else
+            {
+                red = 0;
+                green = 0;
+                blue = 0;
+            }
+        }
+
+        public override void ToRgb8(float[] input, int inputOffset, float[] rgbBuffer, int rgbBufferOffset, int sampleCount)
+        {
+            for (var i = 0; i < sampleCount; i++)
+            {
+                ToRgb(input[inputOffset + i], out var red, out var green, out var blue);
+
+                rgbBuffer[rgbBufferOffset + 0] = red;
+                rgbBuffer[rgbBufferOffset + 1] = green;
+                rgbBuffer[rgbBufferOffset + 2] = blue;
+
+                rgbBufferOffset += 3;
+            }
+        }
+
+        public override void ToRgb8(float[] input, int inputOffset, byte[] rgbBuffer, int rgbBufferOffset, int sampleCount)
+        {
+            for (var i = 0; i < sampleCount; i++)
+            {
+                ToRgb(input[inputOffset + i],
+                    out rgbBuffer[rgbBufferOffset + 0],
+                    out rgbBuffer[rgbBufferOffset + 1],
+                    out rgbBuffer[rgbBufferOffset + 2]);
+
+                rgbBufferOffset += 3;
+            }
+        }
+
+        public override void ToRgba8(float[] input, int inputOffset, byte[] rgbaBuffer, int rgbaBufferOffset, int sampleCount)
+        {
+            for (var i = 0; i < sampleCount; i++)
+            {
+                ToRgb(input[inputOffset + i],
+                    out rgbaBuffer[rgbaBufferOffset + 0],
+                    out rgbaBuffer[rgbaBufferOffset + 1],
+                    out rgbaBuffer[rgbaBufferOffset + 2]);
+                rgbaBuffer[rgbaBufferOffset + 3] = 0;
+
+                rgbaBufferOffset += 4;
+            }
+        }
+        
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public void ToRgb(float input, out byte red, out byte green, out byte blue)
+        {
+            var index = (int)(input + 0.5f);
             var rgbStartIndex = index * RgbComponents;
 
             if (rgbStartIndex + RgbComponents <= rgbLookup.Length)

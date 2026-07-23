@@ -314,6 +314,65 @@ namespace PdfToSvg.Common
                 return Vector128.Create(a[2], b[2], a[3], b[3]);
             }
         }
+
+        /// <summary>
+        /// Interleaves the elements of the lower halves of each 128 bit lane of <paramref name="a"/> and
+        /// <paramref name="b"/>, producing (a0, b0, a1, b1 | a4, b4, a5, b5).
+        /// </summary>
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static Vector256<float> InterleaveLow(Vector256<float> a, Vector256<float> b)
+        {
+            if (Avx.IsSupported)
+            {
+                return Avx.UnpackLow(a, b);
+            }
+            else
+            {
+                return Vector256.Create(
+                    InterleaveLow(a.GetLower(), b.GetLower()),
+                    InterleaveLow(a.GetUpper(), b.GetUpper()));
+            }
+        }
+
+        /// <summary>
+        /// Interleaves the elements of the upper halves of each 128 bit lane of <paramref name="a"/> and
+        /// <paramref name="b"/>, producing (a2, b2, a3, b3 | a6, b6, a7, b7).
+        /// </summary>
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static Vector256<float> InterleaveHigh(Vector256<float> a, Vector256<float> b)
+        {
+            if (Avx.IsSupported)
+            {
+                return Avx.UnpackHigh(a, b);
+            }
+            else
+            {
+                return Vector256.Create(
+                    InterleaveHigh(a.GetLower(), b.GetLower()),
+                    InterleaveHigh(a.GetUpper(), b.GetUpper()));
+            }
+        }
+
+        /// <summary>
+        /// Creates a new vector where byte n is taken from <paramref name="value"/> at the index specified by
+        /// byte n of <paramref name="indices"/>. All indices must be in the range [0, 15].
+        /// </summary>
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static Vector128<byte> ShuffleBytes(Vector128<byte> value, Vector128<byte> indices)
+        {
+            if (Ssse3.IsSupported)
+            {
+                return Ssse3.Shuffle(value, indices);
+            }
+            else if (AdvSimd.Arm64.IsSupported)
+            {
+                return AdvSimd.Arm64.VectorTableLookup(value, indices);
+            }
+            else
+            {
+                return Vector128.Shuffle(value, indices);
+            }
+        }
     }
 }
 

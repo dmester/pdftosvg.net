@@ -64,6 +64,32 @@ namespace PdfToSvg.Tests.Common
         }
 
         [Test]
+        public void InterleaveLow256()
+        {
+            var expectedOutput =
+                Vector256.Create(1f, 9f, 2f, 10f, 5f, 13f, 6f, 14f);
+
+            var actualOutput = VectorUtils.InterleaveLow(
+                Vector256.Create(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f),
+                Vector256.Create(9f, 10f, 11f, 12f, 13f, 14f, 15f, 16f));
+
+            Assert.AreEqual(expectedOutput, actualOutput);
+        }
+
+        [Test]
+        public void InterleaveHigh256()
+        {
+            var expectedOutput =
+                Vector256.Create(3f, 11f, 4f, 12f, 7f, 15f, 8f, 16f);
+
+            var actualOutput = VectorUtils.InterleaveHigh(
+                Vector256.Create(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f),
+                Vector256.Create(9f, 10f, 11f, 12f, 13f, 14f, 15f, 16f));
+
+            Assert.AreEqual(expectedOutput, actualOutput);
+        }
+
+        [Test]
         public void ConvertToInt32RoundToEven128()
         {
             var negativeOutput = VectorUtils.ConvertToInt32RoundToEven(Vector128.Create(-0.4f, -0.5f, -0.6f, -1.5f));
@@ -138,6 +164,20 @@ namespace PdfToSvg.Tests.Common
                 Vector256.Create(6, 7, 8, 9, 10, 11, 12, 13),
                 Vector256.Create(14, 15, 16, 17, 18, 19, 20, 21),
                 Vector256.Create(22, 23, 24, 25, 26, 255, 256, int.MaxValue)
+                );
+
+            Assert.AreEqual(expectedOutput, actualOutput);
+        }
+
+        [Test]
+        public void ShuffleBytes128()
+        {
+            var expectedOutput =
+                Vector128.Create((byte)115, 114, 113, 112, 111, 110, 109, 108, 107, 106, 105, 104, 103, 102, 101, 100);
+
+            var actualOutput = VectorUtils.ShuffleBytes(
+                Vector128.Create((byte)100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115),
+                Vector128.Create((byte)15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
                 );
 
             Assert.AreEqual(expectedOutput, actualOutput);

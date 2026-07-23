@@ -216,5 +216,34 @@ namespace PdfToSvg.Common
                 return -(int)((-dividend) >> divisorPow2);
             }
         }
+
+        /// <summary>
+        /// Determines if a value is a normal power of two number
+        /// </summary>
+        public static bool IsNormalPowerOfTwo(double value)
+        {
+            if (value < 1)
+            {
+                return false;
+            }
+            else
+            {
+                // See bitlayout here:
+                // https://en.wikipedia.org/wiki/Double-precision_floating-point_format
+
+                const long MantissaMask = 0x000fffffffffffff;
+                const long ExponentMask = 0b111_1111_1111;
+                const int ExponentBitOffset = 52;
+
+                var bits = BitConverter.DoubleToInt64Bits(value);
+                var exponent = (bits >> ExponentBitOffset) & ExponentMask;
+
+                var isNormalNumber =
+                    exponent > 0 &&          //   0 is used for subnormal numbers and signed zero
+                    exponent < ExponentMask; // 7ff is used for infinity and NaN
+
+                return isNormalNumber && (bits & MantissaMask) == 0;
+            }
+        }
     }
 }

@@ -94,16 +94,23 @@ namespace PdfToSvg.Functions
                 for (var i = 0; i < values.Length - valueOffset && i * 2 < range.Length; i++)
                 {
                     var min = range[i * 2];
-                    if (values[valueOffset + i] <= min)
+                    ref var value = ref values[valueOffset + i];
+
+                    if (float.IsNaN(value))
                     {
-                        values[valueOffset + i] = (float)min;
+                        value = 0;
+                    }
+
+                    if (value <= min)
+                    {
+                        value = (float)min;
                     }
                     else if (i * 2 + 1 < range.Length)
                     {
                         var max = range[i * 2 + 1];
-                        if (values[valueOffset + i] >= max)
+                        if (value >= max)
                         {
-                            values[valueOffset + i] = (float)max;
+                            value = (float)max;
                         }
                     }
                 }

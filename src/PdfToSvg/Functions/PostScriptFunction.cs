@@ -5,20 +5,33 @@
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Functions.PostScript;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace PdfToSvg.Functions
 {
+    /// <threadsafety instance="true" />
     internal class PostScriptFunction : Function
     {
         private readonly double[] domain;
         private readonly double[] range;
         private readonly PostScriptExpression expression;
 
+        private volatile PostScriptStack? pooledStack;
+
         public override int InputCount { get; }
         public override int OutputCount { get; }
 
+
+        private readonly PostScriptCompiledExpression? compiledExpression;
+
         public PostScriptFunction(PdfDictionary dictionary, CancellationToken cancellationToken = default)
+            : this(dictionary, enableCompilation: true, cancellationToken)
+        {
+        }
+
+        public PostScriptFunction(
+            PdfDictionary dictionary, bool enableCompilation, CancellationToken cancellationToken = default)
         {
             if (!dictionary.TryGetArray(Names.Domain, out domain!))
             {
@@ -40,6 +53,10 @@ namespace PdfToSvg.Functions
                 try
                 {
                     expression = PostScriptParser.Parse(stream);
+                    if (enableCompilation)
+                    {
+                        compiledExpression = PostScriptCompiler.Compile(expression, domain, range);
+                    }
                 }
                 catch (PostScriptFunctionException ex)
                 {
@@ -54,25 +71,65 @@ namespace PdfToSvg.Functions
 
         public override void Evaluate(float[] input, int inputOffset, float[] output, int outputOffset)
         {
-            var arguments = ImmutableClip(domain, input, inputOffset, InputCount);
+            var compiledExpression = this.compiledExpression;
 
-            var stack = new PostScriptStack();
-
-            for (var i = 0; i < arguments.Length; i++)
+            if (compiledExpression != null)
             {
-                stack.Push((double)arguments[i]);
+                compiledExpression.Execute(input, inputOffset, output, outputOffset);
             }
-
-            expression.Execute(stack);
-
-            if (range.Length != stack.Count * 2)
+            else
             {
-                throw new PostScriptFunctionException(
-                    $"Expected a resulting PostScript stack of {range.Length / 2} elements but found {stack.Count}.");
-            }
+                var stack = RentStack();
+                try
+                {
+                    for (var i = 0; i < InputCount; i++)
+                    {
+                        var value = (double)input[inputOffset + i];
 
-            stack.CopyTo(output, outputOffset, OutputCount);
-            Clip(range, output, outputOffset);
+                        if (i * 2 < domain.Length)
+                        {
+                            var min = domain[i * 2];
+                            if (value <= min)
+                            {
+                                value = min;
+                            }
+                            else if (i * 2 + 1 < domain.Length)
+                            {
+                                var max = domain[i * 2 + 1];
+                                if (value >= max)
+                                {
+                                    value = max;
+                                }
+                            }
+                        }
+
+                        stack.Push(value);
+                    }
+
+                    expression.Execute(ref stack);
+
+                    stack.CopyTo(output, outputOffset, range.Length / 2);
+                    Clip(range, output, outputOffset);
+                }
+                finally
+                {
+                    ReturnStack(stack);
+                }
+            }
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        private PostScriptStack RentStack()
+        {
+            var stack = Interlocked.Exchange(ref pooledStack, null);
+            return stack ?? new PostScriptStack();
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        private void ReturnStack(PostScriptStack stack)
+        {
+            stack.Reset();
+            pooledStack = stack;
         }
     }
 }

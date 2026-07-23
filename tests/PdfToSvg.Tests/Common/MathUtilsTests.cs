@@ -191,5 +191,34 @@ namespace PdfToSvg.Tests.Common
         {
             Assert.AreEqual(expectedResult, MathUtils.Clamp(value, min, max));
         }
+
+        [TestCase(1.0)]
+        [TestCase(2.0)]
+        [TestCase(4.0)]
+        [TestCase(8.0)]
+        [TestCase(16.0)]
+        [TestCase(4294967296.0)]
+        public void IsNormalPowerOfTwo_True(double value)
+        {
+            Assert.IsTrue(MathUtils.IsNormalPowerOfTwo(value));
+        }
+
+        [TestCase(double.NaN)]
+        [TestCase(double.PositiveInfinity)]
+        [TestCase(double.NegativeInfinity)]
+        [TestCase(-2.0)]
+        [TestCase(-1.0)]
+        [TestCase(-0.0)]
+        [TestCase(0.0)]
+        [TestCase(1.00000001)]
+        [TestCase(3.0)]
+        [TestCase(5.0)]
+        [TestCase(7.0)]
+        [TestCase(9.0)]
+        [TestCase(4294967297.0)]
+        public void IsNormalPowerOfTwo_False(double value)
+        {
+            Assert.IsFalse(MathUtils.IsNormalPowerOfTwo(value));
+        }
     }
 }

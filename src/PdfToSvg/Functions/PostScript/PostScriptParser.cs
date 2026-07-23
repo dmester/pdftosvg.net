@@ -7,19 +7,67 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PdfToSvg.Functions.PostScript
 {
     internal class PostScriptParser
     {
+        private static readonly Dictionary<string, PostScriptOpCode> operators = new(StringComparer.Ordinal)
+        {
+            { "add", PostScriptOpCode.Add },
+            { "sub", PostScriptOpCode.Sub },
+            { "mul", PostScriptOpCode.Mul },
+            { "div", PostScriptOpCode.Div },
+            { "idiv", PostScriptOpCode.Idiv },
+            { "mod", PostScriptOpCode.Mod },
+            { "neg", PostScriptOpCode.Neg },
+            { "abs", PostScriptOpCode.Abs },
+            { "ceiling", PostScriptOpCode.Ceiling },
+            { "floor", PostScriptOpCode.Floor },
+            { "round", PostScriptOpCode.Round },
+            { "truncate", PostScriptOpCode.Truncate },
+            { "sqrt", PostScriptOpCode.Sqrt },
+            { "sin", PostScriptOpCode.Sin },
+            { "cos", PostScriptOpCode.Cos },
+            { "atan", PostScriptOpCode.Atan },
+            { "exp", PostScriptOpCode.Exp },
+            { "ln", PostScriptOpCode.Ln },
+            { "log", PostScriptOpCode.Log },
+            { "cvi", PostScriptOpCode.Cvi },
+            { "cvr", PostScriptOpCode.Cvr },
+            { "eq", PostScriptOpCode.Eq },
+            { "ne", PostScriptOpCode.Ne },
+            { "gt", PostScriptOpCode.Gt },
+            { "ge", PostScriptOpCode.Ge },
+            { "lt", PostScriptOpCode.Lt },
+            { "le", PostScriptOpCode.Le },
+            { "and", PostScriptOpCode.And },
+            { "or", PostScriptOpCode.Or },
+            { "xor", PostScriptOpCode.Xor },
+            { "not", PostScriptOpCode.Not },
+            { "bitshift", PostScriptOpCode.BitShift },
+            { "true", PostScriptOpCode.True },
+            { "false", PostScriptOpCode.False },
+            { "if", PostScriptOpCode.If },
+            { "ifelse", PostScriptOpCode.IfElse },
+            { "pop", PostScriptOpCode.Pop },
+            { "exch", PostScriptOpCode.Exch },
+            { "dup", PostScriptOpCode.Dup },
+            { "copy", PostScriptOpCode.Copy },
+            { "index", PostScriptOpCode.Index },
+            { "roll", PostScriptOpCode.Roll },
+        };
+
         private readonly Lexer lexer;
 
         private PostScriptParser(Stream stream)
         {
             lexer = new Lexer(stream);
+        }
+
+        private PostScriptParser(string source)
+        {
+            lexer = new Lexer(source);
         }
 
         public static PostScriptExpression Parse(Stream stream)
@@ -28,8 +76,15 @@ namespace PdfToSvg.Functions.PostScript
             return parser.ReadFunction();
         }
 
+        public static PostScriptExpression Parse(string source)
+        {
+            var parser = new PostScriptParser(source);
+            return parser.ReadFunction();
+        }
+
         private PostScriptExpression ReadFunction()
         {
+            var blocks = new List<PostScriptExpression>();
             var nextLexeme = lexer.Read();
 
             if (nextLexeme.Token != Token.BeginBlock)
@@ -37,10 +92,10 @@ namespace PdfToSvg.Functions.PostScript
                 throw new ParserException($"Expected starting '{{' but found {nextLexeme} in PostScript function.", nextLexeme.Position);
             }
 
-            return ReadBlock(0);
+            return ReadBlock(blocks, 0);
         }
 
-        private PostScriptExpression ReadBlock(int depth)
+        private PostScriptExpression ReadBlock(List<PostScriptExpression> blocks, int depth)
         {
             if (depth >= PostScriptLimits.MaxExecutionDepth)
             {
@@ -57,8 +112,9 @@ namespace PdfToSvg.Functions.PostScript
                 switch (nextLexeme.Token)
                 {
                     case Token.BeginBlock:
-                        var block = ReadBlock(depth + 1);
-                        instructions.Add(stack => stack.Push(block));
+                        var block = ReadBlock(blocks, depth + 1);
+                        instructions.Add(new PostScriptInstruction(PostScriptOpCode.PushValue, new PostScriptValue(PostScriptValueType.Expression, blocks.Count)));
+                        blocks.Add(block);
                         break;
 
                     case Token.EndBlock:
@@ -71,19 +127,19 @@ namespace PdfToSvg.Functions.PostScript
 
                     case Token.Integer:
                         var iValue = int.Parse(nextLexeme.Value.ToString(), CultureInfo.InvariantCulture);
-                        instructions.Add(stack => stack.Push(iValue));
+                        instructions.Add(new PostScriptInstruction(PostScriptOpCode.PushValue, new PostScriptValue(iValue)));
                         break;
 
                     case Token.Real:
                         var dblValue = double.Parse(nextLexeme.Value.ToString(), CultureInfo.InvariantCulture);
-                        instructions.Add(stack => stack.Push(dblValue));
+                        instructions.Add(new PostScriptInstruction(PostScriptOpCode.PushValue, new PostScriptValue(dblValue)));
                         break;
 
                     case Token.Keyword:
                         var operatorName = nextLexeme.Value.ToString();
-                        if (PostScriptOperators.TryGetOperator(operatorName, out var op))
+                        if (operators.TryGetValue(operatorName, out var op))
                         {
-                            instructions.Add(op);
+                            instructions.Add(new PostScriptInstruction(op));
                         }
                         else
                         {
@@ -97,7 +153,7 @@ namespace PdfToSvg.Functions.PostScript
             }
             while (continueReading);
 
-            return new PostScriptExpression(instructions);
+            return new PostScriptExpression(instructions, blocks);
         }
     }
 }

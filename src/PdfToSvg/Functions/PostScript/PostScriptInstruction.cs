@@ -4,11 +4,28 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PdfToSvg.Functions.PostScript
 {
-    internal delegate void PostScriptInstruction(PostScriptStack stack);
+    [DebuggerDisplay("{OpCode} {Operand}")]
+    internal readonly struct PostScriptInstruction
+    {
+        public readonly PostScriptOpCode OpCode;
+        public readonly PostScriptValue Operand;
+
+        public PostScriptInstruction(PostScriptOpCode opCode)
+        {
+            OpCode = opCode;
+            Operand = default;
+        }
+
+        public PostScriptInstruction(PostScriptOpCode opCode, in PostScriptValue operand)
+        {
+            OpCode = opCode;
+            Operand = operand;
+        }
+    }
 }

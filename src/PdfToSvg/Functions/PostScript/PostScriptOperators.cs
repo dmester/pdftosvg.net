@@ -3,10 +3,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 
 namespace PdfToSvg.Functions.PostScript
 {
@@ -15,352 +13,205 @@ namespace PdfToSvg.Functions.PostScript
         private const double DegreesToRadians = (2d * Math.PI) / 360d;
         private const double RadiansToDegrees = 360d / (2d * Math.PI);
 
-        private static readonly Dictionary<string, PostScriptInstruction> operators = new(StringComparer.Ordinal)
-        {
-            { "add", Add },
-            { "sub", Sub },
-            { "mul", Mul },
-            { "div", Div },
-            { "idiv", Idiv },
-            { "mod", Mod },
-            { "neg", Neg },
-            { "abs", Abs },
-            { "ceiling", Ceiling },
-            { "floor", Floor },
-            { "round", Round },
-            { "truncate", Truncate },
-            { "sqrt", Sqrt },
-            { "sin", Sin },
-            { "cos", Cos },
-            { "atan", Atan },
-            { "exp", Exp },
-            { "ln", Ln },
-            { "log", Log },
-            { "cvi", Cvi },
-            { "cvr", Cvr },
-            { "eq", Eq },
-            { "ne", Ne },
-            { "gt", Gt },
-            { "ge", Ge },
-            { "lt", Lt },
-            { "le", Le },
-            { "and", And },
-            { "or", Or },
-            { "xor", Xor },
-            { "not", Not },
-            { "bitshift", BitShift },
-            { "true", True },
-            { "false", False },
-            { "if", If },
-            { "ifelse", IfElse },
-            { "pop", Pop },
-            { "exch", Exch },
-            { "dup", Dup },
-            { "copy", Copy },
-            { "index", Index },
-            { "roll", Roll },
-        };
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Add(double left, double right) => left + right;
 
-        public static bool TryGetOperator(string operatorName, [MaybeNullWhen(false)] out PostScriptInstruction result)
-        {
-            return operators.TryGetValue(operatorName, out result);
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Sub(double left, double right) => left - right;
 
-        private static void Add(PostScriptStack stack)
-        {
-            stack.Pop(out double num1, out double num2);
-            stack.Push(num1 + num2);
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Mul(double left, double right) => left * right;
 
-        private static void Sub(PostScriptStack stack)
-        {
-            stack.Pop(out double num1, out double num2);
-            stack.Push(num1 - num2);
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Div(double left, double right) => left / right;
 
-        private static void Mul(PostScriptStack stack)
-        {
-            stack.Pop(out double num1, out double num2);
-            stack.Push(num1 * num2);
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Idiv(int left, int right) => right == 0
+            ? (left < 0 ? double.NegativeInfinity : double.PositiveInfinity)
+            : left / right;
 
-        private static void Div(PostScriptStack stack)
-        {
-            stack.Pop(out double num1, out double num2);
-            stack.Push(num1 / num2);
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Mod(int left, int right) => right == 0 ? double.NaN : left % right;
 
-        private static void Idiv(PostScriptStack stack)
-        {
-            stack.Pop(out int num1, out int num2);
-            stack.Push(num1 / num2);
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Neg(double value) => -value;
 
-        private static void Mod(PostScriptStack stack)
-        {
-            stack.Pop(out int num1, out int num2);
-            stack.Push(num1 % num2);
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Abs(double value) => Math.Abs(value);
 
-        private static void Neg(PostScriptStack stack)
-        {
-            stack.Pop(out double num1);
-            stack.Push(-num1);
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Ceiling(double value) => Math.Ceiling(value);
 
-        private static void Abs(PostScriptStack stack)
-        {
-            stack.Pop(out double num1);
-            stack.Push(Math.Abs(num1));
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Floor(double value) => Math.Floor(value);
 
-        private static void Ceiling(PostScriptStack stack)
-        {
-            stack.Pop(out double num1);
-            stack.Push(Math.Ceiling(num1));
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Round(double value) => Math.Round(value);
 
-        private static void Floor(PostScriptStack stack)
-        {
-            stack.Pop(out double num1);
-            stack.Push(Math.Floor(num1));
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Truncate(double value) => Math.Truncate(value);
 
-        private static void Round(PostScriptStack stack)
-        {
-            stack.Pop(out double num1);
-            stack.Push(Math.Round(num1));
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Sqrt(double value) => Math.Sqrt(value);
 
-        private static void Truncate(PostScriptStack stack)
-        {
-            stack.Pop(out double num1);
-            stack.Push(Math.Truncate(num1));
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Sin(double value) => Math.Sin(value * DegreesToRadians);
 
-        private static void Sqrt(PostScriptStack stack)
-        {
-            stack.Pop(out double num1);
-            stack.Push(Math.Sqrt(num1));
-        }
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Cos(double value) => Math.Cos(value * DegreesToRadians);
 
-        private static void Sin(PostScriptStack stack)
+        public static double Atan(double left, double right)
         {
-            stack.Pop(out double num1);
-            stack.Push(Math.Sin(num1 * DegreesToRadians));
-        }
-
-        private static void Cos(PostScriptStack stack)
-        {
-            stack.Pop(out double num1);
-            stack.Push(Math.Cos(num1 * DegreesToRadians));
-        }
-
-        private static void Atan(PostScriptStack stack)
-        {
-            stack.Pop(out double num, out double den);
-
             // Expected range: 0 - 360
-            var atanDegrees = Math.Atan(num / den) * RadiansToDegrees;
-            if (atanDegrees < 0) atanDegrees += 360d;
-
-            stack.Push(atanDegrees);
-        }
-
-        private static void Exp(PostScriptStack stack)
-        {
-            stack.Pop(out double @base, out double exponent);
-            stack.Push(Math.Pow(@base, exponent));
-        }
-
-        private static void Ln(PostScriptStack stack)
-        {
-            stack.Pop(out double num);
-            stack.Push(Math.Log(num));
-        }
-
-        private static void Log(PostScriptStack stack)
-        {
-            stack.Pop(out double num);
-            stack.Push(Math.Log10(num));
-        }
-
-        private static void Cvi(PostScriptStack stack)
-        {
-            stack.Pop(out int num);
-            stack.Push(num);
-        }
-
-        private static void Cvr(PostScriptStack stack)
-        {
-            stack.Pop(out double num);
-            stack.Push((double)num);
-        }
-
-        private static void Eq(PostScriptStack stack)
-        {
-            stack.Pop(out object any1, out object any2);
-            stack.Push(Equals(any1, any2));
-        }
-
-        private static void Ne(PostScriptStack stack)
-        {
-            stack.Pop(out object any1, out object any2);
-            stack.Push(!Equals(any1, any2));
-        }
-
-        private static void Gt(PostScriptStack stack)
-        {
-            stack.Pop(out double num1, out double num2);
-            stack.Push(num1 > num2);
-        }
-
-        private static void Ge(PostScriptStack stack)
-        {
-            stack.Pop(out double num1, out double num2);
-            stack.Push(num1 >= num2);
-        }
-
-        private static void Lt(PostScriptStack stack)
-        {
-            stack.Pop(out double num1, out double num2);
-            stack.Push(num1 < num2);
-        }
-
-        private static void Le(PostScriptStack stack)
-        {
-            stack.Pop(out double num1, out double num2);
-            stack.Push(num1 <= num2);
-        }
-
-        private static void And(PostScriptStack stack)
-        {
-            if (stack.Peek() is bool)
+            var atanDegrees = Math.Atan(left / right) * RadiansToDegrees;
+            if (atanDegrees < 0)
             {
-                stack.Pop(out bool val1, out bool val2);
-                stack.Push(val1 && val2);
+                atanDegrees += 360d;
             }
-            else
+
+            return atanDegrees;
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Exp(double left, double right) => Math.Pow(left, right);
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Ln(double value) => Math.Log(value);
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Log(double value) => Math.Log10(value);
+
+        // Changed behavior in casting from double to int in .NET 9
+        // https://learn.microsoft.com/en-us/dotnet/core/compatibility/jit/9.0/fp-to-integer
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static int Cvi(double value) =>
+            double.IsNaN(value) ? 0 :
+            value <= int.MinValue ? int.MinValue :
+            value >= int.MaxValue ? int.MaxValue :
+            (int)value;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Cvr(double value) => value;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static bool Eq(in PostScriptValue left, in PostScriptValue right) =>
+            left.Type == right.Type && left.Number == right.Number;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static bool Eq(double left, double right) => left == right;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static bool Ne(in PostScriptValue left, in PostScriptValue right) =>
+            left.Type != right.Type || left.Number != right.Number;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static bool Ne(double left, double right) => left != right;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static bool Gt(double left, double right) => left > right;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static bool Ge(double left, double right) => left >= right;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static bool Lt(double left, double right) => left < right;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static bool Le(double left, double right) => left <= right;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double LogicalAnd(double left, double right) => left != 0d && right != 0d ? 1d : 0d;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static int BitwiseAnd(int left, int right) => left & right;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double LogicalOr(double left, double right) => left != 0d || right != 0d ? 1d : 0d;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static int BitwiseOr(int left, int right) => left | right;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double LogicalXor(double left, double right) => (left != 0d) != (right != 0d) ? 1d : 0d;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static int BitwiseXor(int left, int right) => left ^ right;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double LogicalNot(double value) => value == 0d ? 1d : 0d;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static int BitwiseNot(int value) => ~value;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static int BitShift(int left, int right) => right > 0 ? left << right : left >> -right;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static bool True() => true;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static bool False() => false;
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static double Execute(PostScriptOpCode opCode, double left, double right)
+        {
+            return opCode switch
             {
-                stack.Pop(out int val1, out int val2);
-                stack.Push(val1 & val2);
-            }
+                PostScriptOpCode.PushValue => left,
+                PostScriptOpCode.Add => Add(left, right),
+                PostScriptOpCode.Sub => Sub(left, right),
+                PostScriptOpCode.Mul => Mul(left, right),
+                PostScriptOpCode.Div => Div(left, right),
+                PostScriptOpCode.Idiv => Idiv((int)left, (int)right),
+                PostScriptOpCode.Mod => Mod((int)left, (int)right),
+                PostScriptOpCode.Atan => Atan(left, right),
+                PostScriptOpCode.Exp => Exp(left, right),
+                PostScriptOpCode.LogicalAnd => LogicalAnd(left, right),
+                PostScriptOpCode.BitwiseAnd => BitwiseAnd((int)left, (int)right),
+                PostScriptOpCode.LogicalOr => LogicalOr(left, right),
+                PostScriptOpCode.BitwiseOr => BitwiseOr((int)left, (int)right),
+                PostScriptOpCode.LogicalXor => LogicalXor(left, right),
+                PostScriptOpCode.BitwiseXor => BitwiseXor((int)left, (int)right),
+                PostScriptOpCode.LogicalNot => LogicalNot(left),
+                PostScriptOpCode.BitwiseNot => BitwiseNot((int)left),
+                PostScriptOpCode.Eq => Eq(left, right) ? 1d : 0d,
+                PostScriptOpCode.Ne => Ne(left, right) ? 1d : 0d,
+                PostScriptOpCode.Gt => Gt(left, right) ? 1d : 0d,
+                PostScriptOpCode.Ge => Ge(left, right) ? 1d : 0d,
+                PostScriptOpCode.Lt => Lt(left, right) ? 1d : 0d,
+                PostScriptOpCode.Le => Le(left, right) ? 1d : 0d,
+                PostScriptOpCode.BitShift => BitShift((int)left, (int)right),
+                PostScriptOpCode.Cvi => Cvi(left),
+                PostScriptOpCode.Cvr => Cvr(left),
+                PostScriptOpCode.Neg => Neg(left),
+                PostScriptOpCode.Abs => Abs(left),
+                PostScriptOpCode.Round => Round(left),
+                PostScriptOpCode.Truncate => Truncate(left),
+                PostScriptOpCode.Sqrt => Sqrt(left),
+                PostScriptOpCode.Sin => Sin(left),
+                PostScriptOpCode.Cos => Cos(left),
+                PostScriptOpCode.Ceiling => Ceiling(left),
+                PostScriptOpCode.Floor => Floor(left),
+                PostScriptOpCode.Ln => Ln(left),
+                PostScriptOpCode.Log => Log(left),
+                _ => throw new Exception("Unexpected instruction " + opCode + " in compiled PostScript expression"),
+            };
         }
 
-        private static void Or(PostScriptStack stack)
-        {
-            if (stack.Peek() is bool)
-            {
-                stack.Pop(out bool val1, out bool val2);
-                stack.Push(val1 || val2);
-            }
-            else
-            {
-                stack.Pop(out int val1, out int val2);
-                stack.Push(val1 | val2);
-            }
-        }
-
-        private static void Xor(PostScriptStack stack)
-        {
-            if (stack.Peek() is bool)
-            {
-                stack.Pop(out bool val1, out bool val2);
-                stack.Push(val1 != val2);
-            }
-            else
-            {
-                stack.Pop(out int val1, out int val2);
-                stack.Push(val1 ^ val2);
-            }
-        }
-
-        private static void Not(PostScriptStack stack)
-        {
-            if (stack.Peek() is bool)
-            {
-                stack.Pop(out bool val1);
-                stack.Push(!val1);
-            }
-            else
-            {
-                stack.Pop(out int val1);
-                stack.Push(~val1);
-            }
-        }
-
-        private static void BitShift(PostScriptStack stack)
-        {
-            stack.Pop(out int int1, out int shift);
-            stack.Push(shift > 0 ? (int1 << shift) : (int1 >> (-shift)));
-        }
-
-        private static void True(PostScriptStack stack)
-        {
-            stack.Push(true);
-        }
-
-        private static void False(PostScriptStack stack)
-        {
-            stack.Push(false);
-        }
-
-        private static void If(PostScriptStack stack)
-        {
-            stack.Pop(out bool condition, out PostScriptExpression block1);
-
-            if (condition)
-            {
-                block1.Execute(stack);
-            }
-        }
-
-        private static void IfElse(PostScriptStack stack)
-        {
-            stack.Pop(out bool condition, out PostScriptExpression block1, out PostScriptExpression block2);
-
-            if (condition)
-            {
-                block1.Execute(stack);
-            }
-            else
-            {
-                block2.Execute(stack);
-            }
-        }
-
-        private static void Pop(PostScriptStack stack)
-        {
-            stack.Pop();
-        }
-
-        private static void Exch(PostScriptStack stack)
-        {
-            stack.Exchange();
-        }
-
-        private static void Dup(PostScriptStack stack)
-        {
-            stack.Push(stack.Peek());
-        }
-
-        private static void Copy(PostScriptStack stack)
-        {
-            stack.Pop(out int n);
-            stack.Copy(n);
-        }
-
-        private static void Index(PostScriptStack stack)
-        {
-            stack.Pop(out int n);
-
-            stack.Push(stack.Get(n));
-        }
-
-        private static void Roll(PostScriptStack stack)
-        {
-            stack.Pop(out int n, out int j);
-            stack.Roll(n, j);
-        }
+        /// <summary>
+        /// Operators that can mathematically result in an infinite or NaN result with finite input.
+        /// Simple arithmetics like multiplication will report false, even if they can technically result in
+        /// <see cref="float.PositiveInfinity"/>.
+        /// </summary>
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static bool PotentiallyInfinite(PostScriptOpCode op) =>
+            op == PostScriptOpCode.Atan ||
+            op == PostScriptOpCode.Div ||
+            op == PostScriptOpCode.Idiv ||
+            op == PostScriptOpCode.Mod ||
+            op == PostScriptOpCode.Sqrt ||
+            op == PostScriptOpCode.Log ||
+            op == PostScriptOpCode.Ln ||
+            op == PostScriptOpCode.Exp;
     }
 }

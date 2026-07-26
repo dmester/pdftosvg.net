@@ -1,0 +1,76 @@
+%PDF-1.7
+
+xref
+0 6
+0000000000 65535 f
+0000000182 00000 n
+0000000235 00000 n
+0000000299 00000 n
+0000000433 00000 n
+0000001205 00000 n
+trailer
+<< /Root 1 0 R  /Size 6 >>
+
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+
+2 0 obj << /Type /Pages  /Kids [ 4 0 R ]  /Count 1 >> endobj
+
+3 0 obj << /Length 79 >>
+stream
+   0 0 0 rg
+
+   BT
+      170 600 Td
+      /F1 200 Tf
+     (HI!) '
+   ET
+endstream
+endobj
+
+4 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /F1 <<
+            /Type /Font
+            /Subtype /Type1
+            /BaseFont /NotdefOnly
+            /FirstChar 65
+            /LastChar 66
+            /Widths [ 500 500 ]
+            /FontDescriptor <<
+               /Type /FontDescriptor
+               /FontName /NotdefOnly
+               /Flags 32
+               /FontBBox [0 0 500 666]
+               /ItalicAngle 0
+               /Ascent 666
+               /Descent 0
+               /CapHeight 666
+               /StemV 0
+               /FontFile3 5 0 R
+               /MissingWidth 500
+            >>
+         >>
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 3 0 R ]
+>>
+endobj
+
+5 0 obj
+<<
+   /Length 107
+   /Filter /ASCIIHexDecode
+   /Subtype /Type1C
+>>
+stream
+01000401000101010b4e6f746465664f6e6c7900010101121d0000002d111d000000021d00000033120000000000010101020e8b14>
+endstream
+endobj
+
+startxref
+12
+%%EOF

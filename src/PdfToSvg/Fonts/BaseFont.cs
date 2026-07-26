@@ -853,6 +853,19 @@ namespace PdfToSvg.Fonts
                 duplicatedGlyph0Index = DuplicateGlyph0(preparedFont);
             }
 
+            // There is no value in embedding a font without mapped glyphs. OTS will also reject CFF fonts containing
+            // only a .notdef glyph.
+            var numGlyphs = preparedFont.Tables.Get<MaxpTable>()?.NumGlyphs ?? ushort.MaxValue;
+            var hasMappedGlyphs = chars.Any(ch =>
+                ch.GlyphIndex != null &&
+                ch.GlyphIndex < numGlyphs &&
+                (ch.GlyphIndex > 0 || duplicatedGlyph0Index > 0));
+
+            if (!hasMappedGlyphs)
+            {
+                throw new FontException("This font does not contain any mapped glyphs.");
+            }
+
             RecreateOpenTypeCMap(preparedFont, duplicatedGlyph0Index);
             OverwriteOpenTypeGlyphWidths(preparedFont, duplicatedGlyph0Index);
 

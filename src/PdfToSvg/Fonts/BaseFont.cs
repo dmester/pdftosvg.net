@@ -112,7 +112,15 @@ namespace PdfToSvg.Fonts
             // ToUnicode
             if (fontDict.TryGetDictionary(Names.ToUnicode, out var toUnicode) && toUnicode.Stream != null)
             {
-                this.toUnicode = UnicodeMap.Create(toUnicode.Stream, cancellationToken);
+                try
+                {
+                    this.toUnicode = UnicodeMap.Create(toUnicode.Stream, cancellationToken);
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    Log.WriteLine("Failed to parse ToUnicode CMap. " + ex);
+                    this.toUnicode = UnicodeMap.Empty;
+                }
             }
             else
             {

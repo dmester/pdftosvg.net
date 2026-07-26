@@ -26,7 +26,11 @@ namespace PdfToSvg.Parsing
 
         public static Exception MaxDepthExceeded(BufferedReader reader)
         {
-            return new ParserDepthException(reader.Position);
+            var errorMessage = string.Format(
+                "Max depth exceeded at position {0}",
+                reader.Position
+            );
+            return new PdfException(errorMessage);
         }
 
         public static Exception UnexpectedToken(BufferedReader reader, Lexeme unexpectedLexeme)

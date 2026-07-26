@@ -501,7 +501,7 @@ namespace PdfToSvg.Parsing
                 {
                     objectContent = ReadIndirectObjectContent(objectId.Value, objects);
                 }
-                catch (ParserDepthException ex)
+                catch (Exception ex)
                 {
                     Log.WriteLine("Failed to parse indirect object {0}. {1}", objectId.Value, ex);
                     continue;

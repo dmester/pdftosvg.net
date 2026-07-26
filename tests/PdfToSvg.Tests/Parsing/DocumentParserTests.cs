@@ -69,6 +69,32 @@ namespace PdfToSvg.Tests.Parsing
         }
 
         [Test]
+        public void ReadStartXRef_TrailingData()
+        {
+            var stream = new MemoryStream(Encoding.ASCII.GetBytes(
+                "startxref 123 %%EOF" + new string('x', 2048)));
+            var parser = new DocumentParser(new InputFile(stream, false), stream);
+
+            var actualOffset = parser.ReadStartXRef();
+
+            Assert.AreEqual(123, actualOffset);
+        }
+
+#if !NET40
+        [Test]
+        public async Task ReadStartXRefAsync_TrailingData()
+        {
+            var stream = new MemoryStream(Encoding.ASCII.GetBytes(
+                "startxref 123 %%EOF" + new string('x', 2048)));
+            var parser = new DocumentParser(new InputFile(stream, false), stream);
+
+            var actualOffset = await parser.ReadStartXRefAsync();
+
+            Assert.AreEqual(123, actualOffset);
+        }
+#endif
+
+        [Test]
         public void ReadCrossReferenceTable()
         {
             var stream = new MemoryStream(Encoding.ASCII.GetBytes(

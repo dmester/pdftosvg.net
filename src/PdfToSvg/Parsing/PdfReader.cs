@@ -42,7 +42,7 @@ namespace PdfToSvg.Parsing
             var parser = new DocumentParser(file, reader);
 
             var objects = new Dictionary<PdfObjectId, object?>();
-            var startxref = parser.ReadStartXRef();
+            var startxref = parser.ReadStartXRef(cancellationToken);
             var xrefTable = parser.ReadXRefTables(startxref, cancellationToken);
 
             parser.ReadUncompressedObjects(objects, xrefTable, cancellationToken);
@@ -78,7 +78,7 @@ namespace PdfToSvg.Parsing
             var parser = new DocumentParser(file, reader);
 
             var objects = new Dictionary<PdfObjectId, object?>();
-            var startxref = await parser.ReadStartXRefAsync().ConfigureAwait(false);
+            var startxref = await parser.ReadStartXRefAsync(cancellationToken).ConfigureAwait(false);
             var xrefTable = parser.ReadXRefTables(startxref, cancellationToken); // TODO make async
 
             parser.ReadUncompressedObjects(objects, xrefTable, cancellationToken); // TODO make async

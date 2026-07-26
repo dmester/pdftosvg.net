@@ -18,6 +18,12 @@ namespace PdfToSvg.Parsing
 {
     internal class DocumentParser : Parser
     {
+        // PDF 1.7, Section 3.4.4: The last %%EOF marker should occur within the final 1024 bytes
+        private const int StartXRefSearchChunkSize = 1024;
+
+        // Recover PDFs with a reasonable amount of trailing garbage without scanning an unbounded amount of data
+        private const int MaxStartXRefSearchLength = 64 * 1024;
+
         private static readonly Dictionary<string, Token> keywords = new Dictionary<string, Token>(StringComparer.OrdinalIgnoreCase)
         {
             // Cross reference tables
@@ -121,31 +127,82 @@ namespace PdfToSvg.Parsing
             return -1;
         }
 
-        public long ReadStartXRef()
+        public long ReadStartXRef(CancellationToken cancellationToken = default)
         {
-            lexer.Stream.Seek(-1024, SeekOrigin.End);
+            var stream = lexer.Stream;
+            var streamLength = stream.Length;
+            var maxSearchLength = StartXRefSearchChunkSize;
 
-            var buffer = new byte[1024];
-            var readBytes = lexer.Stream.Read(buffer, 0, buffer.Length);
+            // For most PDFs, the search will succeed in first pass.
+            // Extended search pass is for documents where garbage is appended to the end of the document.
+            for (; ; )
+            {
+                var passLength = (int)Math.Min(streamLength, maxSearchLength);
+                stream.Seek(-passLength, SeekOrigin.End);
 
-            return ReadStartXRef(buffer, 0, readBytes);
+                var buffer = new byte[passLength];
+                var bytesRead = stream.ReadAll(buffer, 0, passLength, cancellationToken);
+
+                var startXref = ReadStartXRef(buffer, 0, bytesRead);
+                if (startXref >= 0)
+                {
+                    return startXref;
+                }
+
+                if (streamLength <= StartXRefSearchChunkSize ||
+                    maxSearchLength > StartXRefSearchChunkSize)
+                {
+                    break;
+                }
+
+                // Continue with extended search
+                maxSearchLength = MaxStartXRefSearchLength;
+            }
+
+            return -1;
         }
 
 #if HAVE_ASYNC
-        public async Task<long> ReadStartXRefAsync()
+        public async Task<long> ReadStartXRefAsync(CancellationToken cancellationToken = default)
         {
-            lexer.Stream.Seek(-1024, SeekOrigin.End);
+            var stream = lexer.Stream;
+            var streamLength = stream.Length;
+            var maxSearchLength = StartXRefSearchChunkSize;
 
-            var buffer = new byte[1024];
-            var readBytes = await lexer.Stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
+            // For most PDFs, the search will succeed in first pass.
+            // Extended search pass is for documents where garbage is appended to the end of the document.
+            for (; ; )
+            {
+                var passLength = (int)Math.Min(streamLength, maxSearchLength);
+                stream.Seek(-passLength, SeekOrigin.End);
 
-            return ReadStartXRef(buffer, 0, readBytes);
+                var buffer = new byte[passLength];
+                var bytesRead = await stream
+                    .ReadAllAsync(buffer, 0, passLength, cancellationToken)
+                    .ConfigureAwait(false);
+
+                var startXref = ReadStartXRef(buffer, 0, bytesRead);
+                if (startXref >= 0)
+                {
+                    return startXref;
+                }
+
+                if (streamLength <= StartXRefSearchChunkSize ||
+                    maxSearchLength > StartXRefSearchChunkSize)
+                {
+                    break;
+                }
+
+                // Continue with extended search
+                maxSearchLength = MaxStartXRefSearchLength;
+            }
+
+            return -1;
         }
 #endif
 
         public PdfObjectId? ReadIndirectObjectId()
         {
-
             if (!TryReadIntegerRelaxed(out var objectNumber) ||
                 !TryReadIntegerRelaxed(out var generation) ||
                 !TryReadToken(Token.Obj))

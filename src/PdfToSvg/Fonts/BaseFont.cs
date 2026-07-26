@@ -502,7 +502,7 @@ namespace PdfToSvg.Fonts
             // Update hmtx metrics (it is used by Firefox)
             foreach (var ch in chars)
             {
-                if (ch.GlyphIndex == null)
+                if (ch.GlyphIndex == null || ch.GlyphIndex >= hmtx.HorMetrics.Length)
                 {
                     continue;
                 }

@@ -147,9 +147,16 @@ namespace PdfToSvg.Parsing
             if (input is PdfDictionary dict)
             {
                 var modifications = new List<KeyValuePair<PdfName, object?>>();
+                var isSignature = dict.TryGetName(Names.Type, out var type) && type == Names.Sig;
 
                 foreach (var property in dict)
                 {
+                    // ISO 32000-1:2008, Section 7.6.2: Signature Contents hexadecimal strings are not encrypted.
+                    if (isSignature && property.Key == Names.Contents)
+                    {
+                        continue;
+                    }
+
                     var decrypted = Decrypt(securityHandler, objectId, property.Value);
                     if (decrypted != property.Value)
                     {

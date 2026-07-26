@@ -2,7 +2,6 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
-using PdfToSvg.Fonts.OpenType.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,6 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
     {
         private const int SizeInt8 = 1;
         private const int SizeInt16 = 2;
-
 
         public static void Read(ref FullGlyfRecord record, OpenTypeReader reader)
         {
@@ -107,6 +105,7 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
             // flags
             var flagsStartPosition = reader.Position;
             int totalCoordinateLength = 0;
+            var hasInvalidFlags = false;
 
             for (var i = 0; i < numberOfPoints; i++)
             {
@@ -144,6 +143,15 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
 
                     totalCoordinateLength += coordinateLength * repeatTimes;
                 }
+
+                // OTS validation
+                // https://github.com/khaledhosny/ots/blob/v9.2.0/src/glyf.cc#L48
+                // https://github.com/khaledhosny/ots/blob/v9.2.0/src/glyf.cc#L77
+                if ((flag & SimpleGlyphFlags.OverlapSimple) != 0 && i > 0 ||
+                    (flag & ~SimpleGlyphFlags.All) != 0)
+                {
+                    hasInvalidFlags = true;
+                }
             }
 
             // xCoordinates and yCoordinates
@@ -151,7 +159,38 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
 
             var endPosition = reader.Position;
             reader.Position = 0;
-            record.SimpleContent = reader.ReadByteSegment(endPosition);
+
+            if (!hasInvalidFlags)
+            {
+                record.SimpleContent = reader.ReadByteSegment(endPosition);
+            }
+            else
+            {
+                // Several files in the SafeDocs corpus contain invalid flags that will make OTS reject the fonts.
+                // Examples: 1008654, 2012366, 2021889, 7007507
+                var cleanContent = reader.ReadBytes(endPosition);
+                var cursor = flagsStartPosition;
+
+                for (var i = 0; i < numberOfPoints; i++)
+                {
+                    ref var flag = ref cleanContent[cursor++];
+
+                    var allowedFlags = i == 0
+                        ? SimpleGlyphFlags.All
+                        : SimpleGlyphFlags.All & ~SimpleGlyphFlags.OverlapSimple;
+
+                    flag = (byte)(flag & (int)allowedFlags);
+
+                    var repeat = (flag & (byte)SimpleGlyphFlags.RepeatFlag) != 0;
+                    if (repeat)
+                    {
+                        int repeatTimes = cleanContent[cursor++];
+                        i += repeatTimes;
+                    }
+                }
+
+                record.SimpleContent = new ArraySegment<byte>(cleanContent);
+            }
         }
 
         private static void ReadCompositeGlyph(ref FullGlyfRecord record, OpenTypeReader reader)

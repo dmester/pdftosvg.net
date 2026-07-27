@@ -4,10 +4,7 @@
 
 using PdfToSvg.DocumentModel;
 using PdfToSvg.IO;
-using System;
 using System.IO;
-using System.IO.Compression;
-using CompressionMode = System.IO.Compression.CompressionMode;
 
 namespace PdfToSvg.Filters
 {
@@ -15,32 +12,14 @@ namespace PdfToSvg.Filters
     {
         public override Stream Decode(Stream stream, PdfDictionary? decodeParms)
         {
-            // Invalid Adler32 checksums seem to be present in some PDf files. Also some producers (see PdfSharp) are completely omitting the checksum (see #47).
-            //
-            // The following PDF readers don't care about invalid or missing zlib checksums:
-            // * Adobe Reader
-            // * PDF.js
-            // * Pdfium
-            // * MuPDF
-            //
-            // Let's follow their lead and read the header but skip the checksum.
-            //
+            Stream resultStream = ZLibFactory.Decompress(stream);
 
-            var cmf = stream.ReadByte();
-            var flg = stream.ReadByte();
-
-            if (cmf < 0 || flg < 0)
+            if (resultStream != Stream.Null)
             {
-                stream.Dispose();
-                return Stream.Null;
+                resultStream = PredictorStream.Create(resultStream, decodeParms);
             }
-            else
-            {
-                PdfToSvg.IO.ZLibStream.VerifyHeader(cmf, flg);
 
-                var deflateStream = new DeflateStream(stream, CompressionMode.Decompress);
-                return PredictorStream.Create(deflateStream, decodeParms);
-            }
+            return resultStream;
         }
     }
 }

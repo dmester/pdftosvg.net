@@ -75,7 +75,7 @@ namespace PdfToSvg.Fonts.Woff
             {
                 using (var compressedStream = new MemoryStream(table.OrigLength))
                 {
-                    using (var zlibStream = new ZLibStream(compressedStream, CompressionMode.Compress, leaveOpen: true))
+                    using (var zlibStream = ZLibFactory.Compress(compressedStream, leaveOpen: true))
                     {
                         zlibStream.Write(binaryOtf, table.OrigOffset, table.OrigLength);
                     }

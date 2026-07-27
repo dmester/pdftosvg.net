@@ -2,17 +2,13 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
-using PdfToSvg;
+#if !NET6_0_OR_GREATER
 using PdfToSvg.Common;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
+using PdfToSvg.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PdfToSvg.IO
+namespace System.IO.Compression
 {
     /// <summary>
     /// Compresses or decompresses an RFC 1950 compatible zlib/deflate stream.
@@ -71,15 +67,56 @@ namespace PdfToSvg.IO
         private const byte FLEVEL_Default = 2;
         private const byte CINFO_32K = 7;
 
-        private readonly Adler32 adler = new Adler32();
+        private Adler32 adler = new();
         private readonly CompressionMode mode;
 
-        private StripTrailerStream? trailerStream;
         private Stream? baseStream;
         private Stream? deflateStream;
 
         private bool endOfStream;
         private bool leaveOpen;
+
+        /// <summary>
+        /// Computes Adler32 checksums. Implementation based on https://tools.ietf.org/html/rfc1950 section 2.2.
+        /// </summary>
+        private struct Adler32
+        {
+            private uint s1;
+            private uint s2;
+
+            public uint Value => (s2 << 16) + s1;
+
+            public void Initialize()
+            {
+                s1 = 1;
+                s2 = 0;
+            }
+
+            public void Update(byte[] buffer, int offset, int count)
+            {
+                const uint Modulo = 65521;
+
+                var s1 = this.s1;
+                var s2 = this.s2;
+
+                for (var i = 0; i < count; i++)
+                {
+                    s1 += buffer[offset + i];
+
+                    if (s2 + s1 < s2)
+                    {
+                        // Addition would cause overflow
+                        s1 = s1 % Modulo;
+                        s2 = s2 % Modulo;
+                    }
+
+                    s2 += s1;
+                }
+
+                this.s1 = s1 % Modulo;
+                this.s2 = s2 % Modulo;
+            }
+        }
 
         public ZLibStream(Stream stream, CompressionMode mode, bool leaveOpen = false)
         {
@@ -99,42 +136,22 @@ namespace PdfToSvg.IO
                 // Important to leave the stream open, since we need to dispose the DeflateStream
                 // before being able to write the checksum.
                 deflateStream = new DeflateStream(stream, CompressionMode.Compress, leaveOpen: true);
+
+                adler.Initialize();
             }
             else
             {
-                trailerStream = new StripTrailerStream(stream, trailerLength: 4, leaveOpen: true);
-
-                var cmf = trailerStream.ReadByte();
-                var flg = trailerStream.ReadByte();
+                var cmf = stream.ReadByte();
+                var flg = stream.ReadByte();
 
                 if (cmf < 0 || flg < 0)
                 {
                     endOfStream = true;
                     return;
                 }
-                VerifyHeader(cmf, flg);
+                ZLibFactory.VerifyHeader(cmf, flg);
 
-                deflateStream = new DeflateStream(trailerStream, CompressionMode.Decompress, leaveOpen: true);
-            }
-        }
-
-        public static void VerifyHeader(int cmf, int flg)
-        {
-            var cm = cmf & 0xf;
-            if (cm != CM_Deflate)
-            {
-                throw new InvalidDataException("Unsupported compression algorithm in ZLib stream.");
-            }
-
-            var fdict = (flg >> 5) & 1;
-            if (fdict != 0)
-            {
-                throw new InvalidDataException("Unknown dictionary in ZLib stream.");
-            }
-
-            if (((cmf * 256 + flg) % 31) != 0)
-            {
-                throw new InvalidDataException("Invalid ZLib header.");
+                deflateStream = new DeflateStream(stream, CompressionMode.Decompress, leaveOpen: true);
             }
         }
 
@@ -146,72 +163,47 @@ namespace PdfToSvg.IO
 
         public override long Length => throw new NotSupportedException();
 
-        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        public override long Position 
+        {
+            get
+            {
+                var deflateStream = this.deflateStream;
+
+                if (deflateStream == null)
+                {
+                    throw new ObjectDisposedException(nameof(ZLibStream));
+                }
+
+                return deflateStream.Position;
+            }
+            set => throw new NotSupportedException();
+        }
 
         public override void Flush()
         {
-            if (deflateStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
+            if (deflateStream == null)
+            {
+                throw new ObjectDisposedException(nameof(ZLibStream));
+            }
 
             deflateStream.Flush();
         }
 
-        private void AfterRead(byte[] buffer, int offset, int read)
+        public override int Read(byte[] buffer, int offset, int count)
         {
-            if (trailerStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
-
-            if (read > 0)
+            if (deflateStream == null)
             {
-                adler.Update(buffer, offset, read);
+                throw new ObjectDisposedException(nameof(ZLibStream));
+            }
+
+            if (endOfStream)
+            {
+                return 0;
             }
             else
             {
-                endOfStream = true;
-
-                var checksumBytes = trailerStream.GetTrailer();
-
-                // Invalid checksums seem to be present in some PDf files. 
-                //
-                // The following PDF readers don't care about invalid zlib checksums:
-                // * Adobe Reader
-                // * PDF.js
-                // * Pdfium
-                // * MuPDF
-                //
-                // Let's follow their lead and just log the error.
-                //
-                if (checksumBytes.Length != 4)
-                {
-                    Log.WriteLine("Missing checksum in ZLib stream.");
-                }
-                else
-                {
-                    var checksum = unchecked((uint)(
-                        (checksumBytes[0] << 24) |
-                        (checksumBytes[1] << 16) |
-                        (checksumBytes[2] << 8) |
-                        (checksumBytes[3])));
-
-                    if (checksum != adler.Value)
-                    {
-                        Log.WriteLine("Invalid checksum in Zlib stream.");
-                    }
-                }
+                return deflateStream.Read(buffer, offset, count);
             }
-        }
-
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            if (baseStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
-
-            var read = 0;
-
-            if (count > 0 && !endOfStream && deflateStream != null)
-            {
-                read = deflateStream.Read(buffer, offset, count);
-                AfterRead(buffer, offset, read);
-            }
-
-            return read;
         }
 
 #if HAVE_ASYNC
@@ -227,19 +219,21 @@ namespace PdfToSvg.IO
         }
 #endif
 
-        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            if (baseStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
-
-            var read = 0;
-
-            if (count > 0 && !endOfStream && deflateStream != null)
+            if (deflateStream == null)
             {
-                read = await deflateStream.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
-                AfterRead(buffer, offset, read);
+                throw new ObjectDisposedException(nameof(ZLibStream));
             }
 
-            return read;
+            if (endOfStream)
+            {
+                return Task.FromResult(0);
+            }
+            else
+            {
+                return deflateStream.ReadAsync(buffer, offset, count, cancellationToken);
+            }
         }
 #endif
 
@@ -249,7 +243,10 @@ namespace PdfToSvg.IO
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            if (deflateStream == null) throw new ObjectDisposedException(nameof(ZLibStream));
+            if (deflateStream == null)
+            {
+                throw new ObjectDisposedException(nameof(ZLibStream));
+            }
 
             deflateStream.Write(buffer, offset, count);
             adler.Update(buffer, offset, count);
@@ -279,15 +276,10 @@ namespace PdfToSvg.IO
 
                     baseStream = null;
                 }
-
-                if (trailerStream != null)
-                {
-                    trailerStream.Dispose();
-                    trailerStream = null;
-                }
             }
 
             base.Dispose(disposing);
         }
     }
 }
+#endif

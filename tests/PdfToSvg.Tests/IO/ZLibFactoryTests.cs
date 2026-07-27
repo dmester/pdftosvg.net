@@ -10,11 +10,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CompressionMode = System.IO.Compression.CompressionMode;
 
 namespace PdfToSvg.Tests.IO
 {
-    public class ZLibStreamTests
+    public class ZLibFactoryTests
     {
         // See also test file 
         // deflate-special-cases.pdf
@@ -23,7 +22,7 @@ namespace PdfToSvg.Tests.IO
         {
             using (var memoryStream = new MemoryStream())
             {
-                using (var zlibStream = new ZLibStream(memoryStream, CompressionMode.Compress))
+                using (var zlibStream = ZLibFactory.Compress(memoryStream))
                 {
                     zlibStream.Write(data, 0, data.Length);
                 }
@@ -37,7 +36,7 @@ namespace PdfToSvg.Tests.IO
         {
             using (var memoryStream = new MemoryStream())
             {
-                using (var zlibStream = new ZLibStream(memoryStream, CompressionMode.Compress))
+                using (var zlibStream = ZLibFactory.Compress(memoryStream))
                 {
                     await zlibStream.WriteAsync(data, 0, data.Length);
                 }
@@ -50,7 +49,7 @@ namespace PdfToSvg.Tests.IO
         {
             using (var memoryStream = new MemoryStream())
             {
-                using (var zlibStream = new ZLibStream(memoryStream, CompressionMode.Compress))
+                using (var zlibStream = ZLibFactory.Compress(memoryStream))
                 {
                     await Task.Factory.FromAsync(
                         zlibStream.BeginWrite, zlibStream.EndWrite,
@@ -68,7 +67,7 @@ namespace PdfToSvg.Tests.IO
             {
                 using (var outStream = new MemoryStream())
                 {
-                    using (var zlibStream = new ZLibStream(inStream, CompressionMode.Decompress))
+                    using (var zlibStream = ZLibFactory.Decompress(inStream))
                     {
                         var buffer = new byte[4096];
                         int read;
@@ -93,7 +92,7 @@ namespace PdfToSvg.Tests.IO
             {
                 using (var outStream = new MemoryStream())
                 {
-                    using (var zlibStream = new ZLibStream(inStream, CompressionMode.Decompress))
+                    using (var zlibStream = ZLibFactory.Decompress(inStream))
                     {
                         var buffer = new byte[4096];
                         int read;
@@ -117,7 +116,7 @@ namespace PdfToSvg.Tests.IO
             {
                 using (var outStream = new MemoryStream())
                 {
-                    using (var zlibStream = new ZLibStream(inStream, CompressionMode.Decompress))
+                    using (var zlibStream = ZLibFactory.Decompress(inStream))
                     {
                         var buffer = new byte[4096];
                         int read;

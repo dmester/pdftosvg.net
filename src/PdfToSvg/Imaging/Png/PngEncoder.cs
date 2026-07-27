@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using CompressionMode = System.IO.Compression.CompressionMode;
 
 namespace PdfToSvg.Imaging.Png
 {
@@ -88,7 +87,7 @@ namespace PdfToSvg.Imaging.Png
         public Stream GetImageDataStream()
         {
             var chunk = new PngChunkStream(output, PngChunkIdentifier.ImageData);
-            var deflate = new ZLibStream(chunk, CompressionMode.Compress);
+            var deflate = ZLibFactory.Compress(chunk);
             return deflate;
         }
 

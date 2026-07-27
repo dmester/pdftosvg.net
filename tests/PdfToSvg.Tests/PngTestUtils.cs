@@ -109,10 +109,10 @@ namespace PdfToSvg.Tests
 
                         var dataStartIndex = (int)resultStream.Position;
 
-                        using (var deflateStream = new ZLibStream(resultStream, CompressionMode.Compress, true))
+                        using (var deflateStream = ZLibFactory.Compress(resultStream, true))
                         {
                             using var originalDataStream = new MemoryStream(pngData, cursor, chunkLength, false);
-                            using var inflateStream = new ZLibStream(originalDataStream, CompressionMode.Decompress);
+                            using var inflateStream = ZLibFactory.Decompress(originalDataStream);
 
                             // CopyTo is not used, since it seems to use different chunk sizes in ZLibStream, which
                             // causes non-equal compressed output.

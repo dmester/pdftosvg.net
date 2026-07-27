@@ -112,20 +112,20 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
                 var flag = (SimpleGlyphFlags)reader.ReadUInt8();
 
                 var xCoordinateLength =
-                    flag.HasFlag(SimpleGlyphFlags.XShortVector) ? SizeInt8 :
-                    flag.HasFlag(SimpleGlyphFlags.XIsSameOrPositiveXShortVector) ? 0 :
+                    (flag & SimpleGlyphFlags.XShortVector) != 0 ? SizeInt8 :
+                    (flag & SimpleGlyphFlags.XIsSameOrPositiveXShortVector) != 0 ? 0 :
                     SizeInt16;
 
                 var yCoordinateLength =
-                    flag.HasFlag(SimpleGlyphFlags.YShortVector) ? SizeInt8 :
-                    flag.HasFlag(SimpleGlyphFlags.YIsSameOrPositiveYShortVector) ? 0 :
+                    (flag & SimpleGlyphFlags.YShortVector) != 0 ? SizeInt8 :
+                    (flag & SimpleGlyphFlags.YIsSameOrPositiveYShortVector) != 0 ? 0 :
                     SizeInt16;
 
                 var coordinateLength = xCoordinateLength + yCoordinateLength;
 
                 totalCoordinateLength += coordinateLength;
 
-                var repeat = flag.HasFlag(SimpleGlyphFlags.RepeatFlag);
+                var repeat = (flag & SimpleGlyphFlags.RepeatFlag) != 0;
                 if (repeat)
                 {
                     int repeatTimes = reader.ReadUInt8();
@@ -210,25 +210,25 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
                 var glyphIndex = reader.ReadUInt16();
 
                 // -- Arguments
-                var argumentsAreWords = flags.HasFlag(ComponentGlyphFlags.Arg1And2AreWords);
+                var argumentsAreWords = (flags & ComponentGlyphFlags.Arg1And2AreWords) != 0;
                 // int16/int8 argument1
                 // int16/int8 argument2
                 var argumentByteCount = 2 * (argumentsAreWords ? SizeInt16 : SizeInt8);
 
                 // -- Scale
                 var scaleByteCount = 0;
-                if (flags.HasFlag(ComponentGlyphFlags.WeHaveAScale))
+                if ((flags & ComponentGlyphFlags.WeHaveAScale) != 0)
                 {
                     // F2DOT14 scale
                     scaleByteCount = 1 * SizeInt16;
                 }
-                else if (flags.HasFlag(ComponentGlyphFlags.WeHaveAnXAndYScale))
+                else if ((flags & ComponentGlyphFlags.WeHaveAnXAndYScale) != 0)
                 {
                     // F2DOT14 xScale
                     // F2DOT14 yScale
                     scaleByteCount = 2 * SizeInt16;
                 }
-                else if (flags.HasFlag(ComponentGlyphFlags.WeHaveATwoByTwo))
+                else if ((flags & ComponentGlyphFlags.WeHaveATwoByTwo) != 0)
                 {
                     // F2DOT14 xScale
                     // F2DOT14 scale01
@@ -245,7 +245,7 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
                     Data = reader.ReadByteSegment(argumentByteCount + scaleByteCount),
                 });
             }
-            while (flags.HasFlag(ComponentGlyphFlags.MoreComponents));
+            while ((flags & ComponentGlyphFlags.MoreComponents) != 0);
 
             // Validate instructions, otherwise remove them
             //
@@ -253,7 +253,8 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
             // which causes OTS Sanitizer to reject the font.
             // https://github.com/dmester/pdftosvg.net/issues/61
             //
-            if (flags.HasFlag(ComponentGlyphFlags.WeHaveInstructions) && reader.Position + SizeInt16 <= reader.Length)
+            if ((flags & ComponentGlyphFlags.WeHaveInstructions) != 0 &&
+                reader.Position + SizeInt16 <= reader.Length)
             {
                 var numInstructions = reader.ReadUInt16();
 

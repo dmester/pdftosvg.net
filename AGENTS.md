@@ -23,6 +23,7 @@ Main project `src/PdfToSvg`
 * Always specify accessibility modifiers on non-interface members
 * Always call `ConfigureAwait(false)` on awaited `Task`s in library code
 * `CancellationToken` parameters must come last, and must be forwarded to any awaited calls that accept one
+* Do not use `ThreadStatic`, `AsyncLocal` or `ThreadLocal` for optimizations
 * New source files need the standard header:
 
   ```

@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.Drawing;
 using System;
 using System.Collections;
@@ -14,33 +15,65 @@ namespace PdfToSvg.Drawing.Paths
 {
     internal class PathData : IEnumerable<PathCommand>
     {
-        private List<PathCommand> commands = new List<PathCommand>();
+        private PathCommand[] commands;
+        private int count;
 
-        public int Count => commands.Count;
+        public int Count => count;
 
-        public PathCommand this[int index] => commands[index];
+        public ref PathCommand this[int index] => ref commands[index];
+
+        public PathData()
+        {
+            this.commands = new PathCommand[10];
+            this.count = 0;
+        }
+
+        private PathData(PathCommand[] commands)
+        {
+            this.commands = commands;
+            this.count = commands.Length;
+        }
 
         public void ClosePath()
         {
-            if (commands.LastOrDefault() != ClosePathCommand.Value)
+            if (count == 0 || commands[count - 1].Type != PathCommandType.ClosePath)
             {
-                commands.Add(ClosePathCommand.Value);
+                Add(PathCommand.ClosePath);
             }
         }
 
         public void MoveTo(double x, double y)
         {
-            commands.Add(new MoveToCommand(x, y));
+            Add(PathCommand.MoveTo(x, y));
         }
 
         public void LineTo(double x, double y)
         {
-            commands.Add(new LineToCommand(x, y));
+            Add(PathCommand.LineTo(x, y));
         }
 
         public void CurveTo(double x1, double y1, double x2, double y2, double x3, double y3)
         {
-            commands.Add(new CurveToCommand(x1, y1, x2, y2, x3, y3));
+            if (count + 2 >= commands.Length)
+            {
+                Array.Resize(ref commands, Math.Max(10, commands.Length * 2));
+            }
+
+            commands[count + 0] = PathCommand.CurveTo(x3, y3);
+            commands[count + 1] = PathCommand.CurveToP1(x1, y1);
+            commands[count + 2] = PathCommand.CurveToP2(x2, y2);
+
+            count += 3;
+        }
+
+        public void Add(PathCommand command)
+        {
+            if (count == commands.Length)
+            {
+                Array.Resize(ref commands, Math.Max(10, commands.Length * 2));
+            }
+
+            commands[count++] = command;
         }
 
         public void Polygon(IEnumerable<Point> points)
@@ -66,36 +99,46 @@ namespace PdfToSvg.Drawing.Paths
             }
         }
 
-        public PathData Transform(Matrix matrix)
+        public void Clear()
         {
-            var result = new PathData();
+            count = 0;
+        }
 
-            foreach (var command in commands)
+        public void Transform(Matrix matrix)
+        {
+            for (var i = 0; i < count; i++)
             {
-                result.commands.Add(command.Transform(matrix));
+                ref var command = ref commands[i];
+                command = command.Transform(matrix);
             }
-
-            return result;
         }
 
         public PathData Clone()
         {
-            return new PathData { commands = commands.ToList() };
+            var commandsCopy = new PathCommand[count];
+            Array.Copy(this.commands, 0, commandsCopy, 0, count);
+            return new PathData(commandsCopy);
         }
 
         public override string ToString()
         {
-            return string.Join(" ", commands);
+            return string.Join(" ", this);
         }
 
-        public IEnumerator<PathCommand> GetEnumerator()
+        IEnumerator<PathCommand> IEnumerable<PathCommand>.GetEnumerator()
         {
-            return commands.GetEnumerator();
+            for (var i = 0; i < count; i++)
+            {
+                yield return commands[i];
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return commands.GetEnumerator();
+            for (var i = 0; i < count; i++)
+            {
+                yield return commands[i];
+            }
         }
     }
 }

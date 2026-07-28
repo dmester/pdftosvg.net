@@ -347,7 +347,7 @@ namespace PdfToSvg.Drawing
         }
 
 
-        private class PathPoint
+        private struct PathPoint
         {
             private const int FractionalDigits = 4;
 
@@ -355,7 +355,7 @@ namespace PdfToSvg.Drawing
             public readonly Point Rounded;
             public readonly Point Diff;
 
-            public PathPoint(PathPoint? previous, double x, double y)
+            public PathPoint(in PathPoint? previous, double x, double y)
             {
                 Original = new Point(x, y);
 
@@ -370,12 +370,12 @@ namespace PdfToSvg.Drawing
                 else
                 {
                     Diff = new Point(
-                        RoundDiff(previous.Rounded.X, previous.Original.X, x),
-                        RoundDiff(previous.Rounded.Y, previous.Original.Y, y));
+                        RoundDiff(previous.Value.Rounded.X, previous.Value.Original.X, x),
+                        RoundDiff(previous.Value.Rounded.Y, previous.Value.Original.Y, y));
 
                     Rounded = new Point(
-                        previous.Rounded.X + Diff.X,
-                        previous.Rounded.Y + Diff.Y);
+                        previous.Value.Rounded.X + Diff.X,
+                        previous.Value.Rounded.Y + Diff.Y);
                 }
             }
 
@@ -391,6 +391,7 @@ namespace PdfToSvg.Drawing
         public string PathData(PathData path)
         {
             var result = reusableSb;
+
             if (result == null)
             {
                 reusableSb = result = new StringBuilder();
@@ -400,38 +401,29 @@ namespace PdfToSvg.Drawing
                 result.Clear();
             }
 
-            PathPoint? previous = null;
-            PathPoint? start = null;
+            var previous = (PathPoint?)null;
+            var start = (PathPoint?)null;
 
-            foreach (var command in path)
+            for (var i=0;i<path.Count; i++)
             {
-                var movingCommand = command as IMovingCommand;
-                if (movingCommand != null)
-                {
-                    var dest = new PathPoint(previous, movingCommand.X, movingCommand.Y);
+                ref var command = ref path[i];
 
-                    switch (command)
+                if (command.Type != PathCommandType.ClosePath)
+                {
+                    var dest = new PathPoint(previous, command.X, command.Y);
+
+                    switch (command.Type)
                     {
-                        case MoveToCommand moveTo:
-                            if (previous == null)
-                            {
-                                result.Append('M');
-                                FormatCoordinate(result, dest.Diff.X);
-                                result.Append(' ');
-                                FormatCoordinate(result, dest.Diff.Y);
-                            }
-                            else
-                            {
-                                result.Append('m');
-                                FormatCoordinate(result, dest.Diff.X);
-                                result.Append(' ');
-                                FormatCoordinate(result, dest.Diff.Y);
-                            }
+                        case PathCommandType.MoveTo:
+                            result.Append(previous.HasValue ? 'm' : 'M');
+                            FormatCoordinate(result, dest.Diff.X);
+                            result.Append(' ');
+                            FormatCoordinate(result, dest.Diff.Y);
                             start = dest;
                             break;
 
-                        case LineToCommand lineTo:
-                            if (previous == null)
+                        case PathCommandType.LineTo:
+                            if (!previous.HasValue)
                             {
                                 result.Append('L');
                                 FormatCoordinate(result, dest.Diff.X);
@@ -457,11 +449,15 @@ namespace PdfToSvg.Drawing
                             }
                             break;
 
-                        case CurveToCommand curveTo:
-                            var diffP1 = new PathPoint(previous, curveTo.X1, curveTo.Y1);
-                            var diffP2 = new PathPoint(previous, curveTo.X2, curveTo.Y2);
+                        case PathCommandType.CurveTo:
+                            ref var p2 = ref path[i + 2];
+                            ref var p1 = ref path[i + 1];
+                            i += 2;
 
-                            result.Append(previous == null ? 'C' : 'c');
+                            var diffP1 = new PathPoint(previous, p1.X, p1.Y);
+                            var diffP2 = new PathPoint(previous, p2.X, p2.Y);
+
+                            result.Append(previous.HasValue ? 'c' : 'C');
                             FormatCoordinate(result, diffP1.Diff.X);
                             result.Append(' ');
                             FormatCoordinate(result, diffP1.Diff.Y);
@@ -483,16 +479,8 @@ namespace PdfToSvg.Drawing
                 }
                 else
                 {
-                    switch (command)
-                    {
-                        case ClosePathCommand _:
-                            result.Append('z');
-                            previous = start;
-                            break;
-
-                        default:
-                            throw new Exception("Unknown path command");
-                    }
+                    result.Append('z');
+                    previous = start;
                 }
             }
 

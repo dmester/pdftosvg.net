@@ -81,16 +81,19 @@ namespace PdfToSvg.Fonts.Type3
         [Operation("f")]
         private void f_Fill_NonZero()
         {
-            var transformedPath = currentPath.Transform(transform);
+            var path = this.currentPath;
+            var transform = this.transform;
 
-            foreach (var command in transformedPath)
+            for (var i = 0; i < path.Count; i++)
             {
-                switch (command)
+                var command = path[i].Transform(transform);
+
+                switch (command.Type)
                 {
-                    case MoveToCommand moveTo:
+                    case PathCommandType.MoveTo:
                         {
-                            var dx = moveTo.X - bbox.LastX;
-                            var dy = moveTo.Y - bbox.LastY;
+                            var dx = command.X - bbox.LastX;
+                            var dy = command.Y - bbox.LastY;
 
                             bbox.RMoveTo(dx, dy);
 
@@ -100,10 +103,10 @@ namespace PdfToSvg.Fonts.Type3
                         }
                         break;
 
-                    case LineToCommand lineTo:
+                    case PathCommandType.LineTo:
                         {
-                            var dx = lineTo.X - bbox.LastX;
-                            var dy = lineTo.Y - bbox.LastY;
+                            var dx = command.X - bbox.LastX;
+                            var dy = command.Y - bbox.LastY;
 
                             bbox.RLineTo(dx, dy);
 
@@ -113,14 +116,18 @@ namespace PdfToSvg.Fonts.Type3
                         }
                         break;
 
-                    case CurveToCommand curveTo:
+                    case PathCommandType.CurveTo:
                         {
-                            var dxa = curveTo.X1 - bbox.LastX;
-                            var dya = curveTo.Y1 - bbox.LastY;
-                            var dxb = curveTo.X2 - curveTo.X1;
-                            var dyb = curveTo.Y2 - curveTo.Y1;
-                            var dxc = curveTo.X3 - curveTo.X2;
-                            var dyc = curveTo.Y3 - curveTo.Y2;
+                            var p2 = path[i + 2].Transform(transform);
+                            var p1 = path[i + 1].Transform(transform);
+                            i += 2;
+
+                            var dxa = p1.X - bbox.LastX;
+                            var dya = p1.Y - bbox.LastY;
+                            var dxb = p2.X - p1.X;
+                            var dyb = p2.Y - p1.Y;
+                            var dxc = command.X - p2.X;
+                            var dyc = command.Y - p2.Y;
 
                             bbox.RRCurveTo(dxa, dya, dxb, dyb, dxc, dyc);
 
@@ -134,11 +141,11 @@ namespace PdfToSvg.Fonts.Type3
                         }
                         break;
 
-                    case ClosePathCommand:
+                    case PathCommandType.ClosePath:
                         break;
 
                     default:
-                        Log.WriteLine("Unknown command type " + command.GetType().FullName);
+                        Log.WriteLine("Unknown command type " + command.Type);
                         break;
                 }
             }

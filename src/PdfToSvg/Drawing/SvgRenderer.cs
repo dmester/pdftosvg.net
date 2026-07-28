@@ -405,7 +405,7 @@ namespace PdfToSvg.Drawing
                             path.LineTo(rect.X1, rect.Y2);
                         }
 
-                        path = path.Transform(originalTransform);
+                        path.Transform(originalTransform);
 
                         rootGraphics.Add(new XElement(ns + "a",
                             new XAttribute("href", href),
@@ -1679,7 +1679,7 @@ namespace PdfToSvg.Drawing
 
         private void AppendClipping(bool evenOdd)
         {
-            var path = currentPath.Transform(graphicsState.Transform);
+            var path = currentPath.Clone();
             var parent = graphicsState.ClipPath;
 
             if (path.Count == 0)
@@ -1687,6 +1687,8 @@ namespace PdfToSvg.Drawing
                 Log.WriteLine("Encountered a zero length clipping path. The path is ignored.");
                 return;
             }
+
+            path.Transform(graphicsState.Transform);
 
             if (PathConverter.TryConvertToRectangle(path, out var rect))
             {
@@ -1888,7 +1890,7 @@ namespace PdfToSvg.Drawing
         {
             if (!markedContentVisible)
             {
-                currentPath = new PathData();
+                currentPath.Clear();
                 return;
             }
 
@@ -1899,46 +1901,49 @@ namespace PdfToSvg.Drawing
 
             if (!stroke || scaleX == scaleY)
             {
-                currentPath = currentPath.Transform(remainingTransform);
+                currentPath.Transform(remainingTransform);
                 remainingTransform = Matrix.Identity;
                 pathTransformed = true;
             }
 
-            var contained =
-                graphicsState.ClipPath != null &&
-                graphicsState.ClipPath.Parent == null &&
-                graphicsState.ClipPath.IsRectangle &&
-                currentPath.All(cmd =>
+            var contained = false;
+
+            var clipPath = graphicsState.ClipPath;
+            if (clipPath != null &&
+                clipPath.Parent == null &&
+                clipPath.IsRectangle)
+            {
+                var clipRectangle = clipPath.Rectangle;
+
+                contained = true;
+
+                for (var i = 0; i < currentPath.Count; i++)
                 {
-                    if (cmd is ClosePathCommand)
+                    ref var cmd = ref currentPath[i];
+
+                    if (cmd.Type == PathCommandType.ClosePath)
                     {
-                        return true;
+                        continue;
                     }
 
-                    double x, y;
-
-                    if (cmd is MoveToCommand move)
-                    {
-                        x = move.X;
-                        y = move.Y;
-                    }
-                    else if (cmd is LineToCommand line)
-                    {
-                        x = line.X;
-                        y = line.Y;
-                    }
-                    else
+                    if (cmd.Type == PathCommandType.CurveTo)
                     {
                         // Cannot determine if curves is within the clip rectangle
-                        return false;
+                        contained = false;
+                        break;
                     }
 
                     // TODO does not consider stroke widths
-                    return graphicsState.ClipPath.Rectangle.Contains(x, y);
-                });
+                    if (!clipRectangle.Contains(cmd.X, cmd.Y))
+                    {
+                        contained = false;
+                        break;
+                    }
+                }
+            }
 
             var pathString = svgConversion.PathData(currentPath);
-            currentPath = new PathData();
+            currentPath.Clear();
 
             var visible = false;
             var attributes = new List<object>();
@@ -2139,7 +2144,7 @@ namespace PdfToSvg.Drawing
         [Operation("n")]
         private void n_EndPath()
         {
-            currentPath = new PathData();
+            currentPath.Clear();
         }
 
         #endregion

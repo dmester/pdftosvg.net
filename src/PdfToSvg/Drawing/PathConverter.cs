@@ -19,8 +19,9 @@ namespace PdfToSvg.Drawing
 
             if (data.Count >= 4 && data.Count <= 6)
             {
-                if (data[0] is MoveToCommand move)
+                if (data[0].Type == PathCommandType.MoveTo)
                 {
+                    var move = data[0];
                     var lastX = move.X;
                     var lastY = move.Y;
                     var otherX = double.NaN;
@@ -28,8 +29,9 @@ namespace PdfToSvg.Drawing
 
                     for (var i = 1; i < data.Count; i++)
                     {
-                        if (data[i] is LineToCommand lineTo)
+                        if (data[i].Type == PathCommandType.LineTo)
                         {
+                            var lineTo = data[i];
                             if (lineTo.X == lastX)
                             {
                                 if (lineTo.Y != lastY && (double.IsNaN(otherY) || otherY == lineTo.Y))
@@ -59,7 +61,7 @@ namespace PdfToSvg.Drawing
                                 return false;
                             }
                         }
-                        else if (data[i] is ClosePathCommand && i + 1 == data.Count)
+                        else if (data[i].Type == PathCommandType.ClosePath && i + 1 == data.Count)
                         {
                             // OK
                         }

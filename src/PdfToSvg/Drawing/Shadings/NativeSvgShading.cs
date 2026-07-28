@@ -76,47 +76,50 @@ namespace PdfToSvg.Drawing.Shadings
             Stops = stops.ToArray();
         }
 
-        protected void AddStopElements(XElement gradientEl, bool inPattern)
+        protected void AddStopElements(SvgConversion svgConversion, XElement gradientEl, bool inPattern)
         {
             if (!ExtendStart)
             {
                 // Background is not applicable when using the sh operator according to the spec
                 if (Background != null && inPattern)
                 {
-                    gradientEl.Add(CreateStop(offset: 0, Background.Value, transparent: false));
+                    gradientEl.Add(CreateStop(svgConversion, offset: 0, Background.Value, transparent: false));
                 }
                 else
                 {
-                    gradientEl.Add(CreateStop(offset: 0, Stops.First().Color, transparent: true));
+                    gradientEl.Add(CreateStop(svgConversion, offset: 0, Stops.First().Color, transparent: true));
                 }
             }
 
             foreach (var stop in Stops)
             {
-                gradientEl.Add(CreateStop(stop));
+                gradientEl.Add(CreateStop(svgConversion, stop));
             }
 
             if (!ExtendEnd)
             {
                 if (Background != null && inPattern)
                 {
-                    gradientEl.Add(CreateStop(offset: 0, Background.Value, transparent: false));
+                    gradientEl.Add(CreateStop(svgConversion, offset: 0, Background.Value, transparent: false));
                 }
                 else
                 {
-                    gradientEl.Add(CreateStop(offset: 1, Stops.Last().Color, transparent: true));
+                    gradientEl.Add(CreateStop(svgConversion, offset: 1, Stops.Last().Color, transparent: true));
                 }
             }
         }
 
-        private static XElement CreateStop(ShadingStop stop) => CreateStop(stop.Offset, stop.Color, false);
+        private static XElement CreateStop(SvgConversion svgConversion, ShadingStop stop)
+        {
+            return CreateStop(svgConversion, stop.Offset, stop.Color, false);
+        }
 
-        private static XElement CreateStop(double offset, RgbColor color, bool transparent)
+        private static XElement CreateStop(SvgConversion svgConversion, double offset, RgbColor color, bool transparent)
         {
             var stopEl = new XElement(ns + "stop");
 
-            stopEl.SetAttributeValue("offset", SvgConversion.FormatCoordinate(offset * 100) + "%");
-            stopEl.SetAttributeValue("stop-color", SvgConversion.FormatColor(color));
+            stopEl.SetAttributeValue("offset", svgConversion.FormatCoordinate(offset * 100) + "%");
+            stopEl.SetAttributeValue("stop-color", svgConversion.FormatColor(color));
 
             if (transparent)
             {

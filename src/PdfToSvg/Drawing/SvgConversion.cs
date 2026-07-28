@@ -5,14 +5,13 @@
 using PdfToSvg.Common;
 using PdfToSvg.Drawing.Paths;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PdfToSvg.Drawing
 {
+    /// <threadsafety instance="false" />
     internal class SvgConversion
     {
         private const string Hex = "0123456789abcdef";
@@ -20,33 +19,43 @@ namespace PdfToSvg.Drawing
         public const double CoordinateResolution = 0.0001;
         public const double TextOffsetResolution = 0.01;
 
-        private static string FormatRgbComponent(float component)
+        // long.MinValue: -9 223 372 036 854 775 808 => 20 chars + radix point + 'px' = 23 chars
+        private readonly char[] buffer = new char[23];
+        private StringBuilder? reusableSb;
+
+        public string FormatColor(RgbColor color)
         {
-            var intComponent = (int)(component * 255);
+            var r = (int)(color.Red * 255);
+            var g = (int)(color.Green * 255);
+            var b = (int)(color.Blue * 255);
 
-            var result = new[]
+            var buffer = this.buffer;
+
+            // The last char is set first to allow the JIT to optimize away the range checks for the following accesses
+            buffer[6] = Hex[b & 0xf];
+
+            buffer[0] = '#';
+
+            buffer[1] = Hex[(r >> 4) & 0xf];
+            buffer[2] = Hex[r & 0xf];
+
+            buffer[3] = Hex[(g >> 4) & 0xf];
+            buffer[4] = Hex[g & 0xf];
+
+            buffer[5] = Hex[(b >> 4) & 0xf];
+
+            if (buffer[1] == buffer[2] &&
+                buffer[3] == buffer[4] &&
+                buffer[5] == buffer[6])
             {
-                Hex[(intComponent >> 4) & 0xf],
-                Hex[intComponent & 0xf],
-            };
-
-            return new string(result);
-        }
-
-        public static string FormatColor(RgbColor color)
-        {
-            var r = FormatRgbComponent(color.Red);
-            var g = FormatRgbComponent(color.Green);
-            var b = FormatRgbComponent(color.Blue);
-
-            if (r[0] == r[1] &&
-                g[0] == g[1] &&
-                b[0] == b[1])
-            {
-                return "#" + r[0] + g[0] + b[0];
+                buffer[2] = buffer[3];
+                buffer[3] = buffer[5];
+                return new string(buffer, 0, 4);
             }
-
-            return "#" + r + g + b;
+            else
+            {
+                return new string(buffer, 0, 7);
+            }
         }
 
         private static bool IsInvalidChar(char ch)
@@ -94,7 +103,7 @@ namespace PdfToSvg.Drawing
             return s;
         }
 
-        public static string? FormatFontStyle(FontStyle? fontStyle)
+        public string? FormatFontStyle(FontStyle? fontStyle)
         {
             return fontStyle switch
             {
@@ -104,7 +113,7 @@ namespace PdfToSvg.Drawing
             };
         }
 
-        public static string? FormatFontWeight(FontWeight? fontWeight)
+        public string? FormatFontWeight(FontWeight? fontWeight)
         {
             if (fontWeight == FontWeight.Default || fontWeight == null)
             {
@@ -126,37 +135,90 @@ namespace PdfToSvg.Drawing
             return numericWeight.ToString(CultureInfo.InvariantCulture);
         }
 
-        public static string FormatFontMetric(double number)
+        public string FormatFontMetricPx(double number)
         {
+            int maxDecimalDigits;
+            int multiplier;
+
             if (number >= 100 || number <= -100)
             {
-                return FormatNumber(number, "0");
+                maxDecimalDigits = 0;
+                multiplier = 1;
             }
-
-            if (number >= 10 || number <= -10)
+            else if (number >= 10 || number <= -10)
             {
-                return FormatNumber(number, "0.##");
+                maxDecimalDigits = 2;
+                multiplier = 100;
             }
-
-            if (number >= 1 || number <= -1)
+            else if (number >= 1 || number <= -1)
             {
-                return FormatNumber(number, "0.###");
+                maxDecimalDigits = 3;
+                multiplier = 1000;
+            }
+            else
+            {
+                maxDecimalDigits = 4;
+                multiplier = 10000;
             }
 
-            return FormatNumber(number, "0.####");
+            var buffer = this.buffer;
+            var startIndex = FormatNumberCore(buffer, buffer.Length - 2, number, maxDecimalDigits, multiplier);
+
+            if (startIndex < 0)
+            {
+                return "0";
+            }
+            else
+            {
+                // Will always be true, but improves JIT range check optimization
+                if (buffer.Length >= 2)
+                {
+                    buffer[buffer.Length - 2] = 'p';
+                    buffer[buffer.Length - 1] = 'x';
+                }
+
+                return new string(buffer, startIndex, buffer.Length - startIndex);
+            }
         }
 
-        public static string FormatCoordinate(double number)
+        public string FormatCoordinate(double number)
         {
-            return FormatNumber(number, "0.####");
+            return FormatNumber(number, 4, 10000);
         }
 
-        public static string FormatTextOffset(double number)
+        public void FormatCoordinate(StringBuilder sb, double number)
         {
-            return FormatNumber(number, "0.##");
+            FormatNumber(sb, number, 4, 10000);
         }
 
-        public static string FormatBlendMode(BlendMode mode)
+        public string FormatCoordinatePx(double number)
+        {
+            var buffer = this.buffer;
+            var startIndex = FormatNumberCore(buffer, buffer.Length - 2, number, 4, 10000);
+
+            if (startIndex < 0)
+            {
+                return "0";
+            }
+            else
+            {
+                // Will always be true, but improves JIT range check optimization
+                if (buffer.Length >= 2)
+                {
+                    buffer[buffer.Length - 2] = 'p';
+                    buffer[buffer.Length - 1] = 'x';
+                }
+
+                return new string(buffer, startIndex, buffer.Length - startIndex);
+            }
+        }
+
+        public string FormatTextOffset(double number)
+        {
+            return FormatNumber(number, 2, 100);
+        }
+
+        public string FormatBlendMode(BlendMode mode)
         {
             return mode switch
             {
@@ -183,30 +245,107 @@ namespace PdfToSvg.Drawing
             };
         }
 
-        private static string FormatNumber(double number, string formatString)
+        private void FormatNumber(StringBuilder sb, double number, int maxDecimalDigits, int multiplier)
         {
-            var result = number.ToString(formatString, CultureInfo.InvariantCulture);
+            var buffer = this.buffer;
+            var startIndex = FormatNumberCore(buffer, buffer.Length, number, maxDecimalDigits, multiplier);
 
-            // .NET Core 3+ formats negative values close to 0 as "-0".
-            // This adds no value to the svg.
-            if (result == "-0")
+            if (startIndex < 0)
             {
-                result = "0";
+                sb.Append('0');
             }
-
-            // Remove leading 0 in fractional numbers in the range (-1, 1)
-            // String.StartsWith() was previously reported as a hot path in the profiler, so let's do an ugly comparison
-            else if (result.Length > 2 && result[0] == '0' && result[1] == '.')
+            else
             {
-                result = result.Substring(1);
+                sb.Append(buffer, startIndex, buffer.Length - startIndex);
             }
-            else if (result.Length > 3 && result[0] == '-' && result[1] == '0' && result[2] == '.')
-            {
-                result = result.Remove(1, 1);
-            }
-
-            return result;
         }
+
+        private string FormatNumber(double number, int maxDecimalDigits, int multiplier)
+        {
+            var buffer = this.buffer;
+            var startIndex = FormatNumberCore(buffer, buffer.Length, number, maxDecimalDigits, multiplier);
+
+            if (startIndex < 0)
+            {
+                return "0";
+            }
+            else
+            {
+                return new string(buffer, startIndex, buffer.Length - startIndex);
+            }
+        }
+
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        private static int FormatNumberCore(
+            char[] buffer, int bufferEndIndex,
+            double number, int maxDecimalDigits, int multiplier)
+        {
+            if (!double.IsNaN(number))
+            {
+                number = Math.Round(number * multiplier);
+
+                // Saturate scaled value
+                var scaledNumber =
+                    number <= -long.MaxValue ? -long.MaxValue : // long.MinValue will not negate
+                    number >= long.MaxValue ? long.MaxValue :
+                    (long)number;
+
+                if (scaledNumber != 0)
+                {
+                    var startIndex = bufferEndIndex;
+
+                    var negative = scaledNumber < 0;
+                    if (negative)
+                    {
+                        scaledNumber = -scaledNumber;
+                    }
+
+                    // Decimal digits
+                    while (maxDecimalDigits-- > 0)
+                    {
+                        var remainder = (int)(scaledNumber % 10);
+                        scaledNumber /= 10;
+
+                        if (remainder != 0)
+                        {
+                            // First non-zero decimal
+                            buffer[--startIndex] = (char)('0' + remainder);
+
+                            // Remaining decimals
+                            while (maxDecimalDigits-- > 0)
+                            {
+                                remainder = (int)(scaledNumber % 10);
+                                scaledNumber /= 10;
+
+                                buffer[--startIndex] = (char)('0' + remainder);
+                            }
+
+                            buffer[--startIndex] = '.';
+                            break;
+                        }
+                    }
+
+                    // Integer digits
+                    while (scaledNumber != 0)
+                    {
+                        var remainder = (int)(scaledNumber % 10);
+                        scaledNumber /= 10;
+
+                        buffer[--startIndex] = (char)('0' + remainder);
+                    }
+
+                    if (negative)
+                    {
+                        buffer[--startIndex] = '-';
+                    }
+
+                    return startIndex;
+                }
+            }
+
+            return -1;
+        }
+
 
         private class PathPoint
         {
@@ -249,9 +388,17 @@ namespace PdfToSvg.Drawing
             }
         }
 
-        public static string PathData(PathData path)
+        public string PathData(PathData path)
         {
-            var result = new StringBuilder();
+            var result = reusableSb;
+            if (result == null)
+            {
+                reusableSb = result = new StringBuilder();
+            }
+            else
+            {
+                result.Clear();
+            }
 
             PathPoint? previous = null;
             PathPoint? start = null;
@@ -269,16 +416,16 @@ namespace PdfToSvg.Drawing
                             if (previous == null)
                             {
                                 result.Append('M');
-                                result.Append(FormatCoordinate(dest.Diff.X));
+                                FormatCoordinate(result, dest.Diff.X);
                                 result.Append(' ');
-                                result.Append(FormatCoordinate(dest.Diff.Y));
+                                FormatCoordinate(result, dest.Diff.Y);
                             }
                             else
                             {
                                 result.Append('m');
-                                result.Append(FormatCoordinate(dest.Diff.X));
+                                FormatCoordinate(result, dest.Diff.X);
                                 result.Append(' ');
-                                result.Append(FormatCoordinate(dest.Diff.Y));
+                                FormatCoordinate(result, dest.Diff.Y);
                             }
                             start = dest;
                             break;
@@ -287,26 +434,26 @@ namespace PdfToSvg.Drawing
                             if (previous == null)
                             {
                                 result.Append('L');
-                                result.Append(FormatCoordinate(dest.Diff.X));
+                                FormatCoordinate(result, dest.Diff.X);
                                 result.Append(' ');
-                                result.Append(FormatCoordinate(dest.Diff.Y));
+                                FormatCoordinate(result, dest.Diff.Y);
                             }
                             else if (dest.Diff.X == 0)
                             {
                                 result.Append('v');
-                                result.Append(FormatCoordinate(dest.Diff.Y));
+                                FormatCoordinate(result, dest.Diff.Y);
                             }
                             else if (dest.Diff.Y == 0)
                             {
                                 result.Append('h');
-                                result.Append(FormatCoordinate(dest.Diff.X));
+                                FormatCoordinate(result, dest.Diff.X);
                             }
                             else
                             {
                                 result.Append('l');
-                                result.Append(FormatCoordinate(dest.Diff.X));
+                                FormatCoordinate(result, dest.Diff.X);
                                 result.Append(' ');
-                                result.Append(FormatCoordinate(dest.Diff.Y));
+                                FormatCoordinate(result, dest.Diff.Y);
                             }
                             break;
 
@@ -315,17 +462,17 @@ namespace PdfToSvg.Drawing
                             var diffP2 = new PathPoint(previous, curveTo.X2, curveTo.Y2);
 
                             result.Append(previous == null ? 'C' : 'c');
-                            result.Append(FormatCoordinate(diffP1.Diff.X));
+                            FormatCoordinate(result, diffP1.Diff.X);
                             result.Append(' ');
-                            result.Append(FormatCoordinate(diffP1.Diff.Y));
+                            FormatCoordinate(result, diffP1.Diff.Y);
                             result.Append(',');
-                            result.Append(FormatCoordinate(diffP2.Diff.X));
+                            FormatCoordinate(result, diffP2.Diff.X);
                             result.Append(' ');
-                            result.Append(FormatCoordinate(diffP2.Diff.Y));
+                            FormatCoordinate(result, diffP2.Diff.Y);
                             result.Append(',');
-                            result.Append(FormatCoordinate(dest.Diff.X));
+                            FormatCoordinate(result, dest.Diff.X);
                             result.Append(' ');
-                            result.Append(FormatCoordinate(dest.Diff.Y));
+                            FormatCoordinate(result, dest.Diff.Y);
                             break;
 
                         default:
@@ -352,7 +499,7 @@ namespace PdfToSvg.Drawing
             return result.ToString();
         }
 
-        public static string Matrix(Matrix matrix)
+        public string Matrix(Matrix matrix)
         {
             var a = FormatCoordinate(matrix.A);
             var b = FormatCoordinate(matrix.B);

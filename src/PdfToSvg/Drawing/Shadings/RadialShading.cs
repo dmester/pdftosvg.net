@@ -39,24 +39,25 @@ namespace PdfToSvg.Drawing.Shadings
 
         public override XElement? GetShadingElement(Matrix transform, Rectangle clipRectangle, bool inPattern)
         {
+            var svgConversion = new SvgConversion();
             var radialGradient = new XElement(ns + "radialGradient");
 
-            radialGradient.SetAttributeValue("fx", SvgConversion.FormatCoordinate(X0));
-            radialGradient.SetAttributeValue("fy", SvgConversion.FormatCoordinate(Y0));
-            radialGradient.SetAttributeValue("fr", SvgConversion.FormatCoordinate(R0));
+            radialGradient.SetAttributeValue("fx", svgConversion.FormatCoordinate(X0));
+            radialGradient.SetAttributeValue("fy", svgConversion.FormatCoordinate(Y0));
+            radialGradient.SetAttributeValue("fr", svgConversion.FormatCoordinate(R0));
 
-            radialGradient.SetAttributeValue("cx", SvgConversion.FormatCoordinate(X1));
-            radialGradient.SetAttributeValue("cy", SvgConversion.FormatCoordinate(Y1));
-            radialGradient.SetAttributeValue("r", SvgConversion.FormatCoordinate(R1));
+            radialGradient.SetAttributeValue("cx", svgConversion.FormatCoordinate(X1));
+            radialGradient.SetAttributeValue("cy", svgConversion.FormatCoordinate(Y1));
+            radialGradient.SetAttributeValue("r", svgConversion.FormatCoordinate(R1));
 
             if (!transform.IsIdentity)
             {
-                radialGradient.SetAttributeValue("gradientTransform", SvgConversion.Matrix(transform));
+                radialGradient.SetAttributeValue("gradientTransform", svgConversion.Matrix(transform));
             }
 
             radialGradient.SetAttributeValue("gradientUnits", "userSpaceOnUse");
 
-            AddStopElements(radialGradient, inPattern);
+            AddStopElements(svgConversion, radialGradient, inPattern);
 
             return radialGradient;
         }

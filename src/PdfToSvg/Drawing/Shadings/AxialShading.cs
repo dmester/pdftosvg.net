@@ -35,21 +35,22 @@ namespace PdfToSvg.Drawing.Shadings
 
         public override XElement? GetShadingElement(Matrix transform, Rectangle clipRectangle, bool inPattern)
         {
+            var svgConversion = new SvgConversion();
             var linearGradient = new XElement(ns + "linearGradient");
 
-            linearGradient.SetAttributeValue("x1", SvgConversion.FormatCoordinate(X1));
-            linearGradient.SetAttributeValue("y1", SvgConversion.FormatCoordinate(Y1));
-            linearGradient.SetAttributeValue("x2", SvgConversion.FormatCoordinate(X2));
-            linearGradient.SetAttributeValue("y2", SvgConversion.FormatCoordinate(Y2));
+            linearGradient.SetAttributeValue("x1", svgConversion.FormatCoordinate(X1));
+            linearGradient.SetAttributeValue("y1", svgConversion.FormatCoordinate(Y1));
+            linearGradient.SetAttributeValue("x2", svgConversion.FormatCoordinate(X2));
+            linearGradient.SetAttributeValue("y2", svgConversion.FormatCoordinate(Y2));
 
             if (!transform.IsIdentity)
             {
-                linearGradient.SetAttributeValue("gradientTransform", SvgConversion.Matrix(transform));
+                linearGradient.SetAttributeValue("gradientTransform", svgConversion.Matrix(transform));
             }
 
             linearGradient.SetAttributeValue("gradientUnits", "userSpaceOnUse");
 
-            AddStopElements(linearGradient, inPattern);
+            AddStopElements(svgConversion, linearGradient, inPattern);
 
             return linearGradient;
         }

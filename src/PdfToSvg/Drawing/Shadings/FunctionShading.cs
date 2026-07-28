@@ -114,6 +114,8 @@ namespace PdfToSvg.Drawing.Shadings
             // apply the transform on the rendered image itself, instead as in MeshShading, on the polygons inside the
             // rendered image.
 
+            var svgConversion = new SvgConversion();
+
             XElement? backgroundEl = null;
             XElement? clipEl = null;
             XAttribute? clipAttribute = null;
@@ -124,13 +126,13 @@ namespace PdfToSvg.Drawing.Shadings
 
                 var bboxPath = new PathData();
                 bboxPath.Polygon(bboxCoords);
-                var bboxPathData = SvgConversion.PathData(bboxPath);
+                var bboxPathData = svgConversion.PathData(bboxPath);
 
                 // Background is not applicable when using the sh operator according to the spec
                 if (Background != null && inPattern)
                 {
                     backgroundEl = new XElement(ns + "path",
-                        new XAttribute("fill", SvgConversion.FormatColor(Background.Value)),
+                        new XAttribute("fill", svgConversion.FormatColor(Background.Value)),
                         new XAttribute("d", bboxPathData)
                         );
                 }
@@ -149,9 +151,9 @@ namespace PdfToSvg.Drawing.Shadings
             else if (Background != null && inPattern)
             {
                 backgroundEl = new XElement(ns + "rect",
-                    new XAttribute("fill", SvgConversion.FormatColor(Background.Value)),
-                    new XAttribute("width", SvgConversion.FormatCoordinate(clipRectangle.X2)),
-                    new XAttribute("height", SvgConversion.FormatCoordinate(clipRectangle.Y2))
+                    new XAttribute("fill", svgConversion.FormatColor(Background.Value)),
+                    new XAttribute("width", svgConversion.FormatCoordinate(clipRectangle.X2)),
+                    new XAttribute("height", svgConversion.FormatCoordinate(clipRectangle.Y2))
                     );
             }
 
@@ -161,8 +163,8 @@ namespace PdfToSvg.Drawing.Shadings
             var imageUrl = RenderDataUrl(imageWidth, imageHeight);
 
             var patternEl = New.XElement(ns + "pattern",
-                new XAttribute("width", SvgConversion.FormatCoordinate(clipRectangle.X2)),
-                new XAttribute("height", SvgConversion.FormatCoordinate(clipRectangle.Y2)),
+                new XAttribute("width", svgConversion.FormatCoordinate(clipRectangle.X2)),
+                new XAttribute("height", svgConversion.FormatCoordinate(clipRectangle.Y2)),
                 new XAttribute("patternUnits", "userSpaceOnUse"),
 
                 clipEl,
@@ -171,11 +173,11 @@ namespace PdfToSvg.Drawing.Shadings
                 New.XElement(ns + "g",
                     clipAttribute,
                     new XElement(ns + "image",
-                        new XAttribute("transform", SvgConversion.Matrix(matrix * transform)),
-                        new XAttribute("x", SvgConversion.FormatCoordinate(minX)),
-                        new XAttribute("y", SvgConversion.FormatCoordinate(minY)),
-                        new XAttribute("width", SvgConversion.FormatCoordinate(maxX - minX)),
-                        new XAttribute("height", SvgConversion.FormatCoordinate(maxY - minY)),
+                        new XAttribute("transform", svgConversion.Matrix(matrix * transform)),
+                        new XAttribute("x", svgConversion.FormatCoordinate(minX)),
+                        new XAttribute("y", svgConversion.FormatCoordinate(minY)),
+                        new XAttribute("width", svgConversion.FormatCoordinate(maxX - minX)),
+                        new XAttribute("height", svgConversion.FormatCoordinate(maxY - minY)),
                         new XAttribute("preserveAspectRatio", "none"),
                         new XAttribute("href", imageUrl)
                         )

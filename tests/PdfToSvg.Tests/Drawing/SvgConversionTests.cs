@@ -15,6 +15,18 @@ namespace PdfToSvg.Tests.Drawing
 {
     public class SvgConversionTests
     {
+        [TestCase(0, 0, 0, "#000")]
+        [TestCase(1, 1, 1, "#fff")]
+        [TestCase(1, 0, 0, "#f00")]
+        [TestCase(0, 1, 0, "#0f0")]
+        [TestCase(0, 0, 1, "#00f")]
+        [TestCase(0xfa / 255f, 0, 1, "#fa00ff")]
+        [TestCase(0xfa / 255f, 0xfb / 255f, 0xfc / 255f, "#fafbfc")]
+        public void FormatColor(float r, float g, float b, string expectedResult)
+        {
+            Assert.AreEqual(expectedResult, new SvgConversion().FormatColor(new RgbColor(r, g, b)));
+        }
+
         [TestCase(1, 0, 0, 1, 0, 0, "none")]
         [TestCase(1.000001, 0.000005, 0, 1, 0, 0, "none")]
         [TestCase(1, 0, 0, 1.000001, 1.100001, 1.111111111, "translate(1.1 1.1111)")]
@@ -23,19 +35,68 @@ namespace PdfToSvg.Tests.Drawing
         [TestCase(1, 2, 3, 4, 5, 6, "matrix(1 2 3 4 5 6)")]
         public void FormatMatrix(double a, double b, double c, double d, double e, double f, string expectedResult)
         {
-            Assert.AreEqual(expectedResult, SvgConversion.Matrix(new Matrix(a, b, c, d, e, f)));
+            Assert.AreEqual(expectedResult, new SvgConversion().Matrix(new Matrix(a, b, c, d, e, f)));
         }
 
-        [TestCase(12341.234, "12341")]
-        [TestCase(1234.1234, "1234")]
-        [TestCase(123.41234, "123")]
-        [TestCase(12.341234, "12.34")]
-        [TestCase(1.2341234, "1.234")]
-        [TestCase(.12341234, ".1234")]
-        [TestCase(.02341234, ".0234")]
-        public void FormatFontMetric(double input, string expectedResult)
+        [TestCase(12341.234, "12341px")]
+        [TestCase(1234.1234, "1234px")]
+        [TestCase(123.41234, "123px")]
+        [TestCase(12.341234, "12.34px")]
+        [TestCase(1.2341234, "1.234px")]
+        [TestCase(.12341234, ".1234px")]
+        [TestCase(.02341234, ".0234px")]
+        public void FormatFontMetricPx(double input, string expectedResult)
         {
-            Assert.AreEqual(expectedResult, SvgConversion.FormatFontMetric(input));
+            Assert.AreEqual(expectedResult, new SvgConversion().FormatFontMetricPx(input));
+        }
+
+        [TestCase(0, "0")]
+        [TestCase(0.00001, "0")]
+        [TestCase(-0.00001, "0")]
+        [TestCase(double.Epsilon, "0")]
+        [TestCase(-double.Epsilon, "0")]
+        [TestCase(double.NaN, "0")]
+        [TestCase(double.MinValue, "-922337203685477.5807")]
+        [TestCase(double.MaxValue, "922337203685477.5807")]
+        [TestCase(double.NegativeInfinity, "-922337203685477.5807")]
+        [TestCase(double.PositiveInfinity, "922337203685477.5807")]
+        [TestCase(-922337203685477.5807, "-922337203685477.5807")]
+        [TestCase(922337203685477.5807, "922337203685477.5807")]
+        [TestCase(-922337203685477.5808, "-922337203685477.5807")]
+        [TestCase(922337203685477.5808, "922337203685477.5807")]
+        [TestCase(1234, "1234")]
+        [TestCase(1234.2, "1234.2")]
+        [TestCase(1234.23, "1234.23")]
+        [TestCase(1234.234, "1234.234")]
+        [TestCase(1234.2344, "1234.2344")]
+        [TestCase(1234.23444, "1234.2344")]
+        [TestCase(1234.23445, "1234.2344")]
+        [TestCase(1234.23446, "1234.2345")]
+        [TestCase(0.2, ".2")]
+        [TestCase(0.23, ".23")]
+        [TestCase(0.234, ".234")]
+        [TestCase(0.2344, ".2344")]
+        [TestCase(0.23444, ".2344")]
+        [TestCase(0.23445, ".2344")]
+        [TestCase(0.23446, ".2345")]
+        [TestCase(-1234, "-1234")]
+        [TestCase(-1234.2, "-1234.2")]
+        [TestCase(-1234.23, "-1234.23")]
+        [TestCase(-1234.234, "-1234.234")]
+        [TestCase(-1234.2344, "-1234.2344")]
+        [TestCase(-1234.23444, "-1234.2344")]
+        [TestCase(-1234.23445, "-1234.2344")]
+        [TestCase(-1234.23446, "-1234.2345")]
+        [TestCase(-0.2, "-.2")]
+        [TestCase(-0.23, "-.23")]
+        [TestCase(-0.234, "-.234")]
+        [TestCase(-0.2344, "-.2344")]
+        [TestCase(-0.23444, "-.2344")]
+        [TestCase(-0.23445, "-.2344")]
+        [TestCase(-0.23446, "-.2345")]
+        public void FormatCoordinate(double input, string expectedResult)
+        {
+            Assert.AreEqual(expectedResult, new SvgConversion().FormatCoordinate(input));
         }
 
         [Test]
@@ -103,7 +164,7 @@ namespace PdfToSvg.Tests.Drawing
 
             path.MoveTo(x, y);
 
-            Assert.AreEqual(expectedResult, SvgConversion.PathData(path));
+            Assert.AreEqual(expectedResult, new SvgConversion().PathData(path));
         }
 
         [TestCase(123.45612321, 10.123456, "M0 10l123.4561 .1235")]
@@ -117,7 +178,7 @@ namespace PdfToSvg.Tests.Drawing
             path.MoveTo(0, 10);
             path.LineTo(x, y);
 
-            Assert.AreEqual(expectedResult, SvgConversion.PathData(path));
+            Assert.AreEqual(expectedResult, new SvgConversion().PathData(path));
         }
 
         [TestCase(0, 1, "L0 1")]
@@ -129,7 +190,7 @@ namespace PdfToSvg.Tests.Drawing
 
             path.LineTo(x, y);
 
-            Assert.AreEqual(expectedResult, SvgConversion.PathData(path));
+            Assert.AreEqual(expectedResult, new SvgConversion().PathData(path));
         }
 
         [Test]
@@ -140,7 +201,7 @@ namespace PdfToSvg.Tests.Drawing
             path.MoveTo(10, 10);
             path.CurveTo(11, 12, 11, 13, 13.5, 14.5);
 
-            Assert.AreEqual("M10 10c1 2,1 3,3.5 4.5", SvgConversion.PathData(path));
+            Assert.AreEqual("M10 10c1 2,1 3,3.5 4.5", new SvgConversion().PathData(path));
         }
 
         [Test]
@@ -150,7 +211,7 @@ namespace PdfToSvg.Tests.Drawing
 
             path.CurveTo(11, 12, 11, 13, 13.5, 14.5);
 
-            Assert.AreEqual("C11 12,11 13,13.5 14.5", SvgConversion.PathData(path));
+            Assert.AreEqual("C11 12,11 13,13.5 14.5", new SvgConversion().PathData(path));
         }
 
         [Test]
@@ -164,7 +225,7 @@ namespace PdfToSvg.Tests.Drawing
             path.LineTo(0, 1300.9456789);
             path.ClosePath();
 
-            Assert.AreEqual("M0 0h1200.4231v1300.9457h-1200.4231z", SvgConversion.PathData(path));
+            Assert.AreEqual("M0 0h1200.4231v1300.9457h-1200.4231z", new SvgConversion().PathData(path));
         }
 
         [Test]
@@ -182,7 +243,7 @@ namespace PdfToSvg.Tests.Drawing
             path.LineTo(15, 20);
             path.ClosePath();
 
-            Assert.AreEqual("M10 10v5l5 -5zm5 5h5l-5 5z", SvgConversion.PathData(path));
+            Assert.AreEqual("M10 10v5l5 -5zm5 5h5l-5 5z", new SvgConversion().PathData(path));
         }
     }
 }

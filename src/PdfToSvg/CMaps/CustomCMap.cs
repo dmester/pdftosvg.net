@@ -5,6 +5,7 @@
 using PdfToSvg.DocumentModel;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -15,7 +16,7 @@ namespace PdfToSvg.CMaps
         private const int ExpandRangesThreshold = 100;
 
         private readonly string? name;
-        private readonly string? version;
+        private readonly double? version;
         private readonly CMap? parentCMap;
         private readonly bool isUnicodeCMap;
 
@@ -308,7 +309,7 @@ namespace PdfToSvg.CMaps
 
         public override string ToString()
         {
-            return ((name ?? nameof(CustomCMap)) + " " + version).TrimEnd();
+            return ((name ?? nameof(CustomCMap)) + " " + version?.ToString(CultureInfo.InvariantCulture)).TrimEnd();
         }
     }
 }

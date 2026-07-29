@@ -10,83 +10,61 @@ namespace PdfToSvg.Parsing
 {
     internal struct Lexeme : IEquatable<Lexeme>
     {
-        private long position;
+        private PdfString? stringValue;
+        private double numericValue;
+        private int position;
+        private Token token;
 
-        public Lexeme(Token token)
+        public Lexeme(Token token, double value = 0d, long position = -1)
         {
-            position = 0;
-            Token = token;
-            Value = PdfString.Empty;
+            this.numericValue = value;
+            this.token = token;
+            this.position = (int)(position + 1);
         }
 
-        public Lexeme(Token token, PdfString value)
+        public Lexeme(Token token, PdfString value, long position = -1)
         {
-            position = 0;
-            Token = token;
-            Value = value;
+            this.stringValue = value;
+            this.position = (int)(position + 1);
+            this.token = token;
         }
 
-        public Lexeme(Token token, string value)
+        public Lexeme(Token token, string value, long position = -1)
         {
-            position = 0;
-            Token = token;
-            Value = new PdfString(value);
+            this.stringValue = new PdfString(value);
+            this.position = (int)(position + 1);
+            this.token = token;
         }
 
-        public Lexeme(Token token, long position)
-        {
-            this.position = position + 1;
-            Token = token;
-            Value = PdfString.Empty;
-        }
-
-        public Lexeme(Token token, long position, PdfString value)
-        {
-            this.position = position + 1;
-            Token = token;
-            Value = value;
-        }
-
-        public Lexeme(Token token, long position, string value)
-        {
-            this.position = position + 1;
-            Token = token;
-            Value = new PdfString(value);
-        }
-
-        public Token Token { get; }
-        public PdfString Value { get; }
-
-        public long Position => position - 1;
-
-        public int IntValue
-        {
-            get
-            {
-                if (Token == Token.Integer && Value != null)
-                {
-                    return int.Parse(Value.ToString(), CultureInfo.InvariantCulture);
-                }
-                return 0;
-            }
-        }
+        public PdfString Value => stringValue ?? PdfString.Empty;
+        public double NumericValue => numericValue;
+        public Token Token => token;
+        public int Position => position - 1;
 
         public override bool Equals(object? obj) =>
             obj is Lexeme lexeme && Equals(lexeme);
 
         public bool Equals(Lexeme other) =>
-            other.Token == Token &&
+            other.token == token &&
             (
                 other.position == 0 ||
                 position == 0 ||
                 other.position == position
             ) &&
-            (other.Value ?? PdfString.Empty) == (Value ?? PdfString.Empty);
+            other.Value == Value &&
+            other.numericValue == numericValue;
 
         public override int GetHashCode() => (int)Token;
 
-        public override string ToString() => position == 0
-            ? $"{Token} {Value}"
-            : $"{Token} {Value} (pos {Position})";
+        public override string ToString()
+        {
+            var value = Token == Token.Integer || Token == Token.Real
+                ? numericValue.ToString(CultureInfo.InvariantCulture)
+                : Value.ToString();
+
+            return position == 0
+                ? $"{token} {value}"
+                : $"{token} {value} (pos {Position})";
+        }
     }
 }

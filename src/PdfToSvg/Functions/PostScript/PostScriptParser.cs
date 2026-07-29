@@ -126,13 +126,9 @@ namespace PdfToSvg.Functions.PostScript
                         break;
 
                     case Token.Integer:
-                        var iValue = int.Parse(nextLexeme.Value.ToString(), CultureInfo.InvariantCulture);
-                        instructions.Add(new PostScriptInstruction(PostScriptOpCode.PushValue, new PostScriptValue(iValue)));
-                        break;
-
                     case Token.Real:
-                        var dblValue = double.Parse(nextLexeme.Value.ToString(), CultureInfo.InvariantCulture);
-                        instructions.Add(new PostScriptInstruction(PostScriptOpCode.PushValue, new PostScriptValue(dblValue)));
+                        var value = new PostScriptValue(nextLexeme.NumericValue);
+                        instructions.Add(new PostScriptInstruction(PostScriptOpCode.PushValue, value));
                         break;
 
                     case Token.Keyword:

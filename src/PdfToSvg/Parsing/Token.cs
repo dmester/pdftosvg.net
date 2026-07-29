@@ -4,7 +4,7 @@
 
 namespace PdfToSvg.Parsing
 {
-    internal enum Token
+    internal enum Token : byte
     {
         None = 0,
         UnexpectedCharacter,

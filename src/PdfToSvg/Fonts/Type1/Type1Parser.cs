@@ -80,13 +80,13 @@ namespace PdfToSvg.Fonts.Type1
                 }
                 else
                 {
-                    throw new Exception("Unexpected type 1 encoding '" + startLexeme.Value + "'.");
+                    throw new Type1Exception("Unexpected type 1 encoding '" + startLexeme.Value + "'.");
                 }
             }
 
             if (startLexeme.Token != Token.Integer)
             {
-                throw new Exception("Unexpected type 1 encoding token '" + startLexeme + "'.");
+                throw new Type1Exception("Unexpected type 1 encoding token '" + startLexeme + "'.");
             }
 
             var glyphNames = new string?[256];
@@ -97,7 +97,7 @@ namespace PdfToSvg.Fonts.Type1
             {
                 if (lexeme.Token == Token.Dup)
                 {
-                    var index = lexer.Read(Token.Integer).IntValue;
+                    var index = (int)lexer.Read(Token.Integer).NumericValue;
                     var glyphName = lexer.Read(Token.Name).Value.ToString();
 
                     if (index >= 0 && index < glyphNames.Length)
@@ -147,7 +147,15 @@ namespace PdfToSvg.Fonts.Type1
 
                 lexer.Stream.Skip(1);
 
-                var content = new byte[length.IntValue];
+                const int MaxLength = 128 << 10;
+
+                if (length.NumericValue < 0 ||
+                    length.NumericValue > MaxLength)
+                {
+                    break;
+                }
+
+                var content = new byte[(int)length.NumericValue];
                 lexer.Stream.ReadAll(content, 0, content.Length);
                 Type1Decryptor.DecryptCharString(content, 0, content.Length);
 
@@ -161,25 +169,42 @@ namespace PdfToSvg.Fonts.Type1
 
         private static byte[][] ReadSubrs(Lexer lexer)
         {
+            const int MaxCount = 10000;
+            const int SubrMaxLength = 128 << 10;
+
             var count = lexer.Read(Token.Integer);
-            var result = new byte[count.IntValue][];
+            if (count.NumericValue < 0 || count.NumericValue > MaxCount)
+            {
+                throw new Type1Exception("Invalid subrs count " + count.NumericValue);
+            }
+
+            var result = new byte[(int)count.NumericValue][];
 
             lexer.Read(Token.Array);
 
             while (lexer.TryRead(Token.Dup))
             {
-                var index = lexer.Read(Token.Integer);
-                var length = lexer.Read(Token.Integer);
+                var index = lexer.Read(Token.Integer).NumericValue;
+                var length = lexer.Read(Token.Integer).NumericValue;
+
+                if (index < 0 || index >= result.Length)
+                {
+                    throw new Type1Exception("Invalid subr index " + index);
+                }
+                if (length < 0 || length > SubrMaxLength)
+                {
+                    throw new Type1Exception("Invalid subr length " + length);
+                }
 
                 lexer.Read(Token.RD);
 
                 lexer.Stream.Skip(1);
 
-                var content = new byte[length.IntValue];
+                var content = new byte[(int)length];
                 lexer.Stream.ReadAll(content, 0, content.Length);
                 Type1Decryptor.DecryptCharString(content, 0, content.Length);
 
-                result[index.IntValue] = content;
+                result[(int)index] = content;
 
                 lexer.Read(Token.NP);
             }
@@ -218,12 +243,8 @@ namespace PdfToSvg.Fonts.Type1
                     switch (nextLexeme.Token)
                     {
                         case Token.Integer:
-                            resultList.Add(nextLexeme.IntValue);
-                            break;
-
                         case Token.Real:
-                            var dblValue = double.Parse(nextLexeme.Value.ToString(), CultureInfo.InvariantCulture);
-                            resultList.Add(dblValue);
+                            resultList.Add(nextLexeme.NumericValue);
                             break;
                     }
 
@@ -241,13 +262,9 @@ namespace PdfToSvg.Fonts.Type1
             switch (lexeme.Token)
             {
                 case Token.Integer:
-                    lexer.Read();
-                    result = lexeme.IntValue;
-                    break;
-
                 case Token.Real:
                     lexer.Read();
-                    result = (int)double.Parse(lexeme.Value.ToString(), CultureInfo.InvariantCulture);
+                    result = (int)lexeme.NumericValue;
                     break;
             }
         }
@@ -259,13 +276,9 @@ namespace PdfToSvg.Fonts.Type1
             switch (lexeme.Token)
             {
                 case Token.Integer:
-                    lexer.Read();
-                    result = lexeme.IntValue;
-                    break;
-
                 case Token.Real:
                     lexer.Read();
-                    result = double.Parse(lexeme.Value.ToString(), CultureInfo.InvariantCulture);
+                    result = lexeme.NumericValue;
                     break;
             }
         }
@@ -277,8 +290,9 @@ namespace PdfToSvg.Fonts.Type1
             switch (lexeme.Token)
             {
                 case Token.Integer:
+                case Token.Real:
                     lexer.Read();
-                    result = lexeme.IntValue != 0;
+                    result = lexeme.NumericValue != 0;
                     break;
 
                 case Token.True:
@@ -311,7 +325,7 @@ namespace PdfToSvg.Fonts.Type1
             var headerStart = data.IndexOf(header, 0, length1);
             if (headerStart < 0)
             {
-                throw new Exception("Missing header in Type 1 font.");
+                throw new Type1Exception("Missing header in Type 1 font.");
             }
 
             var resultLength = length1 - headerStart + length2;

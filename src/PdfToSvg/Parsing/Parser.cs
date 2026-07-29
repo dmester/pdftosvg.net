@@ -163,7 +163,7 @@ namespace PdfToSvg.Parsing
             {
                 if (lexeme.Token == Token.Integer)
                 {
-                    return lexeme.IntValue;
+                    return (int)lexeme.NumericValue;
                 }
                 
                 //
@@ -172,16 +172,11 @@ namespace PdfToSvg.Parsing
                 // * We parse large numbers as doubles
                 // * Other readers tolerates real object references
                 //
-                if (lexeme.Token == Token.Real)
+                if (lexeme.Token == Token.Real &&
+                    lexeme.NumericValue >= 0 &&
+                    lexeme.NumericValue < int.MaxValue)
                 {
-                    var fObjectNumber = double.Parse(lexeme.Value.ToString(), CultureInfo.InvariantCulture);
-
-                    if (!double.IsNaN(fObjectNumber) &&
-                        fObjectNumber >= 0 &&
-                        fObjectNumber < int.MaxValue)
-                    {
-                        return (int)fObjectNumber;
-                    }
+                    return (int)lexeme.NumericValue;
                 }
                 
                 return null;
@@ -222,12 +217,10 @@ namespace PdfToSvg.Parsing
 
             if (value1Lexeme.Token == Token.Integer)
             {
-                return value1Lexeme.IntValue;
+                return (int)value1Lexeme.NumericValue;
             }
-            else
-            {
-                return double.Parse(value1Lexeme.Value.ToString(), CultureInfo.InvariantCulture);
-            }
+
+            return value1Lexeme.NumericValue;
         }
 
         protected bool TryReadToken(Token token)
@@ -270,7 +263,7 @@ namespace PdfToSvg.Parsing
             {
                 lexer.Read();
 
-                result = nextLexeme.IntValue;
+                result = (int)nextLexeme.NumericValue;
                 return true;
             }
 
@@ -278,17 +271,12 @@ namespace PdfToSvg.Parsing
             // Other readers are quite tolerant accepting real numbers where there should be integers
             if (nextLexeme.Token == Token.Real)
             {
-                if (double.TryParse(
-                        nextLexeme.Value.ToString(),
-                        NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint,
-                        CultureInfo.InvariantCulture,
-                        out var realValue) &&
-                    // Do not allow saturation
-                    realValue >= int.MinValue && realValue <= int.MaxValue)
+                // Do not allow saturation
+                if (nextLexeme.NumericValue >= int.MinValue && nextLexeme.NumericValue <= int.MaxValue)
                 {
                     // Do not allow conversion if it alters the value
-                    result = (int)realValue;
-                    if (result == realValue)
+                    result = (int)nextLexeme.NumericValue;
+                    if (result == nextLexeme.NumericValue)
                     {
                         lexer.Read();
                         return true;

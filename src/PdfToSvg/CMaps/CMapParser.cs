@@ -105,7 +105,7 @@ namespace PdfToSvg.CMaps
                             }
                             else if (lexeme.Value.ToString() == "CMapVersion" && lexer.TryRead(Token.Real, out var version))
                             {
-                                cmap.Version = version.Value.ToString();
+                                cmap.Version = version.NumericValue;
                             }
                             else if (lexer.TryRead(Token.UseCMap))
                             {
@@ -142,7 +142,7 @@ namespace PdfToSvg.CMaps
         private int ReadInt32()
         {
             var lexeme = lexer.Read(Token.Integer);
-            return lexeme.IntValue;
+            return (int)lexeme.NumericValue;
         }
 
         private string ReadUnicode()

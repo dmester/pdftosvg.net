@@ -83,7 +83,7 @@ namespace PdfToSvg.Parsing
         {
             var value = new PdfString(stringBuffer);
             stringBuffer.SetLength(0);
-            return new Lexeme(token, position, value);
+            return new Lexeme(token, value, position);
         }
 
         protected bool SkipWhiteSpace()
@@ -191,7 +191,7 @@ namespace PdfToSvg.Parsing
             {
                 if (keyword == Token.Keyword)
                 {
-                    return new Lexeme(keyword, startPosition, keywordName);
+                    return new Lexeme(keyword, keywordName, startPosition);
                 }
 
                 if (keyword == Token.Stream)
@@ -227,70 +227,117 @@ namespace PdfToSvg.Parsing
                     }
                 }
 
-                return new Lexeme(keyword, startPosition);
+                return new Lexeme(keyword, position: startPosition);
             }
             else
             {
-                return new Lexeme(Token.Keyword, startPosition, keywordName);
+                return new Lexeme(Token.Keyword, keywordName, startPosition);
             }
         }
 
         protected Lexeme ReadNumber()
         {
             var startPosition = Stream.Position;
-            var inDecimal = false;
-            bool proceed;
 
-            do
+            const long MaxMantissaBeforeExtension = 1L << 54; // 52 fraction bits in doubles
+
+            Token token;
+            var negative = false;
+            var mantissa = 0L;
+            var exponent = 0;
+
+            // Sign
+            var nextChar = Stream.PeekChar();
+            if (nextChar == '-' || nextChar == '+')
             {
-                var nextChar = Stream.PeekChar();
+                negative = nextChar == '-';
+                Stream.Skip();
+                nextChar = Stream.PeekChar();
+            }
 
-                proceed = false;
-
-                switch (nextChar)
+            // Integer digits
+            while (nextChar >= '0' && nextChar <= '9')
+            {
+                if (mantissa < MaxMantissaBeforeExtension)
                 {
-                    case '+':
-                    case '-':
-                        if (stringBuffer.Length == 0)
-                        {
-                            stringBuffer.WriteByte((byte)nextChar);
-                            Stream.Skip();
-                            proceed = true;
-                        }
-                        break;
-
-                    case '.':
-                        if (!inDecimal)
-                        {
-                            stringBuffer.WriteByte((byte)nextChar);
-                            Stream.Skip();
-                            inDecimal = true;
-                            proceed = true;
-                        }
-                        break;
-
-                    case >= '0' and <= '9':
-                        stringBuffer.WriteByte((byte)nextChar);
-                        Stream.Skip();
-                        proceed = true;
-                        break;
+                    mantissa = mantissa * 10 + (nextChar - '0');
                 }
+                else
+                {
+                    exponent++;
+                }
+
+                Stream.Skip();
+                nextChar = Stream.PeekChar();
             }
-            while (proceed);
 
-            var value = new PdfString(stringBuffer);
-            stringBuffer.SetLength(0);
-
-            // Let integers that are outside the range of Int32 to be typed as reals
-            var token = Token.Real;
-
-            if (!inDecimal && value.Length < 20 &&
-                int.TryParse(value.ToString(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out _))
+            // Decimal point
+            var hasDecimals = nextChar == '.';
+            if (hasDecimals)
             {
-                token = Token.Integer;
+                Stream.Skip();
+                nextChar = Stream.PeekChar();
+
+                // Decimal digits
+                while (nextChar >= '0' && nextChar <= '9')
+                {
+                    if (mantissa < MaxMantissaBeforeExtension)
+                    {
+                        mantissa = mantissa * 10 + (nextChar - '0');
+                        exponent--;
+                    }
+
+                    Stream.Skip();
+                    nextChar = Stream.PeekChar();
+                }
+
+                token = Token.Real;
+            }
+            else
+            {
+                // Let integers that are outside the range of Int32 to be typed as reals
+                token = mantissa <= (negative ? -(long)int.MinValue : int.MaxValue)
+                    ? Token.Integer
+                    : Token.Real;
             }
 
-            return new Lexeme(token, startPosition, value);
+            double result;
+
+            if (exponent == 0)
+            {
+                result = mantissa;
+            }
+            else if (exponent < 0)
+            {
+                exponent = -exponent;
+
+                var multiplier = exponent switch
+                {
+                    1 => 1e1,
+                    2 => 1e2,
+                    3 => 1e3,
+                    4 => 1e4,
+                    5 => 1e5,
+                    6 => 1e6,
+                    7 => 1e7,
+                    8 => 1e8,
+                    9 => 1e9,
+                    _ => Math.Pow(10, exponent),
+                };
+
+                result = mantissa / multiplier;
+            }
+            else
+            {
+                result = mantissa * Math.Pow(10, exponent);
+            }
+
+            if (negative)
+            {
+                result = -result;
+            }
+
+            return new Lexeme(token, result, startPosition);
         }
 
         protected byte ReadOctalByte()
@@ -566,7 +613,7 @@ namespace PdfToSvg.Parsing
         {
             if (isFaulted)
             {
-                return new Lexeme(Token.EndOfInput, Stream.Position);
+                return new Lexeme(Token.EndOfInput, position: Stream.Position);
             }
 
             var result = default(Lexeme);
@@ -578,7 +625,7 @@ namespace PdfToSvg.Parsing
                 var nextChar = Stream.PeekChar();
                 if (nextChar == BufferedReader.EndOfStreamMarker)
                 {
-                    return new Lexeme(Token.EndOfInput, Stream.Position);
+                    return new Lexeme(Token.EndOfInput, position: Stream.Position);
                 }
 
                 switch (nextChar)

@@ -201,11 +201,11 @@ namespace PdfToSvg.Parsing
         {
             var value1Lexeme = lexer.Read();
 
-            var next1Lexeme = lexer.Peek(1);
+            var next1Lexeme = lexer.Peek();
             if (next1Lexeme.Token == Token.Integer ||
                 next1Lexeme.Token == Token.Real)
             {
-                var next2Lexeme = lexer.Peek(2);
+                var next2Lexeme = lexer.Peek2();
                 if (next2Lexeme.Token == Token.Ref)
                 {
                     lexer.Read();

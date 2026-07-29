@@ -6,7 +6,6 @@ using PdfToSvg.DocumentModel;
 using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -15,7 +14,11 @@ namespace PdfToSvg.Parsing
     internal class Lexer
     {
         private MemoryStream stringBuffer = new MemoryStream();
-        private ForwardReadBuffer<Lexeme> forwardLexemeBuffer;
+
+        private Lexeme forwardLexeme1;
+        private Lexeme forwardLexeme2;
+        private int forwardLexemeCount;
+
         private Dictionary<string, Token> keywords;
         private Dictionary<string, int> keywordPrefixesAndMaxLengths;
         private bool isFaulted;
@@ -38,7 +41,6 @@ namespace PdfToSvg.Parsing
         public Lexer(Stream stream, Dictionary<string, Token>? keywords = null)
         {
             Stream = stream as BufferedReader ?? new BufferedStreamReader(stream);
-            forwardLexemeBuffer = new ForwardReadBuffer<Lexeme>(ReadLexeme, 2);
             this.keywords = keywords ?? new Dictionary<string, Token>();
             this.keywordPrefixesAndMaxLengths = new Dictionary<string, int>(this.keywords.Comparer);
 
@@ -68,7 +70,7 @@ namespace PdfToSvg.Parsing
 
         public void Reset()
         {
-            forwardLexemeBuffer.Clear();
+            forwardLexemeCount = 0;
             stringBuffer.SetLength(0);
             isFaulted = false;
         }
@@ -219,7 +221,7 @@ namespace PdfToSvg.Parsing
                         Stream.Skip();
                         nextChar = Stream.PeekChar();
                     }
-                    
+
                     if (nextChar == '\n')
                     {
                         // Line feed
@@ -575,12 +577,47 @@ namespace PdfToSvg.Parsing
             return ReadHexString();
         }
 
+        public Lexeme Peek()
+        {
+            if (forwardLexemeCount == 0)
+            {
+                forwardLexeme1 = ReadLexeme();
+                forwardLexemeCount = 1;
+            }
 
-        public Lexeme Peek() => forwardLexemeBuffer.Peek();
+            return forwardLexeme1;
+        }
 
-        public Lexeme Peek(int offset) => forwardLexemeBuffer.Peek(offset);
+        public Lexeme Peek2()
+        {
+            if (forwardLexemeCount == 0)
+            {
+                forwardLexeme1 = ReadLexeme();
+                forwardLexemeCount = 1;
+            }
 
-        public Lexeme Read() => forwardLexemeBuffer.Read();
+            if (forwardLexemeCount == 1)
+            {
+                forwardLexeme2 = ReadLexeme();
+                forwardLexemeCount = 2;
+            }
+
+            return forwardLexeme2;
+        }
+
+        public Lexeme Read()
+        {
+            if (forwardLexemeCount > 0)
+            {
+                var result = forwardLexeme1;
+                forwardLexeme1 = forwardLexeme2;
+                forwardLexemeCount--;
+                return result;
+            }
+
+            return ReadLexeme();
+        }
+
 
         public Lexeme Read(Token expectedToken)
         {

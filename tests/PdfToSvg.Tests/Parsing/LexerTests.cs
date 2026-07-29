@@ -3,13 +3,12 @@
 // Licensed under the MIT License.
 
 using NUnit.Framework;
-using PdfToSvg;
-using PdfToSvg.DocumentModel;
 using PdfToSvg.Parsing;
 using PdfToSvg.Tests.IO;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,13 +28,12 @@ namespace PdfToSvg.Tests.Parsing
             { "d1d1", Token.Keyword },
         };
 
-        private Lexer CreateLexer(string content)
+        private Lexer CreateLexer(string content, bool seekable = false)
         {
             var bytes = Encoding.ASCII.GetBytes(content);
-            var stream = new NoSeekMemoryStream(bytes);
+            var stream = seekable ? (Stream)new MemoryStream(bytes) : new NoSeekMemoryStream(bytes);
             return new Lexer(stream, basicKeywords);
         }
-             
 
         [Test]
         public void Stream()
@@ -55,6 +53,34 @@ namespace PdfToSvg.Tests.Parsing
             var lexerLF = CreateLexer("  &&&&&&&&&&&& ");
             Assert.AreEqual(new Lexeme(Token.UnexpectedCharacter, position: 2), lexerLF.Read());
             Assert.AreEqual(new Lexeme(Token.EndOfInput, position: 3), lexerLF.Read());
+        }
+
+        [Test]
+        public void Peek()
+        {
+            var lexer = CreateLexer("1 2 3 4 5 6", seekable: true);
+
+            Assert.AreEqual(new Lexeme(Token.Integer, 1), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Integer, 2), lexer.Peek());
+            Assert.AreEqual(new Lexeme(Token.Integer, 3), lexer.Peek2());
+
+            Assert.AreEqual(new Lexeme(Token.Integer, 2), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Integer, 3), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Integer, 4), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Integer, 5), lexer.Peek());
+            Assert.AreEqual(new Lexeme(Token.Integer, 6), lexer.Peek2());
+
+            lexer.Seek(0, SeekOrigin.Begin);
+            Assert.AreEqual(new Lexeme(Token.Integer, 1), lexer.Peek());
+            Assert.AreEqual(new Lexeme(Token.Integer, 2), lexer.Peek2());
+
+            lexer.Seek(-1, SeekOrigin.End);
+            Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Peek2());
+            Assert.AreEqual(new Lexeme(Token.Integer, 6), lexer.Peek());
+
+            lexer.Seek(0, SeekOrigin.End);
+            Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Peek());
+            Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Peek2());
         }
 
         [Test]

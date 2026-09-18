@@ -41,6 +41,20 @@ namespace PdfToSvg.DocumentModel
             Buffer.BlockCopy(data, offset, this.data, 0, count);
         }
 
+        public PdfString(char[] data, int offset, int count)
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (offset < 0) throw new ArgumentOutOfRangeException(nameof(offset));
+            if (count < 0 || offset + count > data.Length) throw new ArgumentOutOfRangeException(nameof(count));
+
+            this.data = new byte[count];
+
+            for (var i = 0; i < count; i++)
+            {
+                this.data[i] = (byte)data[offset + i];
+            }
+        }
+
         public PdfString(byte[] data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));

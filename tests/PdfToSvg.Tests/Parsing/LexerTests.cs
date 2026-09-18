@@ -87,6 +87,18 @@ namespace PdfToSvg.Tests.Parsing
             Assert.AreEqual(text, keyword.Keyword, text);
         }
 
+        private static LexerBuffer CreateBuffer(string value)
+        {
+            var result = new LexerBuffer(Math.Max(value.Length, 1));
+
+            foreach (var ch in value)
+            {
+                result.WriteChar(ch);
+            }
+
+            return result;
+        }
+
         private Lexer CreateLexer(string content, bool seekable = false)
         {
             var bytes = Encoding.ASCII.GetBytes(content);

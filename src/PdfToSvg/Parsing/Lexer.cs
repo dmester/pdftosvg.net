@@ -5,7 +5,6 @@
 using PdfToSvg.DocumentModel;
 using PdfToSvg.IO;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -13,7 +12,7 @@ namespace PdfToSvg.Parsing
 {
     internal class Lexer
     {
-        private MemoryStream stringBuffer = new MemoryStream();
+        private LexerBuffer stringBuffer = new LexerBuffer(128);
 
         private Lexeme forwardLexeme1;
         private Lexeme forwardLexeme2;
@@ -55,7 +54,7 @@ namespace PdfToSvg.Parsing
         public void Reset()
         {
             forwardLexemeCount = 0;
-            stringBuffer.SetLength(0);
+            stringBuffer.Clear();
             isFaulted = false;
         }
 
@@ -109,7 +108,8 @@ namespace PdfToSvg.Parsing
             var startPosition = Stream.Position;
             var nextChar = Stream.ReadChar();
 
-            stringBuffer.WriteByte((byte)nextChar);
+            stringBuffer.Clear();
+            stringBuffer.WriteChar(nextChar);
 
             while (true)
             {
@@ -118,7 +118,7 @@ namespace PdfToSvg.Parsing
                 if (LexerKeywordTable.IsKeywordChar(nextChar))
                 {
                     Stream.Skip();
-                    stringBuffer.WriteByte((byte)nextChar);
+                    stringBuffer.WriteChar(nextChar);
                 }
                 else
                 {
@@ -453,7 +453,7 @@ namespace PdfToSvg.Parsing
                 else
                 {
                     Stream.Skip();
-                    stringBuffer.WriteByte((byte)nextChar);
+                    stringBuffer.WriteChar(nextChar);
                 }
             }
 

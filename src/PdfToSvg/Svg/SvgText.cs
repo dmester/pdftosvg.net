@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Svg
 {
-    internal class SvgText(string value) : SvgNode
+    internal class SvgText(string value, bool isRaw = false) : SvgNode
     {
         public readonly string Value = value;
 
@@ -15,7 +15,14 @@ namespace PdfToSvg.Svg
 
         public override void WriteTo(SvgTextWriter writer)
         {
-            writer.WriteEncodedText(Value, escapeQuote: false);
+            if (isRaw)
+            {
+                writer.WriteRawText(Value);
+            }
+            else
+            {
+                writer.WriteEncodedText(Value, escapeQuote: false);
+            }
         }
 
 #if HAVE_ASYNC
@@ -23,11 +30,18 @@ namespace PdfToSvg.Svg
         {
             if (Value.Length > writer.AsyncLengthThreshold)
             {
-                await writer.WriteEncodedTextAsync(Value, escapeQuote: false, cancellationToken).ConfigureAwait(false);
+                if (isRaw)
+                {
+                    await writer.WriteRawTextAsync(Value, cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    await writer.WriteEncodedTextAsync(Value, escapeQuote: false, cancellationToken).ConfigureAwait(false);
+                }
             }
             else
             {
-                writer.WriteEncodedText(Value, escapeQuote: false);
+                WriteTo(writer);
             }
 
             if (writer.ShouldFlush)

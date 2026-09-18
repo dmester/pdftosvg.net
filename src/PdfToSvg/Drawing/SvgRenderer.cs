@@ -311,9 +311,9 @@ namespace PdfToSvg.Drawing
             svg.AddChild(rootGraphics);
         }
 
-        private void AddStyle(string defintion)
+        private void AddStyle(string defintion, bool isRaw = false)
         {
-            style.AddChild(new SvgText(defintion));
+            style.AddChild(new SvgText(defintion, isRaw));
             style.AddChild(new SvgText("\n"));
         }
 
@@ -898,7 +898,10 @@ namespace PdfToSvg.Drawing
                         var svgImage = new SvgElement("image");
 
                         svgImage.AddAttribute("id", imageId, isRaw: true);
-                        svgImage.AddAttribute("href", imageUrl);
+                        // The built-in resolver generates base64 with a controlled MIME type.
+                        var isRawImageUrl = imageResolver is DataUrlImageResolver &&
+                            (image.ContentType == "image/png" || image.ContentType == "image/jpeg");
+                        svgImage.AddAttribute("href", imageUrl, isRaw: isRawImageUrl);
                         svgImage.AddAttribute("width", "1", isRaw: true);
                         svgImage.AddAttribute("height", "1", isRaw: true);
                         svgImage.AddAttribute("preserveAspectRatio", "none", isRaw: true);
@@ -2887,7 +2890,8 @@ namespace PdfToSvg.Drawing
                         { "src", src },
                     };
 
-                    AddStyle("@font-face{" + fontFace + "}");
+                    // The data factory produces a plain WebFont without a fallback. All parts of its rule are safe.
+                    AddStyle("@font-face{" + fontFace + "}", isRaw: webFont.IsSafeDataUrl);
                 }
             }
             else

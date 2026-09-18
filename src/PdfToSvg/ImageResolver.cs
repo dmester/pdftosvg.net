@@ -34,7 +34,9 @@ namespace PdfToSvg
         /// <param name="image">Found image.</param>
         /// <param name="cancellationToken">Token for monitoring cancellation requests.</param>
         /// <returns>
-        /// <para>URL for the specified image.</para>
+        /// <para>
+        /// URL for the specified image, without XML or CSS escaping. Existing percent escapes are preserved.
+        /// </para>
         /// <note>
         ///     Browsers will not render external images in SVG files embedded using <c>&lt;img&gt;</c> elements.
         ///     If you implement a custom image resolver and intend to use the SVG in HTML,

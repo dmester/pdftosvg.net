@@ -14,7 +14,7 @@ namespace PdfToSvg
     /// <summary>
     /// Creates data URLs for images.
     /// </summary>
-    internal class DataUrlImageResolver : ImageResolver
+    internal sealed class DataUrlImageResolver : ImageResolver
     {
         /// <inheritdoc/>
         public override string ResolveImageUrl(Image image, CancellationToken cancellationToken)

@@ -11,6 +11,7 @@ using PdfToSvg.Fonts;
 using PdfToSvg.Imaging;
 using PdfToSvg.IO;
 using PdfToSvg.Parsing;
+using PdfToSvg.Svg;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
+using System.Xml;
 
 #pragma warning disable IDE1006
 #pragma warning disable IDE0051
@@ -32,8 +33,8 @@ namespace PdfToSvg.Drawing
     internal partial class SvgRenderer
     {
         private SvgConversion svgConversion = new();
-        private static readonly XNamespace ns = "http://www.w3.org/2000/svg";
-        private static readonly XNamespace annotNs = "https://pdftosvg.net/xmlns/annotations";
+        private const string SvgNamespace = "http://www.w3.org/2000/svg";
+        private const string AnnotNamespace = "https://pdftosvg.net/xmlns/annotations";
 
         private const double MaxAlpha = 0.999;
         private const double MinAlpha = 0.001;
@@ -93,9 +94,9 @@ namespace PdfToSvg.Drawing
         private bool markedContentVisible = true;
         private Stack<MarkedContent> markedContentStack = new Stack<MarkedContent>();
 
-        private XElement svg;
-        private XElement rootGraphics;
-        private XElement currentTransparencyGroup;
+        private SvgElement svg;
+        private SvgElement rootGraphics;
+        private SvgElement currentTransparencyGroup;
 
         private bool annotNamespaceAdded;
 
@@ -108,20 +109,30 @@ namespace PdfToSvg.Drawing
 
         private double currentPointX, currentPointY;
 
+        // Cached style for path elements. The style only needs to be recomputed when a style affecting operator has
+        // been executed, or when DrawPath is invoked with other arguments than the cached style was computed for.
+        private SvgElementStyle pathStyle;
+        private bool pathStyleInvalid = true;
+        private bool pathStyleStroke;
+        private bool pathStyleFill;
+        private bool pathStyleEvenOdd;
+        private Matrix pathStyleTransform = Matrix.Identity;
+
         private DocumentCache documentCache;
         private OptionalContentGroupManager optionalContentGroupManager;
         private ResourceCache resources;
 
-        private XElement defs = new XElement(ns + "defs");
+        private SvgElement defs = new SvgElement("defs");
+        private SvgElement? brokenImageSymbol;
         private Dictionary<object, string?> imageIds = new();
         private Dictionary<object, string?> patternIds = new();
 
         private HashSet<string> defIds = new HashSet<string>();
 
-        private XElement? clipWrapper;
+        private SvgElement? clipWrapper;
         private string? clipWrapperId;
 
-        private XElement style = new XElement(ns + "style");
+        private SvgElement style = new SvgElement("style");
 
         private HashSet<string> styleClassNames = new HashSet<string>();
         private HashSet<string> fontFaceNames = new HashSet<string>();
@@ -163,7 +174,7 @@ namespace PdfToSvg.Drawing
             var pageWidth = cropBox.Width;
             var pageHeight = cropBox.Height;
 
-            rootGraphics = new XElement(ns + "g");
+            rootGraphics = new SvgElement("g");
             currentTransparencyGroup = rootGraphics;
 
             if (pageDict.TryGetInteger(Names.Rotate, out var rotate))
@@ -185,7 +196,7 @@ namespace PdfToSvg.Drawing
 
                 if (!rootTransform.IsIdentity)
                 {
-                    rootGraphics.Add(new XAttribute("transform", svgConversion.Matrix(rootTransform)));
+                    rootGraphics.AddAttribute("transform", svgConversion.Matrix(rootTransform), isRaw: true);
                 }
             }
 
@@ -195,17 +206,18 @@ namespace PdfToSvg.Drawing
                 userUnit = 1.0;
             }
 
-            svg = new XElement(ns + "svg",
-                new XAttribute("width", (pageWidth * userUnit).ToString("0", CultureInfo.InvariantCulture)),
-                new XAttribute("height", (pageHeight * userUnit).ToString("0", CultureInfo.InvariantCulture)),
-                new XAttribute("preserveAspectRatio", "xMidYMid meet"),
-                new XAttribute("viewBox",
-                    string.Format(CultureInfo.InvariantCulture, "0 0 {0:0.####} {1:0.####}",
-                    pageWidth, pageHeight
-                )),
-                new XComment(" Generator: PdfToSvg.NET "),
-                style,
-                defs);
+            svg = new SvgElement("svg");
+            svg.AddAttribute("width", (pageWidth * userUnit).ToString("0", CultureInfo.InvariantCulture), isRaw: true);
+            svg.AddAttribute("height", (pageHeight * userUnit).ToString("0", CultureInfo.InvariantCulture), isRaw: true);
+            svg.AddAttribute("preserveAspectRatio", "xMidYMid meet", isRaw: true);
+            svg.AddAttribute("viewBox",
+                string.Format(CultureInfo.InvariantCulture, "0 0 {0:0.####} {1:0.####}",
+                pageWidth, pageHeight
+                ), isRaw: true);
+            svg.AddAttribute("xmlns", SvgNamespace, isRaw: true);
+            svg.AddChild(new SvgComment(" Generator: PdfToSvg.NET "));
+
+            // The style and defs elements are added to the svg element in AfterDispatch, if they have any content
 
             // PDF coordinate system has its origin in the bottom left corner in opposite to SVG, 
             // which has its origin in the upper left corner.
@@ -272,27 +284,37 @@ namespace PdfToSvg.Drawing
             if (hasRtlText)
             {
                 AddStyle(RtlTextStyle);
-                rootGraphics.SetAttributeValue("class", RootClassName + " " + RtlClassName);
-                defs.SetAttributeValue("class", RootClassName + " " + RtlClassName);
+                rootGraphics.SetAttribute("class", RootClassName + " " + RtlClassName, isRaw: true);
+                defs.SetAttribute("class", RootClassName + " " + RtlClassName, isRaw: true);
             }
 
-            if (!defs.HasElements)
+            if (annotNamespaceAdded)
             {
-                defs.Remove();
+                svg.AddAttribute("xmlns:annot", AnnotNamespace, isRaw: true);
             }
 
-            if (style.IsEmpty)
+            if (style.HasChildren)
             {
-                style.Remove();
+                svg.AddChild(style);
             }
 
-            var optimizedRootGraphics = SvgAttributeOptimizer.Optimize(rootGraphics);
-            svg.Add(optimizedRootGraphics);
+            if (defs.HasChildren)
+            {
+                svg.AddChild(defs);
+            }
+
+            if (brokenImageSymbol != null)
+            {
+                svg.AddChild(brokenImageSymbol);
+            }
+
+            svg.AddChild(rootGraphics);
         }
 
         private void AddStyle(string defintion)
         {
-            style.Add("\n" + defintion);
+            style.AddChild(new SvgText(defintion));
+            style.AddChild(new SvgText("\n"));
         }
 
         private void AddStyle(string prefix, CssPropertyCollection content, out string className)
@@ -303,7 +325,7 @@ namespace PdfToSvg.Drawing
 
             if (styleClassNames.Add(className))
             {
-                style.Add("\n." + className + "{" + styleString + "}");
+                style.AddChild(new SvgText("." + className + "{" + styleString + "}\n"));
             }
         }
 
@@ -407,12 +429,15 @@ namespace PdfToSvg.Drawing
 
                         path.Transform(originalTransform);
 
-                        rootGraphics.Add(new XElement(ns + "a",
-                            new XAttribute("href", href),
-                            new XElement(ns + "path",
-                                new XAttribute("d", svgConversion.PathData(path)),
-                                new XAttribute("fill", "transparent"))
-                            ));
+                        var linkPathEl = new SvgElement("path");
+                        linkPathEl.AddAttribute("d", svgConversion.PathData(path), isRaw: true);
+                        linkPathEl.AddAttribute("fill", "transparent", isRaw: true);
+
+                        var linkEl = new SvgElement("a");
+                        linkEl.AddAttribute("href", href);
+                        linkEl.AddChild(linkPathEl);
+
+                        rootGraphics.AddChild(linkEl);
 
                         hasLink = true;
                     }
@@ -440,10 +465,27 @@ namespace PdfToSvg.Drawing
 
                     if (path.Referenced && defIds.Add(path.Id))
                     {
-                        defs.Add(New.XElement(ns + "clipPath",
-                            new XAttribute("id", path.Id),
-                            path.Parent != null ? new XAttribute("clip-path", "url(#" + path.Parent.Id + ")") : null,
-                            path.ClipElement));
+                        var clipPathEl = new SvgElement("clipPath");
+                        clipPathEl.AddAttribute("id", path.Id, isRaw: true);
+
+                        if (path.Parent != null)
+                        {
+                            clipPathEl.AddAttribute("clip-path", "url(#" + path.Parent.Id + ")", isRaw: true);
+                        }
+
+                        if (path.ClipElement is SvgElement singleClipElement)
+                        {
+                            clipPathEl.AddChild(singleClipElement);
+                        }
+                        else if (path.ClipElement is IEnumerable<SvgElement> clipElements)
+                        {
+                            foreach (var clipElement in clipElements)
+                            {
+                                clipPathEl.AddChild(clipElement);
+                            }
+                        }
+
+                        defs.AddChild(clipPathEl);
 
                         stack.Push(path.Children.Values.GetEnumerator());
                     }
@@ -465,7 +507,7 @@ namespace PdfToSvg.Drawing
                 return;
             }
 
-            XElement target;
+            SvgElement target;
 
             if (graphicsState.ClipPath == null ||
                 clipWrapperId != graphicsState.ClipPath.Id)
@@ -550,11 +592,11 @@ namespace PdfToSvg.Drawing
                 text.Append(' ');
             }
 
-            target.Add(new XComment(text.ToString()));
+            target.AddChild(new SvgComment(text.ToString()));
 #endif
         }
 
-        public static XElement Convert(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, OptionalContentGroupManager optionalContentGroupManager, CancellationToken cancellationToken)
+        public static SvgElement Convert(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, OptionalContentGroupManager optionalContentGroupManager, CancellationToken cancellationToken)
         {
             var renderer = new SvgRenderer(pageDict, options, documentCache, optionalContentGroupManager, cancellationToken);
 
@@ -572,7 +614,7 @@ namespace PdfToSvg.Drawing
         }
 
 #if HAVE_ASYNC
-        public static async Task<XElement> ConvertAsync(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, OptionalContentGroupManager optionalContentGroupManager, CancellationToken cancellationToken)
+        public static async Task<SvgElement> ConvertAsync(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, OptionalContentGroupManager optionalContentGroupManager, CancellationToken cancellationToken)
         {
             var renderer = new SvgRenderer(pageDict, options, documentCache, optionalContentGroupManager, cancellationToken);
 
@@ -607,6 +649,7 @@ namespace PdfToSvg.Drawing
             {
                 graphicsState = graphicsStateStack.Pop();
                 textBuilder.InvalidateStyle();
+                pathStyleInvalid = true;
             }
         }
 
@@ -647,6 +690,7 @@ namespace PdfToSvg.Drawing
             {
                 graphicsState.StrokeWidth = lineWidth;
                 textBuilder.InvalidateStyle();
+                pathStyleInvalid = true;
             }
         }
 
@@ -658,6 +702,7 @@ namespace PdfToSvg.Drawing
             {
                 graphicsState.StrokeLineCap = lineCap;
                 textBuilder.InvalidateStyle();
+                pathStyleInvalid = true;
             }
         }
 
@@ -669,6 +714,7 @@ namespace PdfToSvg.Drawing
             {
                 graphicsState.StrokeLineJoin = lineJoin;
                 textBuilder.InvalidateStyle();
+                pathStyleInvalid = true;
             }
         }
 
@@ -680,6 +726,7 @@ namespace PdfToSvg.Drawing
             {
                 graphicsState.StrokeMiterLimit = miterLimit;
                 textBuilder.InvalidateStyle();
+                pathStyleInvalid = true;
             }
         }
 
@@ -689,6 +736,7 @@ namespace PdfToSvg.Drawing
             graphicsState.StrokeDashArray = dashArray;
             graphicsState.StrokeDashPhase = dashPhase;
             textBuilder.InvalidateStyle();
+            pathStyleInvalid = true;
         }
 
         [Operation("gs/D")]
@@ -704,6 +752,7 @@ namespace PdfToSvg.Drawing
             {
                 graphicsState.StrokeAlpha = alpha;
                 textBuilder.InvalidateStyle();
+                pathStyleInvalid = true;
             }
         }
 
@@ -714,6 +763,7 @@ namespace PdfToSvg.Drawing
             {
                 graphicsState.FillAlpha = alpha;
                 textBuilder.InvalidateStyle();
+                pathStyleInvalid = true;
             }
         }
 
@@ -729,6 +779,7 @@ namespace PdfToSvg.Drawing
             {
                 graphicsState.BlendMode = modeValue;
                 textBuilder.InvalidateStyle();
+                pathStyleInvalid = true;
             }
         }
 
@@ -753,6 +804,7 @@ namespace PdfToSvg.Drawing
             {
                 graphicsState.BlendMode = modeValue;
                 textBuilder.InvalidateStyle();
+                pathStyleInvalid = true;
             }
         }
 
@@ -843,20 +895,20 @@ namespace PdfToSvg.Drawing
 
                     if (defIds.Add(imageId))
                     {
-                        var svgImage = new XElement(ns + "image");
+                        var svgImage = new SvgElement("image");
 
-                        svgImage.SetAttributeValue("id", imageId);
-                        svgImage.SetAttributeValue("href", imageUrl);
-                        svgImage.SetAttributeValue("width", "1");
-                        svgImage.SetAttributeValue("height", "1");
-                        svgImage.SetAttributeValue("preserveAspectRatio", "none");
+                        svgImage.AddAttribute("id", imageId, isRaw: true);
+                        svgImage.AddAttribute("href", imageUrl);
+                        svgImage.AddAttribute("width", "1", isRaw: true);
+                        svgImage.AddAttribute("height", "1", isRaw: true);
+                        svgImage.AddAttribute("preserveAspectRatio", "none", isRaw: true);
 
                         if (!interpolate)
                         {
-                            svgImage.SetAttributeValue("image-rendering", "pixelated");
+                            svgImage.AddAttribute("image-rendering", "pixelated", isRaw: true);
                         }
 
-                        defs.Add(svgImage);
+                        defs.AddChild(svgImage);
                     }
                 }
 
@@ -869,7 +921,7 @@ namespace PdfToSvg.Drawing
             return null;
         }
 
-        private XElement? RenderTilingPattern(PdfDictionary pattern, Matrix transform, RgbColor color)
+        private SvgElement? RenderTilingPattern(PdfDictionary pattern, Matrix transform, RgbColor color)
         {
             // PDF 1.7 spec Table 75
             if (pattern.Stream == null)
@@ -895,19 +947,21 @@ namespace PdfToSvg.Drawing
 
             transform = originTransform.Invert() * transform;
 
-            var patternEl = New.XElement(ns + "pattern",
-                new XAttribute("width", svgConversion.FormatCoordinate(xstep)),
-                new XAttribute("height", svgConversion.FormatCoordinate(ystep)),
-                new XAttribute("patternUnits", "userSpaceOnUse"),
-                transform.IsIdentity
-                    ? null
-                    : new XAttribute("patternTransform", svgConversion.Matrix(transform)),
-                new XAttribute("viewBox",
-                    "0 " +
-                    "0 " +
-                    svgConversion.FormatCoordinate(xstep) + " " +
-                    svgConversion.FormatCoordinate(ystep))
-                );
+            var patternEl = new SvgElement("pattern");
+            patternEl.AddAttribute("width", svgConversion.FormatCoordinate(xstep), isRaw: true);
+            patternEl.AddAttribute("height", svgConversion.FormatCoordinate(ystep), isRaw: true);
+            patternEl.AddAttribute("patternUnits", "userSpaceOnUse", isRaw: true);
+
+            if (!transform.IsIdentity)
+            {
+                patternEl.AddAttribute("patternTransform", svgConversion.Matrix(transform), isRaw: true);
+            }
+
+            patternEl.AddAttribute("viewBox",
+                "0 " +
+                "0 " +
+                svgConversion.FormatCoordinate(xstep) + " " +
+                svgConversion.FormatCoordinate(ystep), isRaw: true);
 
             RenderXObject(pattern, () =>
             {
@@ -952,13 +1006,13 @@ namespace PdfToSvg.Drawing
 
             var transform = graphicsState.Transform;
 
-            var maskEl = new XElement(ns + "mask");
+            var maskEl = new SvgElement("mask");
 
             // Possible values: Alpha and Luminosity. Luminosity is the default in SVG.
             var alphaMask = smask.GetValueOrDefault(Names.S, Names.Luminosity) == Names.Alpha;
             if (alphaMask)
             {
-                maskEl.Add(new XAttribute("mask-type", "alpha"));
+                maskEl.AddAttribute("mask-type", "alpha", isRaw: true);
             }
 
             RenderXObject(group, () =>
@@ -972,8 +1026,9 @@ namespace PdfToSvg.Drawing
 
                 if (!transform.IsIdentity)
                 {
-                    var maskContentEl = new XElement(ns + "g", new XAttribute("transform", svgConversion.Matrix(transform)));
-                    currentTransparencyGroup.Add(maskContentEl);
+                    var maskContentEl = new SvgElement("g");
+                    maskContentEl.AddAttribute("transform", svgConversion.Matrix(transform), isRaw: true);
+                    currentTransparencyGroup.AddChild(maskContentEl);
                     currentTransparencyGroup = maskContentEl;
                 }
 
@@ -987,14 +1042,14 @@ namespace PdfToSvg.Drawing
 
             if (defIds.Add(id))
             {
-                maskEl.Add(new XAttribute("id", id));
-                defs.Add(maskEl);
+                maskEl.AddAttribute("id", id, isRaw: true);
+                defs.AddChild(maskEl);
             }
 
             return id;
         }
 
-        private void RenderForm(PdfDictionary xobject, IList<object>? additionalGroupContent = null)
+        private void RenderForm(PdfDictionary xobject, List<SvgAttribute>? additionalGroupAttributes = null)
         {
             // Optional content group
             if (!markedContentVisible)
@@ -1011,24 +1066,26 @@ namespace PdfToSvg.Drawing
 
             RenderXObject(xobject, () =>
             {
-                var groupAttributes = new List<XAttribute>();
+                string? groupOpacity = null;
+                string? groupMask = null;
+                string? groupBlendMode = null;
 
                 var isTransparencyGroup = xobject.GetNameOrNull(Names.Group / Names.S) == Names.Transparency;
                 if (isTransparencyGroup)
                 {
                     if (graphicsState.FillAlpha < MaxAlpha)
                     {
-                        groupAttributes.Add(new XAttribute("opacity", svgConversion.FormatCoordinate(graphicsState.FillAlpha)));
+                        groupOpacity = svgConversion.FormatCoordinate(graphicsState.FillAlpha);
                     }
 
                     if (graphicsState.SMaskId != null)
                     {
-                        groupAttributes.Add(new XAttribute("mask", "url(#" + graphicsState.SMaskId + ")"));
+                        groupMask = "url(#" + graphicsState.SMaskId + ")";
                     }
 
                     if (graphicsState.BlendMode != BlendMode.Normal)
                     {
-                        groupAttributes.Add(new XAttribute("style", "mix-blend-mode:" + svgConversion.FormatBlendMode(graphicsState.BlendMode)));
+                        groupBlendMode = "mix-blend-mode:" + svgConversion.FormatBlendMode(graphicsState.BlendMode);
                     }
 
                     graphicsState.FillAlpha = 1d;
@@ -1039,12 +1096,35 @@ namespace PdfToSvg.Drawing
                     // Isolated groups and knockout groups are currently not supported
                 }
 
-                if (groupAttributes.Count > 0 ||
-                    additionalGroupContent != null && additionalGroupContent.Count > 0)
+                if (groupOpacity != null || groupMask != null || groupBlendMode != null ||
+                    additionalGroupAttributes != null && additionalGroupAttributes.Count > 0)
                 {
-                    var newGroup = New.XElement(ns + "g", groupAttributes, additionalGroupContent);
+                    var newGroup = new SvgElement("g");
 
-                    currentTransparencyGroup.Add(newGroup);
+                    if (groupOpacity != null)
+                    {
+                        newGroup.Style.Opacity = groupOpacity;
+                    }
+
+                    if (groupMask != null)
+                    {
+                        newGroup.AddAttribute("mask", groupMask, isRaw: true);
+                    }
+
+                    if (groupBlendMode != null)
+                    {
+                        newGroup.Style.Style = groupBlendMode;
+                    }
+
+                    if (additionalGroupAttributes != null)
+                    {
+                        foreach (var attribute in additionalGroupAttributes)
+                        {
+                            newGroup.AddAttribute(attribute.Name, attribute.Value, attribute.IsRaw);
+                        }
+                    }
+
+                    currentTransparencyGroup.AddChild(newGroup);
                     currentTransparencyGroup = newGroup;
 
                     clipWrapper = null;
@@ -1089,26 +1169,24 @@ namespace PdfToSvg.Drawing
 
             if (appearanceStream.TryGetRectangle(Names.BBox, out var bbox))
             {
-                var additionalGroupContent = new List<object>();
+                var additionalGroupAttributes = new List<SvgAttribute>();
 
                 // METADATA
                 {
-                    if (!annotNamespaceAdded)
-                    {
-                        svg.Add(new XAttribute(XNamespace.Xmlns + "annot", annotNs));
-                        annotNamespaceAdded = true;
-                    }
+                    // The xmlns:annot attribute is added to the svg element in AfterDispatch
+                    annotNamespaceAdded = true;
 
                     var subtype = annot.GetValueOrDefault<PdfName?>(Names.Subtype)?.Value;
                     if (subtype != null)
                     {
-                        additionalGroupContent.Add(new XAttribute(annotNs + "type", subtype));
+                        additionalGroupAttributes.Add(new SvgAttribute("annot:type", subtype, isRaw: false));
                     }
 
                     var creationDate = annot.GetValueOrDefault<DateTimeOffset?>(Names.CreationDate);
                     if (creationDate != null)
                     {
-                        additionalGroupContent.Add(new XAttribute(annotNs + "created", creationDate));
+                        additionalGroupAttributes.Add(new SvgAttribute(
+                            "annot:created", XmlConvert.ToString(creationDate.Value), isRaw: true));
                     }
 
                     if (annot.ContainsKey(Names.Popup))
@@ -1116,19 +1194,20 @@ namespace PdfToSvg.Drawing
                         var title = annot.GetValueOrDefault(Names.T, PdfString.Empty).ToString();
                         if (!string.IsNullOrWhiteSpace(title))
                         {
-                            additionalGroupContent.Add(new XAttribute(annotNs + "popup-title", title));
+                            additionalGroupAttributes.Add(new SvgAttribute("annot:popup-title", title, isRaw: false));
                         }
 
                         var contents = annot.GetValueOrDefault(Names.Contents, PdfString.Empty).ToString();
                         if (!string.IsNullOrWhiteSpace(contents))
                         {
-                            additionalGroupContent.Add(new XAttribute(annotNs + "popup-contents", contents));
+                            additionalGroupAttributes.Add(new SvgAttribute("annot:popup-contents", contents, isRaw: false));
                         }
                     }
 
                     if (fileIndex != null)
                     {
-                        additionalGroupContent.Add(new XAttribute(annotNs + "file-index", fileIndex));
+                        additionalGroupAttributes.Add(new SvgAttribute(
+                            "annot:file-index", fileIndex.Value.ToString(CultureInfo.InvariantCulture), isRaw: true));
                     }
                 }
 
@@ -1161,7 +1240,7 @@ namespace PdfToSvg.Drawing
                             AddStyle(cssStyle);
                         }
 
-                        additionalGroupContent.Add(new XAttribute("class", cssStyleClassName));
+                        additionalGroupAttributes.Add(new SvgAttribute("class", cssStyleClassName, isRaw: true));
                     }
                 }
 
@@ -1194,7 +1273,7 @@ namespace PdfToSvg.Drawing
                         originalTransform;
                 }
 
-                RenderForm(appearanceStream, additionalGroupContent);
+                RenderForm(appearanceStream, additionalGroupAttributes);
             }
         }
 
@@ -1241,6 +1320,8 @@ namespace PdfToSvg.Drawing
 
                     preparations();
 
+                    pathStyleInvalid = true;
+
                     // Buffer content since we might need to access the input file while rendering the page
                     byte[] content;
                     using (var decodedFormContent = contentStream.OpenDecoded(cancellationToken))
@@ -1272,6 +1353,7 @@ namespace PdfToSvg.Drawing
                     objectStack.Remove(xobject);
 
                     textBuilder.InvalidateStyle();
+                    pathStyleInvalid = true;
                 }
             }
         }
@@ -1291,26 +1373,28 @@ namespace PdfToSvg.Drawing
                 return;
             }
 
-            var imageAttributes = new List<XAttribute>();
-
-            // Positioning
-            var imageTransform = Matrix.Translate(0, -1) * Matrix.Scale(1, -1) * graphicsState.Transform;
-            imageAttributes.Add(new XAttribute("transform", svgConversion.Matrix(imageTransform)));
-
             // Constant alpha
             if (graphicsState.FillAlpha < MinAlpha)
             {
                 return; // Don't render at all
             }
-            else if (graphicsState.FillAlpha < MaxAlpha)
+
+            var imageGroupEl = new SvgElement("g");
+
+            // Positioning
+            var imageTransform = Matrix.Translate(0, -1) * Matrix.Scale(1, -1) * graphicsState.Transform;
+            imageGroupEl.Style.Transform = svgConversion.Matrix(imageTransform);
+
+            // Constant alpha
+            if (graphicsState.FillAlpha < MaxAlpha)
             {
-                imageAttributes.Add(new XAttribute("opacity", svgConversion.FormatCoordinate(graphicsState.FillAlpha)));
+                imageGroupEl.Style.Opacity = svgConversion.FormatCoordinate(graphicsState.FillAlpha);
             }
 
             // Blend mode
             if (graphicsState.BlendMode != BlendMode.Normal)
             {
-                imageAttributes.Add(new XAttribute("style", "mix-blend-mode:" + svgConversion.FormatBlendMode(graphicsState.BlendMode)));
+                imageGroupEl.Style.Style = "mix-blend-mode:" + svgConversion.FormatBlendMode(graphicsState.BlendMode);
             }
 
             var imageId = GetSvgImageId(xobject);
@@ -1321,26 +1405,25 @@ namespace PdfToSvg.Drawing
 
                 if (defIds.Add(BrokenImageSymbolId))
                 {
-                    var brokenImageSymbol = BrokenImageSymbol.Create();
-                    brokenImageSymbol.SetAttributeValue("id", BrokenImageSymbolId);
-                    defs.AddAfterSelf(brokenImageSymbol);
+                    brokenImageSymbol = BrokenImageSymbol.Create();
+                    brokenImageSymbol.AddAttribute("id", BrokenImageSymbolId, isRaw: true);
                 }
 
-                AppendClipped(new XElement(ns + "g",
-                    imageAttributes,
-                    new XElement(ns + "rect",
-                        new XAttribute("width", "1"),
-                        new XAttribute("height", "1"),
-                        new XAttribute("fill", "#7773")
-                        ),
-                    new XElement(ns + "use",
-                        new XAttribute("x", "0.25"),
-                        new XAttribute("y", "0.25"),
-                        new XAttribute("width", "0.5"),
-                        new XAttribute("height", "0.5"),
-                        new XAttribute("href", "#" + BrokenImageSymbolId)
-                        )
-                    ));
+                var placeholderRect = new SvgElement("rect");
+                placeholderRect.AddAttribute("width", "1", isRaw: true);
+                placeholderRect.AddAttribute("height", "1", isRaw: true);
+                placeholderRect.AddAttribute("fill", "#7773", isRaw: true);
+                imageGroupEl.AddChild(placeholderRect);
+
+                var symbolUse = new SvgElement("use");
+                symbolUse.AddAttribute("x", "0.25", isRaw: true);
+                symbolUse.AddAttribute("y", "0.25", isRaw: true);
+                symbolUse.AddAttribute("width", "0.5", isRaw: true);
+                symbolUse.AddAttribute("height", "0.5", isRaw: true);
+                symbolUse.AddAttribute("href", "#" + BrokenImageSymbolId, isRaw: true);
+                imageGroupEl.AddChild(symbolUse);
+
+                AppendClipped(imageGroupEl);
                 return;
             }
 
@@ -1380,30 +1463,38 @@ namespace PdfToSvg.Drawing
 
                     if (defIds.Add(maskId))
                     {
-                        defs.Add(new XElement(
-                            ns + "mask",
-                            new XAttribute("id", maskId),
-                            new XElement(
-                                ns + "use",
-                                new XAttribute("href", "#" + maskImageId))));
+                        var maskUseEl = new SvgElement("use");
+                        maskUseEl.AddAttribute("href", "#" + maskImageId, isRaw: true);
+
+                        var maskEl = new SvgElement("mask");
+                        maskEl.AddAttribute("id", maskId, isRaw: true);
+                        maskEl.AddChild(maskUseEl);
+
+                        defs.AddChild(maskEl);
                     }
 
-                    imageAttributes.Add(new XAttribute("mask", "url(#" + maskId + ")"));
+                    imageGroupEl.AddAttribute("mask", "url(#" + maskId + ")", isRaw: true);
                 }
             }
 
             // Output
-            var imageEl = isStencilMask
-                ? new XElement(ns + "g", imageAttributes,
-                    new XElement(ns + "path",
-                        new XAttribute("d", "M0 0V1H1V-1z"),
-                        new XAttribute("fill", svgConversion.FormatColor(graphicsState.FillColor)))
-                    )
-                : new XElement(ns + "g", imageAttributes,
-                    new XElement(ns + "use", new XAttribute("href", "#" + imageId))
-                    );
+            if (isStencilMask)
+            {
+                var stencilPathEl = new SvgElement("path");
+                stencilPathEl.AddAttribute("d", "M0 0V1H1V-1z", isRaw: true);
+                stencilPathEl.AddAttribute("fill", svgConversion.FormatColor(graphicsState.FillColor), isRaw: true);
+                imageGroupEl.AddChild(stencilPathEl);
+            }
+            else
+            {
+                var imageUseEl = new SvgElement("use");
+                imageUseEl.AddAttribute("href", "#" + imageId, isRaw: true);
+                imageGroupEl.AddChild(imageUseEl);
+            }
 
             // Soft mask from graphics state
+            var imageEl = imageGroupEl;
+
             if (graphicsStateSMaskIsApplicable)
             {
                 imageEl = ApplySMask(imageEl, graphicsState.SMaskId);
@@ -1461,7 +1552,7 @@ namespace PdfToSvg.Drawing
             // This is quite ugly and could be improved.
             transform = (transform * originalTransform).Invert();
 
-            XElement? patternEl = null;
+            SvgElement? patternEl = null;
 
             switch (pattern)
             {
@@ -1477,11 +1568,11 @@ namespace PdfToSvg.Drawing
             if (patternEl != null)
             {
                 patternId = StableID.Generate("pt", patternEl);
-                patternEl.SetAttributeValue("id", patternId);
+                patternEl.SetAttribute("id", patternId, isRaw: true);
 
                 if (defIds.Add(patternId))
                 {
-                    defs.Add(patternEl);
+                    defs.AddChild(patternEl);
                 }
             }
 
@@ -1513,8 +1604,8 @@ namespace PdfToSvg.Drawing
             var gradientId = StableID.Generate("pt", gradientEl);
             if (defIds.Add(gradientId))
             {
-                defs.Add(gradientEl);
-                gradientEl.SetAttributeValue("id", gradientId);
+                defs.AddChild(gradientEl);
+                gradientEl.SetAttribute("id", gradientId, isRaw: true);
             }
 
             Rectangle fillRect;
@@ -1564,30 +1655,30 @@ namespace PdfToSvg.Drawing
             path.LineTo(points[3].X, points[3].Y);
             path.ClosePath();
 
-            var el = new XElement(ns + "path");
-            el.SetAttributeValue("d", svgConversion.PathData(path));
-            el.SetAttributeValue("fill", "url(#" + gradientId + ")");
+            var el = new SvgElement("path");
+            el.AddAttribute("d", svgConversion.PathData(path), isRaw: true);
+            el.Style.Fill = "url(#" + gradientId + ")";
 
             if (graphicsState.FillAlpha < MaxAlpha)
             {
-                el.SetAttributeValue("opacity", svgConversion.FormatCoordinate(graphicsState.FillAlpha));
+                el.Style.Opacity = svgConversion.FormatCoordinate(graphicsState.FillAlpha);
             }
 
             if (graphicsState.SMaskId != null)
             {
-                el.SetAttributeValue("mask", "url(#" + graphicsState.SMaskId + ")");
+                el.AddAttribute("mask", "url(#" + graphicsState.SMaskId + ")", isRaw: true);
             }
 
             if (graphicsState.BlendMode != BlendMode.Normal)
             {
-                el.SetAttributeValue("style", "mix-blend-mode:" + svgConversion.FormatBlendMode(graphicsState.BlendMode));
+                el.Style.Style = "mix-blend-mode:" + svgConversion.FormatBlendMode(graphicsState.BlendMode);
             }
 
             if (bboxClipped)
             {
                 clipWrapper = null;
                 clipWrapperId = null;
-                currentTransparencyGroup.Add(el);
+                currentTransparencyGroup.AddChild(el);
             }
             else
             {
@@ -1628,7 +1719,7 @@ namespace PdfToSvg.Drawing
             graphicsState.ClipPath = clipPath;
         }
 
-        private void AppendClipping(IList<XElement> elements)
+        private void AppendClipping(IList<SvgElement> elements)
         {
             var parent = graphicsState.ClipPath;
 
@@ -1661,11 +1752,20 @@ namespace PdfToSvg.Drawing
                 var formattedX = svgConversion.FormatCoordinate(rect.X1);
                 var formattedY = svgConversion.FormatCoordinate(rect.Y1);
 
-                var element = New.XElement(ns + "rect",
-                    formattedX != "0" ? new XAttribute("x", formattedX) : null,
-                    formattedY != "0" ? new XAttribute("y", formattedY) : null,
-                    new XAttribute("width", svgConversion.FormatCoordinate(rect.Width)),
-                    new XAttribute("height", svgConversion.FormatCoordinate(rect.Height)));
+                var element = new SvgElement("rect");
+
+                if (formattedX != "0")
+                {
+                    element.AddAttribute("x", formattedX, isRaw: true);
+                }
+
+                if (formattedY != "0")
+                {
+                    element.AddAttribute("y", formattedY, isRaw: true);
+                }
+
+                element.AddAttribute("width", svgConversion.FormatCoordinate(rect.Width), isRaw: true);
+                element.AddAttribute("height", svgConversion.FormatCoordinate(rect.Height), isRaw: true);
 
                 AppendClipping(new ClipPath(parent, id, element, rect));
             }
@@ -1703,9 +1803,13 @@ namespace PdfToSvg.Drawing
                     parent?.Id,
                     svgPathData, evenOdd);
 
-                var element = New.XElement(ns + "path",
-                    new XAttribute("d", svgPathData),
-                    evenOdd ? new XAttribute("clip-rule", "evenodd") : null);
+                var element = new SvgElement("path");
+                element.AddAttribute("d", svgPathData, isRaw: true);
+
+                if (evenOdd)
+                {
+                    element.AddAttribute("clip-rule", "evenodd", isRaw: true);
+                }
 
                 AppendClipping(new ClipPath(parent, id, element));
             }
@@ -1795,7 +1899,7 @@ namespace PdfToSvg.Drawing
 
         #region Path-Painting operators
 
-        private XElement GetClipParent()
+        private SvgElement GetClipParent()
         {
             if (graphicsState.ClipPath == null)
             {
@@ -1808,9 +1912,10 @@ namespace PdfToSvg.Drawing
             {
                 if (clipWrapperId != graphicsState.ClipPath.Id)
                 {
-                    clipWrapper = new XElement(ns + "g", new XAttribute("clip-path", "url(#" + graphicsState.ClipPath.Id + ")"));
+                    clipWrapper = new SvgElement("g");
+                    clipWrapper.AddAttribute("clip-path", "url(#" + graphicsState.ClipPath.Id + ")", isRaw: true);
                     clipWrapperId = graphicsState.ClipPath.Id;
-                    currentTransparencyGroup.Add(clipWrapper);
+                    currentTransparencyGroup.AddChild(clipWrapper);
 
                     var cursor = graphicsState.ClipPath;
                     while (cursor != null && !cursor.Referenced)
@@ -1824,26 +1929,27 @@ namespace PdfToSvg.Drawing
             }
         }
 
-        private void AppendClipped(XElement el)
+        private void AppendClipped(SvgElement el)
         {
-            GetClipParent().Add(el);
+            GetClipParent().AddChild(el);
         }
 
-        private XElement ApplySMask(XElement target, string? smaskId)
+        private SvgElement ApplySMask(SvgElement target, string? smaskId)
         {
             if (smaskId != null)
             {
                 // We don't want the transform to affect the mask, as the mask is already transformed according to
                 // the transform that was active when the mask was applied
-                if (target.Attribute("transform") == null)
+                if (target.GetAttribute("transform") == null && target.Style.Transform == null)
                 {
-                    target.SetAttributeValue("mask", "url(#" + smaskId + ")");
+                    target.SetAttribute("mask", "url(#" + smaskId + ")", isRaw: true);
                 }
                 else
                 {
-                    target = new XElement(ns + "g",
-                        new XAttribute("mask", "url(#" + smaskId + ")"),
-                        target);
+                    var wrapper = new SvgElement("g");
+                    wrapper.AddAttribute("mask", "url(#" + smaskId + ")", isRaw: true);
+                    wrapper.AddChild(target);
+                    target = wrapper;
                 }
             }
 
@@ -1945,141 +2051,188 @@ namespace PdfToSvg.Drawing
             var pathString = svgConversion.PathData(currentPath);
             currentPath.Clear();
 
-            var visible = false;
-            var attributes = new List<object>();
+            var visible =
+                fill && graphicsState.FillAlpha > MinAlpha ||
+                stroke && graphicsState.StrokeAlpha > MinAlpha;
 
-            if (!remainingTransform.IsIdentity)
+            // Attributes that only depend on the graphics state and the DrawPath arguments are kept in pathStyle
+            // between paths, and are only recomputed when a style affecting operator has been executed, or when
+            // DrawPath is invoked with other arguments than the cached style was computed for.
+            if (pathStyleInvalid ||
+                pathStyleStroke != stroke ||
+                pathStyleFill != fill ||
+                pathStyleEvenOdd != evenOddWinding ||
+                pathStyleTransform != graphicsState.Transform)
             {
-                attributes.Add(new XAttribute("transform", svgConversion.Matrix(remainingTransform)));
-            }
+                // GetFill and GetStroke may render patterns, which recursively invokes DrawPath and modifies both
+                // pathStyle and the cache keys. Therefore they must be called before pathStyle is updated below.
+                string? fillValue = null;
+                string? strokeValue = null;
 
-            if (evenOddWinding)
-            {
-                attributes.Add(new XAttribute("fill-rule", "evenodd"));
-            }
-
-            if (fill && graphicsState.FillAlpha > MinAlpha)
-            {
-                attributes.Add(new XAttribute("fill", GetFill(graphicsState, remainingTransform)));
-
-                if (graphicsState.FillAlpha < MaxAlpha)
+                if (fill && graphicsState.FillAlpha > MinAlpha)
                 {
-                    attributes.Add(new XAttribute("fill-opacity", svgConversion.FormatCoordinate(graphicsState.FillAlpha)));
+                    fillValue = GetFill(graphicsState, remainingTransform);
                 }
 
-                visible = true;
-            }
-            else
-            {
-                attributes.Add(new XAttribute("fill", "none"));
-            }
-
-            if (stroke && graphicsState.StrokeAlpha > MinAlpha)
-            {
-                var strokeWidth = graphicsState.StrokeWidth;
-                var strokeWidthScale = pathTransformed ? 1d : Math.Min(scaleX, scaleY);
-
-                if (strokeWidth == 0)
+                if (stroke && graphicsState.StrokeAlpha > MinAlpha)
                 {
-                    // Zero width stroke should be rendered as the thinnest line that can be rendered.
-                    // Since the SVG can be scaled, we will assume 0.5pt is the thinnest renderable line.
-                    strokeWidth = 0.5d / strokeWidthScale;
-                }
-                else if (pathTransformed)
-                {
-                    strokeWidth *= scaleX;
+                    strokeValue = GetStroke(graphicsState, remainingTransform);
                 }
 
-                if (strokeWidth * strokeWidthScale < options.MinStrokeWidth)
-                {
-                    strokeWidth = options.MinStrokeWidth / strokeWidthScale;
-                }
+                pathStyleInvalid = false;
+                pathStyleStroke = stroke;
+                pathStyleFill = fill;
+                pathStyleEvenOdd = evenOddWinding;
+                pathStyleTransform = graphicsState.Transform;
 
-                attributes.Add(new XAttribute("stroke", GetStroke(graphicsState, remainingTransform)));
-                attributes.Add(new XAttribute("stroke-width", svgConversion.FormatCoordinate(strokeWidth)));
+                pathStyle.Transform = remainingTransform.IsIdentity ? null : svgConversion.Matrix(remainingTransform);
+                pathStyle.FillRule = evenOddWinding ? "evenodd" : null;
 
-                if (graphicsState.StrokeAlpha < MaxAlpha)
+                if (fillValue != null)
                 {
-                    attributes.Add(new XAttribute("stroke-opacity", svgConversion.FormatCoordinate(graphicsState.StrokeAlpha)));
-                }
-
-                if (graphicsState.StrokeLineCap == 1)
-                {
-                    attributes.Add(new XAttribute("stroke-linecap", "round"));
-                }
-                else if (graphicsState.StrokeLineCap == 2)
-                {
-                    attributes.Add(new XAttribute("stroke-linecap", "square"));
-                }
-
-                if (graphicsState.StrokeLineJoin == 1)
-                {
-                    attributes.Add(new XAttribute("stroke-linejoin", "round"));
-                }
-                else if (graphicsState.StrokeLineJoin == 2)
-                {
-                    attributes.Add(new XAttribute("stroke-linejoin", "bevel"));
+                    pathStyle.Fill = fillValue;
+                    pathStyle.FillOpacity = graphicsState.FillAlpha < MaxAlpha
+                        ? svgConversion.FormatCoordinate(graphicsState.FillAlpha)
+                        : null;
                 }
                 else
                 {
-                    // Default to miter join
-
-                    // Miter limit is applicable
-                    // Default in SVG: 4
-                    // Default in PDF: 10 (PDF 1.7 spec, Table 52)
-
-                    if (graphicsState.StrokeMiterLimit != 10)
-                    {
-                        attributes.Add(new XAttribute("stroke-miterlimit", svgConversion.FormatCoordinate(graphicsState.StrokeMiterLimit)));
-                    }
-                    else if (!svgHasDefaultMiterLimit)
-                    {
-                        // Change default miter limit on root element
-                        rootGraphics.Add(new XAttribute("stroke-miterlimit", svgConversion.FormatCoordinate(graphicsState.StrokeMiterLimit)));
-                        svgHasDefaultMiterLimit = true;
-                    }
+                    pathStyle.Fill = "none";
+                    pathStyle.FillOpacity = null;
                 }
 
-                if (graphicsState.StrokeDashArray != null &&
-                    graphicsState.StrokeDashArray.Length > 0)
+                if (strokeValue != null)
                 {
-                    attributes.Add(new XAttribute("stroke-dasharray", string.Join(" ",
-                        graphicsState.StrokeDashArray.Select(x => x.ToString(CultureInfo.InvariantCulture)))));
+                    var strokeWidth = graphicsState.StrokeWidth;
+                    var strokeWidthScale = pathTransformed ? 1d : Math.Min(scaleX, scaleY);
 
-                    if (graphicsState.StrokeDashPhase != 0)
+                    if (strokeWidth == 0)
                     {
-                        attributes.Add(new XAttribute("stroke-dashoffset",
-                            graphicsState.StrokeDashPhase.ToString(CultureInfo.InvariantCulture)));
+                        // Zero width stroke should be rendered as the thinnest line that can be rendered.
+                        // Since the SVG can be scaled, we will assume 0.5pt is the thinnest renderable line.
+                        strokeWidth = 0.5d / strokeWidthScale;
+                    }
+                    else if (pathTransformed)
+                    {
+                        strokeWidth *= scaleX;
+                    }
+
+                    if (strokeWidth * strokeWidthScale < options.MinStrokeWidth)
+                    {
+                        strokeWidth = options.MinStrokeWidth / strokeWidthScale;
+                    }
+
+                    pathStyle.Stroke = strokeValue;
+                    pathStyle.StrokeWidth = svgConversion.FormatCoordinate(strokeWidth);
+
+                    pathStyle.StrokeOpacity = graphicsState.StrokeAlpha < MaxAlpha
+                        ? svgConversion.FormatCoordinate(graphicsState.StrokeAlpha)
+                        : null;
+
+                    if (graphicsState.StrokeLineCap == 1)
+                    {
+                        pathStyle.StrokeLineCap = "round";
+                    }
+                    else if (graphicsState.StrokeLineCap == 2)
+                    {
+                        pathStyle.StrokeLineCap = "square";
+                    }
+                    else
+                    {
+                        pathStyle.StrokeLineCap = null;
+                    }
+
+                    if (graphicsState.StrokeLineJoin == 1)
+                    {
+                        pathStyle.StrokeLineJoin = "round";
+                        pathStyle.StrokeMiterLimit = null;
+                    }
+                    else if (graphicsState.StrokeLineJoin == 2)
+                    {
+                        pathStyle.StrokeLineJoin = "bevel";
+                        pathStyle.StrokeMiterLimit = null;
+                    }
+                    else
+                    {
+                        // Default to miter join
+                        pathStyle.StrokeLineJoin = null;
+
+                        // Miter limit is applicable
+                        // Default in SVG: 4
+                        // Default in PDF: 10 (PDF 1.7 spec, Table 52)
+
+                        if (graphicsState.StrokeMiterLimit != 10)
+                        {
+                            pathStyle.StrokeMiterLimit = svgConversion.FormatCoordinate(graphicsState.StrokeMiterLimit);
+                        }
+                        else
+                        {
+                            pathStyle.StrokeMiterLimit = null;
+
+                            if (!svgHasDefaultMiterLimit)
+                            {
+                                // Change default miter limit on root element
+                                rootGraphics.AddAttribute("stroke-miterlimit",
+                                    svgConversion.FormatCoordinate(graphicsState.StrokeMiterLimit), isRaw: true);
+                                svgHasDefaultMiterLimit = true;
+                            }
+                        }
+                    }
+
+                    if (graphicsState.StrokeDashArray != null &&
+                        graphicsState.StrokeDashArray.Length > 0)
+                    {
+                        pathStyle.StrokeDashArray = string.Join(" ",
+                            graphicsState.StrokeDashArray.Select(x => x.ToString(CultureInfo.InvariantCulture)));
+
+                        pathStyle.StrokeDashOffset = graphicsState.StrokeDashPhase != 0
+                            ? graphicsState.StrokeDashPhase.ToString(CultureInfo.InvariantCulture)
+                            : null;
+                    }
+                    else
+                    {
+                        pathStyle.StrokeDashArray = null;
+                        pathStyle.StrokeDashOffset = null;
                     }
                 }
+                else
+                {
+                    pathStyle.Stroke = null;
+                    pathStyle.StrokeWidth = null;
+                    pathStyle.StrokeOpacity = null;
+                    pathStyle.StrokeLineCap = null;
+                    pathStyle.StrokeLineJoin = null;
+                    pathStyle.StrokeMiterLimit = null;
+                    pathStyle.StrokeDashArray = null;
+                    pathStyle.StrokeDashOffset = null;
+                }
 
-                visible = true;
-            }
-
-            if (graphicsState.BlendMode != BlendMode.Normal)
-            {
-                attributes.Add(new XAttribute("style", "mix-blend-mode:" + svgConversion.FormatBlendMode(graphicsState.BlendMode)));
+                pathStyle.Style = graphicsState.BlendMode != BlendMode.Normal
+                    ? "mix-blend-mode:" + svgConversion.FormatBlendMode(graphicsState.BlendMode)
+                    : null;
             }
 
             if (visible)
             {
-                var el = new XElement(
-                    ns + "path",
-                    new XAttribute("d", pathString.ToString()),
-                    attributes
-                    );
+                var el = new SvgElement("path");
+                el.AddAttribute("d", pathString, isRaw: true);
 
-                el = ApplySMask(el, graphicsState.SMaskId);
+                // Fork makes subsequent updates of pathStyle copy-on-write, so that the style can be shared between
+                // multiple paths. Shared styles also speed up the style comparisons made during serialization.
+                pathStyle.Fork();
+                el.Style = pathStyle;
+
+                var pathEl = ApplySMask(el, graphicsState.SMaskId);
 
                 if (graphicsState.ClipPath != null && contained)
                 {
                     clipWrapper = null;
                     clipWrapperId = null;
-                    currentTransparencyGroup.Add(el);
+                    currentTransparencyGroup.AddChild(pathEl);
                 }
                 else
                 {
-                    AppendClipped(el);
+                    AppendClipped(pathEl);
                 }
             }
         }
@@ -2172,6 +2325,7 @@ namespace PdfToSvg.Drawing
                 {
                     graphicsState.FillColor = newColor;
                     textBuilder.InvalidateStyle();
+                    pathStyleInvalid = true;
                 }
             }
         }
@@ -2184,6 +2338,7 @@ namespace PdfToSvg.Drawing
                 {
                     graphicsState.StrokeColor = newColor;
                     textBuilder.InvalidateStyle();
+                    pathStyleInvalid = true;
                 }
             }
         }
@@ -2194,6 +2349,7 @@ namespace PdfToSvg.Drawing
             if (!ignoreColorChange)
             {
                 graphicsState.StrokeColorSpace = GetColorSpace(name);
+                pathStyleInvalid = true;
                 SetStrokeColor(graphicsState.StrokeColorSpace.GetDefaultRgbColor());
             }
         }
@@ -2204,6 +2360,7 @@ namespace PdfToSvg.Drawing
             if (!ignoreColorChange)
             {
                 graphicsState.FillColorSpace = GetColorSpace(name);
+                pathStyleInvalid = true;
                 SetFillColor(graphicsState.FillColorSpace.GetDefaultRgbColor());
             }
         }
@@ -2241,6 +2398,7 @@ namespace PdfToSvg.Drawing
                     {
                         graphicsState.StrokePattern = newStrokePattern;
                         textBuilder.InvalidateStyle();
+                        pathStyleInvalid = true;
                     }
                 }
                 else
@@ -2266,6 +2424,7 @@ namespace PdfToSvg.Drawing
                     {
                         graphicsState.FillPattern = newFillPattern;
                         textBuilder.InvalidateStyle();
+                        pathStyleInvalid = true;
                     }
                 }
                 else
@@ -2281,6 +2440,7 @@ namespace PdfToSvg.Drawing
             if (!ignoreColorChange)
             {
                 graphicsState.StrokeColorSpace = new DeviceGrayColorSpace();
+                pathStyleInvalid = true;
                 SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, gray));
             }
         }
@@ -2291,6 +2451,7 @@ namespace PdfToSvg.Drawing
             if (!ignoreColorChange)
             {
                 graphicsState.FillColorSpace = new DeviceGrayColorSpace();
+                pathStyleInvalid = true;
                 SetFillColor(new RgbColor(graphicsState.FillColorSpace, gray));
             }
         }
@@ -2301,6 +2462,7 @@ namespace PdfToSvg.Drawing
             if (!ignoreColorChange)
             {
                 graphicsState.StrokeColorSpace = new DeviceRgbColorSpace();
+                pathStyleInvalid = true;
                 SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, r, g, b));
             }
         }
@@ -2311,6 +2473,7 @@ namespace PdfToSvg.Drawing
             if (!ignoreColorChange)
             {
                 graphicsState.FillColorSpace = new DeviceRgbColorSpace();
+                pathStyleInvalid = true;
                 SetFillColor(new RgbColor(graphicsState.FillColorSpace, r, g, b));
             }
         }
@@ -2321,6 +2484,7 @@ namespace PdfToSvg.Drawing
             if (!ignoreColorChange)
             {
                 graphicsState.StrokeColorSpace = new DeviceCmykColorSpace();
+                pathStyleInvalid = true;
                 SetStrokeColor(new RgbColor(graphicsState.StrokeColorSpace, c, m, y, k));
             }
         }
@@ -2331,6 +2495,7 @@ namespace PdfToSvg.Drawing
             if (!ignoreColorChange)
             {
                 graphicsState.FillColorSpace = new DeviceCmykColorSpace();
+                pathStyleInvalid = true;
                 SetFillColor(new RgbColor(graphicsState.FillColorSpace, c, m, y, k));
             }
         }
@@ -2822,7 +2987,7 @@ namespace PdfToSvg.Drawing
                     else if (!svgHasDefaultMiterLimit)
                     {
                         // Change default miter limit on root element
-                        rootGraphics.Add(new XAttribute("stroke-miterlimit", svgConversion.FormatCoordinate(style.StrokeMiterLimit)));
+                        rootGraphics.AddAttribute("stroke-miterlimit", svgConversion.FormatCoordinate(style.StrokeMiterLimit), isRaw: true);
                         svgHasDefaultMiterLimit = true;
                     }
                 }
@@ -2859,13 +3024,13 @@ namespace PdfToSvg.Drawing
         private void ET_EndText()
         {
             var styleToClassNameLookup = new Dictionary<object, string?>();
-            var clipElements = new List<XElement>();
+            var clipElements = new List<SvgElement>();
 
             if (!hasTextStyle)
             {
                 AddStyle(TextStyle);
-                rootGraphics.SetAttributeValue("class", RootClassName);
-                defs.SetAttributeValue("class", RootClassName);
+                rootGraphics.SetAttribute("class", RootClassName, isRaw: true);
+                defs.SetAttribute("class", RootClassName, isRaw: true);
                 hasTextStyle = true;
             }
 
@@ -2921,6 +3086,7 @@ namespace PdfToSvg.Drawing
                 graphicsStateStack = new Stack<GraphicsState>();
                 graphicsState = (paragraph.Type3Style ?? graphicsState).Clone();
                 inType3Glyph = true;
+                pathStyleInvalid = true;
 
                 graphicsState.Transform = Matrix.Translate(paragraph.X, paragraph.Y, paragraph.Matrix);
 
@@ -2936,11 +3102,12 @@ namespace PdfToSvg.Drawing
                 graphicsState = originalGraphicsState;
                 ignoreColorChange = originalIgnoreColorChange;
                 inType3Glyph = originalInType3Glyph;
+                pathStyleInvalid = true;
                 objectStack.Remove(paragraph.Type3Content);
             }
         }
 
-        private void RenderTextParagraph(TextParagraph paragraph, Dictionary<object, string?> styleToClassNameLookup, List<XElement> clipElements)
+        private void RenderTextParagraph(TextParagraph paragraph, Dictionary<object, string?> styleToClassNameLookup, List<SvgElement> clipElements)
         {
             if (paragraph.Content.Count == 0)
             {
@@ -2949,7 +3116,7 @@ namespace PdfToSvg.Drawing
 
             var singleSpan = paragraph.Content.Count == 1 ? paragraph.Content[0] : null;
 
-            var textEl = new XElement(ns + "text");
+            var textEl = new SvgElement("text");
             var paragraphWidth = 0.0;
 
             var x = paragraph.X;
@@ -2964,13 +3131,13 @@ namespace PdfToSvg.Drawing
 
             if (paragraph.Matrix.IsIdentity)
             {
-                textEl.SetAttributeValue("x", svgConversion.FormatCoordinate(x));
-                textEl.SetAttributeValue("y", svgConversion.FormatCoordinate(y));
+                textEl.AddAttribute("x", svgConversion.FormatCoordinate(x), isRaw: true);
+                textEl.AddAttribute("y", svgConversion.FormatCoordinate(y), isRaw: true);
             }
             else
             {
                 appliedTransform = Matrix.Translate(x, y, paragraph.Matrix);
-                textEl.SetAttributeValue("transform", svgConversion.Matrix(appliedTransform));
+                textEl.Style.Transform = svgConversion.Matrix(appliedTransform);
             }
 
             if (singleSpan != null)
@@ -2983,14 +3150,14 @@ namespace PdfToSvg.Drawing
 
                 if (className != null)
                 {
-                    textEl.Add(new XAttribute("class", className));
+                    textEl.Style.Class = className;
                 }
 
                 if (singleSpan.Style.TextScaling != 100)
                 {
                     var textWidth = singleSpan.Width - singleSpan.SpaceBefore.FirstOrDefault();
-                    textEl.SetAttributeValue("textLength", svgConversion.FormatCoordinatePx(textWidth));
-                    textEl.SetAttributeValue("lengthAdjust", "spacingAndGlyphs");
+                    textEl.AddAttribute("textLength", svgConversion.FormatCoordinatePx(textWidth), isRaw: true);
+                    textEl.AddAttribute("lengthAdjust", "spacingAndGlyphs", isRaw: true);
                 }
 
                 if (singleSpan.SpaceBefore.Count > 1)
@@ -2998,11 +3165,11 @@ namespace PdfToSvg.Drawing
                     // The spacing will also be scaled when rendered, so we need to reverse the scaling
                     var dxMultiplier = 100 / singleSpan.Style.TextScaling;
                     var dx = "0 " + string.Join(" ", singleSpan.SpaceBefore.Skip(1).Select(x => svgConversion.FormatTextOffset(x * dxMultiplier)));
-                    textEl.SetAttributeValue("dx", dx);
+                    textEl.AddAttribute("dx", dx, isRaw: true);
                 }
 
                 var text = singleSpan.Value.ToString();
-                textEl.Value = text;
+                textEl.SetValue(text);
                 hasRtlText = hasRtlText || UnicodeBidi.MightBeRtl(text);
 
                 paragraphWidth = singleSpan.Width;
@@ -3038,37 +3205,37 @@ namespace PdfToSvg.Drawing
 
                 if (!multipleClasses && classNames[0] is string firstClassName)
                 {
-                    textEl.Add(new XAttribute("class", firstClassName));
+                    textEl.Style.Class = firstClassName;
                 }
 
                 for (var i = 0; i < classNames.Length; i++)
                 {
                     var span = paragraph.Content[i];
-                    var tspan = new XElement(ns + "tspan");
+                    var tspan = new SvgElement("tspan");
 
-                    if (multipleClasses)
+                    if (multipleClasses && classNames[i] is string tspanClassName)
                     {
-                        tspan.SetAttributeValue("class", classNames[i]);
+                        tspan.AddAttribute("class", tspanClassName, isRaw: true);
                     }
 
                     if (span.SpaceBefore.Count > 0)
                     {
                         var dx = string.Join(" ", span.SpaceBefore.Select(x => svgConversion.FormatTextOffset(x)));
-                        tspan.SetAttributeValue("dx", dx);
+                        tspan.AddAttribute("dx", dx, isRaw: true);
                     }
 
                     var dy = svgConversion.FormatTextOffset(currentYOffset - span.Style.TextRisePx);
                     if (dy != "0")
                     {
-                        tspan.SetAttributeValue("dy", dy);
+                        tspan.AddAttribute("dy", dy, isRaw: true);
                         currentYOffset = span.Style.TextRisePx;
                     }
 
                     var text = span.Value.ToString();
-                    tspan.Value = text;
+                    tspan.SetValue(text);
                     hasRtlText = hasRtlText || UnicodeBidi.MightBeRtl(text);
 
-                    textEl.Add(tspan);
+                    textEl.AddChild(tspan);
                 }
             }
 
@@ -3108,7 +3275,7 @@ namespace PdfToSvg.Drawing
                 {
                     clipWrapper = null;
                     clipWrapperId = null;
-                    currentTransparencyGroup.Add(textEl);
+                    currentTransparencyGroup.AddChild(textEl);
                 }
                 else
                 {

@@ -5,12 +5,12 @@
 using PdfToSvg.ColorSpaces;
 using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Svg;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Xml.Linq;
 
 namespace PdfToSvg.Drawing.Shadings
 {
@@ -81,6 +81,6 @@ namespace PdfToSvg.Drawing.Shadings
             }
         }
 
-        public abstract XElement? GetShadingElement(Matrix transform, Rectangle clipRectangle, bool inPattern);
+        public abstract SvgElement? GetShadingElement(Matrix transform, Rectangle clipRectangle, bool inPattern);
     }
 }

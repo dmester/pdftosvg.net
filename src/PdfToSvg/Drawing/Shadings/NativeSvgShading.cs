@@ -5,19 +5,17 @@
 using PdfToSvg.ColorSpaces;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Functions;
+using PdfToSvg.Svg;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Xml.Linq;
 
 namespace PdfToSvg.Drawing.Shadings
 {
     internal abstract class NativeSvgShading : Shading
     {
-        private static readonly XNamespace ns = "http://www.w3.org/2000/svg";
-
         private delegate void Adder(double offset, float[] color);
 
         // The shading will leave some room for an additional transparent stop if Extend is false.
@@ -76,54 +74,54 @@ namespace PdfToSvg.Drawing.Shadings
             Stops = stops.ToArray();
         }
 
-        protected void AddStopElements(SvgConversion svgConversion, XElement gradientEl, bool inPattern)
+        protected void AddStopElements(SvgConversion svgConversion, SvgElement gradientEl, bool inPattern)
         {
             if (!ExtendStart)
             {
                 // Background is not applicable when using the sh operator according to the spec
                 if (Background != null && inPattern)
                 {
-                    gradientEl.Add(CreateStop(svgConversion, offset: 0, Background.Value, transparent: false));
+                    gradientEl.AddChild(CreateStop(svgConversion, offset: 0, Background.Value, transparent: false));
                 }
                 else
                 {
-                    gradientEl.Add(CreateStop(svgConversion, offset: 0, Stops.First().Color, transparent: true));
+                    gradientEl.AddChild(CreateStop(svgConversion, offset: 0, Stops.First().Color, transparent: true));
                 }
             }
 
             foreach (var stop in Stops)
             {
-                gradientEl.Add(CreateStop(svgConversion, stop));
+                gradientEl.AddChild(CreateStop(svgConversion, stop));
             }
 
             if (!ExtendEnd)
             {
                 if (Background != null && inPattern)
                 {
-                    gradientEl.Add(CreateStop(svgConversion, offset: 0, Background.Value, transparent: false));
+                    gradientEl.AddChild(CreateStop(svgConversion, offset: 0, Background.Value, transparent: false));
                 }
                 else
                 {
-                    gradientEl.Add(CreateStop(svgConversion, offset: 1, Stops.Last().Color, transparent: true));
+                    gradientEl.AddChild(CreateStop(svgConversion, offset: 1, Stops.Last().Color, transparent: true));
                 }
             }
         }
 
-        private static XElement CreateStop(SvgConversion svgConversion, ShadingStop stop)
+        private static SvgElement CreateStop(SvgConversion svgConversion, ShadingStop stop)
         {
             return CreateStop(svgConversion, stop.Offset, stop.Color, false);
         }
 
-        private static XElement CreateStop(SvgConversion svgConversion, double offset, RgbColor color, bool transparent)
+        private static SvgElement CreateStop(SvgConversion svgConversion, double offset, RgbColor color, bool transparent)
         {
-            var stopEl = new XElement(ns + "stop");
+            var stopEl = new SvgElement("stop");
 
-            stopEl.SetAttributeValue("offset", svgConversion.FormatCoordinate(offset * 100) + "%");
-            stopEl.SetAttributeValue("stop-color", svgConversion.FormatColor(color));
+            stopEl.AddAttribute("offset", svgConversion.FormatCoordinate(offset * 100) + "%", isRaw: true);
+            stopEl.AddAttribute("stop-color", svgConversion.FormatColor(color), isRaw: true);
 
             if (transparent)
             {
-                stopEl.SetAttributeValue("stop-opacity", "0");
+                stopEl.AddAttribute("stop-opacity", "0", isRaw: true);
             }
 
             return stopEl;

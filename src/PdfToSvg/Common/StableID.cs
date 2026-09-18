@@ -2,7 +2,9 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Drawing;
 using PdfToSvg.IO;
+using PdfToSvg.Svg;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -106,6 +108,11 @@ namespace PdfToSvg.Common
                         hashStream.Write(buffer, 0, read);
                     }
                     while (read > 0);
+                }
+                else if (input is SvgElement element)
+                {
+                    using var writer = new SvgStreamWriter(hashStream, preferAsync: false);
+                    element.WriteTo(writer);
                 }
                 else
                 {

@@ -8,19 +8,18 @@ using PdfToSvg.Drawing.Paths;
 using PdfToSvg.Functions;
 using PdfToSvg.Imaging.Png;
 using PdfToSvg.IO;
+using PdfToSvg.Svg;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Xml.Linq;
 
 namespace PdfToSvg.Drawing.Shadings
 {
     internal class FunctionShading : Shading
     {
-        private static readonly XNamespace ns = "http://www.w3.org/2000/svg";
         private const int MaxSize = 200;
         private const int OutputComponentsPerSample = 3;
 
@@ -108,7 +107,7 @@ namespace PdfToSvg.Drawing.Shadings
             return "data:image/png;base64," + Convert.ToBase64String(Render(width, height));
         }
 
-        public override XElement? GetShadingElement(Matrix transform, Rectangle clipRectangle, bool inPattern)
+        public override SvgElement? GetShadingElement(Matrix transform, Rectangle clipRectangle, bool inPattern)
         {
             // This implementation could be shared with MeshShading, but wasn't since it is much easier in this case to
             // apply the transform on the rendered image itself, instead as in MeshShading, on the polygons inside the
@@ -116,9 +115,9 @@ namespace PdfToSvg.Drawing.Shadings
 
             var svgConversion = new SvgConversion();
 
-            XElement? backgroundEl = null;
-            XElement? clipEl = null;
-            XAttribute? clipAttribute = null;
+            SvgElement? backgroundEl = null;
+            SvgElement? clipEl = null;
+            string? clipAttributeValue = null;
 
             if (BBox != null)
             {
@@ -131,30 +130,29 @@ namespace PdfToSvg.Drawing.Shadings
                 // Background is not applicable when using the sh operator according to the spec
                 if (Background != null && inPattern)
                 {
-                    backgroundEl = new XElement(ns + "path",
-                        new XAttribute("fill", svgConversion.FormatColor(Background.Value)),
-                        new XAttribute("d", bboxPathData)
-                        );
+                    backgroundEl = new SvgElement("path");
+                    backgroundEl.AddAttribute("fill", svgConversion.FormatColor(Background.Value), isRaw: true);
+                    backgroundEl.AddAttribute("d", bboxPathData, isRaw: true);
                 }
 
                 var clipId = StableID.Generate("cl", "MeshClip", bboxPathData);
 
-                clipEl = new XElement(ns + "clipPath",
-                    new XAttribute("id", clipId),
-                    new XElement(ns + "path",
-                        new XAttribute("d", bboxPathData)
-                        ));
+                var clipPathEl = new SvgElement("path");
+                clipPathEl.AddAttribute("d", bboxPathData, isRaw: true);
 
-                clipAttribute = new XAttribute("clip-path", "url(#" + clipId + ")");
+                clipEl = new SvgElement("clipPath");
+                clipEl.AddAttribute("id", clipId, isRaw: true);
+                clipEl.AddChild(clipPathEl);
+
+                clipAttributeValue = "url(#" + clipId + ")";
             }
             // Background is not applicable when using the sh operator according to the spec
             else if (Background != null && inPattern)
             {
-                backgroundEl = new XElement(ns + "rect",
-                    new XAttribute("fill", svgConversion.FormatColor(Background.Value)),
-                    new XAttribute("width", svgConversion.FormatCoordinate(clipRectangle.X2)),
-                    new XAttribute("height", svgConversion.FormatCoordinate(clipRectangle.Y2))
-                    );
+                backgroundEl = new SvgElement("rect");
+                backgroundEl.AddAttribute("fill", svgConversion.FormatColor(Background.Value), isRaw: true);
+                backgroundEl.AddAttribute("width", svgConversion.FormatCoordinate(clipRectangle.X2), isRaw: true);
+                backgroundEl.AddAttribute("height", svgConversion.FormatCoordinate(clipRectangle.Y2), isRaw: true);
             }
 
             var imageWidth = (int)MathUtils.Clamp(maxX - minX, 1, MaxSize);
@@ -162,26 +160,38 @@ namespace PdfToSvg.Drawing.Shadings
 
             var imageUrl = RenderDataUrl(imageWidth, imageHeight);
 
-            var patternEl = New.XElement(ns + "pattern",
-                new XAttribute("width", svgConversion.FormatCoordinate(clipRectangle.X2)),
-                new XAttribute("height", svgConversion.FormatCoordinate(clipRectangle.Y2)),
-                new XAttribute("patternUnits", "userSpaceOnUse"),
+            var imageEl = new SvgElement("image");
+            imageEl.AddAttribute("transform", svgConversion.Matrix(matrix * transform), isRaw: true);
+            imageEl.AddAttribute("x", svgConversion.FormatCoordinate(minX), isRaw: true);
+            imageEl.AddAttribute("y", svgConversion.FormatCoordinate(minY), isRaw: true);
+            imageEl.AddAttribute("width", svgConversion.FormatCoordinate(maxX - minX), isRaw: true);
+            imageEl.AddAttribute("height", svgConversion.FormatCoordinate(maxY - minY), isRaw: true);
+            imageEl.AddAttribute("preserveAspectRatio", "none", isRaw: true);
+            imageEl.AddAttribute("href", imageUrl, isRaw: true);
 
-                clipEl,
-                backgroundEl,
+            var imageWrapperEl = new SvgElement("g");
+            if (clipAttributeValue != null)
+            {
+                imageWrapperEl.AddAttribute("clip-path", clipAttributeValue, isRaw: true);
+            }
+            imageWrapperEl.AddChild(imageEl);
 
-                New.XElement(ns + "g",
-                    clipAttribute,
-                    new XElement(ns + "image",
-                        new XAttribute("transform", svgConversion.Matrix(matrix * transform)),
-                        new XAttribute("x", svgConversion.FormatCoordinate(minX)),
-                        new XAttribute("y", svgConversion.FormatCoordinate(minY)),
-                        new XAttribute("width", svgConversion.FormatCoordinate(maxX - minX)),
-                        new XAttribute("height", svgConversion.FormatCoordinate(maxY - minY)),
-                        new XAttribute("preserveAspectRatio", "none"),
-                        new XAttribute("href", imageUrl)
-                        )
-                    ));
+            var patternEl = new SvgElement("pattern");
+            patternEl.AddAttribute("width", svgConversion.FormatCoordinate(clipRectangle.X2), isRaw: true);
+            patternEl.AddAttribute("height", svgConversion.FormatCoordinate(clipRectangle.Y2), isRaw: true);
+            patternEl.AddAttribute("patternUnits", "userSpaceOnUse", isRaw: true);
+
+            if (clipEl != null)
+            {
+                patternEl.AddChild(clipEl);
+            }
+
+            if (backgroundEl != null)
+            {
+                patternEl.AddChild(backgroundEl);
+            }
+
+            patternEl.AddChild(imageWrapperEl);
 
             return patternEl;
         }

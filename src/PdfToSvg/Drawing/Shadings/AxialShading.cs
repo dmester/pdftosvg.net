@@ -3,19 +3,17 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Svg;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Xml.Linq;
 
 namespace PdfToSvg.Drawing.Shadings
 {
     internal class AxialShading : NativeSvgShading
     {
-        private static readonly XNamespace ns = "http://www.w3.org/2000/svg";
-
         public double X1 { get; }
         public double Y1 { get; }
         public double X2 { get; } = 1;
@@ -33,22 +31,22 @@ namespace PdfToSvg.Drawing.Shadings
             }
         }
 
-        public override XElement? GetShadingElement(Matrix transform, Rectangle clipRectangle, bool inPattern)
+        public override SvgElement? GetShadingElement(Matrix transform, Rectangle clipRectangle, bool inPattern)
         {
             var svgConversion = new SvgConversion();
-            var linearGradient = new XElement(ns + "linearGradient");
+            var linearGradient = new SvgElement("linearGradient");
 
-            linearGradient.SetAttributeValue("x1", svgConversion.FormatCoordinate(X1));
-            linearGradient.SetAttributeValue("y1", svgConversion.FormatCoordinate(Y1));
-            linearGradient.SetAttributeValue("x2", svgConversion.FormatCoordinate(X2));
-            linearGradient.SetAttributeValue("y2", svgConversion.FormatCoordinate(Y2));
+            linearGradient.AddAttribute("x1", svgConversion.FormatCoordinate(X1), isRaw: true);
+            linearGradient.AddAttribute("y1", svgConversion.FormatCoordinate(Y1), isRaw: true);
+            linearGradient.AddAttribute("x2", svgConversion.FormatCoordinate(X2), isRaw: true);
+            linearGradient.AddAttribute("y2", svgConversion.FormatCoordinate(Y2), isRaw: true);
 
             if (!transform.IsIdentity)
             {
-                linearGradient.SetAttributeValue("gradientTransform", svgConversion.Matrix(transform));
+                linearGradient.AddAttribute("gradientTransform", svgConversion.Matrix(transform), isRaw: true);
             }
 
-            linearGradient.SetAttributeValue("gradientUnits", "userSpaceOnUse");
+            linearGradient.AddAttribute("gradientUnits", "userSpaceOnUse", isRaw: true);
 
             AddStopElements(svgConversion, linearGradient, inPattern);
 

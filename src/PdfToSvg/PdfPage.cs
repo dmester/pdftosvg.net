@@ -5,7 +5,7 @@
 using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Drawing;
-using PdfToSvg.IO;
+using PdfToSvg.Svg;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,8 +13,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace PdfToSvg
 {
@@ -92,7 +90,9 @@ namespace PdfToSvg
         {
             owner.AssertExtractPermission();
 
-            return ToString(SvgRenderer.Convert(page, options, Document.Cache, Document.OptionalContentGroupManager, cancellationToken));
+            return SvgRenderer
+                .Convert(page, options, Document.Cache, Document.OptionalContentGroupManager, cancellationToken)
+                .ToString();
         }
 
 #if HAVE_ASYNC
@@ -104,8 +104,11 @@ namespace PdfToSvg
         {
             owner.AssertExtractPermission();
 
-            var element = await SvgRenderer.ConvertAsync(page, options, Document.Cache, Document.OptionalContentGroupManager, cancellationToken).ConfigureAwait(false);
-            return ToString(element);
+            var element = await SvgRenderer
+                .ConvertAsync(page, options, Document.Cache, Document.OptionalContentGroupManager, cancellationToken)
+                .ConfigureAwait(false);
+
+            return element.ToString();
         }
 #endif
 
@@ -135,10 +138,13 @@ namespace PdfToSvg
             owner.AssertExtractPermission();
 
             var content = SvgRenderer.Convert(page, options, Document.Cache, Document.OptionalContentGroupManager, cancellationToken);
-            var document = new XDocument(content);
 
-            using var writer = new SvgXmlWriter(stream, ConformanceLevel.Document);
-            document.WriteTo(writer);
+            var writer = new SvgStreamWriter(stream, preferAsync: false);
+            writer.AppendXmlDeclaration();
+            content.WriteTo(writer);
+            writer.Flush();
+            // writer is intentionally not disposed, to ensure any original write exceptions are propagated, instead of
+            // from an additional write from Dispose
         }
 
         /// <summary>
@@ -198,22 +204,16 @@ namespace PdfToSvg
 
             owner.AssertExtractPermission();
 
-            var content = await SvgRenderer.ConvertAsync(page, options, Document.Cache, Document.OptionalContentGroupManager, cancellationToken).ConfigureAwait(false);
-            var document = new XDocument(content);
+            var content = await SvgRenderer
+                .ConvertAsync(page, options, Document.Cache, Document.OptionalContentGroupManager, cancellationToken)
+                .ConfigureAwait(false);
 
-            // XmlTextWriter does not support async, so buffer the file before writing it to the output stream.
-            using var memoryStream = new MemoryStream();
-            using var writer = new SvgXmlWriter(memoryStream, ConformanceLevel.Document);
-
-            document.WriteTo(writer);
-            writer.Flush();
-
-            if (!memoryStream.TryGetBuffer(out var buffer))
-            {
-                throw new Exception("MemoryStream unexpectedly did not allow access to its buffer");
-            }
-
-            await stream.WriteAsync(buffer.Array!, buffer.Offset, buffer.Count, cancellationToken).ConfigureAwait(false);
+            var writer = new SvgStreamWriter(stream, preferAsync: true);
+            writer.AppendXmlDeclaration();
+            await content.WriteToAsync(writer, cancellationToken).ConfigureAwait(false);
+            await writer.FlushAsync(cancellationToken).ConfigureAwait(false);
+            // writer is intentionally not disposed, to ensure any original write exceptions are propagated, instead of
+            // from an additional write from Dispose
         }
 
         /// <summary>
@@ -225,7 +225,8 @@ namespace PdfToSvg
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (path.Length == 0) throw new ArgumentException("The path must not be empty.", nameof(path));
 
-            using var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
+            using var stream = new FileStream(
+                path, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.Asynchronous);
             await SaveAsSvgAsync(stream, options, cancellationToken).ConfigureAwait(false);
         }
 #endif
@@ -286,16 +287,5 @@ namespace PdfToSvg
         /// </example>
         /// <seealso cref="PdfDocument.Images">PdfDocument.Images</seealso>
         public ImageEnumerable Images => new ImageEnumerable([page], owner.AssertExtractPermission);
-
-        private static string ToString(XNode el)
-        {
-            using var stringWriter = new StringWriter();
-            using var writer = new SvgXmlWriter(stringWriter, ConformanceLevel.Fragment);
-
-            el.WriteTo(writer);
-            writer.Flush();
-
-            return stringWriter.ToString();
-        }
     }
 }

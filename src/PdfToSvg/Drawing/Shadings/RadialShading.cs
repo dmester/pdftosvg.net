@@ -3,19 +3,17 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Svg;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Xml.Linq;
 
 namespace PdfToSvg.Drawing.Shadings
 {
     internal class RadialShading : NativeSvgShading
     {
-        private static readonly XNamespace ns = "http://www.w3.org/2000/svg";
-
         public double X0 { get; }
         public double Y0 { get; }
         public double R0 { get; }
@@ -37,25 +35,25 @@ namespace PdfToSvg.Drawing.Shadings
             }
         }
 
-        public override XElement? GetShadingElement(Matrix transform, Rectangle clipRectangle, bool inPattern)
+        public override SvgElement? GetShadingElement(Matrix transform, Rectangle clipRectangle, bool inPattern)
         {
             var svgConversion = new SvgConversion();
-            var radialGradient = new XElement(ns + "radialGradient");
+            var radialGradient = new SvgElement("radialGradient");
 
-            radialGradient.SetAttributeValue("fx", svgConversion.FormatCoordinate(X0));
-            radialGradient.SetAttributeValue("fy", svgConversion.FormatCoordinate(Y0));
-            radialGradient.SetAttributeValue("fr", svgConversion.FormatCoordinate(R0));
+            radialGradient.AddAttribute("fx", svgConversion.FormatCoordinate(X0), isRaw: true);
+            radialGradient.AddAttribute("fy", svgConversion.FormatCoordinate(Y0), isRaw: true);
+            radialGradient.AddAttribute("fr", svgConversion.FormatCoordinate(R0), isRaw: true);
 
-            radialGradient.SetAttributeValue("cx", svgConversion.FormatCoordinate(X1));
-            radialGradient.SetAttributeValue("cy", svgConversion.FormatCoordinate(Y1));
-            radialGradient.SetAttributeValue("r", svgConversion.FormatCoordinate(R1));
+            radialGradient.AddAttribute("cx", svgConversion.FormatCoordinate(X1), isRaw: true);
+            radialGradient.AddAttribute("cy", svgConversion.FormatCoordinate(Y1), isRaw: true);
+            radialGradient.AddAttribute("r", svgConversion.FormatCoordinate(R1), isRaw: true);
 
             if (!transform.IsIdentity)
             {
-                radialGradient.SetAttributeValue("gradientTransform", svgConversion.Matrix(transform));
+                radialGradient.AddAttribute("gradientTransform", svgConversion.Matrix(transform), isRaw: true);
             }
 
-            radialGradient.SetAttributeValue("gradientUnits", "userSpaceOnUse");
+            radialGradient.AddAttribute("gradientUnits", "userSpaceOnUse", isRaw: true);
 
             AddStopElements(svgConversion, radialGradient, inPattern);
 

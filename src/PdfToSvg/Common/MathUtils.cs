@@ -135,6 +135,15 @@ namespace PdfToSvg.Common
 
         public static int IntLog2Ceil(int value)
         {
+            if (value < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
+#if NET5_0_OR_GREATER
+            if (value < 2) return 0;
+            return System.Numerics.BitOperations.Log2(unchecked((uint)value - 1)) + 1;
+#else
             var result = 0;
 
             value--;
@@ -146,6 +155,7 @@ namespace PdfToSvg.Common
             }
 
             return result;
+#endif
         }
 
         public static uint FloorDiv(uint dividend, uint divisor)

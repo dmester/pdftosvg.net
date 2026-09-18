@@ -53,7 +53,6 @@ namespace PdfToSvg.Tests.Common
             Assert.AreEqual(expected, MathUtils.IntLog2(value));
         }
 
-        [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
         [TestCase(15)]
@@ -62,10 +61,26 @@ namespace PdfToSvg.Tests.Common
         [TestCase(1023)]
         [TestCase(1024)]
         [TestCase(1025)]
+        [TestCase((1 << 30) - 1)]
+        [TestCase((1 << 30) + 0)]
+        [TestCase((1 << 30) + 1)]
         public void IntLog2Ceil(int value)
         {
             var expected = (int)Math.Ceiling(Math.Log(value) / Math.Log(2));
             Assert.AreEqual(expected, MathUtils.IntLog2Ceil(value));
+        }
+
+        [TestCase(1, 0)]
+        [TestCase(0, 0)]
+        public void IntLog2Ceil_Fixed(int input, int expectedOutput)
+        {
+            Assert.AreEqual(expectedOutput, MathUtils.IntLog2Ceil(input));
+        }
+
+        [Test]
+        public void IntLog2Ceil_Negative()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => MathUtils.IntLog2Ceil(-1));
         }
 
         [TestCase(-3, 3, -1)]

@@ -11,12 +11,293 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PdfToSvg.Tests.DocumentModel
 {
     internal class PdfDictionaryTests
     {
+        [Test]
+        public void Add_Unique()
+        {
+            var dict = new PdfDictionary();
+
+            for (var i = 0; i < 1024; i++)
+            {
+                var key = new PdfName(i.ToString());
+                dict.Add(key, i);
+
+                Assert.AreEqual(i + 1, dict.Count, "Count");
+                Assert.IsTrue(dict.ContainsKey(key));
+                Assert.IsTrue(dict.TryGetValue(key, out var value));
+                Assert.AreEqual(i, value, "Value");
+            }
+        }
+
+        [TestCase(16)]
+        [TestCase(32)]
+        [TestCase(64)]
+        [TestCase(1024)]
+        public void Add_Remove_Add(int count)
+        {
+            var dict = new PdfDictionary();
+
+            // Add initial
+            for (var i = 0; i < count; i++)
+            {
+                var key = new PdfName(i.ToString());
+                dict.Add(key, i);
+            }
+
+            // Remove
+            for (var i = 0; i < 5; i++)
+            {
+                dict.Remove(new PdfName(i.ToString()));
+            }
+
+            // Readd
+            for (var i = 0; i < count; i++)
+            {
+                var key = new PdfName(i.ToString());
+                dict.Add(key, i);
+            }
+
+            // Ensure they exist
+            for (var i = 0; i < count; i++)
+            {
+                var key = new PdfName(i.ToString());
+                Assert.IsTrue(dict.ContainsKey(key));
+            }
+            Assert.AreEqual(count, dict.Count);
+        }
+
+        [Test]
+        public void Add_Replace()
+        {
+            var dict = new PdfDictionary();
+
+            dict.Add(new PdfName("1"), 1);
+            dict.Add(new PdfName("2"), 2);
+            dict.Add(new PdfName("1"), 3);
+            dict.Add(new PdfName("1"), 4);
+
+            Assert.AreEqual(4, dict[new PdfName("1")]);
+            Assert.AreEqual(2, dict[new PdfName("2")]);
+        }
+
+        [Test]
+        public void Add_Remove_DoesNotIncreaseCapacity()
+        {
+            var dict = new PdfDictionary();
+
+            // Add
+            for (var i = 0; i < 32; i++)
+            {
+                dict.Add(new PdfName(i.ToString(CultureInfo.InvariantCulture)), 1);
+            }
+
+            var capacityAfterAdd = dict.Capacity;
+
+            // Remove
+            for (var i = 0; i < 32; i++)
+            {
+                dict.Remove(new PdfName(i.ToString(CultureInfo.InvariantCulture)));
+            }
+
+            // Add
+            for (var i = 0; i < 32; i++)
+            {
+                dict.Add(new PdfName(i.ToString(CultureInfo.InvariantCulture)), 1);
+            }
+
+            Assert.AreEqual(capacityAfterAdd, dict.Capacity);
+        }
+
+        [Test]
+        public void Add_Remove_Compaction()
+        {
+            var dict = new PdfDictionary();
+
+            var expectedValues = new List<int>();
+
+            // Add
+            for (var i = 0; i < 32; i++)
+            {
+                dict.Add(new PdfName(i.ToString(CultureInfo.InvariantCulture)), i);
+            }
+
+            // Remove even entries
+            for (var i = 0; i < 32; i += 2)
+            {
+                dict.Remove(new PdfName(i.ToString(CultureInfo.InvariantCulture)));
+            }
+            for (var i = 1; i < 32; i += 2)
+            {
+                expectedValues.Add(i);
+            }
+
+            // Add new values, causing compaction
+            for (var i = 0; i < 32; i++)
+            {
+                dict.Add(new PdfName((32 + i).ToString(CultureInfo.InvariantCulture)), 32 + i);
+                expectedValues.Add(32 + i);
+            }
+
+            Assert.AreEqual(expectedValues, dict.Values);
+        }
+
+        [Test]
+        public void Clear()
+        {
+            var dict = new PdfDictionary();
+
+            dict.Add(new PdfName("1"), 1);
+            dict.Add(new PdfName("2"), 2);
+            dict.Add(new PdfName("3"), 3);
+            dict.Add(new PdfName("4"), 4);
+
+            dict.Clear();
+
+            Assert.IsFalse(dict.ContainsKey(new PdfName("1")));
+            Assert.AreEqual(0, dict.Count, "Count");
+        }
+
+        [Test]
+        public void TryGetValue()
+        {
+            var dict = new PdfDictionary();
+
+            dict.Add(new PdfName("1"), 1);
+            dict.Add(new PdfName("2"), 2);
+            dict.Add(new PdfName("3"), 3);
+            dict.Add(new PdfName("4"), 4);
+
+            Assert.IsTrue(dict.TryGetValue(new PdfName("1"), out var value));
+            Assert.AreEqual(1, value);
+
+            Assert.IsFalse(dict.TryGetValue(new PdfName("5"), out value));
+            Assert.IsNull(value);
+        }
+
+        [Test]
+        public void GetIndexer()
+        {
+            var dict = new PdfDictionary();
+
+            dict.Add(new PdfName("1"), 1);
+            dict.Add(new PdfName("2"), 2);
+            dict.Add(new PdfName("3"), 3);
+            dict.Add(new PdfName("4"), 4);
+
+            Assert.AreEqual(1, dict[new PdfName("1")]);
+            Assert.AreEqual(null, dict[new PdfName("5")]);
+        }
+
+        [Test]
+        public void SetIndexer_Unique()
+        {
+            var dict = new PdfDictionary();
+
+            for (var i = 0; i < 1024; i++)
+            {
+                var key = new PdfName(i.ToString());
+                dict[key] = i;
+
+                Assert.AreEqual(i + 1, dict.Count, "Count");
+                Assert.IsTrue(dict.ContainsKey(key));
+                Assert.IsTrue(dict.TryGetValue(key, out var value));
+                Assert.AreEqual(i, value, "Value");
+            }
+        }
+
+        [Test]
+        public void Remove()
+        {
+            var dict = new PdfDictionary();
+
+            dict.Add(new PdfName("1"), 1);
+            dict.Add(new PdfName("2"), 2);
+            dict.Add(new PdfName("3"), 3);
+            dict.Add(new PdfName("4"), 4);
+
+            Assert.IsTrue(dict.Remove(new PdfName("2")), "Remove valueless");
+            Assert.IsFalse(dict.Remove(new PdfName("2")), "Repeated remove");
+
+            Assert.IsFalse(dict.Remove(new KeyValuePair<PdfName, object>(new PdfName("3"), 2)), "Remove non-matching value");
+            Assert.IsTrue(dict.Remove(new KeyValuePair<PdfName, object>(new PdfName("3"), 3)), "Remove non-matching value");
+            Assert.IsFalse(dict.Remove(new KeyValuePair<PdfName, object>(new PdfName("3"), 3)), "Repeated remove");
+
+            Assert.IsTrue(dict.ContainsKey(new PdfName("1")));
+            Assert.IsFalse(dict.ContainsKey(new PdfName("2")));
+            Assert.IsFalse(dict.ContainsKey(new PdfName("3")));
+            Assert.IsTrue(dict.ContainsKey(new PdfName("4")));
+            Assert.AreEqual(2, dict.Count, "Count");
+        }
+
+        [Test]
+        public void Remove_Readd()
+        {
+            var dict = new PdfDictionary();
+
+            dict.Add(new PdfName("1"), 1);
+            dict.Add(new PdfName("2"), 2);
+            dict.Add(new PdfName("3"), 3);
+            dict.Add(new PdfName("4"), 4);
+
+            dict.Remove(new PdfName("2"));
+            dict.Add(new PdfName("2"), 3);
+
+            Assert.IsTrue(dict.TryGetValue(new PdfName("2"), out var value));
+            Assert.AreEqual(3, value);
+            Assert.AreEqual("/1,/3,/4,/2", string.Join(",", dict.Keys));
+        }
+
+        [Test]
+        public void GetEnumerator()
+        {
+            var dict = new PdfDictionary();
+
+            dict.Add(new PdfName("1"), 10);
+            dict.Add(new PdfName("2"), 20);
+            dict.Add(new PdfName("3"), 30);
+            dict.Add(new PdfName("4"), 40);
+
+            dict.Remove(new PdfName("2"));
+            dict.Remove(new PdfName("3"));
+
+            dict.Add(new PdfName("1"), 50);
+            dict.Add(new PdfName("2"), 60);
+
+            var str = string.Join(", ",
+                dict.Select(x => x.Key + "=" + ((int)x.Value).ToString(CultureInfo.InvariantCulture)));
+
+            Assert.AreEqual("/1=50, /4=40, /2=60", str);
+        }
+
+        [Test]
+        public void CopyTo()
+        {
+            var dict = new PdfDictionary();
+
+            dict.Add(new PdfName("1"), 10);
+            dict.Add(new PdfName("2"), 20);
+            dict.Add(new PdfName("3"), 30);
+            dict.Add(new PdfName("4"), 40);
+
+            dict.Remove(new PdfName("2"));
+            dict.Remove(new PdfName("3"));
+
+            dict.Add(new PdfName("1"), 50);
+            dict.Add(new PdfName("2"), 60);
+
+            var copy = new KeyValuePair<PdfName, object>[dict.Count + 2];
+            ((ICollection<KeyValuePair<PdfName, object>>)dict).CopyTo(copy, 1);
+
+            var str = string.Join(", ",
+                copy.Select(x => x.Key + "=" + ((int)(x.Value ?? 99)).ToString(CultureInfo.InvariantCulture)));
+
+            Assert.AreEqual("=99, /1=50, /4=40, /2=60, =99", str);
+        }
+
         [Test]
         public void GetStream()
         {
@@ -226,4 +507,5 @@ namespace PdfToSvg.Tests.DocumentModel
             }
         }
     }
+
 }

@@ -27,6 +27,34 @@ namespace PdfToSvg.Tests.Drawing
             Assert.AreEqual(expectedResult, new SvgConversion().FormatColor(new RgbColor(r, g, b)));
         }
 
+        [Test]
+        public void FormatColor_BlackWhiteInterned()
+        {
+            var conversion = new SvgConversion();
+
+            var str1 = conversion.FormatColor(new RgbColor(0f, 0f, 0f));
+            var str2 = conversion.FormatColor(new RgbColor(1f, 1f, 1f));
+
+            Assert.IsNotNull(string.IsInterned(str1));
+            Assert.IsNotNull(string.IsInterned(str2));
+        }
+
+        [Test]
+        public void FormatColor_CacheLastColor()
+        {
+            var conversion = new SvgConversion();
+
+            var str1 = conversion.FormatColor(new RgbColor(0f, .1f, .2f));
+            var str2 = conversion.FormatColor(new RgbColor(0f, .1f, .2f));
+
+            conversion.FormatColor(new RgbColor(0, 0, .3f));
+
+            var str4 = conversion.FormatColor(new RgbColor(0f, .1f, .2f));
+
+            Assert.AreSame(str1, str2);
+            Assert.AreNotSame(str1, str4);
+        }
+
         [TestCase(1, 0, 0, 1, 0, 0, "none")]
         [TestCase(1.000001, 0.000005, 0, 1, 0, 0, "none")]
         [TestCase(1, 0, 0, 1.000001, 1.100001, 1.111111111, "translate(1.1 1.1111)")]

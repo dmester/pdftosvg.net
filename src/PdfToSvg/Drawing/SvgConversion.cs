@@ -23,11 +23,32 @@ namespace PdfToSvg.Drawing
         private readonly char[] buffer = new char[23];
         private StringBuilder? reusableSb;
 
+        private int lastColorRgb = -1;
+        private string? lastColorString;
+
         public string FormatColor(RgbColor color)
         {
             var r = (int)(color.Red * 255);
             var g = (int)(color.Green * 255);
             var b = (int)(color.Blue * 255);
+
+            var rgb = r << 16 | g << 8 | b;
+
+            // Interned strings for black, white. Reuse last converted color string instance, if applicable
+            if (rgb == 0x000000)
+            {
+                return "#000";
+            }
+            if (rgb == 0xffffff)
+            {
+                return "#fff";
+            }
+            if (rgb == lastColorRgb)
+            {
+                return lastColorString!;
+            }
+
+            lastColorRgb = rgb;
 
             var buffer = this.buffer;
 
@@ -50,11 +71,11 @@ namespace PdfToSvg.Drawing
             {
                 buffer[2] = buffer[3];
                 buffer[3] = buffer[5];
-                return new string(buffer, 0, 4);
+                return lastColorString = new string(buffer, 0, 4);
             }
             else
             {
-                return new string(buffer, 0, 7);
+                return lastColorString = new string(buffer, 0, 7);
             }
         }
 

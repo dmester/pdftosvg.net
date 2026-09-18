@@ -62,7 +62,7 @@ namespace PdfToSvg.Parsing
                 }
                 else if (nextLexeme.Token == Token.Name)
                 {
-                    name = PdfName.Create(nextLexeme.Value.ToString());
+                    name = nextLexeme.NameValue;
                 }
                 else
                 {
@@ -104,7 +104,7 @@ namespace PdfToSvg.Parsing
                 }
                 else if (nextLexeme.Token == Token.Name)
                 {
-                    name = PdfName.Create(nextLexeme.Value.ToString());
+                    name = nextLexeme.NameValue;
                 }
                 else
                 {
@@ -324,11 +324,11 @@ namespace PdfToSvg.Parsing
                 case Token.HexString:
                 case Token.LiteralString:
                     lexer.Read();
-                    return nextLexeme.Value;
+                    return nextLexeme.ObjectValue;
 
                 case Token.Name:
                     lexer.Read();
-                    return PdfName.Create(nextLexeme.Value.ToString());
+                    return nextLexeme.ObjectValue;
 
                 default:
                     throw ParserExceptions.UnexpectedToken(lexer.Stream, nextLexeme);

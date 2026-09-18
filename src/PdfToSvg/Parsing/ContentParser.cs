@@ -118,7 +118,7 @@ namespace PdfToSvg.Parsing
                     case Token.Keyword:
                         lexer.Read();
 
-                        yield return new ContentOperation(nextLexeme.Value.ToString(), operands.ToArray());
+                        yield return new ContentOperation(nextLexeme.KeywordValue, operands.ToArray());
 
                         operands.Clear();
                         break;

@@ -165,13 +165,13 @@ namespace PdfToSvg.Tests.Parsing
             Assert.AreEqual(new Lexeme(Token.Integer, 0), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Integer, 1), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Keyword, "rg"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "Ti"), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("Ti")), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Keyword, "Tj"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Integer, 12), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Keyword, "d0"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Keyword, "d1d1"), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Integer, 2), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.LiteralString, "T*"), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.LiteralString, new PdfString("T*")), lexer.Read());
 
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
@@ -183,11 +183,11 @@ namespace PdfToSvg.Tests.Parsing
             var lexer = CreateLexer("  <</Type/Font/Width 5/NestedEmpty<<>>>> ");
 
             Assert.AreEqual(new Lexeme(Token.BeginDictionary), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "Type"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "Font"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "Width"), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("Type")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("Font")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("Width")), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Integer, 5), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "NestedEmpty"), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("NestedEmpty")), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.BeginDictionary), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.EndDictionary), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.EndDictionary), lexer.Read());
@@ -204,9 +204,9 @@ namespace PdfToSvg.Tests.Parsing
             Assert.AreEqual(new Lexeme(Token.BeginArray), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Integer, 1), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.Ref), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "Name"), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("Name")), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.BeginArray), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.LiteralString, "R]R"), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.LiteralString, new PdfString("R]R")), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.EndArray), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.EndArray), lexer.Read());
 
@@ -302,14 +302,14 @@ namespace PdfToSvg.Tests.Parsing
                 "(normalized\r\nline\rbreaks\n)" +
                 @"(octal \53\053 \53a \0053)");
 
-            Assert.AreEqual(new Lexeme(Token.LiteralString, "abc"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.LiteralString, "string()with parentheses"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.LiteralString, ""), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.LiteralString, "\"#¤%&/[]<>"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.LiteralString, "esc\\\n\r\t)(W"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.LiteralString, "no line breaks"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.LiteralString, "normalized\nline\nbreaks\n"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.LiteralString, "octal ++ +a \x00053"), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.LiteralString, new PdfString("abc")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.LiteralString, new PdfString("string()with parentheses")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.LiteralString, new PdfString("")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.LiteralString, new PdfString("\"#¤%&/[]<>")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.LiteralString, new PdfString("esc\\\n\r\t)(W")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.LiteralString, new PdfString("no line breaks")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.LiteralString, new PdfString("normalized\nline\nbreaks\n")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.LiteralString, new PdfString("octal ++ +a \x00053")), lexer.Read());
 
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
@@ -327,9 +327,9 @@ namespace PdfToSvg.Tests.Parsing
                 "<414a4A50>" +
                 "< 4 14  \na  \t \f 4A 5  >");
 
-            Assert.AreEqual(new Lexeme(Token.HexString, "", position: 0), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.HexString, "AJJP", position: 2), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.HexString, "AJJP", position: 12), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.HexString, new PdfString(""), position: 0), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.HexString, new PdfString("AJJP"), position: 2), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.HexString, new PdfString("AJJP"), position: 12), lexer.Read());
 
             Assert.AreEqual(new Lexeme(Token.EndOfInput, position: 35), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.EndOfInput, position: 35), lexer.Read());
@@ -392,17 +392,17 @@ namespace PdfToSvg.Tests.Parsing
                 "/The_Key_of_F#23_Minor " +
                 "/A#42");
 
-            Assert.AreEqual(new Lexeme(Token.Name, "Name1"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "ASomewhatLongerName"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "A;Name_With-Various***Characters?"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "1.2"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "$$"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "@pattern"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, ".notdef"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "lime green"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "paired()parentheses"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "The_Key_of_F#_Minor"), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.Name, "AB"), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("Name1")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("ASomewhatLongerName")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("A;Name_With-Various***Characters?")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("1.2")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("$$")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("@pattern")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName(".notdef")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("lime green")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("paired()parentheses")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("The_Key_of_F#_Minor")), lexer.Read());
+            Assert.AreEqual(new Lexeme(Token.Name, new PdfName("AB")), lexer.Read());
 
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());

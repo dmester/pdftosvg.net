@@ -10,7 +10,7 @@ namespace PdfToSvg.Parsing
 {
     internal struct Lexeme : IEquatable<Lexeme>
     {
-        private PdfString? stringValue;
+        private object? objectValue;
         private double numericValue;
         private int position;
         private Token token;
@@ -24,19 +24,29 @@ namespace PdfToSvg.Parsing
 
         public Lexeme(Token token, PdfString value, long position = -1)
         {
-            this.stringValue = value;
+            this.objectValue = value;
             this.position = (int)(position + 1);
             this.token = token;
         }
 
         public Lexeme(Token token, string value, long position = -1)
         {
-            this.stringValue = new PdfString(value);
+            this.objectValue = value;
             this.position = (int)(position + 1);
             this.token = token;
         }
 
-        public PdfString Value => stringValue ?? PdfString.Empty;
+        public Lexeme(Token token, PdfName value, long position = -1)
+        {
+            this.objectValue = value;
+            this.position = (int)(position + 1);
+            this.token = token;
+        }
+
+        public object? ObjectValue => objectValue;
+        public PdfString StringValue => objectValue as PdfString ?? PdfString.Empty;
+        public string KeywordValue => objectValue as string ?? "";
+        public PdfName NameValue => objectValue as PdfName ?? PdfName.Empty;
         public double NumericValue => numericValue;
         public Token Token => token;
         public int Position => position - 1;
@@ -51,8 +61,8 @@ namespace PdfToSvg.Parsing
                 position == 0 ||
                 other.position == position
             ) &&
-            other.Value == Value &&
-            other.numericValue == numericValue;
+            other.numericValue == numericValue &&
+            Equals(other.objectValue, objectValue);
 
         public override int GetHashCode() => (int)Token;
 
@@ -60,7 +70,7 @@ namespace PdfToSvg.Parsing
         {
             var value = Token == Token.Integer || Token == Token.Real
                 ? numericValue.ToString(CultureInfo.InvariantCulture)
-                : Value.ToString();
+                : objectValue?.ToString();
 
             return position == 0
                 ? $"{token} {value}"

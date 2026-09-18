@@ -20,6 +20,8 @@ namespace PdfToSvg.DocumentModel
 
         public string Value { get; }
 
+        public static PdfName Empty { get; } = new PdfName("");
+
         public static PdfName Create(string value)
         {
             // Lower memory usage by using interned common names

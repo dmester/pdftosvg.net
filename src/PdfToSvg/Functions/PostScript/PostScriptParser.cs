@@ -132,7 +132,7 @@ namespace PdfToSvg.Functions.PostScript
                         break;
 
                     case Token.Keyword:
-                        var operatorName = nextLexeme.Value.ToString();
+                        var operatorName = nextLexeme.KeywordValue;
                         if (operators.TryGetValue(operatorName, out var op))
                         {
                             instructions.Add(new PostScriptInstruction(op));

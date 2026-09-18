@@ -11,12 +11,7 @@ using PdfToSvg.IO;
 using PdfToSvg.Parsing;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Xml.Linq;
 
 namespace PdfToSvg.Fonts.Type1
 {
@@ -75,14 +70,14 @@ namespace PdfToSvg.Fonts.Type1
 
             if (startLexeme.Token == Token.Keyword)
             {
-                if (startLexeme.Value.ToString() == "StandardEncoding")
+                if (startLexeme.KeywordValue == "StandardEncoding")
                 {
                     result = SingleByteEncoding.Standard;
                     return;
                 }
                 else
                 {
-                    throw new Type1Exception("Unexpected type 1 encoding '" + startLexeme.Value + "'.");
+                    throw new Type1Exception("Unexpected type 1 encoding '" + startLexeme.KeywordValue + "'.");
                 }
             }
 
@@ -100,7 +95,7 @@ namespace PdfToSvg.Fonts.Type1
                 if (lexeme.Token == Token.Dup)
                 {
                     var index = (int)lexer.Read(Token.Integer).NumericValue;
-                    var glyphName = lexer.Read(Token.Name).Value.ToString();
+                    var glyphName = lexer.Read(Token.Name).NameValue.Value;
 
                     if (index >= 0 && index < glyphNames.Length)
                     {
@@ -120,13 +115,13 @@ namespace PdfToSvg.Fonts.Type1
 
             if (lexeme.Token == Token.LiteralString)
             {
-                result = lexeme.Value.ToString();
+                result = lexeme.StringValue.ToString();
                 return;
             }
 
             if (lexeme.Token == Token.Name)
             {
-                result = lexeme.Value.ToString();
+                result = lexeme.NameValue.Value;
                 return;
             }
         }
@@ -142,7 +137,7 @@ namespace PdfToSvg.Fonts.Type1
 
             while (lexer.TryRead(Token.Name, out var nameLexeme))
             {
-                var name = nameLexeme.Value.ToString();
+                var name = nameLexeme.NameValue.Value;
 
                 var length = lexer.Read(Token.Integer);
                 lexer.Read(Token.RD);
@@ -392,7 +387,7 @@ namespace PdfToSvg.Fonts.Type1
 
                 if (nextLexeme.Token == Token.Name)
                 {
-                    var name = nextLexeme.Value.ToString();
+                    var name = nextLexeme.NameValue.Value;
 
                     if (name == "Subrs")
                     {

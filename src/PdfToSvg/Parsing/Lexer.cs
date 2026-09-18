@@ -64,11 +64,29 @@ namespace PdfToSvg.Parsing
             isFaulted = true;
         }
 
-        protected Lexeme CreateLexeme(Token token, long position)
+        private Lexeme CreateKeywordLexeme(long startPosition)
         {
-            var value = new PdfString(stringBuffer);
-            stringBuffer.SetLength(0);
+            var keyword = stringBuffer.ToString();
+            stringBuffer.Clear();
+            return new Lexeme(Token.Keyword, keyword, startPosition);
+        }
+
+        private Lexeme CreateKeywordLexeme(string keyword, long startPosition)
+        {
+            stringBuffer.Clear();
+            return new Lexeme(Token.Keyword, keyword, startPosition);
+        }
+
+        protected Lexeme CreateStringLexeme(Token token, long position)
+        {
+            var value = stringBuffer.ToPdfString();
+            stringBuffer.Clear();
             return new Lexeme(token, value, position);
+        }
+
+        protected Lexeme CreateTokenLexeme(Token token, long position)
+        {
+            return new Lexeme(token, position: position);
         }
 
         protected bool SkipWhiteSpace()
@@ -110,6 +128,8 @@ namespace PdfToSvg.Parsing
 
             stringBuffer.Clear();
             stringBuffer.WriteChar(nextChar);
+
+            var keyword = default(LexerKeyword);
 
             while (true)
             {
@@ -202,7 +222,7 @@ namespace PdfToSvg.Parsing
             }
             else
             {
-                return new Lexeme(Token.Keyword, keywordName, startPosition);
+                return CreateKeywordLexeme(startPosition);
             }
         }
 
@@ -344,7 +364,7 @@ namespace PdfToSvg.Parsing
                 {
                     var errorPosition = Stream.Position;
                     Reset();
-                    return CreateLexeme(Token.EndOfInput, errorPosition);
+                    return CreateTokenLexeme(Token.EndOfInput, errorPosition);
                 }
                 else if (nextChar == '(')
                 {
@@ -425,7 +445,7 @@ namespace PdfToSvg.Parsing
                 }
             }
 
-            return CreateLexeme(Token.LiteralString, startPosition);
+            return CreateStringLexeme(Token.LiteralString, startPosition);
         }
 
         protected Lexeme ReadName()
@@ -457,7 +477,13 @@ namespace PdfToSvg.Parsing
                 }
             }
 
-            return CreateLexeme(Token.Name, startPosition);
+            if (!Names.TryLookup(stringBuffer.Buffer, stringBuffer.Length, out var value))
+            {
+                value = new PdfName(stringBuffer.ToString());
+            }
+            stringBuffer.Clear();
+
+            return new Lexeme(Token.Name, value, startPosition);
         }
 
         private int ReadHexByte()
@@ -520,7 +546,7 @@ namespace PdfToSvg.Parsing
                     var errorPosition = Stream.Position;
                     Stream.Skip();
                     SetFaulted();
-                    return CreateLexeme(Token.UnexpectedCharacter, errorPosition);
+                    return CreateTokenLexeme(Token.UnexpectedCharacter, errorPosition);
                 }
 
                 nextChar = Stream.PeekChar();
@@ -531,14 +557,14 @@ namespace PdfToSvg.Parsing
                 stringBuffer.WriteByte(unchecked((byte)hi));
             }
 
-            return CreateLexeme(Token.HexString, startPosition);
+            return CreateStringLexeme(Token.HexString, startPosition);
         }
 
         protected Lexeme ReadDictionaryOrHexString()
         {
             if (Stream.PeekChar(2) == '<')
             {
-                var beginDict = CreateLexeme(Token.BeginDictionary, Stream.Position);
+                var beginDict = CreateTokenLexeme(Token.BeginDictionary, Stream.Position);
                 Stream.Skip(2);
                 return beginDict;
             }
@@ -649,27 +675,27 @@ namespace PdfToSvg.Parsing
                         break;
 
                     case '>' when Stream.PeekChar(2) == '>':
-                        result = CreateLexeme(Token.EndDictionary, Stream.Position);
+                        result = CreateTokenLexeme(Token.EndDictionary, Stream.Position);
                         Stream.Skip(2);
                         break;
 
                     case '[':
-                        result = CreateLexeme(Token.BeginArray, Stream.Position);
+                        result = CreateTokenLexeme(Token.BeginArray, Stream.Position);
                         Stream.Skip();
                         break;
 
                     case ']':
-                        result = CreateLexeme(Token.EndArray, Stream.Position);
+                        result = CreateTokenLexeme(Token.EndArray, Stream.Position);
                         Stream.Skip();
                         break;
 
                     case '{':
-                        result = CreateLexeme(Token.BeginBlock, Stream.Position);
+                        result = CreateTokenLexeme(Token.BeginBlock, Stream.Position);
                         Stream.Skip();
                         break;
 
                     case '}':
-                        result = CreateLexeme(Token.EndBlock, Stream.Position);
+                        result = CreateTokenLexeme(Token.EndBlock, Stream.Position);
                         Stream.Skip();
                         break;
 
@@ -685,7 +711,7 @@ namespace PdfToSvg.Parsing
 
                     case '-' when Stream.PeekChar(2) == '|':
                         // In Type 1 fonts, -| can be an alias for RD
-                        result = CreateLexeme(Token.RD, Stream.Position);
+                        result = CreateTokenLexeme(Token.RD, Stream.Position);
                         Stream.Skip(2);
                         break;
 
@@ -693,12 +719,12 @@ namespace PdfToSvg.Parsing
                         // In Type 1 fonts, |- can be an alias for ND, and | for NP
                         if (Stream.PeekChar(2) == '-')
                         {
-                            result = CreateLexeme(Token.ND, Stream.Position);
+                            result = CreateTokenLexeme(Token.ND, Stream.Position);
                             Stream.Skip(2);
                         }
                         else
                         {
-                            result = CreateLexeme(Token.NP, Stream.Position);
+                            result = CreateTokenLexeme(Token.NP, Stream.Position);
                             Stream.Skip(1);
                         }
                         break;
@@ -711,7 +737,7 @@ namespace PdfToSvg.Parsing
                         break;
 
                     default:
-                        result = CreateLexeme(Token.UnexpectedCharacter, Stream.Position);
+                        result = CreateTokenLexeme(Token.UnexpectedCharacter, Stream.Position);
                         Stream.Skip();
                         SetFaulted();
                         break;

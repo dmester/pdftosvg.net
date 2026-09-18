@@ -101,17 +101,17 @@ namespace PdfToSvg.CMaps
                     default:
                         if (lexeme.Token == Token.Name)
                         {
-                            if (lexeme.Value.ToString() == "CMapName" && lexer.TryRead(Token.Name, out var name))
+                            if (lexeme.NameValue.Value == "CMapName" && lexer.TryRead(Token.Name, out var name))
                             {
-                                cmap.Name = name.Value.ToString();
+                                cmap.Name = name.NameValue.Value;
                             }
-                            else if (lexeme.Value.ToString() == "CMapVersion" && lexer.TryRead(Token.Real, out var version))
+                            else if (lexeme.NameValue.Value == "CMapVersion" && lexer.TryRead(Token.Real, out var version))
                             {
                                 cmap.Version = version.NumericValue;
                             }
                             else if (lexer.TryRead(Token.UseCMap))
                             {
-                                cmap.UseCMap = lexeme.Value.ToString();
+                                cmap.UseCMap = lexeme.NameValue.Value;
                             }
                         }
                         break;
@@ -127,7 +127,7 @@ namespace PdfToSvg.CMaps
         private uint ReadHex32(out int length)
         {
             var lexeme = lexer.Read(Token.HexString);
-            var arr = lexeme.Value;
+            var arr = lexeme.StringValue;
 
             uint value = 0;
 
@@ -150,7 +150,7 @@ namespace PdfToSvg.CMaps
         private string ReadUnicode()
         {
             var lexeme = lexer.Read(Token.HexString);
-            return lexeme.Value.ToString(Encoding.BigEndianUnicode);
+            return lexeme.StringValue.ToString(Encoding.BigEndianUnicode);
         }
 
         private uint ReadCodePoint()
@@ -229,7 +229,7 @@ namespace PdfToSvg.CMaps
 
                     while (!lexer.TryRead(Token.EndArray))
                     {
-                        dstStrings.Add(lexer.Read(Token.HexString).Value);
+                        dstStrings.Add(lexer.Read(Token.HexString).StringValue);
                     }
 
                     var count = Math.Min(dstStrings.Count, srcHi - srcLo + 1);

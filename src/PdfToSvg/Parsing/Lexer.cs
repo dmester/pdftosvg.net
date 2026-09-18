@@ -19,45 +19,29 @@ namespace PdfToSvg.Parsing
         private Lexeme forwardLexeme2;
         private int forwardLexemeCount;
 
-        private Dictionary<string, Token> keywords;
-        private Dictionary<string, int> keywordPrefixesAndMaxLengths;
+        private static readonly LexerKeywordTable emptyKeywordTable = new();
+        private LexerKeywordTable keywords;
         private bool isFaulted;
 
-        public Lexer(ArraySegment<byte> source, Dictionary<string, Token>? keywords = null) : this(
+        public Lexer(ArraySegment<byte> source, LexerKeywordTable? keywords = null) : this(
             stream: new BufferedMemoryReader(source),
             keywords)
         { }
 
-        public Lexer(byte[] source, Dictionary<string, Token>? keywords = null) : this(
+        public Lexer(byte[] source, LexerKeywordTable? keywords = null) : this(
             stream: new BufferedMemoryReader(source),
             keywords)
         { }
 
-        public Lexer(string source, Dictionary<string, Token>? keywords = null) : this(
+        public Lexer(string source, LexerKeywordTable? keywords = null) : this(
             stream: new BufferedMemoryReader(Encoding.ASCII.GetBytes(source)),
             keywords)
         { }
 
-        public Lexer(Stream stream, Dictionary<string, Token>? keywords = null)
+        public Lexer(Stream stream, LexerKeywordTable? keywords = null)
         {
             Stream = stream as BufferedReader ?? new BufferedStreamReader(stream);
-            this.keywords = keywords ?? new Dictionary<string, Token>();
-            this.keywordPrefixesAndMaxLengths = new Dictionary<string, int>(this.keywords.Comparer);
-
-            foreach (var keyword in this.keywords.Keys)
-            {
-                var prefix = GetKeywordPrefix(keyword);
-                if (prefix == null)
-                {
-                    continue;
-                }
-
-                if (!keywordPrefixesAndMaxLengths.TryGetValue(prefix, out var maxLength) ||
-                    maxLength < keyword.Length)
-                {
-                    keywordPrefixesAndMaxLengths[prefix] = keyword.Length;
-                }
-            }
+            this.keywords = keywords ?? emptyKeywordTable;
         }
 
         public BufferedReader Stream { get; }
@@ -120,28 +104,6 @@ namespace PdfToSvg.Parsing
             return false;
         }
 
-        private static bool IsKeywordChar(char ch)
-        {
-            return
-                PdfCharacters.IsLetter(ch) ||
-                ch == '*' ||
-                ch == '\'' ||
-                ch == '"';
-        }
-
-        private static string? GetKeywordPrefix(string keyword)
-        {
-            for (var i = 0; i < keyword.Length; i++)
-            {
-                if (!IsKeywordChar(keyword[i]))
-                {
-                    return keyword.Substring(0, i);
-                }
-            }
-
-            return null;
-        }
-
         private Lexeme ReadKeyword()
         {
             var startPosition = Stream.Position;
@@ -153,32 +115,36 @@ namespace PdfToSvg.Parsing
             {
                 nextChar = Stream.PeekChar();
 
-                if (IsKeywordChar(nextChar))
+                if (LexerKeywordTable.IsKeywordChar(nextChar))
                 {
                     Stream.Skip();
                     stringBuffer.WriteByte((byte)nextChar);
                 }
                 else
                 {
-                    var keywordSoFar = new PdfString(stringBuffer).ToString();
-                    var prefixLength = keywordSoFar.Length;
-
-                    if (keywordPrefixesAndMaxLengths.TryGetValue(keywordSoFar, out var maxLength))
+                    if (!keywords.TryGetKeyword(stringBuffer, out keyword) &&
+                        keywords.TryGetMaxLength(stringBuffer, out var maxLength))
                     {
-                        var buffer = new byte[maxLength - prefixLength];
+                        var lookaheadChars = maxLength - stringBuffer.Length;
+                        var initialLength = stringBuffer.Length;
+                        var found = false;
 
-                        for (var i = 0; i < buffer.Length; i++)
+                        for (var i = 0; i < lookaheadChars; i++)
                         {
                             nextChar = Stream.PeekChar(i + 1);
-                            buffer[i] = (byte)nextChar;
-                            keywordSoFar += nextChar;
+                            stringBuffer.WriteChar(nextChar);
 
-                            if (keywords.ContainsKey(keywordSoFar))
+                            if (keywords.TryGetKeyword(stringBuffer, out keyword))
                             {
-                                stringBuffer.Write(buffer, 0, i + 1);
                                 Stream.Skip(i + 1);
+                                found = true;
                                 break;
                             }
+                        }
+
+                        if (!found)
+                        {
+                            stringBuffer.Length = initialLength;
                         }
                     }
 
@@ -186,17 +152,19 @@ namespace PdfToSvg.Parsing
                 }
             }
 
-            var keywordName = new PdfString(stringBuffer);
-            stringBuffer.SetLength(0);
-
-            if (keywords.TryGetValue(keywordName.ToString(), out var keyword))
+            if (stringBuffer.Length == 1)
             {
-                if (keyword == Token.Keyword)
+                keywords.TryGetKeyword(stringBuffer, out keyword);
+            }
+
+            if (keyword.Token != Token.None)
+            {
+                if (keyword.Token == Token.Keyword)
                 {
-                    return new Lexeme(keyword, keywordName, startPosition);
+                    return CreateKeywordLexeme(keyword.Keyword, startPosition);
                 }
 
-                if (keyword == Token.Stream)
+                if (keyword.Token == Token.Stream)
                 {
                     // According to ISO 32000-2-2020 section 7.3.8, the `stream` keyword must be followed by either
                     // CR+LF or LF, but not CR alone. In #60 it was however followed by only CR.
@@ -229,7 +197,8 @@ namespace PdfToSvg.Parsing
                     }
                 }
 
-                return new Lexeme(keyword, position: startPosition);
+                stringBuffer.Clear();
+                return new Lexeme(keyword.Token, position: startPosition);
             }
             else
             {

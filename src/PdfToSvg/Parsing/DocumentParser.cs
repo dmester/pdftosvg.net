@@ -16,6 +16,27 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.Parsing
 {
+    // Cross reference tables
+    [LexerKeyword("f", Token.Free)]
+    [LexerKeyword("n", Token.NotFree)]
+
+    // Object types
+    [LexerKeyword("stream", Token.Stream)]
+    [LexerKeyword("endstream", Token.EndStream)]
+    [LexerKeyword("obj", Token.Obj)]
+    [LexerKeyword("endobj", Token.EndObj)]
+    [LexerKeyword("null", Token.Null)]
+    [LexerKeyword("true", Token.True)]
+    [LexerKeyword("false", Token.False)]
+    [LexerKeyword("R", Token.Ref)]
+
+    // Document commands
+    [LexerKeyword("xref", Token.Xref)]
+    [LexerKeyword("trailer", Token.Trailer)]
+    internal sealed partial class DocumentParserKeywordTable : LexerKeywordTable
+    {
+    }
+
     internal class DocumentParser : Parser
     {
         // PDF 1.7, Section 3.4.4: The last %%EOF marker should occur within the final 1024 bytes
@@ -24,26 +45,7 @@ namespace PdfToSvg.Parsing
         // Recover PDFs with a reasonable amount of trailing garbage without scanning an unbounded amount of data
         private const int MaxStartXRefSearchLength = 64 * 1024;
 
-        private static readonly Dictionary<string, Token> keywords = new Dictionary<string, Token>(StringComparer.OrdinalIgnoreCase)
-        {
-            // Cross reference tables
-            { "f", Token.Free },
-            { "n", Token.NotFree },
-
-            // Object types
-            { "stream", Token.Stream },
-            { "endstream", Token.EndStream },
-            { "obj", Token.Obj },
-            { "endobj", Token.EndObj },
-            { "null", Token.Null },
-            { "true", Token.True },
-            { "false", Token.False },
-            { "R", Token.Ref },
-
-            // Document commands
-            { "xref", Token.Xref },
-            { "trailer", Token.Trailer },
-        };
+        private static readonly LexerKeywordTable keywords = new DocumentParserKeywordTable();
 
         private InputFile file;
 

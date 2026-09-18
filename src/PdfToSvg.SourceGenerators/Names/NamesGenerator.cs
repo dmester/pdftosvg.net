@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using System;
+using PdfToSvg.SourceGenerators.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -15,7 +15,7 @@ using System.Text;
 namespace PdfToSvg.SourceGenerators.Names
 {
     /// <summary>
-    /// This generator adds a lookup method to the "Names" class for interning common names for lower memory usage.
+    /// This generator adds lookup methods to the "Names" class for interning common names for lower memory usage.
     /// </summary>
     [Generator]
     public class NamesGenerator : IIncrementalGenerator
@@ -27,23 +27,19 @@ namespace PdfToSvg.SourceGenerators.Names
                     (syntaxNode, _) =>
                         syntaxNode is ClassDeclarationSyntax classDeclaration &&
                         classDeclaration.Identifier.Text == "Names" &&
-                        classDeclaration.Modifiers.Any(m => m.IsKind(SyntaxKind.StaticKeyword)) &&
-                        classDeclaration.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword)),
-                    (context, _) =>
-                        context.SemanticModel.GetDeclaredSymbol(context.Node) as INamedTypeSymbol)
+                        classDeclaration.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.StaticKeyword)) &&
+                        classDeclaration.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PartialKeyword)),
+                    (context, _) => context.SemanticModel.GetDeclaredSymbol(context.Node) as INamedTypeSymbol)
                 .Where(symbol => symbol is not null);
 
-            var compilationAndClasses = context.CompilationProvider.Combine(classes.Collect());
-
             context.RegisterSourceOutput(
-                compilationAndClasses,
-                (spc, source) => Generate(spc, source.Left, source.Right!));
+                classes.Collect(),
+                (sourceContext, symbols) => Generate(sourceContext, symbols!));
         }
 
-        private static List<(string PropertyName, LiteralExpressionSyntax Value)> GetNames(Compilation compilation, INamedTypeSymbol classSymbol)
+        private static List<Name> GetNames(INamedTypeSymbol classSymbol)
         {
-            var result = new List<(string PropertyName, LiteralExpressionSyntax Value)>();
-
+            var result = new List<Name>();
             var properties = classSymbol
                 .GetMembers()
                 .OfType<IPropertySymbol>()
@@ -51,80 +47,142 @@ namespace PdfToSvg.SourceGenerators.Names
 
             foreach (var property in properties)
             {
-                // Expected syntax of initialization:
-                //
-                // ```
+                // Expected syntax:
                 // public static PdfName WinAnsiEncoding { get; } = new PdfName("WinAnsiEncoding");
-                // ```
-                //
+
                 var syntaxRef = property.DeclaringSyntaxReferences.FirstOrDefault();
-                if (syntaxRef == null)
+                var syntaxNode = syntaxRef?.GetSyntax();
+                var constructor = (syntaxNode as PropertyDeclarationSyntax)?.Initializer?.Value as
+                    ObjectCreationExpressionSyntax;
+                var literal = constructor?.ArgumentList?.Arguments.FirstOrDefault()?.Expression as
+                    LiteralExpressionSyntax;
+
+                if (literal == null || !literal.IsKind(SyntaxKind.StringLiteralExpression))
                 {
                     continue;
                 }
 
-                var syntaxNode = syntaxRef.GetSyntax();
-
-                var constructor = (syntaxNode as PropertyDeclarationSyntax)?.Initializer?.Value as ObjectCreationExpressionSyntax;
-                if (constructor == null)
-                {
-                    continue;
-                }
-
-                var constructorArgumentLiteral = constructor.ArgumentList?.Arguments.FirstOrDefault()?.Expression as LiteralExpressionSyntax;
-                if (constructorArgumentLiteral == null ||
-                    !constructorArgumentLiteral.IsKind(SyntaxKind.StringLiteralExpression))
-                {
-                    continue;
-                }
-
-                result.Add((property.Name, constructorArgumentLiteral));
+                result.Add(new Name(property.Name, literal.Token.ValueText));
             }
 
             return result;
         }
 
-        private static void Generate(SourceProductionContext context, Compilation compilation, ImmutableArray<INamedTypeSymbol> classSymbols)
+        private static void Generate(SourceProductionContext context, ImmutableArray<INamedTypeSymbol> classSymbols)
         {
             foreach (var classSymbol in classSymbols)
             {
+                var names = GetNames(classSymbol);
+                var sourceEntries = names
+                    .Select(name => new StringHashTableGenerator.SourceEntry<Name>(name.Value, name))
+                    .ToList();
+                var table = StringHashTableGenerator.CreateTable(sourceEntries);
                 var writer = new SourceWriter();
+
                 writer.WriteLine("// <auto-generated/>");
                 writer.WriteLine();
-                writer.WriteLine("using System;");
-                writer.WriteLine("using System.Collections.Generic;");
-                writer.WriteLine();
                 writer.WriteLine($"namespace {classSymbol.ContainingNamespace}");
+
                 using (writer.BeginBlock())
                 {
-                    writer.WriteLine($"{classSymbol.DeclaredAccessibility.ToDisplayString()} partial class {classSymbol.Name}");
+                    var accessibility = classSymbol.DeclaredAccessibility.ToDisplayString();
+                    writer.WriteLine($"{accessibility} static partial class {classSymbol.Name}");
+
                     using (writer.BeginBlock())
                     {
-                        writer.WriteLine($"private static readonly Dictionary<string, PdfName> lookup;");
+                        GenerateTryLookupMethods(writer);
                         writer.WriteLine();
-                        writer.WriteLine($"static {classSymbol.Name}()");
-                        using (writer.BeginBlock())
-                        {
-                            writer.WriteLine($"lookup = new(StringComparer.Ordinal)");
-                            using (writer.BeginBlock(suffix: ";"))
-                            {
-                                var properties = GetNames(compilation, classSymbol);
-
-                                foreach (var property in properties)
-                                {
-                                    writer.WriteLine($"{{ {property.Value.ToFullString()}, {property.PropertyName} }},");
-                                }
-                            }
-                        }
-
-                        writer.WriteLine();
-                        writer.WriteLine($"public static bool TryLookup(string value, out PdfName result) => lookup.TryGetValue(value, out result);");
+                        GenerateLookupTable(writer, classSymbol, table);
                     }
                 }
-                writer.WriteLine();
 
+                writer.WriteLine();
                 context.AddSource(classSymbol.Name + ".g.cs", SourceText.From(writer.ToString(), Encoding.UTF8));
             }
+        }
+
+        private static void GenerateTryLookupMethods(SourceWriter writer)
+        {
+            writer.WriteLine("public static bool TryLookup(byte[] buffer, int length, out PdfName result)");
+
+            using (writer.BeginBlock())
+            {
+                writer.WriteLine("return GeneratedLookupTable.TryLookup(buffer, length, out result);");
+            }
+
+            writer.WriteLine();
+            writer.WriteLine("public static bool TryLookup(string str, out PdfName result)");
+
+            using (writer.BeginBlock())
+            {
+                writer.WriteLine("return GeneratedLookupTable.TryLookup(str, out result);");
+            }
+        }
+
+        private static void GenerateLookupTable(
+            SourceWriter writer,
+            INamedTypeSymbol classSymbol,
+            StringHashTableGenerator.Table<Name> table)
+        {
+            writer.WriteLine("private static class GeneratedLookupTable");
+
+            using (writer.BeginBlock())
+            {
+                StringHashTableGenerator.GenerateIndexes(writer, "indexes", table.Indexes);
+                writer.WriteLine();
+                GenerateEntries(writer, classSymbol, table.Entries);
+                writer.WriteLine();
+                GenerateLookupTableMethods(writer, table);
+            }
+        }
+
+        private static void GenerateEntries(
+            SourceWriter writer,
+            INamedTypeSymbol classSymbol,
+            IReadOnlyCollection<StringHashTableGenerator.TableEntry<Name>> entries)
+        {
+            writer.WriteLine("private static readonly global::PdfToSvg.Collections.StringHashTable.Entry<" +
+                "global::PdfToSvg.DocumentModel.PdfName>[] entries =");
+
+            using (writer.BeginBlock(";"))
+            {
+                foreach (var entry in entries)
+                {
+                    var text = Utils.LiteralExpression(entry.Key).ToFullString();
+                    var property = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) + "." +
+                        entry.Value.PropertyName;
+                    writer.WriteLine("global::PdfToSvg.Collections.StringHashTable.CreateEntry(" +
+                        $"{text}, {entry.HashCode}, {property}),");
+                }
+            }
+        }
+
+        private static void GenerateLookupTableMethods(SourceWriter writer, StringHashTableGenerator.Table<Name> table)
+        {
+            writer.WriteLine("public static bool TryLookup(byte[] buffer, int length, out PdfName result)");
+
+            using (writer.BeginBlock())
+            {
+                writer.WriteLine("return global::PdfToSvg.Collections.StringHashTable.TryLookup(");
+                writer.WriteLine("    buffer, length, indexes, entries,");
+                writer.WriteLine($"    0x{table.Multiplier:X8}u, {table.ShiftCount}, out result);");
+            }
+
+            writer.WriteLine();
+            writer.WriteLine("public static bool TryLookup(string str, out PdfName result)");
+
+            using (writer.BeginBlock())
+            {
+                writer.WriteLine("return global::PdfToSvg.Collections.StringHashTable.TryLookup(");
+                writer.WriteLine("    str, indexes, entries,");
+                writer.WriteLine($"    0x{table.Multiplier:X8}u, {table.ShiftCount}, out result);");
+            }
+        }
+
+        private sealed class Name(string propertyName, string value)
+        {
+            public string PropertyName { get; } = propertyName;
+            public string Value { get; } = value;
         }
     }
 }

@@ -15,28 +15,30 @@ using System.Threading.Tasks;
 
 namespace PdfToSvg.CMaps
 {
+    [LexerKeyword("begincodespacerange", Token.BeginCodeSpaceRange)]
+    [LexerKeyword("endcodespacerange", Token.EndCodeSpaceRange)]
+    [LexerKeyword("beginbfchar", Token.BeginBfChar)]
+    [LexerKeyword("endbfchar", Token.EndBfChar)]
+    [LexerKeyword("beginbfrange", Token.BeginBfRange)]
+    [LexerKeyword("endbfrange", Token.EndBfRange)]
+    [LexerKeyword("begincidchar", Token.BeginCidChar)]
+    [LexerKeyword("endcidchar", Token.EndCidChar)]
+    [LexerKeyword("begincidrange", Token.BeginCidRange)]
+    [LexerKeyword("endcidrange", Token.EndCidRange)]
+    [LexerKeyword("beginnotdefchar", Token.BeginNotDefChar)]
+    [LexerKeyword("endnotdefchar", Token.EndNotDefChar)]
+    [LexerKeyword("beginnotdefrange", Token.BeginNotDefRange)]
+    [LexerKeyword("endnotdefrange", Token.EndNotDefRange)]
+    [LexerKeyword("usecmap", Token.UseCMap)]
+    internal sealed partial class CMapParserKeywordTable : LexerKeywordTable
+    {
+    }
+
     internal class CMapParser : Parser
     {
         // https://adobe-type-tools.github.io/font-tech-notes/pdfs/5014.CIDFont_Spec.pdf
 
-        private static readonly Dictionary<string, Token> keywords = new Dictionary<string, Token>(StringComparer.OrdinalIgnoreCase)
-        {
-            { "begincodespacerange", Token.BeginCodeSpaceRange },
-            { "endcodespacerange", Token.EndCodeSpaceRange },
-            { "beginbfchar", Token.BeginBfChar },
-            { "endbfchar", Token.EndBfChar },
-            { "beginbfrange", Token.BeginBfRange },
-            { "endbfrange", Token.EndBfRange },
-            { "begincidchar", Token.BeginCidChar },
-            { "endcidchar", Token.EndCidChar },
-            { "begincidrange", Token.BeginCidRange },
-            { "endcidrange", Token.EndCidRange },
-            { "beginnotdefchar", Token.BeginNotDefChar },
-            { "endnotdefchar", Token.EndNotDefChar },
-            { "beginnotdefrange", Token.BeginNotDefRange },
-            { "endnotdefrange", Token.EndNotDefRange },
-            { "usecmap", Token.UseCMap },
-        };
+        private static readonly LexerKeywordTable keywords = new CMapParserKeywordTable();
 
         private CMapParser(Stream stream) : base(new Lexer(stream, keywords))
         {

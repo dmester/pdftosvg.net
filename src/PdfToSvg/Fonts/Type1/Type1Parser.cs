@@ -20,6 +20,18 @@ using System.Xml.Linq;
 
 namespace PdfToSvg.Fonts.Type1
 {
+    [LexerKeyword("def", Token.Def)]
+    [LexerKeyword("dup", Token.Dup)]
+    [LexerKeyword("array", Token.Array)]
+    [LexerKeyword("begin", Token.Begin)]
+    [LexerKeyword("dict", Token.Dict)]
+    [LexerKeyword("RD", Token.RD)]
+    [LexerKeyword("ND", Token.ND)]
+    [LexerKeyword("NP", Token.NP)]
+    internal sealed partial class Type1ParserKeywordTable : LexerKeywordTable
+    {
+    }
+
     internal class Type1Parser
     {
         private readonly Lexer lexer;
@@ -50,17 +62,7 @@ namespace PdfToSvg.Fonts.Type1
             { "StemSnapH", (info, lexer) => ReadDoubleArray(lexer, ref info.StemSnapH) },
         };
 
-        private static readonly Dictionary<string, Token> keywords = new(StringComparer.OrdinalIgnoreCase)
-        {
-            { "def", Token.Def },
-            { "dup", Token.Dup },
-            { "array", Token.Array },
-            { "begin", Token.Begin },
-            { "dict", Token.Dict },
-            { "RD", Token.RD },
-            { "ND", Token.ND },
-            { "NP", Token.NP },
-        };
+        private static readonly LexerKeywordTable keywords = new Type1ParserKeywordTable();
 
         public Type1Parser(byte[] data)
         {

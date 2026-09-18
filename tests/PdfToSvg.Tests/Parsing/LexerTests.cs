@@ -3,30 +3,89 @@
 // Licensed under the MIT License.
 
 using NUnit.Framework;
+using PdfToSvg.CMaps;
+using PdfToSvg.DocumentModel;
+using PdfToSvg.Fonts.Type1;
 using PdfToSvg.Parsing;
 using PdfToSvg.Tests.IO;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PdfToSvg.Tests.Parsing
 {
+    [LexerKeyword("stream", Token.Stream)]
+    [LexerKeyword("true", Token.True)]
+    [LexerKeyword("false", Token.False)]
+    [LexerKeyword("null", Token.Null)]
+    [LexerKeyword("R", Token.Ref)]
+    [LexerKeyword("d0", Token.Keyword)]
+    [LexerKeyword("d1d1", Token.Keyword)]
+    internal sealed partial class GeneratedLexerKeywordTable : LexerKeywordTable
+    {
+    }
+
     public class LexerTests
     {
-        private readonly Dictionary<string, Token> basicKeywords = new(StringComparer.OrdinalIgnoreCase)
+        private readonly LexerKeywordTable basicKeywords = new GeneratedLexerKeywordTable();
+        private readonly GeneratedLexerKeywordTable generatedKeywords = new();
+
+        [Test]
+        public void GeneratedKeywordTable_MatchesExpectedKeywords()
         {
-            { "stream", Token.Stream },
-            { "true", Token.True },
-            { "false", Token.False },
-            { "null", Token.Null },
-            { "R", Token.Ref },
-            { "d0", Token.Keyword },
-            { "d1d1", Token.Keyword },
-        };
+            var expectedKeywords = new Dictionary<string, Token>(StringComparer.Ordinal)
+            {
+                { "stream", Token.Stream },
+                { "true", Token.True },
+                { "false", Token.False },
+                { "null", Token.Null },
+                { "R", Token.Ref },
+                { "d0", Token.Keyword },
+                { "d1d1", Token.Keyword },
+            };
+
+            foreach (var expectedKeyword in expectedKeywords)
+            {
+                var buffer = CreateBuffer(expectedKeyword.Key);
+
+                Assert.AreEqual(true, generatedKeywords.TryGetKeyword(buffer, out var actualKeyword), expectedKeyword.Key);
+                Assert.AreEqual(expectedKeyword.Value, actualKeyword.Token, expectedKeyword.Key);
+                Assert.AreEqual(expectedKeyword.Key, actualKeyword.Keyword, expectedKeyword.Key);
+            }
+
+            foreach (var input in new[] { "", "streams", "TrUe", "d", "d1", "d1d2", "unknown" })
+            {
+                Assert.AreEqual(false, generatedKeywords.TryGetKeyword(CreateBuffer(input), out _), input);
+            }
+        }
+
+        [Test]
+        public void GeneratedKeywordTable_ReturnsMaxLengths()
+        {
+            Assert.AreEqual(true, generatedKeywords.TryGetMaxLength(CreateBuffer("d"), out var maxLength));
+            Assert.AreEqual(4, maxLength);
+            Assert.AreEqual(false, generatedKeywords.TryGetMaxLength(CreateBuffer(""), out _));
+            Assert.AreEqual(false, generatedKeywords.TryGetMaxLength(CreateBuffer("d0"), out _));
+            Assert.AreEqual(false, generatedKeywords.TryGetMaxLength(CreateBuffer("x"), out _));
+        }
+
+        [Test]
+        public void ParserKeywordTables_ContainExpectedKeywords()
+        {
+            AssertKeyword(new ContentParserKeywordTable(), "BI", Token.BeginImage);
+            AssertKeyword(new DocumentParserKeywordTable(), "stream", Token.Stream);
+            AssertKeyword(new CMapParserKeywordTable(), "usecmap", Token.UseCMap);
+            AssertKeyword(new Type1ParserKeywordTable(), "def", Token.Def);
+        }
+
+        private static void AssertKeyword(LexerKeywordTable table, string text, Token token)
+        {
+            Assert.AreEqual(true, table.TryGetKeyword(CreateBuffer(text), out var keyword), text);
+            Assert.AreEqual(token, keyword.Token, text);
+            Assert.AreEqual(text, keyword.Keyword, text);
+        }
 
         private Lexer CreateLexer(string content, bool seekable = false)
         {
@@ -146,14 +205,9 @@ namespace PdfToSvg.Tests.Parsing
         [Test]
         public void Boolean()
         {
-            // Uppercase booleans are technically not legal, but we will be nice to malformed input
-            var lexer = CreateLexer(" true false True TRUE False FALSE ");
+            var lexer = CreateLexer(" true false ");
 
             Assert.AreEqual(new Lexeme(Token.True), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.False), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.True), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.True), lexer.Read());
-            Assert.AreEqual(new Lexeme(Token.False), lexer.Read());
             Assert.AreEqual(new Lexeme(Token.False), lexer.Read());
 
             Assert.AreEqual(new Lexeme(Token.EndOfInput), lexer.Read());

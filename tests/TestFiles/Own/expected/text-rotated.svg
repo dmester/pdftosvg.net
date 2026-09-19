@@ -7,12 +7,12 @@
 </style>
 <g class="ID1">
 <text x="70" y="91.92" class="ID2">Single &lt;text&gt; with dx:</text>
-<text transform="matrix(.9401 -.3409 .3409 .9401 70 181.92)" class="ID3" dx="0 0 0 0 6.12 0 0 0 0 0 5.79 0 0 0 0 6.46 0 0 0 0 0 0 0 0 5.79 0 0 0 0 2.45 0 0 0 6.12">The quick brownfox jumps over thelazydog</text>
+<text dx="0 0 0 0 6.12 0 0 0 0 0 5.79 0 0 0 0 6.46 0 0 0 0 0 0 0 0 5.79 0 0 0 0 2.45 0 0 0 6.12" transform="matrix(.9401 -.3409 .3409 .9401 70 181.92)" class="ID3">The quick brownfox jumps over thelazydog</text>
 <text x="70" y="241.92" class="ID2">Single &lt;text&gt; with merged substrings:</text>
 <text transform="matrix(.9401 -.3409 .3409 .9401 70 341.92)" class="ID3">The quick brown fox jumps over the  lazy dog</text>
 <text x="70" y="391.92" class="ID2">Divided into &lt;tspan&gt;s:</text>
 <text transform="matrix(.9401 -.3409 .3409 .9401 70 481.92)" class="ID3"><tspan>The quick brown fox jumps over the lazy </tspan><tspan dx="12.02">dog</tspan></text>
 <text x="70" y="541.92" class="ID2">Expanded &lt;text&gt; with dx:</text>
-<text transform="matrix(.9401 -.3409 .3409 .9401 70.8158 625.9762)" class="ID3" textLength="400.0273px" lengthAdjust="spacingAndGlyphs" dx="0 0 0 0 12.02 0 0 0 0 0 6.01 0 0 0 0 6.01 0 0 0 0 0 0 0 0 4.81 0 0 0 0 0 0 0 0 6.01 0 0 0 2.4">The quick brownfox jumps over thelazydog</text>
+<text textLength="400.0273px" lengthAdjust="spacingAndGlyphs" dx="0 0 0 0 12.02 0 0 0 0 0 6.01 0 0 0 0 6.01 0 0 0 0 0 0 0 0 4.81 0 0 0 0 0 0 0 0 6.01 0 0 0 2.4" transform="matrix(.9401 -.3409 .3409 .9401 70.8158 625.9762)" class="ID3">The quick brownfox jumps over thelazydog</text>
 </g>
 </svg>

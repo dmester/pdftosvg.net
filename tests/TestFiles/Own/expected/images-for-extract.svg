@@ -47,7 +47,7 @@
 <use href="#ID2" />
 </g>
 </g>
-<path d="M0 841.92h1000v-1000h-1000z" fill="#0f0" mask="url(#ID7)" />
+<path d="M0 841.92h1000v-1000h-1000z" mask="url(#ID7)" fill="#0f0" />
 <g transform="matrix(50 0 0 50 300 291.92)">
 <use href="#ID8" />
 </g>

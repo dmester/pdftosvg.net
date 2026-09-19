@@ -135,7 +135,7 @@
 <text x="199.8" y="203.04" class="ID11">fox</text>
 <text x="226.68" y="203.04" class="ID9"> </text>
 <text x="35.4" y="239.64" class="ID12">The </text>
-<text x="75.84" y="239.64" class="ID13" dx="0 0 0 0 0 0 0 0 0 .47">quick brown</text>
+<text x="75.84" y="239.64" dx="0 0 0 0 0 0 0 0 0 .47" class="ID13">quick brown</text>
 <text x="196.8" y="239.64" class="ID12"> </text>
 <text transform="matrix(1 0 -.342 1 202.68 239.64)" class="ID12">fox</text>
 <text x="233.04" y="239.64" class="ID12"> </text>
@@ -164,12 +164,12 @@
 <text transform="matrix(1 0 -.342 1 211.68 449.88)" class="ID23">fox</text>
 <text x="241.56" y="449.88" class="ID23"> </text>
 <text x="35.4" y="483.24" class="ID25">The </text>
-<text x="88.32" y="483.24" class="ID26" dx="0 0 0 0 .48">quick brown</text>
+<text x="88.32" y="483.24" dx="0 0 0 0 .48" class="ID26">quick brown</text>
 <text x="234.48" y="483.24" class="ID25"> </text>
 <text transform="matrix(1 0 -.342 1 247.68 483.24)" class="ID25">fox</text>
 <text x="287.4" y="483.24" class="ID25"> </text>
 <text x="35.4" y="521.64" class="ID27">The </text>
-<text x="82.2" y="521.64" class="ID28" dx="0 0 0 0 0 0 0 .46">quick brown</text>
+<text x="82.2" y="521.64" dx="0 0 0 0 0 0 0 .46" class="ID28">quick brown</text>
 <text x="214.44" y="521.64" class="ID27"> </text>
 <text transform="matrix(1 0 -.342 1 221.4 521.64)" class="ID27">fox</text>
 <text x="256.32" y="521.64" class="ID27"> </text>
@@ -180,7 +180,7 @@
 <text transform="matrix(1 0 -.342 1 206.52 588.72)" class="ID30">fox</text>
 <text x="238.56" y="588.72" class="ID30"> </text>
 <text x="35.4" y="636.36" class="ID32">The </text>
-<text x="79.44" y="636.36" class="ID33" dx="0 0 0 0 .44 0 0 0 .44">quick brown</text>
+<text x="79.44" y="636.36" dx="0 0 0 0 .44 0 0 0 .44" class="ID33">quick brown</text>
 <text x="201.36" y="636.36" class="ID32"> </text>
 <text transform="matrix(1 0 -.342 1 212.4 636.36)" class="ID32">fox</text>
 <text x="245.28" y="636.36" class="ID32"> </text>
@@ -210,7 +210,7 @@
 <text transform="matrix(1 0 -.342 1 526.2 185.28)" class="ID43">fox</text>
 <text x="562.68" y="185.28" class="ID43"> </text>
 <text x="311.88" y="229.08" class="ID45">The </text>
-<text x="355.92" y="229.08" class="ID46" dx="0 0 0 0 .44 0 0 0 .44">quick brown</text>
+<text x="355.92" y="229.08" dx="0 0 0 0 .44 0 0 0 .44" class="ID46">quick brown</text>
 <text x="477.84" y="229.08" class="ID45"> </text>
 <text transform="matrix(1 0 -.342 1 488.88 229.08)" class="ID45">fox</text>
 <text x="521.76" y="229.08" class="ID45"> </text>
@@ -220,7 +220,7 @@
 <text x="465.96" y="267.96" class="ID49">fox</text>
 <text x="491.52" y="267.96" class="ID47"> </text>
 <text x="311.88" y="305.64" class="ID50">The </text>
-<text x="353.16" y="305.64" class="ID51" dx="0 0 0 0 0 0 0 .46">quick brown</text>
+<text x="353.16" y="305.64" dx="0 0 0 0 0 0 0 .46" class="ID51">quick brown</text>
 <text x="470.52" y="305.64" class="ID50"> </text>
 <text transform="matrix(1 0 -.342 1 476.04 305.64)" class="ID50">fox</text>
 <text x="504.84" y="305.64" class="ID50"> </text>
@@ -239,8 +239,8 @@
 <text x="512.64" y="417.12" class="ID57"> </text>
 <text x="520.32" y="417.12" class="ID59">fox</text>
 <text x="554.52" y="417.12" class="ID57"> </text>
-<text x="311.88" y="444.6" class="ID60" dx="0 0 0 0 0 0 0 0 .32"></text>
-<text x="311.88" y="471.36" class="ID61" dx="0 0 0 0 0 0 0 0 0 .42"></text>
+<text x="311.88" y="444.6" dx="0 0 0 0 0 0 0 0 .32" class="ID60"></text>
+<text x="311.88" y="471.36" dx="0 0 0 0 0 0 0 0 0 .42" class="ID61"></text>
 <text x="311.88" y="505.2" class="ID62"> </text>
 </g>
 </svg>

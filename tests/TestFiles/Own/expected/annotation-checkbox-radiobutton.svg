@@ -1,4 +1,4 @@
-﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns:annot="https://pdftosvg.net/xmlns/annotations" xmlns="http://www.w3.org/2000/svg">
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg" xmlns:annot="https://pdftosvg.net/xmlns/annotations">
 <!-- Generator: PdfToSvg.NET -->
 <style>
 .ID1 text{white-space:pre;}
@@ -23,7 +23,7 @@
 <g class="ID1" stroke-miterlimit="10">
 <g clip-path="url(#ID5)">
 <path d="M0 0h594.9999v841.8536h-594.9999z" fill="#fff" />
-<g transform="matrix(.7503 0 0 .7503 6.0025 6.0025)" mask="url(#ID4)">
+<g mask="url(#ID4)" transform="matrix(.7503 0 0 .7503 6.0025 6.0025)">
 <use href="#ID2" />
 </g>
 </g>

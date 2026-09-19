@@ -17,6 +17,6 @@
 </defs>
 <g stroke-miterlimit="10" class="ID1">
 <path d="M200 391.92h200v-200h-200z" fill="none" stroke="#0c2b33" stroke-width="1" />
-<text x="218" y="371.92" class="ID4" mask="url(#ID3)">TEXT</text>
+<text x="218" y="371.92" mask="url(#ID3)" class="ID4">TEXT</text>
 </g>
 </svg>

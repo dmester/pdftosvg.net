@@ -6,6 +6,6 @@
 </style>
 <g stroke-miterlimit="10" class="ID1">
 <path d="M1 13h74v-13h-74z" fill="none" stroke="#f00" stroke-width="1" />
-<text x="2" y="12" class="ID2" dx="0 0 0 0 0 0 0 3">PDFTOSVG</text>
+<text x="2" y="12" dx="0 0 0 0 0 0 0 3" class="ID2">PDFTOSVG</text>
 </g>
 </svg>

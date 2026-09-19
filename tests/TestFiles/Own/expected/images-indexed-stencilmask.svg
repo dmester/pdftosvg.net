@@ -7,7 +7,7 @@
 </mask>
 </defs>
 <g>
-<g transform="matrix(400 0 0 112 97 97.92)" mask="url(#ID2)">
+<g mask="url(#ID2)" transform="matrix(400 0 0 112 97 97.92)">
 <path d="M0 0V1H1V-1z" fill="#000" />
 </g>
 </g>

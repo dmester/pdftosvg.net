@@ -27,19 +27,19 @@
 <use href="#ID2" />
 </g>
 <text x="80" y="251.92" class="ID10">Stencil mask</text>
-<g transform="matrix(110 0 0 110 80 266.92)" mask="url(#ID4)">
+<g mask="url(#ID4)" transform="matrix(110 0 0 110 80 266.92)">
 <path d="M0 0V1H1V-1z" fill="#f00" />
 </g>
 <text x="300" y="251.92" class="ID10">Masked JPEG</text>
-<g transform="matrix(110 0 0 110 300 266.92)" mask="url(#ID4)">
+<g mask="url(#ID4)" transform="matrix(110 0 0 110 300 266.92)">
 <use href="#ID5" />
 </g>
 <text x="80" y="421.92" class="ID10">Inverted stencil mask</text>
-<g transform="matrix(110 0 0 110 80 436.92)" mask="url(#ID7)">
+<g mask="url(#ID7)" transform="matrix(110 0 0 110 80 436.92)">
 <path d="M0 0V1H1V-1z" fill="#f00" />
 </g>
 <text x="300" y="421.92" class="ID10">Masked JPEG</text>
-<g transform="matrix(110 0 0 110 300 436.92)" mask="url(#ID7)">
+<g mask="url(#ID7)" transform="matrix(110 0 0 110 300 436.92)">
 <use href="#ID5" />
 </g>
 <text x="80" y="591.92" class="ID10">Soft mask</text>
@@ -47,7 +47,7 @@
 <use href="#ID8" />
 </g>
 <text x="300" y="591.92" class="ID10">Masked JPEG</text>
-<g transform="matrix(110 0 0 110 300 606.92)" mask="url(#ID9)">
+<g mask="url(#ID9)" transform="matrix(110 0 0 110 300 606.92)">
 <use href="#ID5" />
 </g>
 </g>

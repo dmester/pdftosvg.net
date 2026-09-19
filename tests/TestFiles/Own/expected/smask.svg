@@ -74,13 +74,13 @@
 </defs>
 <g class="ID1">
 <path d="M0 841.92h280v-842h-280z" fill="#bae0ed" />
-<path d="M90 201.92h1000v-1000h-1000z" fill="#0c2b33" mask="url(#ID4)" />
+<path d="M90 201.92h1000v-1000h-1000z" mask="url(#ID4)" fill="#0c2b33" />
 <text x="90" y="136.92" class="ID12">TEXT SMASK</text>
 <g mask="url(#ID6)">
 <path d="M90 261.92h1000v-1000h-1000z" fill="#0c2b33" />
 </g>
-<path d="M0 841.92h594.96v-841.92h-594.96z" fill="url(#ID8)" mask="url(#ID7)" />
-<text x="90" y="381.92" class="ID13" mask="url(#ID9)">zzzzzzz</text>
-<path d="M-3240 -3078.08v6300h6300v-6300z" fill="#0c2b33" mask="url(#ID10)" />
+<path d="M0 841.92h594.96v-841.92h-594.96z" mask="url(#ID7)" fill="url(#ID8)" />
+<text x="90" y="381.92" mask="url(#ID9)" class="ID13">zzzzzzz</text>
+<path d="M-3240 -3078.08v6300h6300v-6300z" mask="url(#ID10)" fill="#0c2b33" />
 </g>
 </svg>

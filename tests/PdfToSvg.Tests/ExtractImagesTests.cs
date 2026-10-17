@@ -115,7 +115,7 @@ namespace PdfToSvg.Tests
             var sizes = string.Join(", ", doc.Images.Select(image => image.Width).OrderBy(x => x));
 
             // The 70px image is not referenced
-            Assert.AreEqual("20, 30, 40, 50, 60, 80", sizes);
+            Assert.AreEqual("20, 25, 30, 35, 40, 50, 60, 80", sizes);
         }
 
         [Test]
@@ -128,7 +128,7 @@ namespace PdfToSvg.Tests
             var sizes = string.Join(", ", page.Images.Select(image => image.Width).OrderBy(x => x));
 
             // The 70px image is not referenced
-            Assert.AreEqual("20, 30, 40, 50, 60, 80", sizes);
+            Assert.AreEqual("20, 25, 30, 35, 40, 50, 60, 80", sizes);
         }
 
 #if !NET40
@@ -209,7 +209,7 @@ namespace PdfToSvg.Tests
             var sizes = string.Join(", ", images.Select(image => image.Width).OrderBy(x => x));
 
             // The 70px image is not referenced
-            Assert.AreEqual("20, 30, 40, 50, 60, 80", string.Join(", ", sizes));
+            Assert.AreEqual("20, 25, 30, 35, 40, 50, 60, 80", string.Join(", ", sizes));
         }
 
         [Test]
@@ -223,7 +223,7 @@ namespace PdfToSvg.Tests
             var sizes = string.Join(", ", images.Select(image => image.Width).OrderBy(x => x));
 
             // The 70px image is not referenced
-            Assert.AreEqual("20, 30, 40, 50, 60, 80", string.Join(", ", sizes));
+            Assert.AreEqual("20, 25, 30, 35, 40, 50, 60, 80", string.Join(", ", sizes));
         }
 
 #endif
@@ -310,7 +310,7 @@ namespace PdfToSvg.Tests
             sizes.Sort();
 
             // The 70px image is not referenced
-            Assert.AreEqual("20, 30, 40, 50, 60, 80", string.Join(", ", sizes));
+            Assert.AreEqual("20, 25, 30, 35, 40, 50, 60, 80", string.Join(", ", sizes));
         }
 
         [Test]
@@ -328,7 +328,7 @@ namespace PdfToSvg.Tests
             sizes.Sort();
 
             // The 70px image is not referenced
-            Assert.AreEqual("20, 30, 40, 50, 60, 80", string.Join(", ", sizes));
+            Assert.AreEqual("20, 25, 30, 35, 40, 50, 60, 80", string.Join(", ", sizes));
         }
 
 #endif

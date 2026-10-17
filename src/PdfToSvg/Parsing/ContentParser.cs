@@ -2,9 +2,13 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.DocumentModel;
+using PdfToSvg.Drawing;
+using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace PdfToSvg.Parsing
 {
@@ -66,37 +70,118 @@ namespace PdfToSvg.Parsing
     {
         private static readonly LexerKeywordTable keywords = new ContentParserKeywordTable();
 
-        public ContentParser(Stream stream) : base(new Lexer(stream, keywords))
+        private readonly ResourceCache? resources;
+
+        private ContentParser(Stream stream, ResourceCache? resources = null) : base(new Lexer(stream, keywords))
         {
+            this.resources = resources;
         }
 
-        public ContentParser(ArraySegment<byte> data) : base(new Lexer(data, keywords))
+        private ContentParser(ArraySegment<byte> data, ResourceCache? resources = null) : base(new Lexer(data, keywords))
         {
+            this.resources = resources;
         }
 
-        public ContentParser(byte[] data) : base(new Lexer(data, keywords))
+        private ContentParser(byte[] data, ResourceCache? resources = null) : base(new Lexer(data, keywords))
         {
+            this.resources = resources;
         }
 
-        public static IEnumerable<ContentOperation> Parse(Stream stream)
+        public static IEnumerable<ContentOperation> Parse(Stream stream,
+            ResourceCache? resources = null, CancellationToken cancellationToken = default)
         {
-            var parser = new ContentParser(stream);
-            return parser.ReadContentStream();
+            var parser = new ContentParser(stream, resources);
+            return parser.ReadContentStream(cancellationToken);
         }
 
-        public static IEnumerable<ContentOperation> Parse(ArraySegment<byte> data)
+        public static IEnumerable<ContentOperation> Parse(ArraySegment<byte> data,
+            ResourceCache? resources = null, CancellationToken cancellationToken = default)
         {
-            var parser = new ContentParser(data);
-            return parser.ReadContentStream();
+            var parser = new ContentParser(data, resources);
+            return parser.ReadContentStream(cancellationToken);
         }
 
-        public static IEnumerable<ContentOperation> Parse(byte[] data)
+        public static IEnumerable<ContentOperation> Parse(byte[] data,
+            ResourceCache? resources = null, CancellationToken cancellationToken = default)
         {
-            var parser = new ContentParser(data);
-            return parser.ReadContentStream();
+            var parser = new ContentParser(data, resources);
+            return parser.ReadContentStream(cancellationToken);
         }
 
-        private IEnumerable<ContentOperation> ReadContentStream()
+        private PdfDictionary ReadInlineImageDictionary(CancellationToken cancellationToken)
+        {
+            var dictionary = new PdfDictionary();
+
+            var nextLexeme = lexer.Read();
+
+            while (true)
+            {
+                nextLexeme = lexer.Read();
+
+                PdfName name;
+
+                if (nextLexeme.Token == Token.BeginImageData ||
+                    nextLexeme.Token == Token.EndImage)
+                {
+                    break;
+                }
+                else if (nextLexeme.Token == Token.Name)
+                {
+                    name = nextLexeme.NameValue;
+                }
+                else
+                {
+                    throw new ParserException("Unclosed inline image dictionary", lexer.Stream.Position);
+                }
+
+                nextLexeme = lexer.Peek();
+
+                if (nextLexeme.Token == Token.BeginImageData ||
+                    nextLexeme.Token == Token.EndImage)
+                {
+                    lexer.Read();
+                    break;
+                }
+                else
+                {
+                    dictionary[name] = ReadValue();
+                }
+            }
+
+            InlineImageHelper.DeabbreviateInlineImageDictionary(dictionary);
+
+            if (nextLexeme.Token == Token.BeginImageData)
+            {
+                // According to PDF spec 1.7, page 223, ID should be followed by a single whitespace character.
+                if (PdfCharacters.IsWhiteSpace(lexer.Stream.PeekChar()))
+                {
+                    lexer.Stream.Skip();
+                }
+
+                // Detect stream length
+                var startPosition = lexer.Stream.Position;
+                var bytesToRead = InlineImageHelper
+                    .DetectStreamLength(lexer.Stream, dictionary, resources, cancellationToken);
+
+                // Read stream data
+                var imageData = new byte[bytesToRead];
+                lexer.Stream.Position = startPosition;
+
+                var bytesActuallyRead = lexer.Stream.ReadAll(imageData, 0, bytesToRead, cancellationToken);
+
+                dictionary.MakeIndirectObject(default, new PdfMemoryStream(dictionary, imageData, bytesActuallyRead));
+
+                lexer.TryRead(Token.EndImage);
+            }
+            else if (nextLexeme.Token == Token.EndImage)
+            {
+                // Missing stream
+            }
+
+            return dictionary;
+        }
+
+        private IEnumerable<ContentOperation> ReadContentStream(CancellationToken cancellationToken)
         {
             var operands = new List<object?>();
 
@@ -110,9 +195,20 @@ namespace PdfToSvg.Parsing
                         yield break;
 
                     case Token.BeginImage:
-                        var imageDictionary = ReadInlineImageDictionary();
+                        var imageDictionary = ReadInlineImageDictionary(cancellationToken);
 
                         yield return new ContentOperation("BI", imageDictionary);
+                        break;
+
+                    /*
+                    case Token.BeginImageData:
+                        // This is not ignored, as image data will likely mess a lot with the lexer and parser
+                    */
+
+                    case Token.EndImage:
+                        // Unexpected at this position, but ignore it
+                        lexer.Read();
+                        operands.Clear();
                         break;
 
                     case Token.Keyword:

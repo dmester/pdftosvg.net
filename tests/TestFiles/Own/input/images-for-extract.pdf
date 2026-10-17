@@ -6,19 +6,19 @@ xref
 0000000410 00000 n
 0000000460 00000 n
 0000000523 00000 n
-0000001102 00000 n
-0000004712 00000 n
-0000005167 00000 n
-0000005523 00000 n
-0000005829 00000 n
-0000006076 00000 n
-0000006299 00000 n
-0000009354 00000 n
-0000012214 00000 n
-0000015476 00000 n
-0000020313 00000 n
-0000024935 00000 n
-0000025363 00000 n
+0000001212 00000 n
+0000007356 00000 n
+0000007811 00000 n
+0000008167 00000 n
+0000008473 00000 n
+0000008720 00000 n
+0000008943 00000 n
+0000011998 00000 n
+0000014858 00000 n
+0000018120 00000 n
+0000022957 00000 n
+0000027579 00000 n
+0000028007 00000 n
 trailer
 << /Root 1 0 R  /Size 17 >>
       
@@ -32,6 +32,7 @@ trailer
    /Resources <<
       /ColorSpace <<
          /CS1 /DeviceRGB
+         /BPC /DeviceGray % The key is intentionally the same as an inline image dictionary key abbreviation
       >>
       /Pattern <<
          /P1 5 0 R
@@ -58,7 +59,7 @@ trailer
 >>
 endobj
 
-4 0 obj << /Length 3527 >>
+4 0 obj << /Length 6061 >>
 stream
 
    % Pattern (image 50, shared 60, unused 70)
@@ -80,6 +81,39 @@ stream
    q
       1 0 0 1 100 500 cm
       /Fm1 Do
+   Q
+
+   % Inline with containing EI (image 25)
+   % It should be successfully converted and should not prevent following images from being rendered.
+   q
+      50 0 0 50 360 500 cm
+      BI
+         /W 25
+         /H 25
+         /BPC 8
+         /CS /BPC
+         /D [4.88 -5.32]
+         /I true
+      ID aaaaaaaa EI a a a a a a a a a a a a a a a aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaagigcaaaaaacdddddddaaaaamxzzzznaaaaauzzzzzzzaaaaizvnoozznaaaauzqqqqpoaaaagkaaaajzxaaaauzeaaaaaaaaaaaaaaa`zzdaaauzeaaaaaaaaaaaaaaaaxzaaaauzeaaaaaaaaaaaaaaafztaaaauzigeaaaaaaaaaaaaapznaaaauzzzzzqeaaaaaaaaahzuaaaaalkjjmvzydaaaaaaaewzgaaaaaaaaaaatzqaaaaaacvzjaaaaaaaaaaaajzuaaaaabuzlaaaaaaaaaaaaafzvaaaabtznaaaaaaaaaaaaaakzraaabszraaaaaaaahaaaaafxzkaaaozzwvutrroaaqxpmlozzpaaaaozzzzzzzztaajszzzzvjaaaaaaaaaaaaaaaaaaabddaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+EI
+   Q
+
+   % Inline with containing EI and explicit length (PDF 2.0) (image 35)
+   % The data is intentionally missing the last couple of lines.
+   % It should be successfully converted and should not prevent following images from being rendered.
+   q
+      50 0 0 50 360 600 cm
+      BI
+         /W 35
+         /H 35
+         /L 1085
+         /BPC 8
+         /CS /BPC
+         /D [4.88 -5.32]
+         /I true
+      ID aaaaaaaa EI a a a a a a a a a a a a a a a aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaafhhebaaaaaaaaabbbbbbbbbbaaaaaaaagqxzzzzzlaaaaaaagzzzzzzzzzzmaaaaaalzzzzxzzzzqaaaaaaizzzzzzzzzzmaaaaaaszsgcacmzzzkaaaaaizzrkkklkkkcaaaaaapiaaaaaaozzraaaaaizzmaaaaaaaaaaaaaaaaaaaaaafzzvaaaaaizzmaaaaaaaaaaaaaaaaaaaaaaezzuaaaaaizzmaaaaaaaaaaaaaaaaaaaaaajzzqaaaaaizzmaaaaaaaaaaaaaaaaaaaaaavzzgaaaaaizzmaaaaaaaaaaaaaaaaaaabhtzzmaaaaaaizztuusokcaaaaaaaaacwxxzzzwjaaaaaaaizzzzzzzzxmaaaaaaaadzzzzzzzodaaaaaadomljlovzzzoaaaaaaaagggkovzzxjaaaaaaaaaaaaaqzzzhaaaaaaaaaaaaapzzzfaaaaaaaaaaaaaozznaaaaaaaaaaaaaamzzqaaaaaaaaaaaaahzzsaaaaaaaaaaaaaadzzuaaaaaaaaaaaaagzztaaaaaaaaaaaaaabzzsaaaaaaaaaaaaahzzpaaaaaaaaaaaaaagzzoaaaaaaaaaaaaarzzlaaaadkbaaaaaaatzzjaaaccaaaaaaahzzzgaaaaizwomebehtzzqaaaamzogcabfozzzkaaaaaezzzzzzzzzzucaaaakzzzzzzzzzzoaaaaaaafovzzzzzuiaaaaaaaktzzzzzxpeaaaaaaaaaaaeghe`aaaaaaaaaaaaegfbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      trailing data not included in the image data  
+      EI
    Q
    
    % Soft mask (image 80, unused 70)

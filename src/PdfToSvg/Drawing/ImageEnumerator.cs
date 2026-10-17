@@ -12,7 +12,6 @@ using PdfToSvg.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -100,7 +99,9 @@ namespace PdfToSvg.Drawing
             var handledObjects = new HashSet<PdfName>();
             var handledPatterns = new HashSet<PdfName>();
 
-            foreach (var op in ContentParser.Parse(content))
+            var resources = new ResourceCache(ownerDict.GetDictionaryOrEmpty(Names.Resources));
+
+            foreach (var op in ContentParser.Parse(content, resources, cancellationToken))
             {
                 switch (op.Operator)
                 {
@@ -120,7 +121,7 @@ namespace PdfToSvg.Drawing
                             }
                             else if (subtype == Names.Image)
                             {
-                                var image = await CreateImageAsync(xobjectDict, ownerDict).ConfigureAwait(false);
+                                var image = await CreateImageAsync(xobjectDict, resources).ConfigureAwait(false);
                                 if (image != null)
                                 {
                                     images.Add(image);
@@ -138,7 +139,7 @@ namespace PdfToSvg.Drawing
                         break;
 
                     case "BI":
-                        var inlineImage = await CreateImageAsync(ownerDict, op).ConfigureAwait(false);
+                        var inlineImage = await CreateImageAsync(resources, op).ConfigureAwait(false);
                         if (inlineImage != null)
                         {
                             images.Add(inlineImage);
@@ -148,22 +149,22 @@ namespace PdfToSvg.Drawing
             }
         }
 
-        private Task<Image?> CreateImageAsync(PdfDictionary ownerDict, ContentOperation op)
+        private Task<Image?> CreateImageAsync(ResourceCache resources, ContentOperation op)
         {
             if (op.Operands.Length == 1 &&
                 op.Operands[0] is PdfDictionary imageDict)
             {
                 imageDict[Names.Subtype] = Names.Image;
 
-                return CreateImageAsync(imageDict, ownerDict);
+                return CreateImageAsync(imageDict, resources);
             }
 
             return Task.FromResult<Image?>(null);
         }
 
-        private async Task<Image?> CreateImageAsync(PdfDictionary imageDict, PdfDictionary ownerDict)
+        private async Task<Image?> CreateImageAsync(PdfDictionary imageDict, ResourceCache resources)
         {
-            var colorSpace = GetColorSpace(imageDict, ownerDict);
+            var colorSpace = GetColorSpace(imageDict, resources);
             
             Image? image = null;
 
@@ -221,7 +222,9 @@ namespace PdfToSvg.Drawing
             var handledObjects = new HashSet<PdfName>();
             var handledPatterns = new HashSet<PdfName>();
 
-            foreach (var op in ContentParser.Parse(content))
+            var resources = new ResourceCache(ownerDict.GetDictionaryOrEmpty(Names.Resources));
+
+            foreach (var op in ContentParser.Parse(content, resources, cancellationToken))
             {
                 switch (op.Operator)
                 {
@@ -247,7 +250,7 @@ namespace PdfToSvg.Drawing
                             }
                             else if (subtype == Names.Image)
                             {
-                                var image = await CreateImageAsync(xobjectDict, ownerDict).ConfigureAwait(false);
+                                var image = await CreateImageAsync(xobjectDict, resources).ConfigureAwait(false);
                                 if (image != null)
                                 {
                                     yield return image;
@@ -268,7 +271,7 @@ namespace PdfToSvg.Drawing
                         break;
 
                     case "BI":
-                    var inlineImage = await CreateImageAsync(ownerDict, op).ConfigureAwait(false);
+                    var inlineImage = await CreateImageAsync(resources, op).ConfigureAwait(false);
                         if (inlineImage != null)
                         {
                             yield return inlineImage;
@@ -314,7 +317,9 @@ namespace PdfToSvg.Drawing
             var handledObjects = new HashSet<PdfName>();
             var handledPatterns = new HashSet<PdfName>();
 
-            foreach (var op in ContentParser.Parse(content))
+            var resources = new ResourceCache(ownerDict.GetDictionaryOrEmpty(Names.Resources));
+
+            foreach (var op in ContentParser.Parse(content, resources, cancellationToken))
             {
                 switch (op.Operator)
                 {
@@ -340,7 +345,7 @@ namespace PdfToSvg.Drawing
                             }
                             else if (subtype == Names.Image)
                             {
-                                var image = CreateImage(xobjectDict, ownerDict);
+                                var image = CreateImage(xobjectDict, resources);
                                 if (image != null)
                                 {
                                     yield return image;
@@ -361,7 +366,7 @@ namespace PdfToSvg.Drawing
                         break;
 
                     case "BI":
-                        var inlineImage = CreateImage(ownerDict, op);
+                        var inlineImage = CreateImage(resources, op);
                         if (inlineImage != null)
                         {
                             yield return inlineImage;
@@ -371,21 +376,21 @@ namespace PdfToSvg.Drawing
             }
         }
 
-        private Image? CreateImage(PdfDictionary ownerDict, ContentOperation op)
+        private Image? CreateImage(ResourceCache resources, ContentOperation op)
         {
             if (op.Operands.Length == 1 &&
                 op.Operands[0] is PdfDictionary imageDict)
             {
                 imageDict[Names.Subtype] = Names.Image;
-                return CreateImage(imageDict, ownerDict);
+                return CreateImage(imageDict, resources);
             }
 
             return null;
         }
 
-        private Image? CreateImage(PdfDictionary imageDict, PdfDictionary ownerDict)
+        private Image? CreateImage(PdfDictionary imageDict, ResourceCache resources)
         {
-            var colorSpace = GetColorSpace(imageDict, ownerDict);
+            var colorSpace = GetColorSpace(imageDict, resources);
 
             Image? image = null;
             try
@@ -405,7 +410,7 @@ namespace PdfToSvg.Drawing
             return image;
         }
 
-        private ColorSpace GetColorSpace(PdfDictionary imageDict, PdfDictionary ownerDict)
+        private ColorSpace GetColorSpace(PdfDictionary imageDict, ResourceCache resources)
         {
             if (imageDict.GetValueOrDefault(Names.ImageMask, false))
             {
@@ -415,13 +420,18 @@ namespace PdfToSvg.Drawing
                     /* 1 */ 0, 0, 0,
                 ]);
             }
-            else
+
+            var colorSpaceDefinition = imageDict[Names.ColorSpace];
+
+            if (colorSpaceDefinition is PdfName colorSpaceName)
             {
-                return ColorSpaceParser.Parse(
-                    imageDict[Names.ColorSpace],
-                    ownerDict.GetDictionaryOrEmpty(Names.Resources / Names.ColorSpace),
-                    cancellationToken);
+                return resources.GetColorSpace(colorSpaceName, cancellationToken);
             }
+            
+            return ColorSpaceParser.Parse(
+                colorSpaceDefinition,
+                resources.Dictionary.GetDictionaryOrEmpty(Names.ColorSpace),
+                cancellationToken);
         }
 
         private bool TryGetGState(PdfDictionary ownerDict, ContentOperation op, HashSet<PdfName> handledGStates,

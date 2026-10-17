@@ -100,6 +100,12 @@ namespace PdfToSvg.Common
             return (bits + 7) >> 3;
         }
 
+        [MethodImpl(MethodInliningOptions.AggressiveInlining)]
+        public static long BitsToBytes(long bits)
+        {
+            return (bits + 7) >> 3;
+        }
+
         public static int ModBE(byte[] dividend, byte divisor)
         {
             // Adapted from https://stackoverflow.com/a/10441333

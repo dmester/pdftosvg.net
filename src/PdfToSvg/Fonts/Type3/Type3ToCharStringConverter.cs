@@ -39,7 +39,7 @@ namespace PdfToSvg.Fonts.Type3
 
             using (var contentStream = new MemoryStream(charProc))
             {
-                foreach (var op in ContentParser.Parse(contentStream))
+                foreach (var op in ContentParser.Parse(contentStream, cancellationToken: cancellationToken))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 

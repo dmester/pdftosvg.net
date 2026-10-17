@@ -601,8 +601,8 @@ namespace PdfToSvg.Drawing
             var renderer = new SvgRenderer(pageDict, options, documentCache, optionalContentGroupManager, cancellationToken);
 
             var content = ContentStream.Combine(pageDict, cancellationToken);
-            
-            foreach (var op in ContentParser.Parse(content))
+
+            foreach (var op in ContentParser.Parse(content, renderer.resources, cancellationToken))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 renderer.DebugLogOperation(op.Operator, op.Operands);
@@ -620,7 +620,7 @@ namespace PdfToSvg.Drawing
 
             var content = await ContentStream.CombineAsync(pageDict, cancellationToken).ConfigureAwait(false);
             
-            foreach (var op in ContentParser.Parse(content))
+            foreach (var op in ContentParser.Parse(content, renderer.resources, cancellationToken))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 renderer.DebugLogOperation(op.Operator, op.Operands);
@@ -1332,7 +1332,7 @@ namespace PdfToSvg.Drawing
                         content = decodedFormContent.ToArray();
                     }
 
-                    foreach (var operation in ContentParser.Parse(content))
+                    foreach (var operation in ContentParser.Parse(content, resources, cancellationToken))
                     {
                         DebugLogOperation(operation.Operator, operation.Operands);
                         Proxy.Invoke(this, operation.Operator, operation.Operands);

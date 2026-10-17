@@ -2,14 +2,17 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.ColorSpaces;
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
+using PdfToSvg.Drawing;
 using PdfToSvg.Filters;
 using PdfToSvg.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PdfToSvg.Parsing
@@ -44,46 +47,149 @@ namespace PdfToSvg.Parsing
         ///     Note: Leaves the stream in an undefined position.
         /// </para>
         /// </summary>
-        public static int DetectStreamLength(Stream stream, object filter)
+        public static int DetectStreamLength(Stream stream, PdfDictionary imageDictionary,
+            ResourceCache? resources = null, CancellationToken cancellationToken = default)
         {
-            return DetectStreamLength(stream as BufferedReader ?? new BufferedStreamReader(stream), filter);
+            return DetectStreamLength(stream as BufferedReader ?? new BufferedStreamReader(stream), imageDictionary, resources, cancellationToken);
         }
 
-        /// <inheritdoc cref="DetectStreamLength(Stream, object)"/>
-        public static int DetectStreamLength(BufferedReader reader, object? filterNames)
+        /// <inheritdoc cref="DetectStreamLength(Stream, PdfDictionary, ResourceCache?, CancellationToken)"/>
+        public static int DetectStreamLength(BufferedReader reader, PdfDictionary imageDictionary,
+            ResourceCache? resources = null, CancellationToken cancellationToken = default)
         {
-            // Detecting length of inline image data is problematic, since the end marker is only two letter,
-            // and according to the specification /Length is not specified on inline streams.
+            // Note: Dictionary keys are normalized when passed to DetectStreamLength => no abbreviated keys
 
-            // Prefer deterministic stream length detectors
+            // PDF 2.0 has a /Length property
+            // ISO 32000-2:2020 section 8.9.7 specifies 7096 as max length
+            const int MaxLength = 4096;
+            const int MaxLengthWithGrace = 2 * MaxLength;
+
+            if (imageDictionary.TryGetInteger(Names.Length, out var fixedLength) &&
+                fixedLength >= 0 &&
+                fixedLength <= MaxLengthWithGrace &&
+                fixedLength <= (int)(reader.Length - reader.Position))
+            {
+                return fixedLength;
+            }
+
+            var filterNames = imageDictionary[Names.Filter];
+
             var outerFilterName =
                 filterNames is PdfName singleFilterName ? singleFilterName :
                 filterNames is object?[] filterNamesArray ? filterNamesArray.FirstOrDefault() as PdfName :
                 null;
 
-            var outerFilter = Filter.ByName(outerFilterName);
-            if (outerFilter.CanDetectStreamLength)
+            // Prefer deterministic stream length detectors
+            if (outerFilterName == null)
             {
-                return outerFilter.DetectStreamLength(reader);
+                var result = DetectUncompressedStreamLength(reader, imageDictionary, resources, cancellationToken);
+                if (result >= 0)
+                {
+                    return result;
+                }
+            }
+            else
+            {
+                var outerFilter = Filter.ByName(outerFilterName);
+                if (outerFilter.CanDetectStreamLength)
+                {
+                    return outerFilter.DetectStreamLength(reader);
+                }
             }
 
-            // For other filters, or no filter at all, we need to revert back to heuristics.
+            return DetectHeuristicStreamLength(reader);
+        }
+
+        private static int DetectUncompressedStreamLength(BufferedReader reader,
+            PdfDictionary imageDictionary, ResourceCache? resources, CancellationToken cancellationToken)
+        {
+            // Note: Dictionary keys are normalized when passed to DetectStreamLength => no abbreviated keys
+
+            // Max size of images is 4096 bytes => we can limit the maximum dimension in any direction to 8 * 4096
+            const int MinDimension = 1;
+            const int MaxDimension = 8 * 4096;
+
+            const int DefaultBitsPerComponent = 8;
+            const int MinBitsPerComponent = 1;
+            const int MaxBitsPerComponent = 16;
+
+            const int Unknown = -1;
+
+            if (!imageDictionary.TryGetInteger(Names.Width, out var width) ||
+                !imageDictionary.TryGetInteger(Names.Height, out var height) ||
+                width < MinDimension ||
+                width > MaxDimension ||
+                height < MinDimension ||
+                height > MaxDimension)
+            {
+                return Unknown;
+            }
+
+            int bitsPerComponent;
+            int componentsPerSample;
+
+            // ISO 32000-2:2020 section 8.9.7:
+            // Color space must be DeviceGray, DeviceRGB, or DeviceCMYK, unless ImageMask is specified
+
+            var isStencilMask = imageDictionary.GetValueOrDefault(Names.ImageMask, false);
+            if (isStencilMask)
+            {
+                bitsPerComponent = 1;
+                componentsPerSample = 1;
+            }
+            else
+            {
+                bitsPerComponent = imageDictionary.GetValueOrDefault(Names.BitsPerComponent, DefaultBitsPerComponent);
+                if (bitsPerComponent < MinBitsPerComponent ||
+                    bitsPerComponent > MaxBitsPerComponent)
+                {
+                    return Unknown;
+                }
+
+                var colorSpaceName = imageDictionary.GetNameOrNull(Names.ColorSpace);
+                if (colorSpaceName == Names.DeviceGray)
+                {
+                    componentsPerSample = 1;
+                }
+                else if (colorSpaceName == Names.DeviceRGB)
+                {
+                    componentsPerSample = 3;
+                }
+                else if (colorSpaceName == Names.DeviceCMYK)
+                {
+                    componentsPerSample = 4;
+                }
+                else if (
+                    resources is not null &&
+                    colorSpaceName is not null &&
+                    resources.GetColorSpace(colorSpaceName, cancellationToken) is ColorSpace colorSpace &&
+                    colorSpace is not UnsupportedColorSpace &&
+                    colorSpace is not NullColorSpace)
+                {
+                    componentsPerSample = colorSpace.ComponentsPerSample;
+                }
+                else
+                {
+                    return Unknown;
+                }
+            }
+
+            var bitCountPerLine = (long)width * componentsPerSample * bitsPerComponent;
+            var byteCount = height * MathUtils.BitsToBytes(bitCountPerLine);
+
+            var remainingBytes = reader.Length - reader.Position;
+            if (remainingBytes < byteCount)
+            {
+                return Unknown;
+            }
+
+            return checked((int)byteCount);
+        }
+
+        private static int DetectHeuristicStreamLength(BufferedReader reader)
+        {
             // Find first index of <whitespace> 'E' 'I' <whitespace>
             // Then try to parse a few tokens to ensure the following data is valid.
-            //
-            // Let's have a look at how other libraries handle this case:
-            //
-            //  * Pdfium
-            //    Looks for <whitespace> 'E' 'I' <whitespace>
-            //    https://github.com/PDFium/PDFium/blob/ee6088e63bfdee81153ef1eeec9b90e42c87064f/core/src/fpdfapi/fpdf_page/fpdf_page_parser_new.cpp#L238
-            //
-            //  * PdfSharp
-            //    Looks for <whitespace> 'E' 'I' <whitespace>
-            //    https://github.com/empira/PDFsharp/blob/3205bd933b464d150c0f42e8bcdff3314b6c6164/src/PdfSharp/Pdf.Content/CLexer.cs#L178
-            //
-            //  * Pdf.js
-            //    Looks for 'E' 'I' <whitespace> <10 ASCII characters>
-            //    https://github.com/mozilla/pdf.js/blob/f6f335173d9b162120484db82c53c00b20697d4a/src/core/parser.js#L212
             //
             var streamLength = 0;
 

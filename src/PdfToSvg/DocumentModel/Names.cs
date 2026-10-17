@@ -279,20 +279,33 @@ namespace PdfToSvg.DocumentModel
         public static PdfName RL { get; } = new PdfName("RL");
         public static PdfName CCF { get; } = new PdfName("CCF");
         public static PdfName DCT { get; } = new PdfName("DCT");
+        public static PdfName L { get; } = new PdfName("L");
 
-        public static PdfName Translate(PdfName input, bool isRootDictionary)
+        public static PdfName Translate(PdfName input, bool isRootDictionaryKey)
         {
+            if (isRootDictionaryKey)
+            {
+                // These can be valid names for e.g. color spaces, so they should only be expanded when they are root
+                // dictionary keys
+
+                switch (input.Value)
+                {
+                    case nameof(BPC): return Names.BitsPerComponent;
+                    case nameof(CS): return Names.ColorSpace;
+                    case nameof(D): return Names.Decode;
+                    case nameof(DP): return Names.DecodeParms;
+                    case nameof(F): return Names.Filter;
+                    case nameof(H): return Names.Height;
+                    case nameof(IM): return Names.ImageMask;
+                    case nameof(I): return Names.Interpolate;
+                    case nameof(W): return Names.Width;
+                    case nameof(L): return Names.Length; // PDF 2.0
+                }
+            }
+
             switch (input.Value)
             {
-                case nameof(BPC): return Names.BitsPerComponent;
-                case nameof(CS): return Names.ColorSpace;
-                case nameof(D): return Names.Decode;
-                case nameof(DP): return Names.DecodeParms;
-                case nameof(F): return Names.Filter;
-                case nameof(H): return Names.Height;
-                case nameof(IM): return Names.ImageMask;
-                case nameof(I): return isRootDictionary ? Names.Interpolate : Names.Indexed;
-                case nameof(W): return Names.Width;
+                case nameof(I): return Names.Indexed;
                 case nameof(G): return Names.DeviceGray;
                 case nameof(RGB): return Names.DeviceRGB;
                 case nameof(CMYK): return Names.DeviceCMYK;

@@ -1,0 +1,28 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID2{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:10px;}
+.ID3{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:160px;fill:none;stroke:#000;stroke-width:8;}
+.ID4{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:160px;fill:none;stroke:#000;stroke-width:7.9762;}
+.ID5{font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:160px;fill:none;stroke:#000;stroke-width:.5;}
+</style>
+<g class="ID1" stroke-miterlimit="10">
+<g class="ID2">
+<text x="105" y="71.92">The rectangles and letter outlines should have the same stroke width per column</text>
+<text x="264" y="741.92">PdfToSvg.NET</text>
+</g>
+<text x="110" y="241.92" class="ID3">A</text>
+<path d="M90 261.92h154v-154h-154z" fill="none" stroke="#000" stroke-width="8" />
+<text transform="matrix(1.5 0 0 1 80 431.92)" class="ID3">A</text>
+<path d="M-10 -10h77v77h-77z" transform="matrix(3 0 0 -2 80 431.92)" fill="none" stroke="#000" stroke-width="4" />
+<text transform="matrix(.7071 -.7071 .7071 .7071 167 671.92)" class="ID4">A</text>
+<path d="M167 700.12l108.57 -108.57l-108.57 -108.57l-108.57 108.57z" fill="none" stroke="#000" stroke-width="7.9762" />
+<text x="370" y="241.92" class="ID5">A</text>
+<path d="M350 261.92h154v-154h-154z" fill="none" stroke="#000" stroke-width=".5" />
+<text transform="matrix(1.5 0 0 1 340 431.92)" class="ID5">A</text>
+<path d="M-10 -10h77v77h-77z" transform="matrix(3 0 0 -2 340 431.92)" fill="none" stroke="#000" stroke-width=".25" />
+<text transform="matrix(.7071 -.7071 .7071 .7071 427 671.92)" class="ID5">A</text>
+<path d="M427 700.12l108.57 -108.57l-108.57 -108.57l-108.57 108.57z" fill="none" stroke="#000" stroke-width=".5" />
+</g>
+</svg>

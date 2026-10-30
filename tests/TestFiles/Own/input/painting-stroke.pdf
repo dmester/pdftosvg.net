@@ -1,0 +1,152 @@
+%PDF-1.7
+
+xref
+0 5
+0000000000 65535 f
+0000000167 00000 n
+0000000218 00000 n
+0000000282 00000 n
+0000000529 00000 n
+trailer
+<< /Root 1 0 R  /Size 5 >>
+     
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 3 0 R ]  /Count 1 >> endobj
+
+3 0 obj 
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Resources <<
+      /Font <<
+         /FR << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+      >>
+   >>
+   /Contents [ 4 0 R ]
+>>
+endobj
+
+4 0 obj << /Length 1937 >>
+stream
+
+   /FR 10 Tf
+   BT
+      1 0 0 1 105 770 Tm
+      (The rectangles and letter outlines should have the same stroke width per column) Tj
+
+      1 0 0 1 264 100 Tm
+      (PdfToSvg.NET) Tj
+   ET
+
+   0 0 0 RG
+   0.9 0.9 0.9 rg
+   1 Tr
+   /FR 40 Tf
+
+   q
+      1 0 0 1 -130 0 cm
+      4 w
+
+      q
+         BT
+            % Should affect stroke width
+            2 0 0 2 240 600 cm
+
+            % Should NOT affect stroke width
+            2 0 0 2 0 0 Tm
+
+            (A) Tj
+         ET
+
+         -10 -10 77 77 re
+         S
+      Q
+
+      q
+         BT
+            % Should affect stroke width
+            3 0 0 2 210 410 cm
+
+            % Should NOT affect stroke width
+            2 0 0 2 0 0 Tm
+
+            (A) Tj
+         ET
+
+         -10 -10 77 77 re
+         S
+      Q
+
+      q
+         BT
+            % Should affect stroke width
+            1.41 1.41 -1.41 1.41 297 170 cm
+
+            % Should NOT affect stroke width
+            2 0 0 2 0 0 Tm
+
+            (A) Tj
+         ET
+
+         -10 -10 77 77 re
+         S
+      Q
+   Q
+
+   q
+      1 0 0 1 130 0 cm
+      0 w
+
+      q
+         BT
+            % Should affect stroke width
+            2 0 0 2 240 600 cm
+
+            % Should NOT affect stroke width
+            2 0 0 2 0 0 Tm
+
+            (A) Tj
+         ET
+
+         -10 -10 77 77 re
+         S
+      Q
+
+      q
+         BT
+            % Should affect stroke width
+            3 0 0 2 210 410 cm
+
+            % Should NOT affect stroke width
+            2 0 0 2 0 0 Tm
+
+            (A) Tj
+         ET
+
+         -10 -10 77 77 re
+         S
+      Q
+
+      q
+         BT
+            % Should affect stroke width
+            1.41 1.41 -1.41 1.41 297 170 cm
+
+            % Should NOT affect stroke width
+            2 0 0 2 0 0 Tm
+
+            (A) Tj
+         ET
+
+         -10 -10 77 77 re
+         S
+      Q
+   Q
+
+endstream
+endobj
+
+startxref
+10
+%%EOF

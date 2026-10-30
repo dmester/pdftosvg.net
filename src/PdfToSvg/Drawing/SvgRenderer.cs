@@ -1995,6 +1995,56 @@ namespace PdfToSvg.Drawing
             return svgConversion.FormatColor(state.StrokeColor);
         }
 
+        private double GetStrokeWidthForPath(GraphicsState state, double scaleX, double scaleY, bool transformPreapplied)
+        {
+            var strokeWidth = state.StrokeWidth;
+
+            var totalScale = Math.Min(scaleX, scaleY);
+            var preappliedScale = transformPreapplied ? 1d : totalScale;
+
+            if (transformPreapplied)
+            {
+                strokeWidth *= totalScale;
+            }
+
+            // Zero width stroke should be rendered as the thinnest line that can be rendered.
+            // Since the SVG can be scaled, this can not be accurately realized in SVG. Instead, we use a configurable
+            // minimum stroke width.
+            if (strokeWidth * preappliedScale < options.MinStrokeWidth)
+            {
+                strokeWidth = options.MinStrokeWidth / preappliedScale;
+            }
+
+            return strokeWidth;
+        }
+
+        private double GetStrokeWidthForText(GraphicsState state, Matrix appliedTextTransform)
+        {
+            // The current transform matrix should affect stroke
+            state.Transform.DecomposeScaleXY(out var transformScaleX, out var transformScaleY);
+            var transformScale = Math.Min(transformScaleX, transformScaleY);
+
+            // The text matrix should NOT affect stroke and is reversed in the calculations below.
+            appliedTextTransform.DecomposeScaleXY(out var textScaleX, out var textScaleY);
+            var appliedTextTransformScale = Math.Min(textScaleX, textScaleY);
+
+            var strokeWidth = state.StrokeWidth;
+
+            // This is not correct in case the horizontal and vertical scaling are not the same, but should be an
+            // good-enough approximation. All other alternatives have their own cons.
+            strokeWidth *= transformScale / appliedTextTransformScale;
+
+            // Zero width stroke should be rendered as the thinnest line that can be rendered.
+            // Since the SVG can be scaled, this can not be accurately realized in SVG. Instead, we use a configurable
+            // minimum stroke width.
+            if (strokeWidth * appliedTextTransformScale < options.MinStrokeWidth)
+            {
+                strokeWidth = options.MinStrokeWidth / appliedTextTransformScale;
+            }
+
+            return strokeWidth;
+        }
+
         private void DrawPath(bool stroke, bool fill, bool evenOddWinding)
         {
             if (!markedContentVisible)
@@ -2106,25 +2156,8 @@ namespace PdfToSvg.Drawing
 
                 if (strokeValue != null)
                 {
-                    var strokeWidth = graphicsState.StrokeWidth;
-                    var strokeWidthScale = pathTransformed ? 1d : Math.Min(scaleX, scaleY);
-
-                    if (strokeWidth == 0)
-                    {
-                        // Zero width stroke should be rendered as the thinnest line that can be rendered.
-                        // Since the SVG can be scaled, we will assume 0.5pt is the thinnest renderable line.
-                        strokeWidth = 0.5d / strokeWidthScale;
-                    }
-                    else if (pathTransformed)
-                    {
-                        strokeWidth *= scaleX;
-                    }
-
-                    if (strokeWidth * strokeWidthScale < options.MinStrokeWidth)
-                    {
-                        strokeWidth = options.MinStrokeWidth / strokeWidthScale;
-                    }
-
+                    var strokeWidth = GetStrokeWidthForPath(graphicsState, scaleX, scaleY, pathTransformed);
+                    
                     pathStyle.Stroke = strokeValue;
                     pathStyle.StrokeWidth = svgConversion.FormatCoordinate(strokeWidth);
 
@@ -2952,9 +2985,10 @@ namespace PdfToSvg.Drawing
                 }
 
                 // Width
-                if (style.StrokeWidth != 1d)
+                var strokeWidth = GetStrokeWidthForText(style, appliedTextTransform);
+                if (strokeWidth != 1d)
                 {
-                    cssClass["stroke-width"] = svgConversion.FormatCoordinate(style.StrokeWidth);
+                    cssClass["stroke-width"] = svgConversion.FormatCoordinate(strokeWidth);
                 }
 
                 // Line cap

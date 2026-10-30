@@ -16,25 +16,25 @@
 .ID13{font-family:Gadugi,sans-serif;font-size:21.96px;}
 .ID14{font-family:Gadugi,sans-serif;font-weight:bold;font-size:21.96px;}
 .ID15{font-family:'Ink Free',cursive;font-size:21.96px;}
-.ID16{font-family:'Ink Free',cursive;font-size:21.96px;stroke:#000;stroke-width:.293;}
+.ID16{font-family:'Ink Free',cursive;font-size:21.96px;stroke:#000;stroke-width:.5;}
 .ID17{font-family:'Franklin Gothic',sans-serif;font-size:21.96px;}
-.ID18{font-family:'Franklin Gothic',sans-serif;font-size:21.96px;stroke:#000;stroke-width:.293;}
+.ID18{font-family:'Franklin Gothic',sans-serif;font-size:21.96px;stroke:#000;stroke-width:.5;}
 .ID19{font-family:'Franklin Gothic',sans-serif;font-style:italic;font-size:21.96px;}
 .ID20{font-family:Gabriola,cursive;font-size:27.96px;}
-.ID21{font-family:Gabriola,cursive;font-size:27.96px;stroke:#000;stroke-width:.373;}
+.ID21{font-family:Gabriola,cursive;font-size:27.96px;stroke:#000;stroke-width:.5;}
 .ID22{font-family:Ebrima,sans-serif;font-size:21.96px;}
 .ID23{font-family:Ebrima,sans-serif;font-weight:bold;font-size:21.96px;}
 .ID24{font-family:'Lucida Console',monospace;font-size:21.96px;}
-.ID25{font-family:'Lucida Console',monospace;font-size:21.96px;stroke:#000;stroke-width:.293;}
+.ID25{font-family:'Lucida Console',monospace;font-size:21.96px;stroke:#000;stroke-width:.5;}
 .ID26{font-family:'Lucida Sans Unicode','Lucida Sans',sans-serif;font-size:21.96px;}
-.ID27{font-family:'Lucida Sans Unicode','Lucida Sans',sans-serif;font-size:21.96px;stroke:#000;stroke-width:.293;}
+.ID27{font-family:'Lucida Sans Unicode','Lucida Sans',sans-serif;font-size:21.96px;stroke:#000;stroke-width:.5;}
 .ID28{font-family:Marlett;font-size:15.96px;}
 .ID29{font-family:'Microsoft Himalaya',sans-serif;font-size:36px;}
-.ID30{font-family:'Microsoft Himalaya',sans-serif;font-size:36px;stroke:#000;stroke-width:.48;}
+.ID30{font-family:'Microsoft Himalaya',sans-serif;font-size:36px;stroke:#000;stroke-width:.5;}
 .ID31{font-family:'MS Gothic',sans-serif;font-size:21.96px;}
-.ID32{font-family:'MS Gothic',sans-serif;font-size:21.96px;stroke:#000;stroke-width:.293;}
+.ID32{font-family:'MS Gothic',sans-serif;font-size:21.96px;stroke:#000;stroke-width:.5;}
 .ID33{font-family:'MV Boli',cursive;font-size:21.96px;}
-.ID34{font-family:'MV Boli',cursive;font-size:21.96px;stroke:#000;stroke-width:.293;}
+.ID34{font-family:'MV Boli',cursive;font-size:21.96px;stroke:#000;stroke-width:.5;}
 .ID35{font-family:'Myanmar Text','Myanmar Unicode',sans-serif;font-size:21.96px;}
 .ID36{font-family:'Myanmar Text','Myanmar Unicode',sans-serif;font-weight:bold;font-size:21.96px;}
 .ID37{font-family:'Palatino Linotype',Palatino,serif;font-size:21.96px;}
@@ -45,12 +45,12 @@
 .ID42{font-family:'Segoe Script',cursive;font-size:21.96px;}
 .ID43{font-family:'Segoe Script',cursive;font-weight:bold;font-size:21.96px;}
 .ID44{font-family:SimSun,serif;font-size:21.96px;}
-.ID45{font-family:SimSun,serif;font-size:21.96px;stroke:#000;stroke-width:.293;}
+.ID45{font-family:SimSun,serif;font-size:21.96px;stroke:#000;stroke-width:.5;}
 .ID46{font-family:Sitka,serif;font-size:21.96px;}
 .ID47{font-family:Sitka,serif;font-weight:bold;font-size:21.96px;}
 .ID48{font-family:Sitka,serif;font-style:italic;font-size:21.96px;}
 .ID49{font-family:Sylfaen,serif;font-size:21.96px;}
-.ID50{font-family:Sylfaen,serif;font-size:21.96px;stroke:#000;stroke-width:.293;}
+.ID50{font-family:Sylfaen,serif;font-size:21.96px;stroke:#000;stroke-width:.5;}
 .ID51{font-family:Tahoma,sans-serif;font-size:21.96px;}
 .ID52{font-family:Tahoma,sans-serif;font-weight:bold;font-size:21.96px;}
 .ID53{font-family:'Trebuchet MS',sans-serif;font-size:21.96px;}

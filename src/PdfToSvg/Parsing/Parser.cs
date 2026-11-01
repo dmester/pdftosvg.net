@@ -13,6 +13,8 @@ namespace PdfToSvg.Parsing
 {
     internal abstract class Parser
     {
+        private const int MaxDepth = 100;
+
         protected readonly Lexer lexer;
 
         public Parser(Lexer lexer)
@@ -20,7 +22,7 @@ namespace PdfToSvg.Parsing
             this.lexer = lexer;
         }
 
-        protected object?[] ReadArray()
+        protected object?[] ReadArray(int depth)
         {
             var result = new List<object?>();
 
@@ -36,13 +38,13 @@ namespace PdfToSvg.Parsing
                     break;
                 }
 
-                result.Add(ReadValue());
+                result.Add(ReadValue(depth + 1));
             }
 
             return result.ToArray();
         }
 
-        protected PdfDictionary ReadDictionary()
+        protected PdfDictionary ReadDictionary(int depth)
         {
             var result = new PdfDictionary();
 
@@ -76,7 +78,7 @@ namespace PdfToSvg.Parsing
                 }
                 else
                 {
-                    result[name] = ReadValue();
+                    result[name] = ReadValue(depth + 1);
                 }
             }
 
@@ -226,17 +228,22 @@ namespace PdfToSvg.Parsing
             return true;
         }
 
-        protected object? ReadValue()
+        protected object? ReadValue(int depth = 0)
         {
+            if (depth > MaxDepth)
+            {
+                throw ParserExceptions.MaxDepthExceeded(lexer.Stream);
+            }
+
             var nextLexeme = lexer.Peek();
 
             switch (nextLexeme.Token)
             {
                 case Token.BeginArray:
-                    return ReadArray();
+                    return ReadArray(depth);
 
                 case Token.BeginDictionary:
-                    return ReadDictionary();
+                    return ReadDictionary(depth);
 
                 case Token.False:
                     lexer.Read();

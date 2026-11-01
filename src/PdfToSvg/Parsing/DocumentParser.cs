@@ -532,7 +532,7 @@ namespace PdfToSvg.Parsing
 
                     if (lexer.Read().Token == Token.Trailer)
                     {
-                        var trailerDict = ReadDictionary();
+                        var trailerDict = ReadDictionary(depth: 0);
                         if (trailerDict.ContainsKey(Names.Root))
                         {
                             xrefTable.Trailer = trailerDict;
@@ -585,7 +585,7 @@ namespace PdfToSvg.Parsing
                     {
                         lexer.Read();
 
-                        var trailerDict = ReadDictionary();
+                        var trailerDict = ReadDictionary(depth: 0);
                         byteOffsetLastXRef = trailerDict.GetValueOrDefault(Names.Prev, -1);
 
                         if (!trailerSet)

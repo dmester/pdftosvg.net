@@ -15,8 +15,20 @@ namespace PdfToSvg.Functions
 {
     internal abstract class Function
     {
+        private const int MaxRecursion = 100;
+
         public static Function Parse(object? functionDefinition, CancellationToken cancellationToken)
         {
+            return Parse(functionDefinition, depth: 0, cancellationToken);
+        }
+
+        protected static Function Parse(object? functionDefinition, int depth, CancellationToken cancellationToken)
+        {
+            if (depth > MaxRecursion)
+            {
+                throw new PdfException("Maximum recursion exceeded");
+            }
+
             if (functionDefinition is PdfDictionary dict &&
                 dict.TryGetInteger(Names.FunctionType, out var functionType))
             {
@@ -26,7 +38,7 @@ namespace PdfToSvg.Functions
                     {
                         case 0: return new SampledFunction(dict, cancellationToken);
                         case 2: return new ExponentialFunction(dict);
-                        case 3: return new StitchingFunction(dict, cancellationToken);
+                        case 3: return new StitchingFunction(dict, depth, cancellationToken);
                         case 4: return new PostScriptFunction(dict, cancellationToken);
                         default:
                             Log.WriteLine("Unknown function type {0}.", functionType);

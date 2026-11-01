@@ -23,7 +23,7 @@ namespace PdfToSvg.Functions
         public readonly double[] Encode;
 
 
-        public StitchingFunction(PdfDictionary dictionary, CancellationToken cancellationToken = default)
+        public StitchingFunction(PdfDictionary dictionary, int depth = 0, CancellationToken cancellationToken = default)
         {
             if (!dictionary.TryGetArray(Names.Domain, out Domain!))
             {
@@ -51,7 +51,7 @@ namespace PdfToSvg.Functions
 
             for (var i = 0; i < Functions.Length; i++)
             {
-                Functions[i] = Parse(funcDicts[i], cancellationToken);
+                Functions[i] = Parse(funcDicts[i], depth + 1, cancellationToken);
             }
 
             this.Domain = EnsureArrayLength(this.Domain, 2);

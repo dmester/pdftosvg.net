@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 
 using PdfToSvg.ColorSpaces;
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Drawing.Patterns;
 using PdfToSvg.Drawing.Shadings;
@@ -37,7 +38,15 @@ namespace PdfToSvg.Drawing
             {
                 if (Dictionary.TryGetDictionary(Names.Pattern / patternName, out var patternDict))
                 {
-                    pattern = Pattern.Create(patternDict, cancellationToken);
+                    try
+                    {
+                        pattern = Pattern.Create(patternDict, cancellationToken);
+                    }
+                    catch (Exception ex) when (ex is not OperationCanceledException)
+                    {
+                        Log.WriteLine("Failed to parse pattern. " + ex);
+                        pattern = null;
+                    }
                 }
                 patterns[patternName] = pattern;
             }
@@ -51,7 +60,15 @@ namespace PdfToSvg.Drawing
             {
                 if (Dictionary.TryGetDictionary(Names.Shading / shadingName, out var shadingDict))
                 {
-                    shading = Shading.Create(shadingDict, cancellationToken);
+                    try
+                    {
+                        shading = Shading.Create(shadingDict, cancellationToken);
+                    }
+                    catch (Exception ex) when (ex is not OperationCanceledException)
+                    {
+                        Log.WriteLine("Failed to parse shading. " + ex);
+                        shading = null;
+                    }
                 }
                 shadings[shadingName] = shading;
             }

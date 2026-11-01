@@ -334,6 +334,7 @@ namespace PdfToSvg.Drawing
         {
             if (pageDict.TryGetArray<PdfDictionary>(Names.Annots, out var annots))
             {
+                var filter = options.LinkFilter;
                 var hasLink = false;
 
                 foreach (var annot in annots)
@@ -353,6 +354,13 @@ namespace PdfToSvg.Drawing
                         action.GetNameOrNull(Names.S) == Names.URI &&
                         action.TryGetValue<PdfString>(Names.URI, out var uri))
                     {
+                        var originalUrl = uri.ToString();
+                        var href = filter == null ? originalUrl : filter(originalUrl);
+                        if (href == null)
+                        {
+                            continue;
+                        }
+
                         var rect = new Rectangle(arrRect[0], arrRect[1], arrRect[2], arrRect[3]);
                         var path = new PathData();
 
@@ -395,7 +403,7 @@ namespace PdfToSvg.Drawing
                         path = path.Transform(originalTransform);
 
                         rootGraphics.Add(new XElement(ns + "a",
-                            new XAttribute("href", uri.ToString()),
+                            new XAttribute("href", href),
                             new XElement(ns + "path",
                                 new XAttribute("d", SvgConversion.PathData(path)),
                                 new XAttribute("fill", "transparent"))

@@ -200,6 +200,66 @@ namespace PdfToSvg
         public bool IncludeLinks { get; set; } = true;
 
         /// <summary>
+        /// Filters or rewrites hyperlink targets. The callback receives the original target before URI parsing.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        ///     By default, link targets must parse as absolute URIs and use one of the following schemes:
+        /// </para>
+        /// <list type="bullet">
+        ///     <item><c>http:</c></item>
+        ///     <item><c>https:</c></item>
+        ///     <item><c>mailto:</c></item>
+        ///     <item><c>tel:</c></item>
+        /// </list>
+        /// <para>
+        ///     Set this property to <see langword="null"/> to use the original link target without URI validation or
+        ///     scheme filtering. This allows potentially unsafe schemes such as <c>javascript:</c>.
+        /// </para>
+        /// <para>
+        ///     A custom callback replaces the default validation. Its return value is used as the hyperlink target,
+        ///     or the hyperlink is omitted if it returns <see langword="null"/>.
+        /// </para>
+        /// </remarks>
+        /// <example>
+        /// <para>
+        ///     The following example will allow only http and https hyperlinks.
+        /// </para>
+        /// <code language="cs" title="Allow http and https hyperlinks">
+        /// var conversionOptions = new SvgConversionOptions
+        /// {
+        ///     LinkFilter = url =>
+        ///         Uri.TryCreate(url, UriKind.Absolute, out var uri) &amp;&amp;
+        ///         (uri.Scheme == "http" || uri.Scheme == "https")
+        ///         ? url
+        ///         : null,
+        /// };
+        /// 
+        /// using (var doc = PdfDocument.Open("input.pdf"))
+        /// {
+        ///     var pageNo = 1;
+        ///
+        ///     foreach (var page in doc.Pages)
+        ///     {
+        ///         page.SaveAsSvg($"output-{pageNo++}.svg", conversionOptions);
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        public LinkFilter? LinkFilter { get; set; } = FilterLink;
+
+        private static string? FilterLink(string url)
+        {
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            {
+                return null;
+            }
+
+            var scheme = uri.Scheme;
+            return scheme == "http" || scheme == "https" || scheme == "mailto" || scheme == "tel" ? url : null;
+        }
+
+        /// <summary>
         /// Determines whether annotations drawn in the PDF document should be included in the generated SVG.
         /// The default value is <c>true</c>.
         /// </summary>

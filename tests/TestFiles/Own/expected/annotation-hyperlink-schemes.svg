@@ -1,0 +1,30 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID2{font-family:'Times New Roman',serif;font-size:24px;fill:#00f;}
+.ID1 a:active path{fill:#ffe4002e;}
+</style>
+<g class="ID1">
+<g class="ID2">
+<text x="70" y="76.92">Http link</text>
+<text x="70" y="116.92">Https link</text>
+<text x="70" y="156.92">Mailto link</text>
+<text x="70" y="196.92">Javascript link</text>
+<text x="70" y="236.92">Ftp link</text>
+<text x="70" y="276.92">Tel link</text>
+</g>
+<a href="http://github.com/dmester/pdftosvg.net/">
+<path d="M70 51.92h350v30h-350" fill="transparent" />
+</a>
+<a href="https://github.com/dmester/pdftosvg.net/">
+<path d="M70 91.92h350v30h-350" fill="transparent" />
+</a>
+<a href="mailto:hello@example.com">
+<path d="M70 131.92h350v30h-350" fill="transparent" />
+</a>
+<a href="tel:+46-70-1740605">
+<path d="M70 251.92h350v30h-350" fill="transparent" />
+</a>
+</g>
+</svg>

@@ -176,7 +176,7 @@ namespace PdfToSvg.Fonts
                         openTypeFont = Type1Converter.ConvertToOpenType(info);
                         openTypeFontEncoding = info.Encoding;
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (ex is not OperationCanceledException)
                     {
                         throw new FontException("Failed to parse Type 1 font.", ex);
                     }
@@ -193,7 +193,7 @@ namespace PdfToSvg.Fonts
                         var fontFileData = fontFileStream.ToArray(cancellationToken);
                         openTypeFont = OpenTypeFont.Parse(fontFileData);
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (ex is not OperationCanceledException)
                     {
                         throw new FontException("Failed to parse TrueType font.", ex);
                     }
@@ -212,7 +212,7 @@ namespace PdfToSvg.Fonts
                             var fontFileData = fontFileStream.ToArray(cancellationToken);
                             openTypeFont = OpenTypeFont.Parse(fontFileData);
                         }
-                        catch (Exception ex)
+                        catch (Exception ex) when (ex is not OperationCanceledException)
                         {
                             throw new FontException("Failed to parse OpenType font.", ex);
                         }
@@ -232,7 +232,7 @@ namespace PdfToSvg.Fonts
 
                             openTypeFontEncoding = compactFontSet.Fonts.FirstOrDefault()?.Encoding;
                         }
-                        catch (Exception ex)
+                        catch (Exception ex) when (ex is not OperationCanceledException)
                         {
                             throw new FontException("Failed to parse CFF font.", ex);
                         }
@@ -310,7 +310,7 @@ namespace PdfToSvg.Fonts
                         openTypeFont = Type1Converter.ConvertToOpenType(info);
                         openTypeFontEncoding = info.Encoding;
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (ex is not OperationCanceledException)
                     {
                         throw new FontException("Failed to parse Type 1 font.", ex);
                     }
@@ -327,7 +327,7 @@ namespace PdfToSvg.Fonts
                         var fontFileData = await fontFileStream.ToArrayAsync(cancellationToken).ConfigureAwait(false);
                         openTypeFont = OpenTypeFont.Parse(fontFileData);
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (ex is not OperationCanceledException)
                     {
                         throw new FontException("Failed to parse TrueType font.", ex);
                     }
@@ -346,7 +346,7 @@ namespace PdfToSvg.Fonts
                             var fontFileData = await fontFileStream.ToArrayAsync(cancellationToken).ConfigureAwait(false);
                             openTypeFont = OpenTypeFont.Parse(fontFileData);
                         }
-                        catch (Exception ex)
+                        catch (Exception ex) when (ex is not OperationCanceledException)
                         {
                             throw new FontException("Failed to parse OpenType font.", ex);
                         }
@@ -366,7 +366,7 @@ namespace PdfToSvg.Fonts
 
                             openTypeFontEncoding = compactFontSet.Fonts.FirstOrDefault()?.Encoding;
                         }
-                        catch (Exception ex)
+                        catch (Exception ex) when (ex is not OperationCanceledException)
                         {
                             throw new FontException("Failed to parse CFF font.", ex);
                         }
@@ -783,7 +783,7 @@ namespace PdfToSvg.Fonts
             {
                 font.PopulateOpenTypeFont(fontRepository, cancellationToken);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 font.openTypeFont = null;
                 font.openTypeFontException = ex;
@@ -804,7 +804,7 @@ namespace PdfToSvg.Fonts
             {
                 await font.PopulateOpenTypeFontAsync(fontRepository, cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 font.openTypeFont = null;
                 font.openTypeFontException = ex;

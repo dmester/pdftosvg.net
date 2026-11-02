@@ -129,10 +129,17 @@ namespace PdfToSvg.Imaging
 
             var filters = imageDictionaryStream.Filters;
             var encodedStream = imageDictionaryStream.Open(cancellationToken);
+            
+            var filtersExceptLast = new PdfStreamFilter[filters.Count - 1];
+            
+            for (var i = 0; i < filtersExceptLast.Length; i++)
+            {
+                filtersExceptLast[i] = filters[i];
+            }
 
             try
             {
-                resultStream = filters.Take(filters.Count - 1).Decode(encodedStream);
+                resultStream = filtersExceptLast.Decode(encodedStream);
             }
             finally
             {

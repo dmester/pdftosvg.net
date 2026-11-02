@@ -2,6 +2,7 @@
 // https://github.com/dmester/pdftosvg.net
 // Licensed under the MIT License.
 
+using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.IO;
 using System;
@@ -57,8 +58,17 @@ namespace PdfToSvg.Parsing
                 var stream = content.Stream;
                 if (stream != null)
                 {
-                    using var decodedStream = stream.OpenDecoded(cancellationToken);
-                    await decodedStream.CopyToAsync(combinedBuffer, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        using var decodedStream = stream.OpenDecoded(cancellationToken);
+                        await decodedStream.CopyToAsync(combinedBuffer, cancellationToken).ConfigureAwait(false);
+                    }
+                    // Allow partial decoding if at least some parts of the page has been decoded
+                    catch (Exception ex) when (ex is not OperationCanceledException && combinedBuffer.Length > 0)
+                    {
+                        Log.WriteLine("Content decoding failed. " + ex);
+                        break;
+                    }
                 }
             }
 
@@ -90,8 +100,17 @@ namespace PdfToSvg.Parsing
                 var stream = content.Stream;
                 if (stream != null)
                 {
-                    using var decodedStream = stream.OpenDecoded(cancellationToken);
-                    decodedStream.CopyTo(combinedBuffer, cancellationToken);
+                    try
+                    {
+                        using var decodedStream = stream.OpenDecoded(cancellationToken);
+                        decodedStream.CopyTo(combinedBuffer, cancellationToken);
+                    }
+                    // Allow partial decoding if at least some parts of the page has been decoded
+                    catch (Exception ex) when (ex is not OperationCanceledException && combinedBuffer.Length > 0)
+                    {
+                        Log.WriteLine("Content decoding failed. " + ex);
+                        break;
+                    }
                 }
             }
 

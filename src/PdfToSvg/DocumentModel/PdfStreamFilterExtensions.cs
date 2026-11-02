@@ -14,10 +14,17 @@ namespace PdfToSvg.DocumentModel
 {
     internal static class PdfStreamFilterExtensions
     {
-        public static Stream Decode(this IEnumerable<PdfStreamFilter> filters, Stream encodedStream)
+        private const int MaxFilterCount = 10;
+
+        public static Stream Decode(this IList<PdfStreamFilter> filters, Stream encodedStream)
         {
             var result = encodedStream;
             var disposeResult = true;
+
+            if (filters.Count > MaxFilterCount)
+            {
+                throw new PdfException("Max filter count exceeded. Filters found: " + filters.Count);
+            }
 
             try
             {

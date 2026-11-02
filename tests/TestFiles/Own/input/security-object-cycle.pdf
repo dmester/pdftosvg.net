@@ -1,0 +1,191 @@
+%PDF-1.7
+
+xref
+0 9
+0000000000 65535 f
+0000000233 00000 n 
+0000000289 00000 n 
+0000000358 00000 n 
+0000000614 00000 n 
+0000002440 00000 n 
+0000002872 00000 n 
+0000002982 00000 n 
+0000003408 00000 n 
+trailer
+<< /Root 1 0 R /Size 9 >>
+
+1 0 obj
+<<
+   /Type /Catalog
+   /Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+   /Type /Pages
+   /Kids [ 3 0 R ]
+   /Count 1
+>>
+endobj
+
+3 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Resources <<
+      /Font <<
+         /F << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+      >>
+      /XObject << /Cycle 5 0 R >>
+   >>
+   /Contents 4 0 R
+>>
+endobj
+
+4 0 obj
+<<
+
+   /Length 1770
+>>
+stream
+% Each blue square is one processed invocation of Form XObject 5.
+BT /F 20 Tf 1 0 0 1 48 780 Tm (Recursive object cycle) Tj ET
+BT /F 12 Tf 1 0 0 1 48 750 Tm (XObject -> SMask -> Pattern -> XObject) Tj ET
+BT /F 10 Tf 1 0 0 1 48 724 Tm (One blue square per XObject invocation; horizontal offset: 24 pt.) Tj ET
+0.8 G 0.5 w
+48 620 14 20 re S
+72 620 14 20 re S
+96 620 14 20 re S
+120 620 14 20 re S
+144 620 14 20 re S
+168 620 14 20 re S
+192 620 14 20 re S
+216 620 14 20 re S
+240 620 14 20 re S
+264 620 14 20 re S
+288 620 14 20 re S
+312 620 14 20 re S
+336 620 14 20 re S
+360 620 14 20 re S
+384 620 14 20 re S
+408 620 14 20 re S
+432 620 14 20 re S
+456 620 14 20 re S
+480 620 14 20 re S
+504 620 14 20 re S
+0 g
+BT /F 8 Tf 1 0 0 1 49 604 Tm (1) Tj ET
+BT /F 8 Tf 1 0 0 1 73 604 Tm (2) Tj ET
+BT /F 8 Tf 1 0 0 1 97 604 Tm (3) Tj ET
+BT /F 8 Tf 1 0 0 1 121 604 Tm (4) Tj ET
+BT /F 8 Tf 1 0 0 1 145 604 Tm (5) Tj ET
+BT /F 8 Tf 1 0 0 1 169 604 Tm (6) Tj ET
+BT /F 8 Tf 1 0 0 1 193 604 Tm (7) Tj ET
+BT /F 8 Tf 1 0 0 1 217 604 Tm (8) Tj ET
+BT /F 8 Tf 1 0 0 1 241 604 Tm (9) Tj ET
+BT /F 8 Tf 1 0 0 1 265 604 Tm (10) Tj ET
+BT /F 8 Tf 1 0 0 1 289 604 Tm (11) Tj ET
+BT /F 8 Tf 1 0 0 1 313 604 Tm (12) Tj ET
+BT /F 8 Tf 1 0 0 1 337 604 Tm (13) Tj ET
+BT /F 8 Tf 1 0 0 1 361 604 Tm (14) Tj ET
+BT /F 8 Tf 1 0 0 1 385 604 Tm (15) Tj ET
+BT /F 8 Tf 1 0 0 1 409 604 Tm (16) Tj ET
+BT /F 8 Tf 1 0 0 1 433 604 Tm (17) Tj ET
+BT /F 8 Tf 1 0 0 1 457 604 Tm (18) Tj ET
+BT /F 8 Tf 1 0 0 1 481 604 Tm (19) Tj ET
+BT /F 8 Tf 1 0 0 1 505 604 Tm (20) Tj ET
+q
+1 0 0 1 48 620 cm
+0.05 0.35 0.8 rg
+/Cycle Do
+Q
+BT /F 10 Tf 1 0 0 1 48 560 Tm (The cycle has no terminating object. The renderer must stop recursion.) Tj ET
+BT /F 10 Tf 1 0 0 1 48 510 Tm (This text is after the recursive call and should remain visible.) Tj ET
+endstream
+endobj
+
+5 0 obj
+<<
+   /Type /XObject
+   /Subtype /Form
+   /FormType 1
+   /BBox [ 0 0 520 20 ]
+   /Resources <<
+      /ExtGState << /Next 6 0 R >>
+   >>
+   /Length 245
+>>
+stream
+% ISO 32000-1:2008, 8.10: Form XObjects.
+% Paint before recursing so the last accepted call still contributes a square.
+0 0 14 20 re f
+% Shift the next mask and its recursively rendered squares by 24 pt.
+1 0 0 1 24 0 cm
+/Next gs
+0 0 520 20 re f
+endstream
+endobj
+
+6 0 obj
+<<
+   /Type /ExtGState
+   /SMask <<
+      /Type /Mask
+      /S /Alpha
+      /G 7 0 R
+   >>
+>>
+endobj
+
+7 0 obj
+<<
+   /Type /XObject
+   /Subtype /Form
+   /FormType 1
+   /BBox [ 0 0 520 20 ]
+   /Group <<
+      /S /Transparency
+      /CS /DeviceRGB
+      /I true
+   >>
+   /Resources <<
+      /Pattern << /Again 8 0 R >>
+   >>
+   /Length 163
+>>
+stream
+% ISO 32000-1:2008, 11.6.5.1: soft-mask group.
+% Transparent background; only the recursively generated squares are opaque.
+/Pattern cs
+/Again scn
+0 0 520 20 re f
+endstream
+endobj
+
+8 0 obj
+<<
+   /Type /Pattern
+   /PatternType 1
+   /PaintType 1
+   /TilingType 1
+   /BBox [ 0 0 520 20 ]
+   /XStep 520
+   /YStep 20
+   /Resources <<
+      /XObject << /Cycle 5 0 R >>
+   >>
+   /Length 125
+>>
+stream
+% ISO 32000-1:2008, 8.7.3: tiling patterns.
+% Close the cycle: Form 5 -> SMask group 7 -> Pattern 8 -> Form 5.
+0 g
+/Cycle Do
+endstream
+endobj
+
+startxref
+10
+%%EOF

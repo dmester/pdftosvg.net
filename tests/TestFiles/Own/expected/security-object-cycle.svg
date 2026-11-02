@@ -1,0 +1,78 @@
+﻿<svg width="595" height="842" preserveAspectRatio="xMidYMid meet" viewBox="0 0 594.96 841.92" xmlns="http://www.w3.org/2000/svg">
+<!-- Generator: PdfToSvg.NET -->
+<style>
+.ID1 text{white-space:pre;}
+.ID5{font-family:Helvetica,Arial,sans-serif;font-size:20px;}
+.ID6{font-family:Helvetica,Arial,sans-serif;font-size:12px;}
+.ID7{font-family:Helvetica,Arial,sans-serif;font-size:10px;}
+.ID8{font-family:Helvetica,Arial,sans-serif;font-size:8px;}
+</style>
+<defs class="ID1">
+<pattern width="520" height="20" patternUnits="userSpaceOnUse" patternTransform="translate(0 821.92)" viewBox="0 0 520 20" id="ID2" />
+<mask mask-type="alpha" id="ID3">
+<g transform="translate(72 -620)">
+<path d="M0 841.92h520v-20h-520z" fill="url(#ID2)" />
+</g>
+</mask>
+<clipPath id="ID4">
+<rect x="48" y="201.92" width="520" height="20" />
+</clipPath>
+</defs>
+<g class="ID1" stroke-miterlimit="10">
+<text x="48" y="61.92" class="ID5">Recursive object cycle</text>
+<text x="48" y="91.92" class="ID6">XObject -&gt; SMask -&gt; Pattern -&gt; XObject</text>
+<text x="48" y="117.92" class="ID7">One blue square per XObject invocation; horizontal offset: 24 pt.</text>
+<g fill="none" stroke="#ccc" stroke-width=".5">
+<path d="M48 221.92h14v-20h-14z" />
+<path d="M72 221.92h14v-20h-14z" />
+<path d="M96 221.92h14v-20h-14z" />
+<path d="M120 221.92h14v-20h-14z" />
+<path d="M144 221.92h14v-20h-14z" />
+<path d="M168 221.92h14v-20h-14z" />
+<path d="M192 221.92h14v-20h-14z" />
+<path d="M216 221.92h14v-20h-14z" />
+<path d="M240 221.92h14v-20h-14z" />
+<path d="M264 221.92h14v-20h-14z" />
+<path d="M288 221.92h14v-20h-14z" />
+<path d="M312 221.92h14v-20h-14z" />
+<path d="M336 221.92h14v-20h-14z" />
+<path d="M360 221.92h14v-20h-14z" />
+<path d="M384 221.92h14v-20h-14z" />
+<path d="M408 221.92h14v-20h-14z" />
+<path d="M432 221.92h14v-20h-14z" />
+<path d="M456 221.92h14v-20h-14z" />
+<path d="M480 221.92h14v-20h-14z" />
+<path d="M504 221.92h14v-20h-14z" />
+</g>
+<g class="ID8">
+<text x="49" y="237.92">1</text>
+<text x="73" y="237.92">2</text>
+<text x="97" y="237.92">3</text>
+<text x="121" y="237.92">4</text>
+<text x="145" y="237.92">5</text>
+<text x="169" y="237.92">6</text>
+<text x="193" y="237.92">7</text>
+<text x="217" y="237.92">8</text>
+<text x="241" y="237.92">9</text>
+<text x="265" y="237.92">10</text>
+<text x="289" y="237.92">11</text>
+<text x="313" y="237.92">12</text>
+<text x="337" y="237.92">13</text>
+<text x="361" y="237.92">14</text>
+<text x="385" y="237.92">15</text>
+<text x="409" y="237.92">16</text>
+<text x="433" y="237.92">17</text>
+<text x="457" y="237.92">18</text>
+<text x="481" y="237.92">19</text>
+<text x="505" y="237.92">20</text>
+</g>
+<path d="M48 221.92h14v-20h-14z" fill="#0c59cc" />
+<g clip-path="url(#ID4)">
+<path d="M72 221.92h520v-20h-520z" mask="url(#ID3)" fill="#0c59cc" />
+</g>
+<g class="ID7">
+<text x="48" y="281.92">The cycle has no terminating object. The renderer must stop recursion.</text>
+<text x="48" y="331.92">This text is after the recursive call and should remain visible.</text>
+</g>
+</g>
+</svg>

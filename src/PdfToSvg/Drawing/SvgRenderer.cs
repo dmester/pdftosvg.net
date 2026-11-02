@@ -129,6 +129,9 @@ namespace PdfToSvg.Drawing
         private bool hasTextStyle;
         private bool hasRtlText;
 
+        private const int MaxObjectDepth = 50;
+        private HashSet<object> objectStack = new(ReferenceEqualityComparer.Instance); // To detect circular references
+
         private readonly PdfDictionary pageDict;
         private readonly Rectangle cropBox;
         private readonly SvgConversionOptions options;
@@ -1183,6 +1186,18 @@ namespace PdfToSvg.Drawing
             var contentStream = xobject.Stream;
             if (contentStream != null)
             {
+                if (objectStack.Count > MaxObjectDepth)
+                {
+                    Log.WriteLine("Maximum object depth was exceeded");
+                    return;
+                }
+
+                if (!objectStack.Add(xobject))
+                {
+                    Log.WriteLine("Circular object reference");
+                    return;
+                }
+
                 var originalGraphicsStateStack = graphicsStateStack;
                 var originalGraphicsState = graphicsState;
                 var originalMarkedContentStack = markedContentStack;
@@ -1236,6 +1251,8 @@ namespace PdfToSvg.Drawing
 
                     clipWrapper = null;
                     clipWrapperId = null;
+
+                    objectStack.Remove(xobject);
 
                     textBuilder.InvalidateStyle();
                 }

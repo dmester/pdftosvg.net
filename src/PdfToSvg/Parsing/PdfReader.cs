@@ -190,9 +190,12 @@ namespace PdfToSvg.Parsing
 
         public static IList<PdfDictionary> GetFlattenedPages(PdfDictionary root)
         {
+            const int MaxPages = 10000;
+
             var pages = new List<PdfDictionary>();
             var pagesStack = new Stack<IEnumerator>();
             var parentStack = new Stack<PdfDictionary>();
+            var parentStackSet = new HashSet<object>(ReferenceEqualityComparer.Instance);
 
             if (root.TryGetDictionary(Names.Pages, out var rootPagesDict))
             {
@@ -200,10 +203,11 @@ namespace PdfToSvg.Parsing
                 {
                     pagesStack.Push(kids.GetEnumerator());
                     parentStack.Push(rootPagesDict);
+                    parentStackSet.Add(rootPagesDict);
                 }
             }
 
-            while (pagesStack.Count > 0)
+            while (pagesStack.Count > 0 && pages.Count < MaxPages)
             {
                 var enumerator = pagesStack.Peek();
                 if (enumerator.MoveNext())
@@ -214,7 +218,8 @@ namespace PdfToSvg.Parsing
                     {
                         if (name == Names.Pages)
                         {
-                            if (dict.TryGetArray(Names.Kids, out var kids))
+                            // Note: Don't allow cycles
+                            if (dict.TryGetArray(Names.Kids, out var kids) && parentStackSet.Add(dict))
                             {
                                 InheritAttributes(parentStack.Peek(), dict);
                                 pagesStack.Push(kids.GetEnumerator());
@@ -232,7 +237,7 @@ namespace PdfToSvg.Parsing
                 {
                     (enumerator as IDisposable)?.Dispose();
                     pagesStack.Pop();
-                    parentStack.Pop();
+                    parentStackSet.Remove(parentStack.Pop());
                 }
             }
 

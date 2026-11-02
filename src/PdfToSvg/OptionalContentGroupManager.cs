@@ -13,6 +13,9 @@ namespace PdfToSvg
 {
     internal class OptionalContentGroupManager
     {
+        private const int MaxExpressionDepth = 32;
+        private const int MaxExpressionOperands = 4096;
+
         private Dictionary<PdfDictionary, OptionalContentGroup> allGroups = new();
         private List<OptionalContentGroup> publicGroups = new();
         private PdfName viewerIntent = Names.View;
@@ -94,7 +97,8 @@ namespace PdfToSvg
             {
                 if (dict.TryGetArray(Names.VE, out var ve))
                 {
-                    return EvaluateVisibilityExpression(ve);
+                    var remainingOperands = MaxExpressionOperands;
+                    return EvaluateVisibilityExpression(ve, depth: 0, ref remainingOperands) == true;
                 }
 
                 if (dict.TryGetArray(Names.OCGs, out var ocgDicts))
@@ -128,14 +132,19 @@ namespace PdfToSvg
             return true;
         }
 
-        private bool EvaluateVisibilityExpression(object expression)
+        private bool? EvaluateVisibilityExpression(object?[] expression, int depth, ref int remainingOperands)
         {
-            if (expression is object?[] arr && arr.Length > 0 && arr[0] is PdfName op)
+            if (depth > MaxExpressionDepth)
+            {
+                return null;
+            }
+
+            if (expression.Length > 0 && expression[0] is PdfName op)
             {
                 if (op == Names.Not)
                 {
-                    if (arr.Length > 1 &&
-                        arr[1] is PdfDictionary ocgDict &&
+                    if (expression.Length > 1 &&
+                        expression[1] is PdfDictionary ocgDict &&
                         allGroups.TryGetValue(ocgDict, out var ocg))
                     {
                         return !ocg.Visible;
@@ -144,42 +153,37 @@ namespace PdfToSvg
                     return true;
                 }
 
-                if (op == Names.And)
+                if (op == Names.And || op == Names.Or)
                 {
-                    foreach (var arg in arr.Skip(1))
+                    var isAnd = op == Names.And;
+
+                    for (var i = 1; i < expression.Length; i++)
                     {
-                        if (arg is object[] argArr && !EvaluateVisibilityExpression(argArr))
+                        if (remainingOperands-- <= 0)
                         {
-                            return false;
+                            // Propagate exhaustion through both operators and hide the marked content.
+                            return null;
+                        }
+
+                        var arg = expression[i];
+                        bool? visible = isAnd;
+                        if (arg is object?[] argArr)
+                        {
+                            visible = EvaluateVisibilityExpression(argArr, depth + 1, ref remainingOperands);
                         }
                         else if (arg is PdfDictionary ocgDict &&
-                            allGroups.TryGetValue(ocgDict, out var ocg) &&
-                            !ocg.Visible)
+                            allGroups.TryGetValue(ocgDict, out var ocg))
                         {
-                            return false;
+                            visible = ocg.Visible;
+                        }
+
+                        if (visible != isAnd)
+                        {
+                            return visible;
                         }
                     }
 
-                    return true;
-                }
-
-                if (op == Names.Or)
-                {
-                    foreach (var arg in arr.Skip(1))
-                    {
-                        if (arg is object[] argArr && EvaluateVisibilityExpression(argArr))
-                        {
-                            return true;
-                        }
-                        else if (arg is PdfDictionary ocgDict &&
-                            allGroups.TryGetValue(ocgDict, out var ocg) &&
-                            ocg.Visible)
-                        {
-                            return true;
-                        }
-                    }
-
-                    return false;
+                    return isAnd;
                 }
             }
 

@@ -55,6 +55,7 @@ namespace PdfToSvg.Fonts.OpenType.Utils
             { "hhea", 1 },
             { "hmtx", 2 }, // Has dependencies to hhea
             { "loca", 3 }, // Has dependencies to head
+            { "maxp", 4 }, // Must precede cmap, whose glyph ranges are bounded by NumGlyphs
         };
 
         private class StorageComparerImpl<T> : IComparer<T>

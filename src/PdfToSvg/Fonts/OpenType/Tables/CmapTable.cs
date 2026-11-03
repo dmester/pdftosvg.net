@@ -22,9 +22,10 @@ namespace PdfToSvg.Fonts.OpenType.Tables
 
         public CMapEncodingRecord[] EncodingRecords = ArrayUtils.Empty<CMapEncodingRecord>();
 
-        private static IBaseTable? Read(OpenTypeReader reader)
+        private static IBaseTable? Read(OpenTypeReader reader, OpenTypeReaderContext context)
         {
             var table = new CMapTable();
+            var glyphCount = context.ReadTables.Get<MaxpTable>()?.NumGlyphs ?? (ushort.MaxValue + 1);
 
             var version = reader.ReadUInt16();
             var numTables = reader.ReadUInt16();
@@ -57,7 +58,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
                     4 => ReadFormat4(localReader),
                     6 => ReadFormat6(localReader),
                     10 => ReadFormat10(localReader),
-                    12 => ReadFormat12(localReader),
+                    12 => ReadFormat12(localReader, glyphCount),
                     _ => (ICMapFormat?)null,
                 };
 
@@ -208,7 +209,7 @@ namespace PdfToSvg.Fonts.OpenType.Tables
             return format;
         }
 
-        private static CMapFormat12? ReadFormat12(OpenTypeReader reader)
+        private static CMapFormat12? ReadFormat12(OpenTypeReader reader, int glyphCount)
         {
             const int MinSize = 16;
             if (reader.Length < MinSize)
@@ -238,6 +239,10 @@ namespace PdfToSvg.Fonts.OpenType.Tables
                 group.EndCharCode = reader.ReadUInt32();
                 group.StartGlyphID = reader.ReadUInt32();
             }
+
+            // Sanitize the stored table as well as its lookup view, so invalid ranges are not re-embedded.
+            var ranges = OpenTypeCMap.NormalizeRanges(OpenTypeCMapDecoder.GetRanges(format), glyphCount);
+            format.Groups = OpenTypeCMapEncoder.EncodeFormat12(ranges).Groups;
 
             return format;
         }

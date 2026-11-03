@@ -22,8 +22,7 @@ namespace PdfToSvg.Fonts.OpenType
 
         public OpenTypeCMap(OpenTypePlatformID platformID, int encodingID, IEnumerable<OpenTypeCMapRange> ranges)
         {
-            rangesByUnicode = ranges.ToList();
-            rangesByUnicode.Sort(x => x.StartUnicode, x => x.StartGlyphIndex);
+            rangesByUnicode = NormalizeRanges(ranges);
 
             PlatformID = platformID;
             EncodingID = encodingID;
@@ -47,6 +46,53 @@ namespace PdfToSvg.Fonts.OpenType
                     return new uint[0];
                 }
             }, LazyThreadSafetyMode.PublicationOnly);
+        }
+
+        internal static List<OpenTypeCMapRange> NormalizeRanges(
+            IEnumerable<OpenTypeCMapRange> ranges, int glyphCount = ushort.MaxValue + 1)
+        {
+            const uint MaxUnicode = 0x10ffffu;
+
+            var result = new List<OpenTypeCMapRange>();
+            if (glyphCount <= 0)
+            {
+                return result;
+            }
+
+            var sorted = ranges.ToList();
+            sorted.Sort(x => x.StartUnicode, x => x.StartGlyphIndex);
+
+            var maxGlyphIndex = (uint)Math.Min(ushort.MaxValue, glyphCount - 1);
+            var nextUnicode = 0u;
+
+            foreach (var range in sorted)
+            {
+                // OpenType 'cmap' format 12 and 'maxp': Unicode ends at U+10FFFF and glyph IDs are uint16.
+                // Keep the usable prefix of malformed ranges without allowing glyph arithmetic to wrap.
+                if (range.StartUnicode > range.EndUnicode ||
+                    range.StartUnicode > MaxUnicode ||
+                    range.StartGlyphIndex > maxGlyphIndex)
+                {
+                    continue;
+                }
+
+                var end = range.EndUnicode;
+                end = Math.Min(end, MaxUnicode);
+                end = Math.Min(end, range.StartUnicode + (maxGlyphIndex - range.StartGlyphIndex));
+
+                var start = Math.Max(range.StartUnicode, nextUnicode);
+                if (start > end)
+                {
+                    continue;
+                }
+
+                var glyph = range.StartGlyphIndex + (start - range.StartUnicode);
+                result.Add(new OpenTypeCMapRange(start, end, glyph));
+
+                nextUnicode = end + 1;
+            }
+
+            return result;
         }
 
         public OpenTypePlatformID PlatformID { get; }

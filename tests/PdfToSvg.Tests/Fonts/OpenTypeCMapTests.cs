@@ -5,6 +5,7 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
 using PdfToSvg.Fonts.OpenType;
+using PdfToSvg.Fonts.OpenType.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,6 +53,80 @@ namespace PdfToSvg.Tests.Fonts
             Assert.AreEqual(
                 JsonConvert.SerializeObject(expectedGroups),
                 JsonConvert.SerializeObject(actualGroups));
+        }
+
+        [Test]
+        public void ToGlyphIndex_Format4Wrap()
+        {
+            var map = OpenTypeCMapDecoder.GetCMap(new CMapEncodingRecord
+            {
+                Content = new CMapFormat4
+                {
+                    StartCode = new ushort[] { 10 },
+                    EndCode = new ushort[] { 20 },
+                    IdDelta = new short[] { -15 },
+                    IdRangeOffsets = new ushort[] { 0 },
+                },
+            });
+
+            Assert.AreEqual(11, map.Chars.Count());
+            Assert.AreEqual(65531u, map.ToGlyphIndex(10));
+            Assert.AreEqual(65535u, map.ToGlyphIndex(14));
+            Assert.AreEqual(0u, map.ToGlyphIndex(15));
+            Assert.AreEqual(5u, map.ToGlyphIndex(20));
+        }
+
+        [Test]
+        public void Chars_InvalidRanges()
+        {
+            var map = new OpenTypeCMap(0, 0, new[]
+            {
+                new OpenTypeCMapRange(10, 2, 1),
+                new OpenTypeCMapRange(0, uint.MaxValue, 0),
+                new OpenTypeCMapRange(0x10000, 0x10001, uint.MaxValue),
+                new OpenTypeCMapRange(0xfffffff0, uint.MaxValue, 1),
+            });
+
+            Assert.AreEqual(65536, map.Chars.Count());
+            Assert.AreEqual(65535u, map.ToGlyphIndex(65535));
+            Assert.IsNull(map.ToGlyphIndex(65536));
+            Assert.IsNull(map.ToUnicode(65536));
+        }
+
+        [Test]
+        public void Chars_OverlappingRanges()
+        {
+            var ranges = Enumerable.Range(0, 10000).Select(i => new OpenTypeCMapRange(0, 65535, 0));
+            var map = new OpenTypeCMap(0, 0, ranges);
+
+            Assert.AreEqual(1, map.Ranges.Count);
+            Assert.AreEqual(65536, map.Chars.Count());
+        }
+
+        [Test]
+        public void Chars_ClippedGlyphs()
+        {
+            var map = new OpenTypeCMap(0, 0, new[] { new OpenTypeCMapRange(0x10fffe, uint.MaxValue, 65535) });
+
+            Assert.AreEqual(1, map.Chars.Count());
+            Assert.AreEqual(65535u, map.ToGlyphIndex(0x10fffe));
+            Assert.IsNull(map.ToGlyphIndex(0x10ffff));
+            Assert.AreEqual(char.ConvertFromUtf32(0x10fffe), map.ToUnicode(65535));
+        }
+
+        [Test]
+        public void Chars_OverlappingSuffix()
+        {
+            var map = new OpenTypeCMap(0, 0, new[]
+            {
+                new OpenTypeCMapRange(10, 20, 100),
+                new OpenTypeCMapRange(15, 25, 200),
+            });
+
+            Assert.AreEqual(16, map.Chars.Count());
+            Assert.AreEqual(110u, map.ToGlyphIndex(20));
+            Assert.AreEqual(206u, map.ToGlyphIndex(21));
+            Assert.AreEqual(210u, map.ToGlyphIndex(25));
         }
 
         private static object[][] charMappings = new[]

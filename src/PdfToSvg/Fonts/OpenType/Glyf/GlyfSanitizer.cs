@@ -14,10 +14,23 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
 {
     internal static class GlyfSanitizer
     {
+        // Implementation limits shared by all traversals and glyphs in one font.
+        private const int MaxOperations = 1000000;
+        private const int MaxCompositeDepth = 64;
+
+        private static void CheckLimits(int depth, ref int remainingOperations, int operations = 1)
+        {
+            if (depth > MaxCompositeDepth || (remainingOperations -= operations) < 0)
+            {
+                throw new OpenTypeException("Composite glyph complexity limit exceeded.");
+            }
+        }
+
         public static void Sanitize(FullGlyfRecord[] glyphs, GlyfStats stats)
         {
-            RemoveInvalidCompositeGlyphs(glyphs);
-            RemoveEmptyGlyphReferences(glyphs);
+            var remainingOperations = MaxOperations;
+            RemoveInvalidCompositeGlyphs(glyphs, ref remainingOperations);
+            RemoveEmptyGlyphReferences(glyphs, ref remainingOperations);
 
             var maxPoints = 0;
             var maxContours = 0;
@@ -50,6 +63,7 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
                         var enumerator = stack.Peek();
                         if (enumerator.MoveNext())
                         {
+                            CheckLimits(stack.Count, ref remainingOperations);
                             var referencedGlyph = glyphs[((GlyfReference)enumerator.Current).GlyphIndex];
                             totalGlyphPoints += referencedGlyph.NumberOfPoints;
 
@@ -67,6 +81,12 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
                                 {
                                     maxCompositeDepth = stack.Count;
                                 }
+                            }
+
+                            // OpenType 'maxp' v1.0 stores composite point and contour counts as uint16.
+                            if (totalGlyphPoints > ushort.MaxValue || totalGlyphContours > ushort.MaxValue)
+                            {
+                                throw new OpenTypeException("Composite glyph point or contour count exceeds uint16.");
                             }
                         }
                         else
@@ -113,7 +133,7 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
             stats.MaxSizeOfInstructions = (ushort)maxSizeOfInstructions;
         }
 
-        private static void RemoveInvalidCompositeGlyphs(FullGlyfRecord[] glyphs)
+        private static void RemoveInvalidCompositeGlyphs(FullGlyfRecord[] glyphs, ref int remainingOperations)
         {
             for (var i = 0; i < glyphs.Length; i++)
             {
@@ -135,6 +155,7 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
                     var enumerator = stack.Peek();
                     if (enumerator.MoveNext())
                     {
+                        CheckLimits(stack.Count, ref remainingOperations);
                         var glyphReference = (GlyfReference)enumerator.Current;
                         if (glyphPath.Contains(glyphReference.GlyphIndex))
                         {
@@ -175,7 +196,7 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
             }
         }
 
-        private static void RemoveEmptyGlyphReferences(FullGlyfRecord[] glyphs)
+        private static void RemoveEmptyGlyphReferences(FullGlyfRecord[] glyphs, ref int remainingOperations)
         {
             for (var glyphIndex = 0; glyphIndex < glyphs.Length; glyphIndex++)
             {
@@ -187,6 +208,7 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
 
                 for (var refIndex = glyph.ReferencedGlyphs.Length - 1; refIndex >= 0; refIndex--)
                 {
+                    CheckLimits(0, ref remainingOperations);
                     var glyphRef = glyph.ReferencedGlyphs[refIndex];
 
                     var invalidRef =
@@ -203,6 +225,8 @@ namespace PdfToSvg.Fonts.OpenType.Glyf
 
                     if (invalidRef)
                     {
+                        // Removing an entry copies the array; charge that work to the same font budget.
+                        CheckLimits(0, ref remainingOperations, glyph.ReferencedGlyphs.Length);
                         glyph.ReferencedGlyphs = ArrayUtils.Remove(glyph.ReferencedGlyphs, refIndex);
 
                         // References left?

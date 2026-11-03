@@ -143,6 +143,77 @@ namespace PdfToSvg.Tests.Fonts.OpenType.Glyf
             Assert.AreEqual(maxp.MaxSizeOfInstructions, glyf.MaxSizeOfInstructions);
         }
 
+        [Test]
+        public void Sanitize_SharedComponents()
+        {
+            var glyphs = new[]
+            {
+                SimpleGlyph(0),
+                CompositeGlyph(1, [0, 0]),
+                CompositeGlyph(2, [1, 1, 0]),
+            };
+            glyphs[0].NumberOfPoints = 2;
+            var stats = new GlyfStats();
+
+            GlyfSanitizer.Sanitize(glyphs, stats);
+
+            AssertOriginal(glyphs, 2);
+            Assert.AreEqual(10, stats.MaxCompositePoints);
+            Assert.AreEqual(5, stats.MaxCompositeContours);
+            Assert.AreEqual(2, stats.MaxComponentDepth);
+            Assert.AreEqual(3, stats.MaxComponentElements);
+        }
+
+        [Test]
+        public void Sanitize_ExponentialComponents()
+        {
+            var glyphs = new FullGlyfRecord[41];
+            glyphs[0] = SimpleGlyph(0);
+            for (var i = 1; i < glyphs.Length; i++)
+            {
+                glyphs[i] = CompositeGlyph((byte)i, [(ushort)(i - 1), (ushort)(i - 1)]);
+            }
+
+            var exception = Assert.Throws<OpenTypeException>(() => GlyfSanitizer.Sanitize(glyphs, new GlyfStats()));
+            StringAssert.Contains("complexity limit", exception.Message);
+        }
+
+        [TestCase(64, false)]
+        [TestCase(65, true)]
+        public void Sanitize_DeepComponents(int depth, bool exceedsLimit)
+        {
+            var glyphs = new FullGlyfRecord[depth + 1];
+            glyphs[0] = SimpleGlyph(0);
+            for (var i = 1; i < glyphs.Length; i++)
+            {
+                glyphs[i] = CompositeGlyph((byte)i, [(ushort)(i - 1)]);
+            }
+            var stats = new GlyfStats();
+
+            if (exceedsLimit)
+            {
+                Assert.Throws<OpenTypeException>(() => GlyfSanitizer.Sanitize(glyphs, stats));
+            }
+            else
+            {
+                GlyfSanitizer.Sanitize(glyphs, stats);
+                Assert.AreEqual(depth, stats.MaxComponentDepth);
+                Assert.AreEqual(1, stats.MaxCompositeContours);
+            }
+        }
+
+        [TestCase(65535, 1)]
+        [TestCase(0, 32767)]
+        public void Sanitize_CountOverflow(int points, short contours)
+        {
+            var glyphs = new[] { SimpleGlyph(0), CompositeGlyph(1, [0, 0, 0]) };
+            glyphs[0].NumberOfPoints = (ushort)points;
+            glyphs[0].NumberOfContours = contours;
+
+            var exception = Assert.Throws<OpenTypeException>(() => GlyfSanitizer.Sanitize(glyphs, new GlyfStats()));
+            StringAssert.Contains("uint16", exception.Message);
+        }
+
         private static FullGlyfRecord SimpleGlyph(byte glyphIndex)
         {
             return new FullGlyfRecord

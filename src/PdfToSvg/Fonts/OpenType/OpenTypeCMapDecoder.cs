@@ -63,11 +63,23 @@ namespace PdfToSvg.Fonts.OpenType
             {
                 if (cmap.IdRangeOffsets[i] == 0)
                 {
-                    ranges.Add(new OpenTypeCMapRange(
-                        startUnicode: cmap.StartCode[i],
-                        endUnicode: cmap.EndCode[i],
-                        startGlyphIndex: (ushort)(cmap.StartCode[i] + cmap.IdDelta[i]) // Modulo 65536
-                        ));
+                    var start = (uint)cmap.StartCode[i];
+                    var end = (uint)cmap.EndCode[i];
+                    if (start > end)
+                    {
+                        continue;
+                    }
+
+                    var glyph = (ushort)(start + cmap.IdDelta[i]);
+                    var firstEnd = Math.Min(end, start + (ushort.MaxValue - (uint)glyph));
+                    ranges.Add(new OpenTypeCMapRange(start, firstEnd, glyph));
+
+                    // OpenType 'cmap' format 4: idDelta arithmetic is modulo 65536.
+                    // Preserve mappings after a glyph ID wrap when normalizing to uint16 glyph ranges.
+                    if (firstEnd < end)
+                    {
+                        ranges.Add(new OpenTypeCMapRange(firstEnd + 1, end, 0));
+                    }
                 }
                 else
                 {

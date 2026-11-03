@@ -18,6 +18,9 @@ namespace PdfToSvg.Fonts.WidthMaps
         private readonly double defaultWidth;
         private readonly Dictionary<uint, double> widthMap;
         private const double WidthMultiplier = 0.001;
+        // ISO 32000-1, section 9.7.3: CIDs are limited to two bytes.
+        private const int MaxCid = ushort.MaxValue;
+        private const int MaxWidthAssignments = 1000000;
 
         private CidFontWidthMap(Dictionary<uint, double> widthMap, double defaultWidth)
         {
@@ -28,6 +31,8 @@ namespace PdfToSvg.Fonts.WidthMaps
         public static CidFontWidthMap Parse(PdfDictionary font)
         {
             var widthMap = new Dictionary<uint, double>();
+            // Include overwrites in the budget: repeated ranges must not multiply the work without limit.
+            var remainingWidths = MaxWidthAssignments;
             var defaultWidth = 1.0; // Default value for default width is 1000
 
             if (font.TryGetNumber(Names.DescendantFonts / Indexes.First / Names.DW, out var dw))
@@ -37,31 +42,44 @@ namespace PdfToSvg.Fonts.WidthMaps
 
             if (font.TryGetArray(Names.DescendantFonts / Indexes.First / Names.W, out var w))
             {
-                uint? cfirst = null;
-                uint? clast = null;
+                int? cfirst = null;
+                int? clast = null;
 
                 foreach (var item in w)
                 {
+                    if (remainingWidths <= 0)
+                    {
+                        // Preserve parsed widths and use the default width for missing CIDs.
+                        break;
+                    }
+
                     if (item is object[] rangeArray)
                     {
                         if (cfirst != null)
                         {
-                            var offset = 0u;
-
-                            foreach (var width in rangeArray)
+                            for (var offset = 0; offset < rangeArray.Length && remainingWidths > 0;
+                                offset++, remainingWidths--)
                             {
-                                var charCode = cfirst.Value + offset;
+                                var charCode = (long)cfirst.Value + offset;
+                                if (charCode > MaxCid)
+                                {
+                                    break;
+                                }
+                                if (charCode < 0)
+                                {
+                                    continue;
+                                }
+
+                                var width = rangeArray[offset];
 
                                 if (width is int intWidth)
                                 {
-                                    widthMap[charCode] = intWidth * WidthMultiplier;
+                                    widthMap[(uint)charCode] = intWidth * WidthMultiplier;
                                 }
                                 else if (width is double realWidth)
                                 {
-                                    widthMap[charCode] = realWidth * WidthMultiplier;
+                                    widthMap[(uint)charCode] = realWidth * WidthMultiplier;
                                 }
-
-                                offset++;
                             }
                         }
 
@@ -72,17 +90,19 @@ namespace PdfToSvg.Fonts.WidthMaps
                     {
                         if (cfirst == null)
                         {
-                            cfirst = unchecked((uint)integer);
+                            cfirst = integer;
                         }
                         else if (clast == null)
                         {
-                            clast = unchecked((uint)integer);
+                            clast = integer;
                         }
                         else
                         {
-                            for (var i = cfirst.Value; i <= clast.Value; i++)
+                            var last = Math.Min(MaxCid, clast.Value);
+                            for (var i = Math.Max(0, cfirst.Value); i <= last && remainingWidths > 0;
+                                i++, remainingWidths--)
                             {
-                                widthMap[i] = integer * WidthMultiplier;
+                                widthMap[(uint)i] = integer * WidthMultiplier;
                             }
 
                             cfirst = null;
@@ -93,9 +113,11 @@ namespace PdfToSvg.Fonts.WidthMaps
                     {
                         if (cfirst != null && clast != null)
                         {
-                            for (var i = cfirst.Value; i <= clast.Value; i++)
+                            var last = Math.Min(MaxCid, clast.Value);
+                            for (var i = Math.Max(0, cfirst.Value); i <= last && remainingWidths > 0;
+                                i++, remainingWidths--)
                             {
-                                widthMap[i] = real * WidthMultiplier;
+                                widthMap[(uint)i] = real * WidthMultiplier;
                             }
                         }
 

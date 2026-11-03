@@ -1,0 +1,104 @@
+%PDF-1.7
+% Crafted regression: CID widths: negative and oversized ranges
+
+1 0 obj
+<<
+    /Type /Catalog
+    /Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+    /Type /Pages
+    /Kids [3 0 R]
+    /Count 1
+>>
+endobj
+
+3 0 obj
+<<
+    /Type /Page
+    /Parent 2 0 R
+    /MediaBox [0 0 480 140]
+    /Contents 4 0 R
+    /Resources <<
+        /Font <<
+            /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+            /F2 5 0 R
+        >>
+    >>
+>>
+endobj
+
+4 0 obj
+<<
+    /Length 119
+
+>>
+stream
+BT /F1 12 Tf 20 110 Td (CID widths: negative and oversized ranges) Tj ET
+BT /F2 32 Tf 20 45 Td <000100020003FFFF> Tj ET
+endstream
+endobj
+
+5 0 obj
+<<
+    /Type /Font
+    /Subtype /Type0
+    /BaseFont /SecurityCID
+    /Encoding /Identity-H
+    /DescendantFonts [6 0 R]
+    /ToUnicode 7 0 R
+>>
+endobj
+
+6 0 obj
+<<
+    /Type /Font
+    /Subtype /CIDFontType2
+    /BaseFont /SecurityCID
+    /CIDSystemInfo << /Registry (Adobe) /Ordering (Identity) /Supplement 0 >>
+    /DW 1000
+    /W [0 -1 500 -1 -1 600.5 0 2147483647 650 1 [600 700] 65534 [800 900 1000]]
+>>
+endobj
+
+7 0 obj
+<<
+    /Length 151
+
+>>
+stream
+begincmap
+1 begincodespacerange
+<0000> <FFFF>
+endcodespacerange
+4 beginbfchar
+<0001> <0041>
+<0002> <0042>
+<0003> <0043>
+<FFFF> <0044>
+endbfchar
+endcmap
+endstream
+endobj
+
+xref
+0 8
+0000000000 65535 f 
+0000000074 00000 n 
+0000000132 00000 n 
+0000000202 00000 n 
+0000000452 00000 n 
+0000000628 00000 n 
+0000000789 00000 n 
+0000001052 00000 n 
+trailer
+<<
+    /Size 8
+    /Root 1 0 R
+>>
+startxref
+1260
+%%EOF

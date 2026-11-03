@@ -405,3 +405,64 @@ namespace PdfToSvg.Tests.Fonts.CharStrings.Parser
         }
     }
 }
+
+namespace PdfToSvg.Tests.Fonts.CharStrings
+{
+    internal class CharStringParserTests
+    {
+        [TestCase(CharStringType.Type1, false)]
+        [TestCase(CharStringType.Type2, false)]
+        [TestCase(CharStringType.Type2, true)]
+        public void Parse_ExponentialSubroutines(CharStringType type, bool global)
+        {
+            var subrs = new List<CharStringSubRoutine>();
+            var call = global ? CharStringOpCode.CallGSubr : CharStringOpCode.CallSubr;
+            var bias = type == CharStringType.Type2 ? 107 : 0;
+
+            for (var i = 0; i < 10; i++)
+            {
+                var writer = new Type2CharStringWriter();
+                if (i < 9)
+                {
+                    for (var j = 0; j < 10; j++)
+                    {
+                        writer.WriteOperand(i + 1 - bias);
+                        writer.WriteOperator((int)call);
+                    }
+                }
+                writer.WriteOperator((int)CharStringOpCode.Return);
+                subrs.Add(new CharStringSubRoutine(writer.ToArray()));
+            }
+
+            var main = new Type2CharStringWriter();
+            main.WriteOperand(-bias);
+            main.WriteOperator((int)call);
+            main.WriteOperator((int)CharStringOpCode.EndChar);
+            var empty = new CharStringSubRoutine[0];
+
+            var exception = Assert.Throws<CharStringException>(() => CharStringParser.Parse(
+                type, new ArraySegment<byte>(main.ToArray()), global ? subrs : empty, global ? empty : subrs));
+            StringAssert.Contains("instruction limit", exception.Message);
+        }
+
+        [Test]
+        public void Parse_SharedSubroutine()
+        {
+            var subr = new Type2CharStringWriter();
+            subr.WriteOperand(1);
+            subr.WriteOperator((int)CharStringOpCode.HMoveTo);
+            subr.WriteOperator((int)CharStringOpCode.Return);
+            var main = new Type2CharStringWriter();
+            for (var i = 0; i < 50; i++)
+            {
+                main.WriteOperand(-107);
+                main.WriteOperator((int)CharStringOpCode.CallSubr);
+            }
+            main.WriteOperator((int)CharStringOpCode.EndChar);
+
+            var glyph = CharStringParser.Parse(CharStringType.Type2, new ArraySegment<byte>(main.ToArray()),
+                new CharStringSubRoutine[0], new[] { new CharStringSubRoutine(subr.ToArray()) });
+            Assert.AreEqual(50, glyph.LastX);
+        }
+    }
+}

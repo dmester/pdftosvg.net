@@ -1,0 +1,107 @@
+%PDF-1.7
+% Crafted regression: CharStrings: bounded work across shared subroutines
+
+1 0 obj
+<<
+    /Type /Catalog
+    /Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+    /Type /Pages
+    /Kids [3 0 R]
+    /Count 1
+>>
+endobj
+
+3 0 obj
+<<
+    /Type /Page
+    /Parent 2 0 R
+    /MediaBox [0 0 480 140]
+    /Contents 4 0 R
+    /Resources <<
+        /Font <<
+            /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+            /F2 5 0 R
+        >>
+    >>
+>>
+endobj
+
+4 0 obj
+<<
+    /Length 115
+
+>>
+stream
+BT /F1 12 Tf 20 110 Td (CharStrings: bounded work across shared subroutines) Tj ET
+BT /F2 32 Tf 20 45 Td (AB) Tj ET
+endstream
+endobj
+
+5 0 obj
+<<
+    /Type /Font
+    /Subtype /Type1
+    /BaseFont /SecurityFont
+    /FirstChar 65
+    /LastChar 66
+    /Widths [600 600]
+    /Encoding /WinAnsiEncoding
+    /FontDescriptor 6 0 R
+>>
+endobj
+
+6 0 obj
+<<
+    /Type /FontDescriptor
+    /FontName /SecurityFont
+    /Flags 32
+    /FontBBox [0 0 500 700]
+    /Ascent 700
+    /Descent 0
+    /CapHeight 700
+    /StemV 80
+    /ItalicAngle 0
+    /FontFile3 7 0 R
+>>
+endobj
+
+7 0 obj
+<<
+    /Length 566
+    /Filter /ASCIIHexDecode
+    /Length1 280
+    /Subtype /Type1C
+>>
+stream
+01000404000101010C5365637572697479434646000101010D1D000000F30F1D000000F8110000000A0101162B40556A
+7F94A9BEBF211D211D211D211D211D211D211D211D211D211D0B221D221D221D221D221D221D221D221D221D221D0B23
+1D231D231D231D231D231D231D231D231D231D0B241D241D241D241D241D241D241D241D241D241D0B251D251D251D25
+1D251D251D251D251D251D251D0B261D261D261D261D261D261D261D261D261D261D0B271D271D271D271D271D271D27
+1D271D271D271D0B281D281D281D281D281D281D281D281D281D281D0B291D291D291D291D291D291D291D291D291D29
+1D0B0B00002200230003010102171A0E8B8B151C01F48B8B1C02BC1CFE0C8B8B1CFD44050E201D0E>
+endstream
+endobj
+
+xref
+0 8
+0000000000 65535 f 
+0000000084 00000 n 
+0000000142 00000 n 
+0000000212 00000 n 
+0000000462 00000 n 
+0000000634 00000 n 
+0000000834 00000 n 
+0000001056 00000 n 
+trailer
+<<
+    /Size 8
+    /Root 1 0 R
+>>
+startxref
+1744
+%%EOF

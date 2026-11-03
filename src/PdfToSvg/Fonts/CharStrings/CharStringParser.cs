@@ -14,6 +14,10 @@ namespace PdfToSvg.Fonts.CharStrings
     {
         private readonly Stack<CharStringLexer> parkedLexers = new Stack<CharStringLexer>();
 
+        // Shared by the glyph and all subroutine calls; a depth limit alone does not bound execution time.
+        private const int MaxExecutedInstructions = 100000;
+        private int remainingInstructions = MaxExecutedInstructions;
+
         private double[]? storage;
 
         private readonly IList<CharStringSubRoutine> globalSubrs, localSubrs;
@@ -65,6 +69,11 @@ namespace PdfToSvg.Fonts.CharStrings
 
             while (lexeme.Token != CharStringToken.EndOfInput)
             {
+                if (--remainingInstructions < 0)
+                {
+                    throw new CharStringException("Char string instruction limit exceeded.");
+                }
+
                 if (lexeme.Token == CharStringToken.Operand)
                 {
                     Stack.Push(lexeme.Value);

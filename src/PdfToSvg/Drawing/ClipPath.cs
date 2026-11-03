@@ -16,6 +16,7 @@ namespace PdfToSvg.Drawing
     {
         public readonly string Id;
         public readonly ClipPath? Parent;
+        public int Depth;
 
         public readonly object ClipElement;
 
@@ -28,6 +29,7 @@ namespace PdfToSvg.Drawing
         public ClipPath(ClipPath? parent, string id, object clipElement)
         {
             Parent = parent;
+            Depth = parent == null ? 0 : parent.Depth + 1;
             Id = id;
             ClipElement = clipElement;
         }
@@ -35,6 +37,7 @@ namespace PdfToSvg.Drawing
         public ClipPath(ClipPath? parent, string id, object clipElement, Rectangle rectangle)
         {
             Parent = parent;
+            Depth = parent == null ? 0 : parent.Depth + 1;
             Id = id;
             ClipElement = clipElement;
             IsRectangle = true;

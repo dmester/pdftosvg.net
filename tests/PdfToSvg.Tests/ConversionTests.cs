@@ -160,6 +160,46 @@ namespace PdfToSvg.Tests
             ConvertSync(fileName, "nonembedded-" + fileName, options);
         }
 
+        [TestCase("clip-path-depth.pdf", "Maximum clip path depth exceeded")]
+        public void ConvertShouldFail(string filename, string expectedException)
+        {
+            var input = Path.Combine(TestFiles.InputShouldFailDirectory, filename);
+
+            var exception = Assert.Throws<PdfException>(() =>
+            {
+                using (var document = PdfDocument.Open(input))
+                {
+                    foreach (var page in document.Pages)
+                    {
+                        page.ToSvgString();
+                    }
+                }
+            });
+
+            StringAssert.Contains(expectedException, exception.Message);
+        }
+
+#if !NET40
+        [TestCase("clip-path-depth.pdf", "Maximum clip path depth exceeded")]
+        public void ConvertShouldFailAsync(string filename, string expectedException)
+        {
+            var input = Path.Combine(TestFiles.InputShouldFailDirectory, filename);
+
+            var exception = Assert.ThrowsAsync<PdfException>(async () =>
+            {
+                using (var document = await PdfDocument.OpenAsync(input))
+                {
+                    foreach (var page in document.Pages)
+                    {
+                        await page.ToSvgStringAsync();
+                    }
+                }
+            });
+
+            StringAssert.Contains(expectedException, exception.Message);
+        }
+#endif
+
         [Test]
         public void ToggleOptionalContentGroup()
         {

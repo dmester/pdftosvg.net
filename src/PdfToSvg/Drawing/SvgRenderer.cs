@@ -138,6 +138,7 @@ namespace PdfToSvg.Drawing
         private readonly CancellationToken cancellationToken;
         private Matrix originalTransform;
 
+        private const int MaxClipPathDepth = 200;
         private Dictionary<string, ClipPath> clipPaths = new Dictionary<string, ClipPath>();
 
         private SvgRenderer(PdfDictionary pageDict, SvgConversionOptions? options, DocumentCache documentCache, OptionalContentGroupManager optionalContentGroupManager, CancellationToken cancellationToken)
@@ -425,16 +426,31 @@ namespace PdfToSvg.Drawing
 
         private void AddClipPaths(IEnumerable<ClipPath> paths)
         {
-            foreach (var path in paths)
-            {
-                if (path.Referenced && defIds.Add(path.Id))
-                {
-                    defs.Add(New.XElement(ns + "clipPath",
-                        new XAttribute("id", path.Id),
-                        path.Parent != null ? new XAttribute("clip-path", "url(#" + path.Parent.Id + ")") : null,
-                        path.ClipElement));
+            var stack = new Stack<IEnumerator<ClipPath>>();
+            stack.Push(paths.GetEnumerator());
 
-                    AddClipPaths(path.Children.Values);
+            while (stack.Count > 0)
+            {
+                var enumerator = stack.Peek();
+
+                if (enumerator.MoveNext())
+                {
+                    var path = enumerator.Current;
+
+                    if (path.Referenced && defIds.Add(path.Id))
+                    {
+                        defs.Add(New.XElement(ns + "clipPath",
+                            new XAttribute("id", path.Id),
+                            path.Parent != null ? new XAttribute("clip-path", "url(#" + path.Parent.Id + ")") : null,
+                            path.ClipElement));
+
+                        stack.Push(path.Children.Values.GetEnumerator());
+                    }
+                }
+                else
+                {
+                    enumerator.Dispose();
+                    stack.Pop();
                 }
             }
         }
@@ -1592,6 +1608,11 @@ namespace PdfToSvg.Drawing
 
         private void AppendClipping(ClipPath clipPath)
         {
+            if (clipPath.Depth > MaxClipPathDepth)
+            {
+                throw new PdfException("Maximum clip path depth exceeded");
+            }
+
             var targetDictionary = clipPath.Parent?.Children ?? clipPaths;
 
             if (targetDictionary.TryGetValue(clipPath.Id, out var existing))

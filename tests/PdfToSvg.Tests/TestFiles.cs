@@ -16,6 +16,7 @@ namespace PdfToSvg.Tests
         private const string ProtectedTestFilesDirName = "Protected";
         private const string OwnTestFilesDirName = "Own";
         private const string InputDirName = "input";
+        private const string InputShouldFailDirName = "input-should-fail";
         private const string ExternalFontsDirName = "external-fonts";
         private const string ExpectedDirName = "expected";
 
@@ -70,6 +71,8 @@ namespace PdfToSvg.Tests
         public static string ProtectedInputDirectory => Path.Combine(TestFilesPath, ProtectedTestFilesDirName);
 
         public static string InputDirectory => Path.Combine(TestFilesPath, OwnTestFilesDirName, InputDirName);
+
+        public static string InputShouldFailDirectory => Path.Combine(TestFilesPath, OwnTestFilesDirName, InputShouldFailDirName);
 
         public static string Jpeg2000ConformanceDirectory => Path.Combine(TestFilesPath, "T.803-JPEG2000-conformance");
 

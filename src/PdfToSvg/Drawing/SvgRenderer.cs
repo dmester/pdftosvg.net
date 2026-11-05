@@ -2893,6 +2893,18 @@ namespace PdfToSvg.Drawing
                 throw new ArgumentException("There must be Type 3 content specified for the paragraph.", nameof(paragraph));
             }
 
+            if (objectStack.Count > MaxObjectDepth)
+            {
+                Log.WriteLine("Maximum type 3 glyph depth was exceeded");
+                return;
+            }
+
+            if (!objectStack.Add(paragraph.Type3Content))
+            {
+                Log.WriteLine("Circular type 3 glyph reference");
+                return;
+            }
+
             var originalGraphicsStateStack = graphicsStateStack;
             var originalGraphicsState = graphicsState;
             var originalIgnoreColorChange = ignoreColorChange;
@@ -2918,6 +2930,7 @@ namespace PdfToSvg.Drawing
                 graphicsState = originalGraphicsState;
                 ignoreColorChange = originalIgnoreColorChange;
                 inType3Glyph = originalInType3Glyph;
+                objectStack.Remove(paragraph.Type3Content);
             }
         }
 

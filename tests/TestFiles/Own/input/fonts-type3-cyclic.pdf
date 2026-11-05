@@ -1,0 +1,163 @@
+%PDF-1.7
+
+xref
+0 11
+0000000000 65535 f
+0000000289 00000 n
+0000000340 00000 n
+0000000404 00000 n
+0000000542 00000 n
+0000000730 00000 n
+0000001199 00000 n
+0000001615 00000 n
+0000001991 00000 n
+0000002179 00000 n
+0000002361 00000 n
+trailer
+<< /Root 1 0 R  /Size 11 >>
+     
+1 0 obj << /Type /Catalog  /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages  /Kids [ 4 0 R ]  /Count 1 >> endobj
+
+3 0 obj << /Length 81 >>
+stream
+   0 0 0 rg
+
+   BT
+      200 600 Td
+      /F1 200 Tf
+      <040503> '
+   ET
+endstream
+endobj
+
+4 0 obj
+<<
+   /Type /Page
+   /Parent 2 0 R
+   /Resources <<
+      /Font <<
+         /F1 6 0 R
+      >> >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 3 0 R ]
+>>
+endobj
+
+5 0 obj
+<< 
+   /Type /CMap
+   /Length 387
+>> 
+stream
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+/CIDSystemInfo
+<< /Registry (Adobe)
+/Ordering (UCS) /Supplement 0 >> def
+/CMapName /Adobe-Identity-UCS def
+/CMapType 2 def
+1 begincodespacerange
+<0000> <FFFF>
+endcodespacerange
+3 beginbfchar
+<0003> <0021>
+<0004> <0048>
+<0005> <0049>
+endbfchar 
+endcmap 
+CMapName currentdict /CMap defineresource pop 
+end
+end
+endstream
+endobj
+
+6 0 obj
+<<
+   /Type /Font
+   /Subtype /Type3
+   /CharProcs << /H 7 0 R /I 8 0 R /Exclamation 9 0 R /space 10 0 R >>
+   /Encoding << /Type /Encoding /Differences [ 3 /Exclamation /H /I ] >>
+   /FirstChar 3
+   /LastChar 32
+   /FontBBox [ 0 0 1 -1 ]
+   /FontMatrix [ 1 0 0 1 0 0]
+   /Widths [0.209 0.445 0.227 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.34]
+   /ToUnicode 5 0 R
+>>
+endobj
+
+% H
+7 0 obj
+<< /Length 312 >>
+stream
+   0.445 0 -10 -10 10 10 d1
+   0.01 0 0 0.01 0 0 cm
+   5.19922 0 m
+   5.19922 65.4063 l
+   14.3047 65.4063 l
+   14.3047 39.4063 l
+   29.0039 39.4063 l
+   29.0039 65.4063 l
+   37.793 65.4063 l
+   37.793 0 l
+   29.0039 0 l
+   29.0039 29.8086 l
+   14.3047 29.8086 l
+   14.3047 0 l
+   5.19922 0 l
+f ET
+endstream
+endobj
+
+% I
+8 0 obj
+<< /Length 124 >>
+stream
+   0.227 0 -10 -10 10 10 d1
+   0.01 0 0 0.01 0 0 cm
+   1 0 0 rg % Should be ignored
+   7.39844 0 7.19922 63.9883 re
+   f
+endstream
+endobj
+
+% !
+9 0 obj
+<<
+   /Length 43
+   /Resources <<
+      /Font <<
+         /F1 6 0 R
+      >> >>
+>>
+stream
+   BT
+      /F1 60 Tf
+      <03> '
+   ET
+endstream
+endobj
+
+% space
+10 0 obj
+<<
+   /Length 42
+   /Resources <<
+      /Font <<
+         /F1 6 0 R
+      >> >>
+>>
+stream
+   BT
+      /F1 60 Tf
+      ( ) '
+   ET
+endstream
+endobj
+
+
+startxref
+8
+%%EOF

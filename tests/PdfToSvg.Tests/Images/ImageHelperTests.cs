@@ -29,6 +29,31 @@ namespace PdfToSvg.Tests.Images
         }
 
         [Test]
+        public void GetBitsPerComponent_StencilMask()
+        {
+            var imageDictionary = new PdfDictionary
+            {
+                { Names.BitsPerComponent, 8 },
+                { Names.ImageMask, true },
+            };
+            Assert.AreEqual(1, ImageHelper.GetBitsPerComponent(imageDictionary));
+        }
+
+        [Test]
+        public void GetBitsPerComponent_Missing()
+        {
+            var imageDictionary = new PdfDictionary { };
+            Assert.AreEqual(8, ImageHelper.GetBitsPerComponent(imageDictionary));
+        }
+
+        [Test]
+        public void GetBitsPerComponent_ZeroBitsPerComponent()
+        {
+            var imageDictionary = new PdfDictionary { { Names.BitsPerComponent, 0 } };
+            Assert.AreEqual(8, ImageHelper.GetBitsPerComponent(imageDictionary));
+        }
+
+        [Test]
         public void GetDecodeArray_MissingUsesDefault()
         {
             var imageDictionary = new PdfDictionary { { Names.BitsPerComponent, 8 } };

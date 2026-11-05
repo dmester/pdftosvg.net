@@ -37,7 +37,14 @@ namespace PdfToSvg.Imaging
                 return DefaultBitsPerComponent;
             }
 
-            return imageDictionary.GetValueOrDefault(Names.BitsPerComponent, DefaultBitsPerComponent);
+            var bitsPerComponent = imageDictionary.GetValueOrDefault(Names.BitsPerComponent, DefaultBitsPerComponent);
+            if (bitsPerComponent < 1)
+            {
+                // Prevent infinity loops in consumers how validating the value
+                return DefaultBitsPerComponent;
+            }
+
+            return bitsPerComponent;
         }
 
         public static bool HasCustomDecodeArray(PdfDictionary imageDictionary, ColorSpace colorSpace)

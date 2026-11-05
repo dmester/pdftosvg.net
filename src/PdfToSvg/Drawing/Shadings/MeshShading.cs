@@ -160,6 +160,15 @@ namespace PdfToSvg.Drawing.Shadings
             bitsPerCoordinate = definition.GetValueOrDefault(Names.BitsPerCoordinate, 8);
             bitsPerFlag = definition.GetValueOrDefault(Names.BitsPerFlag, 8);
 
+            if (bitsPerComponent < 1 || bitsPerComponent > 32)
+            {
+                throw new PdfException("BitsPerComponent out of range");
+            }
+            if (bitsPerCoordinate < 1 || bitsPerCoordinate > 32)
+            {
+                throw new PdfException("BitsPerCoordinate out of range");
+            }
+
             // Data stream
             var data = ArrayUtils.Empty<byte>();
 

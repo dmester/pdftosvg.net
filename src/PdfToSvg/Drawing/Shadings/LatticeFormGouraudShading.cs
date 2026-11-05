@@ -6,9 +6,6 @@ using PdfToSvg.Common;
 using PdfToSvg.DocumentModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 
 namespace PdfToSvg.Drawing.Shadings
@@ -20,6 +17,11 @@ namespace PdfToSvg.Drawing.Shadings
         public LatticeFormGouraudShading(PdfDictionary definition, CancellationToken cancellationToken) : base(definition, cancellationToken)
         {
             verticesPerRow = definition.GetValueOrDefault(Names.VerticesPerRow, 2);
+            if (verticesPerRow < 1)
+            {
+                throw new PdfException("VerticesPerRow out of range");
+            }
+
             ReadData();
         }
 

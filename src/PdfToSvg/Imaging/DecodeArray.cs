@@ -20,7 +20,14 @@ namespace PdfToSvg.Imaging
 
         public DecodeArray(int bitsPerComponent, float[] values)
         {
-            if (values == null) throw new ArgumentNullException(nameof(values));
+            if (bitsPerComponent < 1 || bitsPerComponent > 32)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bitsPerComponent));
+            }
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
 
             ranges = new DecodeRange[values.Length / 2];
             this.values = values;
@@ -33,7 +40,14 @@ namespace PdfToSvg.Imaging
 
         public DecodeArray(int bitsPerComponent, double[] values)
         {
-            if (values == null) throw new ArgumentNullException(nameof(values));
+            if (bitsPerComponent < 1 || bitsPerComponent > 32)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bitsPerComponent));
+            }
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
 
             ranges = new DecodeRange[values.Length / 2];
             this.values = values;

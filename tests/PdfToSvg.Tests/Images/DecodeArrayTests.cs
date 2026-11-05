@@ -15,6 +15,13 @@ namespace PdfToSvg.Tests.Images
     public class DecodeArrayTests
     {
         [Test]
+        public void ZeroBitsPerComponent()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => new DecodeArray(0, new float[0]));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new DecodeArray(0, new double[0]));
+        }
+
+        [Test]
         public void DecodeValues()
         {
             var decodeArray = new DecodeArray(4, new[] { .2f, .8f, 0f, 2f });

@@ -2868,7 +2868,12 @@ namespace PdfToSvg.Drawing
                 hasTextStyle = true;
             }
 
-            foreach (var paragraph in PrepareSvgSpans(textBuilder.paragraphs, options.IncludeHiddenText))
+            var paragraphs = PrepareSvgSpans(textBuilder.paragraphs, options.IncludeHiddenText);
+            
+            // Ensure imbalanced ET does not render the text again, causing a StackOverflowException
+            textBuilder.Clear();
+
+            foreach (var paragraph in paragraphs)
             {
                 if (paragraph.Type3Content != null)
                 {

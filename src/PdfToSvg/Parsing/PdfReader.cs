@@ -255,28 +255,30 @@ namespace PdfToSvg.Parsing
             }
         }
 
-        private static void InlineReferences(Dictionary<PdfObjectId, object?> objects)
+        public static void InlineReferences(Dictionary<PdfObjectId, object?> objects)
         {
-            foreach (var pair in objects)
-            {
-                InlineReferences(objects, pair.Value, recurse: true);
-            }
+            InlineReferences(objects, new Stack<object?>(objects.Values), recurse: true);
         }
 
-        private static void InlineReferences(Dictionary<PdfObjectId, object?> objects, object? value, bool recurse)
+        public static void InlineReferences(Dictionary<PdfObjectId, object?> objects, object? value, bool recurse)
         {
-            Recurse(objects, value, recurse, isTopLevel: true);
+            var pending = new Stack<object?>();
+            pending.Push(value);
+            InlineReferences(objects, pending, recurse);
+        }
 
-            static void Recurse(Dictionary<PdfObjectId, object?> objects, object? value, bool recurse, bool isTopLevel)
+        private static void InlineReferences(Dictionary<PdfObjectId, object?> objects, Stack<object?> pending,
+            bool recurse)
+        {
+            // Different object IDs can share a container, and inlining can introduce cycles between containers.
+            var visited = new HashSet<object>(ReferenceEqualityComparer.Instance);
+
+            while (pending.Count > 0)
             {
-                if (value is PdfDictionary dict)
-                {
-                    if (!isTopLevel && !dict.Id.IsEmpty)
-                    {
-                        // Inlined by InlineReferences(objects)
-                        return;
-                    }
+                var value = pending.Pop();
 
+                if (value is PdfDictionary dict && visited.Add(dict))
+                {
                     var refs = new List<KeyValuePair<PdfName, PdfObjectId>>();
 
                     foreach (var pair in dict)
@@ -285,9 +287,9 @@ namespace PdfToSvg.Parsing
                         {
                             refs.Add(KeyValuePair.Create(pair.Key, reference.Id));
                         }
-                        else if (recurse)
+                        else if (recurse && pair.Value is PdfDictionary or object?[])
                         {
-                            Recurse(objects, pair.Value, recurse, isTopLevel: false);
+                            pending.Push(pair.Value);
                         }
                     }
 
@@ -303,7 +305,7 @@ namespace PdfToSvg.Parsing
                         }
                     }
                 }
-                else if (value is object?[] arr)
+                else if (value is object?[] arr && visited.Add(arr))
                 {
                     for (var i = 0; i < arr.Length; i++)
                     {
@@ -318,9 +320,9 @@ namespace PdfToSvg.Parsing
                                 Log.WriteLine($"Reference to missing object ({reference.Id}).");
                             }
                         }
-                        else if (recurse)
+                        else if (recurse && arr[i] is PdfDictionary or object?[])
                         {
-                            Recurse(objects, arr[i], recurse, isTopLevel: false);
+                            pending.Push(arr[i]);
                         }
                     }
                 }

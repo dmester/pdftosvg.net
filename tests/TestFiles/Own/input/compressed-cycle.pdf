@@ -1,0 +1,100 @@
+%PDF-1.7
+
+1 0 obj <<
+   /Type /ObjStm
+   /N 7
+   /Length 558
+   /First 50
+>>
+stream
+2 0 3 45 4 100 5 359 6 398 8 453 9 485
+
+% 2 0 obj
+<< /Type /Catalog /Pages 3 0 R >>
+
+% 3 0 obj
+<< /Type /Pages /Kids [ 4 0 R ] /Count 1 >>
+
+% 4 0 obj
+<<
+   /Type /Page
+   /Parent 3 0 R
+   /Resources <<
+      /Font <<
+         /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+      >>
+   >>
+   /MediaBox [ 0 0 594.96 841.92 ]
+   /Contents [ 11 0 R ]
+>>
+
+% Cycle
+
+% 5 0 obj
+<< /Test 6 0 R >>
+
+% 6 0 obj
+% 7 0 obj
+<< /Test 5 0 R /Test2 6 0 R /Test3 7 0 R >>
+
+% 8 0 obj
+[ 9 0 R ]
+
+% 9 0 obj
+% 10 0 obj
+[ 8 0 R 9 0 R 10 0 R ]
+
+endstream
+endobj
+
+11 0 obj
+<<
+   /Length 104
+>>
+stream
+
+   0 0 0 rg
+   1 0 0 RG
+   
+   BT
+      
+      /F1 12 Tf
+      1 0 0 1 70 750 Tm
+      (Hello) '
+   ET
+
+endstream
+endobj
+
+% Fields: type; byte offset / object-stream number; generation / object index. Big-endian bytes.
+12 0 obj
+<<
+   /Type /XRef
+   /Root 2 0 R
+   /Size 13
+   /Index [ 0 13 ]
+   /W [ 1 4 2 ]
+   /Filter /ASCIIHexDecode
+   /Length 222
+>>
+stream
+00 00000000 FFFF
+01 0000000A 0000
+02 00000001 0000
+02 00000001 0001
+02 00000001 0002
+02 00000001 0003
+02 00000001 0004
+02 00000001 0004
+02 00000001 0005
+02 00000001 0006
+02 00000001 0006
+01 00000295 0000
+01 00000396 0000
+>
+endstream
+endobj
+
+startxref
+918
+%%EOF

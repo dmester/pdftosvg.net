@@ -495,7 +495,16 @@ namespace PdfToSvg.Parsing
                     continue;
                 }
 
-                var objectContent = ReadIndirectObjectContent(objectId.Value, objects);
+                object? objectContent;
+                try
+                {
+                    objectContent = ReadIndirectObjectContent(objectId.Value, objects);
+                }
+                catch (ParserDepthException ex)
+                {
+                    Log.WriteLine("Failed to parse indirect object {0}. {1}", objectId.Value, ex);
+                    continue;
+                }
 
                 // See #60
                 //

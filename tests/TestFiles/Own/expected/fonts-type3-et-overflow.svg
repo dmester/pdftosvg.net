@@ -7,7 +7,7 @@
 </style>
 <g class="ID1" stroke-miterlimit="10">
 <text x="200" y="241.92" class="ID2">HI!</text>
-<text x="100" y="341.92" textLength="402.8px" lengthAdjust="spacingAndGlyphs" class="ID3">HI! HI!</text>
+<text x="100" y="341.92" class="ID3" textLength="402.8px" lengthAdjust="spacingAndGlyphs">HI! HI!</text>
 <g fill="none" stroke="#f00" stroke-width="1">
 <path d="M107 351.92v-20" />
 <path d="M157 351.92v-20" />

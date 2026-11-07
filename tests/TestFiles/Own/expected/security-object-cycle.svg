@@ -68,7 +68,7 @@
 </g>
 <path d="M48 221.92h14v-20h-14z" fill="#0c59cc" />
 <g clip-path="url(#ID4)">
-<path d="M72 221.92h520v-20h-520z" mask="url(#ID3)" fill="#0c59cc" />
+<path d="M72 221.92h520v-20h-520z" fill="#0c59cc" mask="url(#ID3)" />
 </g>
 <g class="ID7">
 <text x="48" y="281.92">The cycle has no terminating object. The renderer must stop recursion.</text>

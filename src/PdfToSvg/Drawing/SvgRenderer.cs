@@ -2704,7 +2704,9 @@ namespace PdfToSvg.Drawing
 
                     var src = string.Join(",", sourceFonts
                         .Where(x => !string.IsNullOrEmpty(x.Url))
-                        .Select(x => $"url('{x.Url}') format('{x.Format}')"));
+                        .Select(x => "url(" +
+                            (webFont.IsSafeDataUrl ? "'" + x.Url + "'" : CssUtils.EncodeString(x.Url!)) +
+                            ") format('" + x.Format + "')"));
 
                     var fontFace = new CssPropertyCollection
                     {

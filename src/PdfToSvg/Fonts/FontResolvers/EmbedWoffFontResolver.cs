@@ -19,8 +19,7 @@ namespace PdfToSvg.Fonts.FontResolvers
                 try
                 {
                     var woff = sourceFont.ToWoff();
-                    var woffDataUrl = "data:font/woff;base64," + Convert.ToBase64String(woff);
-                    return new WebFont(woffUrl: woffDataUrl);
+                    return WebFont.FromWoffData(woff);
                 }
                 catch
                 {

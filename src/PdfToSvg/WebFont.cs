@@ -54,6 +54,7 @@ namespace PdfToSvg
         /// <param name="trueTypeUrl">URL to a TypeType font file to be included as a @font-face.</param>
         /// <param name="openTypeUrl">URL to a OpenType font file to be included as a @font-face.</param>
         /// <remarks>
+        /// <para>URLs must not be XML- or CSS-escaped. Existing percent escapes are preserved.</para>
         /// <note>
         ///     Standalone SVG’s must not reference external resources. If you intend to create standalone SVG files,
         ///     ensure the font URLs are
@@ -81,6 +82,23 @@ namespace PdfToSvg
         /// Gets the fallback font that is used to render the text if the web font files cannot be downloaded.
         /// </summary>
         public LocalFont? FallbackFont { get; }
+
+        /// <summary>
+        /// When <c>true</c>, the urls are not XML or CSS encoded.
+        /// </summary>
+        internal bool IsSafeDataUrl { get; private set; }
+
+        internal static WebFont FromWoffData(byte[] data)
+        {
+            var url = "data:font/woff;base64," + Convert.ToBase64String(data);
+            return new WebFont(woffUrl: url) { IsSafeDataUrl = true };
+        }
+
+        internal static WebFont FromOtfData(byte[] data)
+        {
+            var url = "data:font/otf;base64," + Convert.ToBase64String(data);
+            return new WebFont(openTypeUrl: url) { IsSafeDataUrl = true };
+        }
 
         /// <summary>
         /// Gets the generated font name of the web font.

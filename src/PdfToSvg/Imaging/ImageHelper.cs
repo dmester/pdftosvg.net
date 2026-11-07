@@ -125,31 +125,8 @@ namespace PdfToSvg.Imaging
 
         private static Stream GetImageStream(PdfStream imageDictionaryStream, CancellationToken cancellationToken)
         {
-            Stream? resultStream = null;
-
             var filters = imageDictionaryStream.Filters;
-            var encodedStream = imageDictionaryStream.Open(cancellationToken);
-            
-            var filtersExceptLast = new PdfStreamFilter[filters.Count - 1];
-            
-            for (var i = 0; i < filtersExceptLast.Length; i++)
-            {
-                filtersExceptLast[i] = filters[i];
-            }
-
-            try
-            {
-                resultStream = filtersExceptLast.Decode(encodedStream);
-            }
-            finally
-            {
-                if (resultStream == null)
-                {
-                    encodedStream.Dispose();
-                }
-            }
-
-            return resultStream;
+            return filters.Decode(imageDictionaryStream.Open(cancellationToken), skipLast: true);
         }
 
         public static byte[] GetContent(PdfStream imageDictionaryStream, CancellationToken cancellationToken)

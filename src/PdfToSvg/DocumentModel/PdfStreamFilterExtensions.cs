@@ -16,21 +16,22 @@ namespace PdfToSvg.DocumentModel
     {
         private const int MaxFilterCount = 10;
 
-        public static Stream Decode(this IList<PdfStreamFilter> filters, Stream encodedStream)
+        public static Stream Decode(this IList<PdfStreamFilter> filters, Stream encodedStream, bool skipLast = false)
         {
             var result = encodedStream;
             var disposeResult = true;
 
-            if (filters.Count > MaxFilterCount)
-            {
-                throw new PdfException("Max filter count exceeded. Filters found: " + filters.Count);
-            }
-
             try
             {
-                foreach (var filter in filters)
+                if (filters.Count > MaxFilterCount)
                 {
-                    result = filter.Decode(result);
+                    throw new PdfException("Max filter count exceeded. Filters found: " + filters.Count);
+                }
+
+                var count = filters.Count - (skipLast ? 1 : 0);
+                for (var i = 0; i < count; i++)
+                {
+                    result = filters[i].Decode(result);
                 }
 
                 disposeResult = false;

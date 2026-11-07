@@ -4,17 +4,18 @@ This tool makes a binary compressed representation of the predefined CMaps allow
 single compressed file instead of one file per CMap to provide better compression ratio. This will have a
 negative performance impact on usage, but PDFs using predefined CMaps seem to be quite rare.
 
-Note that the tool only handles CID and Not Def chars and ranges, and will do optimizations of the data
-before it is compressed. BF chars and ranges are discarded.
+The tool packs CID, notdef and BF character and range mappings. It optimizes CID and BF mappings before compression.
 
 ## Usage
 
-1. Download source CMaps from https://github.com/adobe-type-tools/cmap-resources
+1. Download the source files from https://github.com/adobe-type-tools/cmap-resources and
+   https://github.com/adobe-type-tools/mapping-resources-pdf. Place them under a common resource directory with
+   `license.md` at its root.
 
 2. Optionally download a Windows binary of Zopfli and put it in the output folder of CompressCMaps. This will improve compression of the resulting file.
 
 3. Run:
 
    ```
-   CompressCMaps <path to cmap-resources folder> <output file>
+   CompressCMaps <path to CMap resource directory> <output file>
    ```

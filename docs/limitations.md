@@ -15,17 +15,18 @@ The following image formats are not supported:
 
 ## Color spaces
 
-The commonly used color spaces are supported and transformed to RGB. PDF does however support a lot of color spaces, and not all of them are supported. If an unsupported color space is encountered, you might see areas that are black, but shouldn't be.
-
-Non-supported color spaces:
-
-* ICCBased
+The commonly used color spaces are supported and transformed to RGB. For ICCBased color spaces, the converter uses the
+profile's `/Alternate` color space when present. Otherwise it selects DeviceGray, DeviceRGB or DeviceCMYK based on the
+number of components. This fallback bypasses the ICC profile's color transform.
 
 ## Other features
 
 The following features are not supported:
 
-* PDF forms
+* Interactive PDF form fields
 * Embedded JavaScript
-* Annotations
-* Document links
+* Interactive annotations other than URI hyperlinks
+* Links to destinations within the PDF
+
+Annotations with a normal appearance stream can be rendered as static SVG, including form widgets such as checkboxes
+and radio buttons. URI hyperlinks are exported subject to the configured link filter.

@@ -35,9 +35,9 @@ https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.3.pd
 ## Imaging
 
 ### PNG
-Portable Network Graphics (PNG) Specification (Second Edition)
+Portable Network Graphics (PNG) Specification (Third Edition)
 
-https://www.w3.org/TR/PNG/
+https://www.w3.org/TR/2025/REC-png-3-20250624/
 
 ### JPEG
 CCITT Rec. T.81

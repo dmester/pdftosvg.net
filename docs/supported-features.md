@@ -2,7 +2,7 @@
 
 This document summarizes implemented features in PdfToSvg.NET.
 
-✅ = Implemented  ❌ = Not implemented
+✅ = Implemented  ◐ = Partially implemented  ❌ = Not implemented
 
 ## Text decoding
 
@@ -46,8 +46,8 @@ Impl | Description
 ✅ | FlateDecode with TIFF predictor
 ✅ | FlateDecode CMYK
 ✅ | CCITTFaxDecode
-❌ | JBIG2Decode
-❌ | JPXDecode (JPEG2000)
+✅ | JBIG2Decode
+✅ | JPXDecode (JPEG 2000)
 ✅ | Crypt
 ❌ | External images
 
@@ -71,7 +71,7 @@ Impl | Description
 ✅ | CalRGB
 ✅ | CalGray
 ✅ | Lab
-❌ | ICCBased
+◐ | ICCBased (fallback color space only)
 ✅ | Pattern
 ✅ | Indexed
 ✅ | Separation
@@ -159,8 +159,8 @@ Impl | Operator | Description
 ✅ | rg | Set RGB, nonstroke
 ✅ | SC | Set color, stroke
 ✅ | sc | Set color, nonstroke
-✅ | SCN | Set ICC color, stroke
-✅ | scn | Set ICC color, nonstroke
+✅ | SCN | Set color or pattern, stroke
+✅ | scn | Set color or pattern, nonstroke
 
 ## Operators / Drawing
 
@@ -202,7 +202,7 @@ Impl | Operator | Description
 
 Impl | Operator | Description
 :--: | :------- | :----------
-❌ | BDC | Begin marked-content seq with props
+◐ | BDC | Begin marked-content sequence with properties (optional content visibility)
 ✅ | BI | Begin inline image
 ❌ | BMC | Begin marked-content seq
 ❌ | BX | Begin compatiblity section
@@ -211,7 +211,7 @@ Impl | Operator | Description
 ✅ | Do | Invoke XObject (form & image)
 ❌ | DP | Define marked-content point
 ✅ | EI | End inline image
-❌ | EMC | End marked-content seq
+◐ | EMC | End marked-content sequence (optional content visibility)
 ❌ | EX | End compatibility section
 ✅ | ID | Begin inline image data
 ❌ | MP | Define marked-content point

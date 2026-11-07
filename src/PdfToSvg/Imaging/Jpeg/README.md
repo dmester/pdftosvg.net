@@ -51,7 +51,8 @@ described by C. Loeffler, A. Ligtenberg and G. Moschytz.
 
 ### SIMD vectorization
 
-The pipelines of the encoder and decoder are entirely vectorized using SSE2 or AVX2 SIMD operations.
+The encoder and decoder use SIMD on supported hardware, including SSE2 and AVX2 on x86 and AdvSimd on ARM64.
+Scalar paths are available when SIMD is unavailable.
 
 SIMD operations can execute operations on several values simultaneously using a single CPU instruction.
 For example, in non-vectorized code, the compiler will use an instruction to add two 16 bit numbers into a sum.

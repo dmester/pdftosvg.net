@@ -37,11 +37,16 @@ namespace PdfToSvg.Functions.PostScript
                 throw new ParserException($"Expected starting '{{' but found {nextLexeme} in PostScript function.", nextLexeme.Position);
             }
 
-            return ReadBlock();
+            return ReadBlock(0);
         }
 
-        private PostScriptExpression ReadBlock()
+        private PostScriptExpression ReadBlock(int depth)
         {
+            if (depth >= PostScriptLimits.MaxExecutionDepth)
+            {
+                throw new PostScriptFunctionException("PostScript block nesting limit exceeded.");
+            }
+
             var instructions = new List<PostScriptInstruction>();
             var continueReading = true;
 
@@ -52,7 +57,7 @@ namespace PdfToSvg.Functions.PostScript
                 switch (nextLexeme.Token)
                 {
                     case Token.BeginBlock:
-                        var block = ReadBlock();
+                        var block = ReadBlock(depth + 1);
                         instructions.Add(stack => stack.Push(block));
                         break;
 

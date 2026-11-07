@@ -21,9 +21,18 @@ namespace PdfToSvg.Functions.PostScript
 
         public void Execute(PostScriptStack stack)
         {
-            foreach (var instruction in instructions)
+            stack.EnterBlock();
+            try
             {
-                instruction(stack);
+                foreach (var instruction in instructions)
+                {
+                    stack.ConsumeInstruction();
+                    instruction(stack);
+                }
+            }
+            finally
+            {
+                stack.ExitBlock();
             }
         }
     }

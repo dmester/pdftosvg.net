@@ -16,7 +16,38 @@ namespace PdfToSvg.Functions.PostScript
     {
         private readonly List<object> stack = new List<object>();
 
+        private int executionDepth;
+        private int remainingInstructions;
+
         public int Count => stack.Count;
+
+        public void EnterBlock()
+        {
+            if (executionDepth >= PostScriptLimits.MaxExecutionDepth)
+            {
+                throw new PostScriptFunctionException("PostScript execution depth limit exceeded");
+            }
+
+            if (executionDepth == 0)
+            {
+                remainingInstructions = PostScriptLimits.MaxInterpretedInstructions;
+            }
+
+            executionDepth++;
+        }
+
+        public void ExitBlock()
+        {
+            executionDepth--;
+        }
+
+        public void ConsumeInstruction()
+        {
+            if (--remainingInstructions < 0)
+            {
+                throw new PostScriptFunctionException("PostScript instruction limit exceeded");
+            }
+        }
 
         public double[] ToDoubleArray()
         {
@@ -91,6 +122,11 @@ namespace PdfToSvg.Functions.PostScript
         [MethodImpl(MethodInliningOptions.AggressiveInlining)]
         public void Push(object value)
         {
+            if (stack.Count >= PostScriptLimits.StackSize)
+            {
+                throw new PostScriptFunctionException("PostScript stack limit exceeded");
+            }
+
             stack.Add(value);
         }
 

@@ -5,6 +5,8 @@
 using NUnit.Framework;
 using PdfToSvg.DocumentModel;
 using PdfToSvg.Functions;
+using PdfToSvg.Functions.PostScript;
+using System.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -130,6 +132,66 @@ namespace PdfToSvg.Tests.Functions
 
             var function = new PostScriptFunction(dict, default);
             Assert.That(function.Evaluate(input), Is.EqualTo(expectedOutput).Within(0.00001d));
+        }
+
+        [Test]
+        public void Parse_BlockDepthBoundary()
+        {
+            var source = new string('{', PostScriptLimits.MaxExecutionDepth) +
+                new string('}', PostScriptLimits.MaxExecutionDepth);
+            Assert.DoesNotThrow(() => Parse(source));
+            Assert.Throws<PostScriptFunctionException>(() => Parse("{" + source + "}"));
+        }
+
+        [TestCase("{ { dup true exch if } dup true exch if }")]
+        [TestCase("{ { dup true exch {} ifelse } dup true exch {} ifelse }")]
+        public void Execute_RecursiveBlock(string source)
+        {
+            var expression = Parse(source);
+            var exception = Assert.Throws<PostScriptFunctionException>(() => expression.Execute(new PostScriptStack()));
+            StringAssert.Contains("execution depth limit", exception.Message);
+        }
+
+        [Test]
+        public void Execute_SharedInstructionBudget()
+        {
+            var source = "{ { " + string.Concat(Enumerable.Repeat(
+                "0 pop ", PostScriptLimits.MaxInterpretedInstructions / 4)) +
+                "} dup true exch if true exch if }";
+            var expression = Parse(source);
+
+            Assert.Throws<PostScriptFunctionException>(() => expression.Execute(new PostScriptStack()));
+        }
+
+        [Test]
+        public void Execute_BudgetResets()
+        {
+            var body = string.Concat(Enumerable.Repeat("0 pop ", PostScriptLimits.MaxInterpretedInstructions / 2));
+            var stack = new PostScriptStack();
+            Assert.Throws<PostScriptFunctionException>(() => Parse("{ " + body + "0 }").Execute(stack));
+
+            var expression = Parse("{ " + body + "}");
+            expression.Execute(stack);
+            expression.Execute(stack);
+            Assert.AreEqual(0, stack.Count);
+        }
+
+        [Test]
+        public void Push_StackLimit()
+        {
+            var stack = new PostScriptStack();
+            for (var i = 0; i < PostScriptLimits.StackSize; i++)
+            {
+                stack.Push(i);
+            }
+
+            Assert.Throws<PostScriptFunctionException>(() => stack.Push(0));
+        }
+
+        private static PostScriptExpression Parse(string source)
+        {
+            using var stream = new MemoryStream(Encoding.ASCII.GetBytes(source));
+            return PostScriptParser.Parse(stream);
         }
 
         private static double[] ReadNumbers(object[] readFrom, ref int index)
